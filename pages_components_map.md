@@ -6,33 +6,35 @@ Every page, every component it contains, every input/output, and every service d
 
 ## Master Component Registry
 
-| Component                        | Type    | File Path                                | Inputs                                                                             | Outputs                                                 | Used On                                       |
-|----------------------------------|---------|------------------------------------------|------------------------------------------------------------------------------------|---------------------------------------------------------|-----------------------------------------------|
-| `AppComponent`                   | Shell   | `app/app.component.ts`                   | —                                                                                  | —                                                       | Root                                          |
-| `HeaderComponent`                | Layout  | `app/layout/header/`                     | —                                                                                  | —                                                       | All pages                                     |
-| `FooterComponent`                | Layout  | `app/layout/footer/`                     | —                                                                                  | —                                                       | All pages                                     |
-| `GameCatalogComponent`           | Page    | `app/features/game-catalog/`             | —                                                                                  | —                                                       | `/catalog`                                    |
-| `GenreDirectoryComponent`        | Page    | `app/features/genres/`                   | —                                                                                  | —                                                       | `/genres`                                     |
-| `GameDetailComponent`            | Page    | `app/features/game-detail/`              | —                                                                                  | —                                                       | `/games/:id`                                  |
-| `CreatorProfileComponent`        | Page    | `app/features/creator-profile/`          | —                                                                                  | —                                                       | `/creators/:id`                               |
-| `LoginComponent`                 | Page    | `app/features/auth/login/`               | —                                                                                  | —                                                       | `/login`                                      |
-| `RegisterComponent`              | Page    | `app/features/auth/register/`            | —                                                                                  | —                                                       | `/register`                                   |
-| `ForgotPasswordComponent`        | Page    | `app/features/auth/forgot-password/`     | —                                                                                  | —                                                       | `/forgot-password`                            |
-| `LibraryComponent`               | Page    | `app/features/library/`                  | —                                                                                  | —                                                       | `/library`                                    |
-| `WishlistComponent`              | Page    | `app/features/wishlist/`                 | —                                                                                  | —                                                       | `/wishlist`                                   |
-| `OrdersComponent`                | Page    | `app/features/orders/`                   | —                                                                                  | —                                                       | `/orders`                                     |
-| `ProfileComponent`               | Page    | `app/features/profile/`                  | —                                                                                  | —                                                       | `/profile`                                    |
-| `CreatorStudioComponent`         | Page    | `app/features/creator-studio/`           | —                                                                                  | —                                                       | `/studio`                                     |
-| `GameFormComponent`              | Page    | `app/features/creator-studio/game-form/` | —                                                                                  | —                                                       | `/studio/games/new`, `/studio/games/:id/edit` |
-| `SupportComponent`               | Page    | `app/features/support/`                  | —                                                                                  | —                                                       | `/support`                                    |
-| `NotFoundComponent`              | Page    | `app/features/not-found/`                | —                                                                                  | —                                                       | `/not-found`, `**`                            |
-| `GameCardComponent`              | Shared  | `app/shared/ui/game-card/`               | `game: Game`, `isWishlisted?: boolean`                                             | `(select)`, `(toggleWishlist)`                          | Catalog, Genres, Wishlist, CreatorProfile     |
-| `DownloadButtonComponent`        | Shared  | `app/shared/ui/download-button/`         | `game: Game`, `isOwned: boolean`                                                   | `(download)`, `(loginRequired)`, `(purchaseConfirmed)`  | Detail, Library                               |
-| `PurchaseConfirmModalComponent`  | Shared  | `app/shared/ui/purchase-confirm-modal/`  | `game: Game`                                                                       | `(confirm)`, `(cancel)`                                 | Detail                                        |
-| `LoadingSpinnerComponent`        | Shared  | `app/shared/ui/loading-spinner/`         | `size?: 'sm' \| 'md'`                                                              | —                                                       | Catalog, Detail, Library, Studio, Wishlist     |
-| `EmptyStateComponent`            | Shared  | `app/shared/ui/empty-state/`             | `message: string`, `icon?: string`, `actionLabel?: string`, `actionRoute?: string` | `(action)`                                              | Catalog, Library, Studio, Wishlist, Creator   |
-| `RoleBadgeComponent`             | Shared  | `app/shared/ui/role-badge/`              | `role: 'buyer' \| 'creator'`                                                       | —                                                       | Header, Profile, CreatorProfile               |
-| `TagChipInputComponent`          | Shared  | `app/shared/ui/tag-chip-input/`          | `tags: string[]`, `max: number`                                                    | `(tagsChange)`                                          | GameForm                                      |
+> **Status Key:** ✅ = Built & Verified | 🔲 = Placeholder Shell (route exists, awaiting Phase 3 implementation) | ⏳ = Planned (not yet created)
+
+| Component                        | Status | Type    | File Path                                | Inputs                                                                             | Outputs                                                 | Used On                                       |
+|----------------------------------|:------:|---------|------------------------------------------|------------------------------------------------------------------------------------|---------------------------------------------------------|-----------------------------------------------|
+| `AppComponent`                   | ✅     | Shell   | `app/app.component.ts`                   | —                                                                                  | —                                                       | Root                                          |
+| `HeaderComponent`                | ✅     | Layout  | `app/layout/header/`                     | —                                                                                  | —                                                       | All pages                                     |
+| `FooterComponent`                | ✅     | Layout  | `app/layout/footer/`                     | —                                                                                  | —                                                       | All pages                                     |
+| `GameCatalogComponent`           | ✅     | Page    | `app/features/game-catalog/`             | —                                                                                  | —                                                       | `/catalog`                                    |
+| `GenreDirectoryComponent`        | ✅     | Page    | `app/features/genres/`                   | —                                                                                  | —                                                       | `/genres`                                     |
+| `GameDetailComponent`            | ✅     | Page    | `app/features/game-detail/`              | —                                                                                  | —                                                       | `/games/:id`                                  |
+| `CreatorProfileComponent`        | ✅     | Page    | `app/features/creator-profile/`          | —                                                                                  | —                                                       | `/creators/:id`                               |
+| `LoginComponent`                 | ✅     | Page    | `app/features/auth/login/`               | —                                                                                  | —                                                       | `/login`                                      |
+| `RegisterComponent`              | ✅     | Page    | `app/features/auth/register/`            | —                                                                                  | —                                                       | `/register`                                   |
+| `ForgotPasswordComponent`        | ✅     | Page    | `app/features/auth/forgot-password/`     | —                                                                                  | —                                                       | `/forgot-password`                            |
+| `LibraryComponent`               | 🔲     | Page    | `app/features/library/`                  | —                                                                                  | —                                                       | `/library`                                    |
+| `WishlistComponent`              | 🔲     | Page    | `app/features/wishlist/`                 | —                                                                                  | —                                                       | `/wishlist`                                   |
+| `OrdersComponent`                | 🔲     | Page    | `app/features/orders/`                   | —                                                                                  | —                                                       | `/orders`                                     |
+| `ProfileComponent`               | 🔲     | Page    | `app/features/profile/`                  | —                                                                                  | —                                                       | `/profile`                                    |
+| `CreatorStudioComponent`         | 🔲     | Page    | `app/features/creator-studio/`           | —                                                                                  | —                                                       | `/studio`                                     |
+| `GameFormComponent`              | 🔲     | Page    | `app/features/creator-studio/game-form/` | —                                                                                  | —                                                       | `/studio/games/new`, `/studio/games/:id/edit` |
+| `SupportComponent`               | ✅     | Page    | `app/features/support/`                  | —                                                                                  | —                                                       | `/support`                                    |
+| `NotFoundComponent`              | ✅     | Page    | `app/features/not-found/`                | —                                                                                  | —                                                       | `/not-found`, `**`                            |
+| `GameCardComponent`              | ✅     | Shared  | `app/shared/ui/game-card/`               | `game: Game`, `isWishlisted?: boolean`                                             | `(select)`, `(toggleWishlist)`                          | Catalog, Genres, Wishlist, CreatorProfile     |
+| `DownloadButtonComponent`        | ⏳     | Shared  | `app/shared/ui/download-button/`         | `game: Game`, `isOwned: boolean`                                                   | `(download)`, `(loginRequired)`, `(purchaseConfirmed)`  | Detail, Library                               |
+| `PurchaseConfirmModalComponent`  | ⏳     | Shared  | `app/shared/ui/purchase-confirm-modal/`  | `game: Game`                                                                       | `(confirm)`, `(cancel)`                                 | Detail                                        |
+| `LoadingSpinnerComponent`        | ✅     | Shared  | `app/shared/ui/loading-spinner/`         | `size?: 'sm' \| 'md'`                                                              | —                                                       | Catalog, Detail, Library, Studio, Wishlist     |
+| `EmptyStateComponent`            | ✅     | Shared  | `app/shared/ui/empty-state/`             | `message: string`, `icon?: string`, `actionLabel?: string`, `actionRoute?: string` | `(action)`                                              | Catalog, Library, Studio, Wishlist, Creator   |
+| `RoleBadgeComponent`             | ✅     | Shared  | `app/shared/ui/role-badge/`              | `role: 'buyer' \| 'creator'`, `size?: 'sm' \| 'md'`                                 | —                                                       | Header, Profile, CreatorProfile               |
+| `TagChipInputComponent`          | ⏳     | Shared  | `app/shared/ui/tag-chip-input/`          | `tags: string[]`, `max: number`                                                    | `(tagsChange)`                                          | GameForm                                      |
 
 ---
 
@@ -160,34 +162,31 @@ Every page, every component it contains, every input/output, and every service d
 └─────────────────────────────────────────────────────┘
 ```
 
-**Child components on this page:**
+**Child components on this page (current Phase 2 state):**
 
-| Component                       | How it's used                                                                                                                                           |
-|---------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `DownloadButtonComponent`       | Renders one of 5 states based on auth + ownership + price. Emits `(loginRequired)`, `(download)`, or `(purchaseConfirmed)`                            |
-| `PurchaseConfirmModalComponent` | Rendered conditionally when `showPurchaseModal` is true. On `(confirm)`, calls `createOrder()` $\rightarrow$ `addToLibrary()` $\rightarrow$ auto-downloads |
-| `LoadingSpinnerComponent`       | While `getGameById()` resolves                                                                                                                          |
+| Component                       | How it's used                                                                                       | Status |
+|---------------------------------|-----------------------------------------------------------------------------------------------------|:------:|
+| `LoadingSpinnerComponent`       | While `getGameById()` resolves                                                                      | ✅     |
+| `DownloadButtonComponent`       | ⏳ *Planned (Phase 3)* — will render 5 states based on auth + ownership + price                     | ⏳     |
+| `PurchaseConfirmModalComponent` | ⏳ *Planned (Phase 3)* — will render conditionally for paid game purchase confirmation              | ⏳     |
 
-**Services injected:**
+> **Note:** In the current Phase 2 implementation, the Game Detail page uses a direct action button (`button.btn-action-main`) for Buy/Download and a separate wishlist toggle button (`button.btn-wishlist-action`). The `DownloadButtonComponent` and `PurchaseConfirmModalComponent` are planned for Phase 3.
+
+**Services injected (current Phase 2 state):**
 
 | Token          | Method called                            | Purpose                                |
 |----------------|------------------------------------------|----------------------------------------|
 | `GAMES_DATA`   | `getGameById(id)`                        | Fetch game details                     |
 | `USERS_DATA`   | `getUser(game.ownerId)`                  | Resolve creator display name           |
-| `LIBRARY_DATA` | `isOwned(userId, gameId)`                | Check if current user owns this game   |
-| `LIBRARY_DATA` | `addToLibrary(userId, gameId, orderId?)` | Create library entry on download       |
-| `ORDERS_DATA`  | `createOrder(userId, gameId)`            | Create order for paid games            |
 | `AuthService`  | `currentUser()`                          | Check auth state for button logic      |
 
-**Signals / State:**
+**Signals / State (current Phase 2 state):**
 
 | Signal              | Type                        | Purpose                             |
 |---------------------|-----------------------------|-------------------------------------|
 | `game`              | `Signal<Game \| undefined>` | Loaded game data                    |
 | `creatorName`       | `Signal<string>`            | Resolved display name               |
-| `isOwned`           | `Signal<boolean>`           | Whether current user owns this game |
 | `loading`           | `Signal<boolean>`           | Loading state                       |
-| `showPurchaseModal` | `Signal<boolean>`           | Whether to show the purchase modal  |
 
 ---
 

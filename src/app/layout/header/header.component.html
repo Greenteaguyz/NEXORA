@@ -1,0 +1,299 @@
+<header class="header-shell">
+  <div class="header-bar">
+    <div class="header-container">
+      <!-- Left: Brand Logo + Navigation Links -->
+      <div class="header-left">
+        <!-- Brand Logo -->
+        <a routerLink="/catalog" class="logo-link" (click)="closeMobileMenu()">
+          <img src="assets/logo-icon.svg" alt="NEXORA Icon" class="logo-icon">
+          <span class="logo-text">NEXORA</span>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="desktop-nav">
+          <ul class="nav-links">
+            <li class="nav-item">
+              <a routerLink="/catalog" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
+                Store
+              </a>
+            </li>
+            <li class="nav-item">
+              <a routerLink="/genres" routerLinkActive="active">
+                Genres
+              </a>
+            </li>
+
+            @if (authService.isAuthenticated()) {
+              <li class="nav-item">
+                <a routerLink="/library" routerLinkActive="active">
+                  Library
+                </a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="/wishlist" routerLinkActive="active">
+                  Wishlist
+                </a>
+              </li>
+              <li class="nav-item">
+                <a routerLink="/orders" routerLinkActive="active">
+                  Orders
+                </a>
+              </li>
+
+              @if (authService.isCreator()) {
+                <li class="nav-item">
+                  <a routerLink="/studio" routerLinkActive="active">
+                    Creator Studio
+                  </a>
+                </li>
+              }
+            }
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Desktop Header Actions & Auth Status -->
+      <div class="header-actions">
+        <!-- Demo Account Quick-Switcher -->
+        <div class="demo-switcher" title="Quick-Switch Demo Persona">
+          <button 
+            class="demo-pill" 
+            [class.active]="authService.currentUser()?.email === 'alice@nexora.io'"
+            (click)="switchAccount('alice@nexora.io')">
+            Alice (Creator)
+          </button>
+          <button 
+            class="demo-pill" 
+            [class.active]="authService.currentUser()?.email === 'bob@nexora.io'"
+            (click)="switchAccount('bob@nexora.io')">
+            Bob (Buyer)
+          </button>
+          <button 
+            class="demo-pill" 
+            [class.active]="authService.currentUser()?.email === 'carol@nexora.io'"
+            (click)="switchAccount('carol@nexora.io')">
+            Carol (Creator)
+          </button>
+        </div>
+
+        <!-- Apple iOS-Style Theme Switch Toggle -->
+        <button 
+          class="ios-theme-switch theme-pill" 
+          [class.dark]="themeService.currentTheme() === 'dark'"
+          (click)="toggleTheme()" 
+          role="switch"
+          [attr.aria-checked]="themeService.currentTheme() === 'dark'"
+          title="Toggle Light / Dark Mode (iOS Switch)">
+          <div class="switch-track">
+            <!-- Background Track Icons -->
+            <svg class="track-svg track-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+            <svg class="track-svg track-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+
+            <!-- Sliding Knob with Active SVG Icon -->
+            <div class="switch-knob">
+              @if (themeService.currentTheme() === 'dark') {
+                <svg class="knob-svg moon-svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+              } @else {
+                <svg class="knob-svg sun-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                </svg>
+              }
+            </div>
+          </div>
+        </button>
+
+        @if (authService.currentUser(); as user) {
+          <div class="user-profile-menu">
+            <div class="user-badge-group">
+              <span class="user-name">{{ user.displayName }}</span>
+              <app-role-badge [role]="user.roles.includes('creator') ? 'creator' : 'buyer'" size="sm"></app-role-badge>
+            </div>
+
+            <a routerLink="/profile" (click)="closeMobileMenu()">
+              <img [src]="user.avatarUrl || 'assets/logo-icon.svg'" [alt]="user.displayName" class="avatar-img">
+            </a>
+
+            <button class="btn-logout" (click)="logout()" title="Log out">
+              Log Out
+            </button>
+          </div>
+        } @else {
+          <a routerLink="/login" class="btn-secondary" (click)="closeMobileMenu()">Log In</a>
+          <a routerLink="/register" class="btn-primary" (click)="closeMobileMenu()">Register</a>
+        }
+
+        <!-- Mobile Hamburger Toggle Button -->
+        <button 
+          class="hamburger-btn" 
+          [class.open]="mobileMenuOpen()" 
+          (click)="toggleMobileMenu()" 
+          aria-label="Toggle navigation menu"
+          [attr.aria-expanded]="mobileMenuOpen()">
+          <span class="hamburger-box">
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile Drawer Backdrop & Menu Overlay (Outside header-bar to avoid clipping) -->
+@if (mobileMenuOpen()) {
+  <div class="mobile-backdrop" (click)="closeMobileMenu()"></div>
+  <aside class="mobile-drawer" [class.drawer-open]="mobileMenuOpen()" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
+    <div class="mobile-drawer-header">
+      <div class="mobile-brand">
+        <img src="assets/logo-icon.svg" alt="NEXORA" class="mobile-logo-icon">
+        <span class="logo-text">NEXORA</span>
+      </div>
+      <button class="btn-close-drawer" (click)="closeMobileMenu()" aria-label="Close menu">✕</button>
+    </div>
+
+    <nav class="mobile-nav">
+      <ul class="mobile-nav-list">
+        <li>
+          <a routerLink="/catalog" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }" (click)="closeMobileMenu()">
+            <span class="nav-emoji">🏪</span> Store Catalog
+          </a>
+        </li>
+        <li>
+          <a routerLink="/genres" routerLinkActive="active" (click)="closeMobileMenu()">
+            <span class="nav-emoji">🏷️</span> Genres Directory
+          </a>
+        </li>
+
+        @if (authService.isAuthenticated()) {
+          <li>
+            <a routerLink="/library" routerLinkActive="active" (click)="closeMobileMenu()">
+              <span class="nav-emoji">📚</span> My Library
+            </a>
+          </li>
+          <li>
+            <a routerLink="/wishlist" routerLinkActive="active" (click)="closeMobileMenu()">
+              <span class="nav-emoji">❤️</span> My Wishlist
+            </a>
+          </li>
+          <li>
+            <a routerLink="/orders" routerLinkActive="active" (click)="closeMobileMenu()">
+              <span class="nav-emoji">🧾</span> Orders & Receipts
+            </a>
+          </li>
+
+          @if (authService.isCreator()) {
+            <li>
+              <a routerLink="/studio" routerLinkActive="active" (click)="closeMobileMenu()">
+                <span class="nav-emoji">⚡</span> Creator Studio
+              </a>
+            </li>
+          }
+
+          <li>
+            <a routerLink="/profile" routerLinkActive="active" (click)="closeMobileMenu()">
+              <span class="nav-emoji">👤</span> Account Settings
+            </a>
+          </li>
+        }
+
+        <li>
+          <a routerLink="/support" routerLinkActive="active" (click)="closeMobileMenu()">
+            <span class="nav-emoji">🛡️</span> Support & Trust
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="mobile-drawer-footer">
+      <!-- Mobile Theme Toggle -->
+      <div class="mobile-theme-row">
+        <span class="mobile-section-label">Appearance:</span>
+        <button 
+          class="ios-theme-switch theme-pill" 
+          [class.dark]="themeService.currentTheme() === 'dark'"
+          (click)="toggleTheme()" 
+          role="switch"
+          [attr.aria-checked]="themeService.currentTheme() === 'dark'"
+          title="Toggle Light / Dark Mode (iOS Switch)">
+          <div class="switch-track">
+            <!-- Background Track Icons -->
+            <svg class="track-svg track-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+            <svg class="track-svg track-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+
+            <!-- Sliding Knob with Active SVG Icon -->
+            <div class="switch-knob">
+              @if (themeService.currentTheme() === 'dark') {
+                <svg class="knob-svg moon-svg" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+              } @else {
+                <svg class="knob-svg sun-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                </svg>
+              }
+            </div>
+          </div>
+        </button>
+      </div>
+
+      <!-- Mobile Demo Persona Quick-Switcher -->
+      <div class="mobile-demo-section">
+        <span class="mobile-section-label">Quick Switch Persona:</span>
+        <div class="mobile-demo-pills">
+          <button 
+            class="demo-pill" 
+            [class.active]="authService.currentUser()?.email === 'alice@nexora.io'"
+            (click)="switchAccount('alice@nexora.io')">
+            Alice (Creator)
+          </button>
+          <button 
+            class="demo-pill" 
+            [class.active]="authService.currentUser()?.email === 'bob@nexora.io'"
+            (click)="switchAccount('bob@nexora.io')">
+            Bob (Buyer)
+          </button>
+          <button 
+            class="demo-pill" 
+            [class.active]="authService.currentUser()?.email === 'carol@nexora.io'"
+            (click)="switchAccount('carol@nexora.io')">
+            Carol (Creator)
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile User Status / Auth CTAs -->
+      @if (authService.currentUser(); as user) {
+        <div class="mobile-user-row">
+          <div class="mobile-user-info">
+            <img [src]="user.avatarUrl || 'assets/logo-icon.svg'" [alt]="user.displayName" class="avatar-img">
+            <div class="mobile-user-names">
+              <span class="user-name">{{ user.displayName }}</span>
+              <app-role-badge [role]="user.roles.includes('creator') ? 'creator' : 'buyer'" size="sm"></app-role-badge>
+            </div>
+          </div>
+          <button class="btn-logout" (click)="logout()">Log Out</button>
+        </div>
+      } @else {
+        <div class="mobile-auth-btns">
+          <a routerLink="/login" class="btn-secondary" (click)="closeMobileMenu()">Log In</a>
+          <a routerLink="/register" class="btn-primary" (click)="closeMobileMenu()">Register</a>
+        </div>
+      }
+    </div>
+  </aside>
+}

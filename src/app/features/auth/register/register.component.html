@@ -1,0 +1,74 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <img src="assets/logo-icon.svg" alt="NEXORA Icon" class="auth-icon">
+      <h1 class="auth-title">Create an Account</h1>
+      <p class="auth-subtitle">Join NEXORA to download indie games and publish your creations.</p>
+    </div>
+
+    @if (errorMessage) {
+      <div class="error-banner">{{ errorMessage }}</div>
+    }
+
+    <form (submit)="onSubmit($event)">
+      <div class="form-group">
+        <label for="displayName" class="form-label">Display Name</label>
+        <input 
+          id="displayName" 
+          type="text" 
+          name="displayName" 
+          [value]="displayName" 
+          (input)="onDisplayNameChange($event)"
+          class="form-input" 
+          placeholder="CyberSamurai" 
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="email" class="form-label">Email Address</label>
+        <input 
+          id="email" 
+          type="email" 
+          name="email" 
+          [value]="email" 
+          (input)="onEmailChange($event)"
+          class="form-input" 
+          placeholder="samurai@nexora.io" 
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <input 
+          id="password" 
+          type="password" 
+          name="password" 
+          [value]="password" 
+          (input)="onPasswordChange($event)"
+          class="form-input" 
+          placeholder="••••••••" 
+          required>
+      </div>
+
+      <!-- Creator Role Toggle (Task 2.6) -->
+      <div class="creator-toggle-box">
+        <div class="creator-toggle-info">
+          <span class="toggle-title">Creator Account</span>
+          <span class="toggle-desc">Enable Creator Studio to upload and sell games</span>
+        </div>
+        <label class="switch">
+          <input type="checkbox" name="isCreator" [checked]="isCreator" (change)="onCreatorToggle($event)">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-submit" [disabled]="loading || !email || !displayName">
+        {{ loading ? 'Creating Account...' : 'Register' }}
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a routerLink="/login">Log in here</a>
+    </div>
+  </div>
+</div>

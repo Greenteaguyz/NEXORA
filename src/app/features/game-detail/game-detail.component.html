@@ -1,0 +1,161 @@
+<div class="game-detail-page">
+  @if (loading) {
+    <app-loading-spinner size="lg" label="Loading game showcase..."></app-loading-spinner>
+  } @else if (!game) {
+    <app-empty-state 
+      icon="⚠️" 
+      title="Game Not Found" 
+      message="The requested game listing could not be found or may have been removed."
+      actionLabel="Back to Catalog"
+      [routerLink]="['/catalog']">
+    </app-empty-state>
+  } @else {
+    <!-- Breadcrumb & Back -->
+    <div class="detail-nav">
+      <a routerLink="/catalog" class="back-link">← Back to Store</a>
+    </div>
+
+    <!-- Hero Showcase Section -->
+    <div class="showcase-hero">
+      <div class="hero-image-container">
+        <img [src]="game.coverImageUrl" [alt]="game.title" class="hero-cover-img">
+        <div class="hero-image-gradient"></div>
+        <div class="hero-header-overlay">
+          <div class="hero-title-group">
+            <h1 class="hero-game-title">{{ game.title }}</h1>
+            <div class="hero-tags">
+              @for (tag of game.tags; track tag) {
+                <a [routerLink]="['/catalog']" [queryParams]="{ tag: tag }" class="detail-tag-chip">
+                  {{ tag }}
+                </a>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2-Column Main Layout -->
+    <div class="detail-grid">
+      <!-- Left Column: Story & Screenshots -->
+      <div class="detail-main-col">
+        <!-- Synopsis Section -->
+        <section class="detail-card synopsis-card">
+          <h2 class="card-section-title">About the Game</h2>
+          <p class="synopsis-text">{{ game.description }}</p>
+
+          <div class="features-highlight">
+            <div class="highlight-item">
+              <span class="highlight-icon">✓</span>
+              <span>100% DRM-Free Standalone Package</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon">✓</span>
+              <span>Instant Offline Playability</span>
+            </div>
+            <div class="highlight-item">
+              <span class="highlight-icon">✓</span>
+              <span>Direct Support for Independent Creators</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Screenshot Gallery Carousel -->
+        @if (game.screenshotUrls && game.screenshotUrls.length > 0) {
+          <section class="detail-card gallery-card">
+            <div class="gallery-header">
+              <h2 class="card-section-title">Screenshot Gallery</h2>
+              <span class="gallery-hint">Click any image to enlarge</span>
+            </div>
+
+            <div class="screenshots-scroll-row">
+              @for (shot of game.screenshotUrls; track shot; let idx = $index) {
+                <div class="screenshot-thumb-box" (click)="openLightbox(idx)">
+                  <img [src]="shot" [alt]="game.title + ' screenshot ' + (idx + 1)" class="screenshot-thumb">
+                  <div class="thumb-zoom-icon">🔍</div>
+                </div>
+              }
+            </div>
+          </section>
+        }
+      </div>
+
+      <!-- Right Column: Metadata & Acquisition Sidebar -->
+      <aside class="detail-sidebar-col">
+        <!-- Purchase / Acquisition Card -->
+        <div class="sidebar-card purchase-card">
+          <div class="price-header">
+            <span class="price-label">Price</span>
+            @if (game.price === 0) {
+              <span class="price-display free">FREE</span>
+            } @else {
+              <span class="price-display paid">${{ game.price.toFixed(2) }}</span>
+            }
+          </div>
+
+          <!-- Download / Buy Action -->
+          <div class="action-buttons-group">
+            <button 
+              type="button" 
+              class="btn-action-main"
+              [class.free]="game.price === 0"
+              [class.paid]="game.price > 0"
+              (click)="handleActionClick()">
+              <span>{{ game.price === 0 ? '⬇ Download Free' : '💳 Buy Now · $' + game.price.toFixed(2) }}</span>
+            </button>
+
+            <button 
+              type="button" 
+              class="btn-wishlist-action" 
+              [class.active]="isWishlisted"
+              (click)="toggleWishlist()">
+              <span>{{ isWishlisted ? '♥ In Wishlist' : '♡ Add to Wishlist' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Creator Profile Card -->
+        @if (creator) {
+          <div class="sidebar-card creator-card">
+            <span class="sidebar-card-label">Developer</span>
+            <div class="creator-header">
+              <img [src]="creator.avatarUrl || 'assets/logo-icon.svg'" [alt]="creator.displayName" class="creator-avatar">
+              <div class="creator-details">
+                <a [routerLink]="['/creators', creator.id]" class="creator-name-link">{{ creator.displayName }}</a>
+                <span class="creator-badge">Verified Creator</span>
+              </div>
+            </div>
+            @if (creator.bio) {
+              <p class="creator-bio-snippet">{{ creator.bio }}</p>
+            }
+            <a [routerLink]="['/creators', creator.id]" class="btn-view-creator">
+              View Developer Storefront →
+            </a>
+          </div>
+        }
+      </aside>
+    </div>
+
+    <!-- Screenshot Lightbox Modal Overlay -->
+    @if (lightboxActive) {
+      <div class="lightbox-backdrop" (click)="closeLightbox()">
+        <div class="lightbox-container" (click)="$event.stopPropagation()">
+          <button type="button" class="btn-lightbox-close" (click)="closeLightbox()" title="Close Lightbox">✕</button>
+          
+          <button type="button" class="btn-lightbox-nav prev" (click)="prevScreenshot()" title="Previous Screenshot">‹</button>
+          
+          <img 
+            [src]="game.screenshotUrls[activeScreenshotIndex]" 
+            [alt]="game.title + ' enlarged preview'" 
+            class="lightbox-image">
+          
+          <button type="button" class="btn-lightbox-nav next" (click)="nextScreenshot()" title="Next Screenshot">›</button>
+
+          <div class="lightbox-counter">
+            {{ activeScreenshotIndex + 1 }} / {{ game.screenshotUrls.length }}
+          </div>
+        </div>
+      </div>
+    }
+  }
+</div>

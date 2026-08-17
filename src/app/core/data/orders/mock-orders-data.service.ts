@@ -1,0 +1,52 @@
+import { Injectable, inject } from '@angular/core';
+import { Observable, of, delay } from 'rxjs';
+import { Order } from '../../models/order.model';
+import { OrdersDataService } from '../tokens';
+import { LocalStoreService } from '../../persistence/local-store.service';
+import { SEED_ORDERS } from '../seed-data';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class MockOrdersDataService implements OrdersDataService {
+  private readonly STORAGE_KEY = 'orders_list';
+  private localStore = inject(LocalStoreService);
+  private orders: Order[] = [];
+
+  constructor() {
+    this.initData();
+  }
+
+  private initData(): void {
+    const saved = this.localStore.getItem<Order[]>(this.STORAGE_KEY);
+    if (saved && saved.length > 0) {
+      this.orders = saved;
+    } else {
+      this.orders = [...SEED_ORDERS];
+      this.localStore.setItem(this.STORAGE_KEY, this.orders);
+    }
+  }
+
+  private persist(): void {
+    this.localStore.setItem(this.STORAGE_KEY, this.orders);
+  }
+
+  createOrder(userId: string, gameId: string, price: number): Observable<Order> {
+    const newOrder: Order = {
+      id: 'ord_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5),
+      userId,
+      gameId,
+      price,
+      status: 'confirmed',
+      createdAt: new Date().toISOString()
+    };
+    this.orders.unshift(newOrder);
+    this.persist();
+    return of(newOrder);
+  }
+
+  getOrders(userId: string): Observable<Order[]> {
+    const userOrders = this.orders.filter(o => o.userId === userId);
+    return of(userOrders);
+  }
+}

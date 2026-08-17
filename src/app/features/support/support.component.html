@@ -1,0 +1,143 @@
+<div class="support-page">
+  <!-- Hero Section -->
+  <header class="support-hero">
+    <div class="support-badge">Help & Documentation Center</div>
+    <h1 class="support-title">How Can We Help You?</h1>
+    <p class="support-subtitle">
+      Find answers to common questions about DRM-free downloads, creator tools, account settings, and data safety on NEXORA.
+    </p>
+  </header>
+
+  <div class="support-grid">
+    <!-- FAQ Section -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon">❓</div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="faq-list">
+        @for (faq of faqs; track faq.id) {
+          <div class="faq-item" [class.open]="openFaqId === faq.id">
+            <button type="button" class="faq-question" (click)="toggleFaq(faq.id)">
+              <span>{{ faq.question }}</span>
+              <span class="faq-toggle-icon">+</span>
+            </button>
+            @if (openFaqId === faq.id) {
+              <div class="faq-answer">
+                {{ faq.answer }}
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- Support Ticket Form -->
+    <section class="section-card">
+      <div class="section-header">
+        <div class="section-icon">✉️</div>
+        <h2 class="section-title">Submit a Support Ticket</h2>
+      </div>
+
+      @if (ticketSubmitted) {
+        <div class="ticket-success">
+          <strong>✓ Ticket #{{ generatedTicketId }} Created Successfully</strong><br>
+          Our team has received your message and will respond to <em>{{ email }}</em> shortly.
+        </div>
+      }
+
+      <form (ngSubmit)="submitTicket()">
+        <div class="form-group">
+          <label for="ticketName" class="form-label">Your Name</label>
+          <input 
+            id="ticketName" 
+            type="text" 
+            name="name" 
+            [(ngModel)]="name" 
+            class="form-input" 
+            placeholder="Alice Vance" 
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="ticketEmail" class="form-label">Email Address</label>
+          <input 
+            id="ticketEmail" 
+            type="email" 
+            name="email" 
+            [(ngModel)]="email" 
+            class="form-input" 
+            placeholder="alice@nexora.io" 
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="ticketSubject" class="form-label">Subject</label>
+          <input 
+            id="ticketSubject" 
+            type="text" 
+            name="subject" 
+            [(ngModel)]="subject" 
+            class="form-input" 
+            placeholder="e.g. Question regarding game downloads" 
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="ticketMessage" class="form-label">Message</label>
+          <textarea 
+            id="ticketMessage" 
+            name="message" 
+            [(ngModel)]="message" 
+            class="form-textarea" 
+            placeholder="Describe your issue or feedback in detail..." 
+            required></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="loading || !email || !subject || !message">
+          {{ loading ? 'Submitting Ticket...' : 'Submit Support Ticket' }}
+        </button>
+      </form>
+    </section>
+  </div>
+
+  <!-- Privacy & Data Trust Notice -->
+  <section class="privacy-banner" id="privacy">
+    <h2 class="privacy-title">
+      <span>🛡️</span> Privacy & Data Trust Notice
+    </h2>
+    <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
+      NEXORA values developer freedom and player privacy. The marketplace is engineered with transparent, zero-telemetry local storage and open distribution standards.
+    </p>
+
+    <div class="trust-points">
+      <div class="trust-item">
+        <div class="trust-item-title">100% DRM-Free</div>
+        <div class="trust-item-desc">
+          Every game package you acquire is yours forever. No launcher lock-in, no background online checks, and no activation keys required.
+        </div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-item-title">Local Browser Persistence</div>
+        <div class="trust-item-desc">
+          All user sessions, library states, and wishlists are stored locally in your browser via IndexedDB & LocalStorage.
+        </div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-item-title">Simulated Transactions</div>
+        <div class="trust-item-desc">
+          All monetary transactions on this prototype are 100% simulated sandbox mock purchases with zero real credit card charges.
+        </div>
+      </div>
+    </div>
+
+    <!-- Seed Data Reset Tool -->
+    <div style="border-top: 1px solid var(--border-card); padding-top: var(--space-4); margin-top: var(--space-2); display: flex; justify-content: space-between; align-items: center;">
+      <span style="color: var(--text-muted); font-size: 0.85rem;">Need to restore default mock games and seed data?</span>
+      <button type="button" class="reset-db-btn" (click)="resetDatabase()">
+        ↺ Reset Mock Marketplace Seed Data
+      </button>
+    </div>
+  </section>
+</div>

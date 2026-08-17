@@ -1,0 +1,8 @@
+<span 
+  class="role-badge" 
+  [class.role-creator]="isCreator" 
+  [class.role-buyer]="!isCreator"
+  [class.size-sm]="size === 'sm'"
+  [class.size-md]="size === 'md'">
+  <span class="role-pill">{{ displayLabel }}</span>
+</span>

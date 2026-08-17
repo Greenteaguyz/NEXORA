@@ -1,0 +1,59 @@
+<article class="game-card">
+  <!-- 16:9 Cover Thumbnail -->
+  <div class="card-media">
+    <a [routerLink]="['/games', game.id]" class="media-link" [attr.aria-label]="game.title">
+      <img 
+        [src]="game.coverImageUrl" 
+        [alt]="game.title" 
+        class="cover-img"
+        decoding="sync">
+      <div class="media-overlay"></div>
+    </a>
+
+    <!-- Wishlist Heart Button -->
+    <button 
+      type="button" 
+      class="btn-wishlist" 
+      [class.wishlisted]="isWishlisted" 
+      (click)="toggleWishlist($event)"
+      [attr.aria-label]="isWishlisted ? 'Remove ' + game.title + ' from Wishlist' : 'Add ' + game.title + ' to Wishlist'"
+      [attr.aria-pressed]="isWishlisted"
+      [title]="isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'">
+      <span class="heart-icon" aria-hidden="true">{{ isWishlisted ? '♥' : '♡' }}</span>
+    </button>
+
+    <!-- Price Tag Badge -->
+    <div class="price-badge-wrapper">
+      @if (game.price === 0) {
+        <span class="price-badge free">FREE</span>
+      } @else {
+        <span class="price-badge paid">${{ game.price.toFixed(2) }}</span>
+      }
+    </div>
+  </div>
+
+  <!-- Content & Metadata -->
+  <div class="card-content">
+    <div class="card-header">
+      <h3 class="game-title">
+        <a [routerLink]="['/games', game.id]">{{ game.title }}</a>
+      </h3>
+      <a [routerLink]="['/creators', game.ownerId]" class="creator-link" title="View Creator Profile">
+        by {{ game.ownerId === 'usr_alice' ? 'Alice Vance' : (game.ownerId === 'usr_carol' ? 'Carol PixelForge' : 'Independent Dev') }}
+      </a>
+    </div>
+
+    <p class="game-desc">
+      {{ game.description }}
+    </p>
+
+    <!-- Tags Row -->
+    <div class="tags-row">
+      @for (tag of game.tags.slice(0, 3); track tag) {
+        <a [routerLink]="['/catalog']" [queryParams]="{ tag: tag }" class="tag-chip">
+          {{ tag }}
+        </a>
+      }
+    </div>
+  </div>
+</article>

@@ -1,0 +1,40 @@
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: var(--radius-full, 9999px);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  user-select: none;
+  transition: all 0.2s ease;
+}
+
+.size-sm {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+}
+
+.size-md {
+  font-size: 0.8rem;
+  padding: 4px 12px;
+}
+
+.role-creator {
+  background: rgba(139, 92, 246, 0.15);
+  color: var(--accent-400, #A78BFA);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+}
+
+.role-buyer {
+  background: rgba(6, 182, 212, 0.15);
+  color: var(--cyan-400, #22D3EE);
+  border: 1px solid rgba(6, 182, 212, 0.4);
+  box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+}
+
+.role-icon {
+  font-size: 0.85em;
+  line-height: 1;
+}

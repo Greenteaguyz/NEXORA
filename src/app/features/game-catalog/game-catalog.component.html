@@ -1,0 +1,82 @@
+<div class="catalog-page">
+  <!-- Hero Banner -->
+  <header class="catalog-hero">
+    <div class="hero-badge">Cyberpunk & Indie Distribution</div>
+    <h1 class="hero-title">Discover DRM-Free Indie Games</h1>
+    <p class="hero-subtitle">
+      Explore cutting-edge synthwave adventures, tactical roguelikes, and immersive cyberpunk worlds. Yours forever to download and keep.
+    </p>
+
+    <!-- Search Bar & Filters -->
+    <div class="search-bar-container">
+      <div class="search-input-wrapper">
+        <span class="search-icon">🔍</span>
+        <input 
+          type="text" 
+          id="catalog-search"
+          name="search"
+          aria-label="Search games by title, genre, or keywords"
+          autocomplete="off"
+          class="search-input" 
+          placeholder="Search games by title, genre, or keywords..."
+          [value]="searchTerm" 
+          (input)="onSearchInput($event)">
+        @if (searchTerm) {
+          <button type="button" class="btn-clear-search" (click)="clearSearch()" title="Clear search" aria-label="Clear search text">
+            ✕
+          </button>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- Tag Filter Chips -->
+  <div class="filter-chips-bar" role="region" aria-label="Genre categories">
+    <div class="chips-scroll">
+      @for (tag of availableTags; track tag) {
+        <button 
+          type="button" 
+          class="tag-filter-chip" 
+          [class.active]="selectedTag === tag"
+          [attr.aria-pressed]="selectedTag === tag"
+          (click)="selectTag(tag)">
+          {{ tag }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Catalog Results Meta -->
+  <div class="catalog-meta">
+    <span class="results-count" aria-live="polite" aria-atomic="true">
+      Showing <strong>{{ filteredGames.length }}</strong> {{ filteredGames.length === 1 ? 'game' : 'games' }}
+      @if (selectedTag !== 'All') {
+        in <span class="active-tag-label">#{{ selectedTag }}</span>
+      }
+    </span>
+    @if (selectedTag !== 'All' || searchTerm) {
+      <button type="button" class="btn-reset-filters" (click)="resetAllFilters()">
+        ↺ Clear Filters
+      </button>
+    }
+  </div>
+
+  <!-- Main Game Cards Grid -->
+  @if (loading) {
+    <app-loading-spinner size="lg" label="Loading game grid..."></app-loading-spinner>
+  } @else if (filteredGames.length === 0) {
+    <app-empty-state 
+      icon="👾"
+      title="No matching games found"
+      message="We couldn't find any games matching your current search or genre filters."
+      actionLabel="View All Games"
+      (actionClicked)="resetAllFilters()">
+    </app-empty-state>
+  } @else {
+    <div class="game-grid">
+      @for (game of filteredGames; track game.id) {
+        <app-game-card [game]="game"></app-game-card>
+      }
+    </div>
+  }
+</div>

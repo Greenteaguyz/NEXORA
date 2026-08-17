@@ -1,0 +1,62 @@
+<div class="creator-page">
+  @if (loading) {
+    <app-loading-spinner size="lg" label="Loading creator profile..."></app-loading-spinner>
+  } @else if (!creator) {
+    <app-empty-state 
+      icon="🔍" 
+      title="Creator Not Found" 
+      message="We couldn't locate the developer profile you requested."
+      actionLabel="Explore Catalog"
+      [routerLink]="['/catalog']">
+    </app-empty-state>
+  } @else {
+    <!-- Breadcrumb -->
+    <div class="profile-nav">
+      <a routerLink="/catalog" class="back-link">← Back to Store</a>
+    </div>
+
+    <!-- Creator Header Banner -->
+    <header class="creator-hero-card">
+      <img [src]="creator.avatarUrl || 'assets/logo-icon.svg'" [alt]="creator.displayName" class="hero-avatar">
+      <div class="hero-info">
+        <div class="name-badge-row">
+          <h1 class="creator-name">{{ creator.displayName }}</h1>
+          <app-role-badge role="creator" size="md"></app-role-badge>
+        </div>
+        <p class="creator-email">{{ creator.email }}</p>
+        @if (creator.bio) {
+          <p class="creator-bio">{{ creator.bio }}</p>
+        }
+        <div class="creator-stats">
+          <span class="stat-item">
+            <strong>{{ creatorGames.length }}</strong> {{ creatorGames.length === 1 ? 'Published Game' : 'Published Games' }}
+          </span>
+          <span class="stat-divider">•</span>
+          <span class="stat-item">Joined {{ creator.createdAt | date:'mediumDate' }}</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Published Games Section -->
+    <section class="portfolio-section">
+      <div class="section-title-bar">
+        <h2 class="section-title">Games by {{ creator.displayName }}</h2>
+        <span class="section-count">{{ creatorGames.length }} total</span>
+      </div>
+
+      @if (creatorGames.length === 0) {
+        <app-empty-state 
+          icon="🎮"
+          title="No games published yet"
+          message="This creator hasn't published any games to the NEXORA catalog yet. Check back soon!">
+        </app-empty-state>
+      } @else {
+        <div class="games-grid">
+          @for (game of creatorGames; track game.id) {
+            <app-game-card [game]="game"></app-game-card>
+          }
+        </div>
+      }
+    </section>
+  }
+</div>
