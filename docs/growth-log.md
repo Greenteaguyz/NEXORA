@@ -134,18 +134,21 @@
 
 ---
 
-## [Pattern] Cross-Game Layout Consistency and Adaptive Media Stages
+---
+
+## [Pattern] Streamlined Storefront Architecture: High Signal-to-Noise Ratio UI
 
 ### Context
-- Game detail showcases have varying data profiles: some titles have 3+ high-res screenshots, others have only 1 screenshot or just a cover image, and system requirements vary wildly from lightweight 2D pixel platformers to 3D cyberpunk sims.
+- Game detail and product showcase pages can easily accumulate redundant labels, headers, and repetitive feature cards that increase cognitive load and page scroll length.
 
 ### Root Cause / Core Insight
-- Hardcoding static arrays or layouts leads to awkward UI gaps (e.g. empty thumbnail strips, truncated cards, or out-of-viewport CTAs on desktop).
-- Providing an adaptive `galleryImages` getter with automatic fallback to `[coverImageUrl]` guarantees consistent 16:9 stage rendering across all catalog items.
-- Applying `position: sticky; top: 88px; align-self: start;` to the sidebar keeps purchase CTAs, metadata, and developer cards permanently accessible during long page scrolls without causing layout shifts.
-- Dynamic hardware specs mapping (`isRetro2D`) tailors minimum and recommended system requirements to match the game's actual architecture and tags.
+- Users on modern digital distribution platforms (Steam, GOG, Epic Games) value fast scanability:
+  1. **Edge-to-Edge Media Viewer**: Visual assets (screenshots/trailers) speak for themselves; verbose section headers (`"Media Showcase / High-Definition Visuals"`) add visual noise.
+  2. **Unified Action Card**: Merging disparate sidebar cards (Price, Technical Information, Developer) into a single sticky panel reduces visual hopping and puts the primary CTA, key specs (`DRM-Free`, package size, OS), and verified creator metadata in one glanceable block.
+  3. **3-Pill Highlights Ribbon**: Replacing 6 giant boilerplate cards with a compact horizontal badge bar delivers store guarantees (`100% DRM-Free`, `Instant Offline Play`, `Controller Ready`) in < 40px of vertical space.
+  4. **Strict Tag-to-Spec Resolution**: Disambiguating 2D retro titles from 3D action games via strict tag matching prevents incorrect hardware specs from rendering.
 
 ### The Pattern (Transferable)
-- Use fallback getters for media stages and responsive sticky sidebar positioning to ensure consistent visual balance and CTA visibility across heterogeneous product catalogs.
+- Consolidate multi-card sidebars into a single unified CTA panel and replace verbose selling-point grids with compact horizontal highlight ribbons to maximize purchase intent clarity and scanability.
 
 
