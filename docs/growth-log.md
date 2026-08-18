@@ -138,18 +138,21 @@
 
 ---
 
-## [Pattern] Steam-Style Storefront Architecture for PC Gaming Marketplaces
+---
+
+## [Pattern] Dual-Theme Contrast & Layout Whitespace Rhythm
 
 ### Context
-- Digital game distribution storefronts require high above-the-fold engagement, immediate purchase clarity, and structured technical specifications.
+- Rich PC gaming storefront pages designed primarily with neon dark aesthetics can suffer from poor contrast or invisible elements when users toggle to Light Mode, and compacting layouts too aggressively can crowd essential narrative blocks.
 
 ### Root Cause / Core Insight
-- Adapting the battle-tested Steam storefront layout dramatically optimizes the browsing and acquisition experience:
-  1. **Upper Showcase Stage (65/35 Split)**: Unifies screenshot/video preview with the game cover capsule, 2-line story pitch, overall review rating, formatted release date, developer link, package size, and category tags—all visible above the fold in a single 450px viewport.
-  2. **Iconic Full-Width Purchase Banner**: Sits right below the media stage where user eyes land after scanning visuals. Provides an unambiguous price tag, high-visibility gradient CTA (`Download Free` / `Buy Now`), and instant wishlist toggle.
-  3. **Lower Deep-Dive Section (70/30 Split)**: Left side contains full narrative lore, 4 key distribution highlight cards (`100% DRM-Free`, `Instant Offline Execution`, `Full Controller Ready`, `Direct Creator Revenue`), and a tabbed system requirements matrix (Minimum vs Recommended). The right sidebar displays a clean feature checklist and developer spotlight.
+- Strict design system tokens (`var(--text-primary)`, `var(--bg-surface)`, `var(--bg-elevated)`, `var(--border-card)`) ensure seamless semantic contrast across both themes without hardcoded hex values.
+- Dynamic theme adaptations for complex CTA containers:
+  - Dark Mode: Electric glow gradient (`linear-gradient(90deg, #131622 0%, #1E1738 100%)`).
+  - Light Mode: Crisp white-to-violet gradient (`linear-gradient(90deg, #FFFFFF 0%, #F5F3FF 100%)`) with `rgba(124, 58, 237, 0.35)` borders.
+- Maintaining an intentional vertical whitespace rhythm (`--space-6` to `--space-8`) around the "About This Game" story lead, Key Highlights grid, and System Requirements cards preserves high scanability and visual breathing room.
 
 ### The Pattern (Transferable)
-- Use a 2-column upper media/capsule stage, full-width purchase bar, and deep-dive lower grid for game detail and rich media product showcases to maximize conversion and information hierarchy.
+- Always test complex gradient containers and nested tables across both light and dark token palettes, using elevated background layers and generous section gaps to maintain layout elegance.
 
 
