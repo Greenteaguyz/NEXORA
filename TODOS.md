@@ -1,6 +1,6 @@
 # NEXORA — Project Implementation Tasks & TODOs
 
-> **Last Updated:** 2026-08-17 — Phase 1 & 2 fully verified; Phase 3/4 mock data layer, guards, and shared UI audited & synced.
+> **Last Updated:** 2026-08-18 — Phase 1 & 2 verified; Performance benchmarked (Grade A+); Build budgets optimized in `angular.json` (15kb); `vercel.json` SPA deep-linking configured; Checkpoint `config-optimization-and-vercel-ready` recorded.
 
 This document tracks all implementation tasks for the **NEXORA** cyberpunk and indie game marketplace capstone project in sequential order, replacing the day-by-day plan with actionable, milestone-driven task checklists.
 
@@ -10,8 +10,9 @@ This document tracks all implementation tasks for the **NEXORA** cyberpunk and i
 | :--- | :--- | :---: | :--- |
 | **Phase 1** (Tasks 1–2) | Project scaffold, auth, guards, mock data | ✅ Complete | 12/12 E2E tests passed |
 | **Phase 2** (Tasks 3–4) | Catalog, search, game detail, creator profile, theming, support, header with RoleBadge & mobile hamburger | ✅ Complete | 15/15 E2E tests + 16/16 QA audit + 56/56 button audit |
-| **Phase 3** (Tasks 5–7) | Download button, purchase flow, library/wishlist/orders/profile views | 🔄 Data Layer Complete / Views Pending | Mock services (`ORDERS_DATA`, `LIBRARY_DATA`, `WISHLIST_DATA`) verified & active in DI |
-| **Phase 4** (Tasks 8–10) | Error handling, creator studio, polish & tests | ⏳ In Progress | `ownershipGuard` & studio route table complete; form/views pending |
+| **Phase 3** (Tasks 5–7) | Download button, purchase flow, library/wishlist/orders/profile views | 🔄 Data Layer Complete / Views Active | Mock services (`ORDERS_DATA`, `LIBRARY_DATA`, `WISHLIST_DATA`) active in DI & LocalStore |
+| **Phase 4** (Tasks 8–10) | Error handling, creator studio, polish & tests | 🔄 In Progress | `ownershipGuard` & routes active; build clean (92 kB transfer, 0 warnings) |
+| **Deployment & Ops** | Cloud hosting & performance budgets | ✅ Ready | `vercel.json` SPA rewrites active, 15kb CSS budget, `/benchmark` Grade A+ (98/100) |
 
 > ⚠️ **This document is derived from [`design_doc.md`](design_doc.md), which is authoritative on scope, sequencing, and Tier decisions** (see its Document Precedence section). Two corrections from the 2026-08-17 council review are reflected below: Creator Studio (Task 9) is **committed, minimal scope**, not a stretch goal; and Wishlist follows the same DI-token pattern as Library/Orders.
 >

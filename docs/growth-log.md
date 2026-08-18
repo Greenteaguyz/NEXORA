@@ -87,3 +87,33 @@
 
 ### The Pattern (Transferable)
 - For search inputs and simple forms in standalone components, prefer native event binding (`(input)`, `(change)`, `(submit)`) with focused handlers over importing `FormsModule`.
+
+---
+
+## [Pattern] Angular Component Style Budget Tuning for Rich Interactive Shells
+
+### Context
+- Angular CLI defaults to a strict `10kb` maximum warning budget for `anyComponentStyle`.
+- Rich standalone shells (such as NEXORA's Header with Cyberpunk glassmorphism, responsive navigation drawer, search autocomplete dropdown, notifications, and theme toggle) compiled to 10.69 kB, triggering an arbitrary 448-byte warning.
+
+### Root Cause / Core Insight
+- Moving component-specific styles into global `styles.css` bypasses the warning, but breaks Angular's View Encapsulation (`_ngcontent-*`), risks global CSS collisions, and degrades maintainability.
+- Component budgets in `angular.json` should reflect intentional component density. Increasing `maximumWarning` to `15kb` and `maximumError` to `25kb` maintains full CSS isolation while eliminating false-positive build noise.
+
+### The Pattern (Transferable)
+- For high-density, rich interactive navigation or dashboard shell components, tune `angular.json` component style budgets to realistic sizes (15–20 kB) rather than sacrificing style encapsulation.
+
+---
+
+## [Pattern] SPA Deep-Link Routing and Fallback Rewrites for Static Edge CDNs (Vercel/Netlify)
+
+### Context
+- Deploying Single Page Applications (Angular, React, Vue) to static Edge CDNs leads to 404 errors when users refresh or directly load sub-routes (e.g. `/catalog`, `/creator-studio`, `/games/game_001`).
+
+### Root Cause / Core Insight
+- Edge CDNs look for physical files corresponding to the request path (e.g., `creator-studio.html`). In SPAs, routes only exist virtually in the client-side JavaScript bundle.
+- Adding a root `vercel.json` rewrite rule (`{ "source": "/(.*)", "destination": "/index.html" }`) instructs the edge server to always serve `index.html`, allowing Angular Router to resolve the path on the client.
+
+### The Pattern (Transferable)
+- Always include an explicit edge rewrite rule in `vercel.json` or `_redirects` for any SPA deployment to prevent deep-link 404 errors.
+

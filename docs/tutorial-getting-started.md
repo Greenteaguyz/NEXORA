@@ -192,13 +192,39 @@ export class MockGamesDataService implements GamesDataService {
 }
 ```
 
+```
+
+## Step 6: Building for Production & Cloud Deployment
+
+### 1. Build & Optimize
+To compile the production-ready optimized application:
+```bash
+npm run build
+```
+Compiled bundles are generated in `dist/nexora/browser` with sub-3-second esbuild compilation and inlined critical CSS.
+
+### 2. Testing on Mobile Devices (Local Network)
+To test responsive layouts and touch interactions on a physical smartphone:
+```bash
+npm start -- --host 0.0.0.0
+```
+Open `http://<YOUR_COMPUTER_IP>:4200` in your mobile phone's browser.
+
+### 3. Deploy to Vercel
+The project includes [`vercel.json`](../vercel.json) to handle Single Page App (SPA) client-side routing.
+```bash
+npx vercel --prod
+```
+
 ## What You Built
 
 You have successfully:
-1. Created an Angular 17+ standalone project
-2. Established the feature-based folder structure
-3. Configured the application design tokens
-4. Created the base `Game` model
-5. Set up a mock data layer using Dependency Injection
+1. Created an Angular 17+ standalone project with Vite/esbuild Application Builder
+2. Established the feature-based Clean Architecture structure
+3. Configured the Cyberpunk dual-mode design tokens
+4. Created the base `Game` model and DI `InjectionToken` abstraction layer
+5. Set up a mock data layer using `LocalStoreService` persistence
+6. Configured production build budgets and Vercel SPA deployment
 
 Next, check out [Tutorial: Download Flow](./tutorial-download-flow.md) to build the core marketplace functionality, or review the [API Services Reference](./reference-api-services.md).
+
