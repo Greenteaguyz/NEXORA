@@ -210,7 +210,17 @@ npm start -- --host 0.0.0.0
 ```
 Open `http://<YOUR_COMPUTER_IP>:4200` in your mobile phone's browser.
 
-### 3. Deploy to Vercel
+### 3. Testing Publicly via Cloudflare Quick Tunnel
+To test on remote devices worldwide without port forwarding:
+```bash
+# 1. Start the lightweight production server:
+node dist/serve.js
+
+# 2. In another terminal, launch Cloudflare Quick Tunnel:
+.\cloudflared.exe tunnel --url http://127.0.0.1:4200
+```
+
+### 4. Deploy to Vercel
 The project includes [`vercel.json`](../vercel.json) to handle Single Page App (SPA) client-side routing.
 ```bash
 npx vercel --prod
@@ -224,7 +234,8 @@ You have successfully:
 3. Configured the Cyberpunk dual-mode design tokens
 4. Created the base `Game` model and DI `InjectionToken` abstraction layer
 5. Set up a mock data layer using `LocalStoreService` persistence
-6. Configured production build budgets and Vercel SPA deployment
+6. Configured production build budgets, Cloudflare remote tunneling, and Vercel SPA deployment
 
 Next, check out [Tutorial: Download Flow](./tutorial-download-flow.md) to build the core marketplace functionality, or review the [API Services Reference](./reference-api-services.md).
+
 

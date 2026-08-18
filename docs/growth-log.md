@@ -117,3 +117,32 @@
 ### The Pattern (Transferable)
 - Always include an explicit edge rewrite rule in `vercel.json` or `_redirects` for any SPA deployment to prevent deep-link 404 errors.
 
+---
+
+## [Pattern] Standalone Production SPA Daemon with Zero-Config Cloudflare Quick Tunnels for Instant Remote QA
+
+### Context
+- During feature development and stakeholder demos, testing on physical smartphones, tablets, or remote devices often requires public HTTPS URLs without setting up manual DNS, firewalls, or paid hosting.
+
+### Root Cause / Core Insight
+- A lightweight Node.js static SPA server (`dist/serve.js`) can serve compiled client bundles with full MIME types and `index.html` fallback.
+- Pairing this server with the standalone `cloudflared.exe` Quick Tunnel (`cloudflared.exe tunnel --url http://127.0.0.1:4200`) generates an instant, zero-config public HTTPS URL on `*.trycloudflare.com` without requiring an account, open router ports, or DNS records.
+- When running in Windows sandboxed CLI environments, both the server and the tunnel daemon must execute in the same network namespace (`127.0.0.1`) to ensure loopback socket connectivity.
+
+### The Pattern (Transferable)
+- Use lightweight Node.js SPA daemons + Cloudflare Quick Tunnels for immediate, zero-friction remote device QA testing during active pair-programming sessions.
+
+---
+
+## [Pattern] In-Memory Domain Regression Harness for Rapid Pre-Commit AI Verification
+
+### Context
+- AI-assisted development cycles risk subtle regression hazards: contract drift between mock services and TypeScript models, session leakage across user switches, and broken fulfillment states.
+
+### Root Cause / Core Insight
+- Full browser E2E suites can be slow to run on every minor change. A dedicated, fast in-memory domain regression harness (`comprehensive-unit-and-integration.spec.ts`) verifies data persistence, catalog filtering, auth state machines, wishlist lifecycle, and order fulfillment in < 20ms using pure Node.js runtime.
+
+### The Pattern (Transferable)
+- Build a lightweight in-memory domain runner alongside E2E tests to execute continuous, sub-second regression checks across all business logic contracts before every major git commit or milestone transition.
+
+

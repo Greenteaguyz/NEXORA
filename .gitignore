@@ -31,3 +31,6 @@ bazel-out/
 *.sw?
 .DS_Store
 Thumbs.db
+*.exe
+cloudflared.exe
+
