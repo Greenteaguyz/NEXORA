@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterLink } from '@angular/router';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
 
 @Component({
@@ -13,6 +13,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 export class RegisterComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   displayName = '';
   email = '';
@@ -58,7 +59,14 @@ export class RegisterComponent {
     }).subscribe({
       next: () => {
         this.loading = false;
-        this.router.navigate(['/catalog']);
+        const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+        if (returnUrl) {
+          this.router.navigateByUrl(returnUrl);
+        } else if (this.isCreator) {
+          this.router.navigate(['/studio']);
+        } else {
+          this.router.navigate(['/catalog']);
+        }
       },
       error: (err) => {
         this.loading = false;
