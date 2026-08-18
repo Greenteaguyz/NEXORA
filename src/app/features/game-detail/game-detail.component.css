@@ -27,11 +27,14 @@
   color: var(--cyan-400);
 }
 
-.back-arrow {
+.svg-icon-arrow {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2.2;
   transition: transform 0.15s ease;
 }
 
-.back-link:hover .back-arrow {
+.back-link:hover .svg-icon-arrow {
   transform: translateX(-3px);
 }
 
@@ -95,34 +98,43 @@
 }
 
 .hero-status-badge {
-  background: rgba(34, 211, 238, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(34, 211, 238, 0.18);
   border: 1px solid rgba(34, 211, 238, 0.4);
   color: var(--cyan-400);
   font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 3px 10px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
 }
 
 .hero-rating-badge {
-  background: rgba(245, 158, 11, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(245, 158, 11, 0.18);
   border: 1px solid rgba(245, 158, 11, 0.4);
   color: #FBBF24;
   font-size: 0.75rem;
   font-weight: 700;
-  padding: 3px 10px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
 }
 
 .hero-platform-badge {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: #E2E8F0;
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 3px 10px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
 }
 
@@ -234,6 +246,9 @@
 }
 
 .btn-fullscreen-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-card);
   color: var(--text-secondary);
@@ -290,6 +305,9 @@
 }
 
 .stage-zoom-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background: rgba(19, 22, 34, 0.85);
   backdrop-filter: blur(8px);
   border: 1px solid var(--border-glow);
@@ -350,7 +368,7 @@
   margin-bottom: var(--space-6);
 }
 
-/* Feature Cards Grid (Visual Polish) */
+/* Feature Cards Grid (Visual Polish with SVGs) */
 .features-subheading {
   font-size: 1.05rem;
   font-weight: 800;
@@ -389,38 +407,48 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.15rem;
   flex-shrink: 0;
 }
 
 .feature-card-icon-box.drm {
   background: rgba(16, 185, 129, 0.15);
   border: 1px solid rgba(16, 185, 129, 0.3);
+  color: var(--emerald-400);
 }
 
 .feature-card-icon-box.offline {
   background: rgba(34, 211, 238, 0.15);
   border: 1px solid rgba(34, 211, 238, 0.3);
+  color: var(--cyan-400);
 }
 
 .feature-card-icon-box.creator {
   background: rgba(124, 58, 237, 0.15);
   border: 1px solid rgba(124, 58, 237, 0.3);
+  color: var(--accent-400);
 }
 
 .feature-card-icon-box.controller {
   background: rgba(245, 158, 11, 0.15);
   border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #F59E0B;
 }
 
 .feature-card-icon-box.save {
   background: rgba(59, 130, 246, 0.15);
   border: 1px solid rgba(59, 130, 246, 0.3);
+  color: #3B82F6;
 }
 
 .feature-card-icon-box.multi {
   background: rgba(236, 72, 153, 0.15);
   border: 1px solid rgba(236, 72, 153, 0.3);
+  color: #EC4899;
+}
+
+.feature-svg {
+  width: 20px;
+  height: 20px;
 }
 
 .feature-card-content {
@@ -557,6 +585,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   width: 100%;
   padding: 14px 20px;
   border-radius: var(--radius);
@@ -598,6 +627,11 @@
   transform: translateY(0);
 }
 
+.btn-action-svg {
+  width: 18px;
+  height: 18px;
+}
+
 .btn-wishlist-action {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-card);
@@ -610,6 +644,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   transition: all 0.2s ease;
 }
 
@@ -625,7 +660,21 @@
   color: var(--rose-500);
 }
 
+.btn-wishlist-svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s ease;
+}
+
+.btn-wishlist-action:hover .btn-wishlist-svg {
+  transform: scale(1.15);
+}
+
 .sidebar-guarantee-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   font-size: 0.78rem;
   color: var(--text-muted);
   text-align: center;
@@ -675,6 +724,9 @@
 }
 
 .meta-value.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: #FBBF24;
 }
 
@@ -741,12 +793,32 @@
   text-decoration: none;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .btn-view-creator:hover {
   color: var(--accent-500);
   text-decoration: underline;
+}
+
+/* SVG Icon Shared Helpers */
+.svg-icon-xs {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.svg-icon-sm {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.star-fill {
+  color: #FBBF24;
+  fill: #FBBF24;
 }
 
 /* Lightbox Modal — True Full-Screen Overlay */
@@ -796,7 +868,6 @@
   height: 38px;
   border-radius: 50%;
   color: #FFFFFF;
-  font-size: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -810,6 +881,11 @@
   transform: scale(1.1);
 }
 
+.svg-lightbox-icon {
+  width: 18px;
+  height: 18px;
+}
+
 .btn-lightbox-nav {
   position: absolute;
   top: 50%;
@@ -817,7 +893,6 @@
   background-color: rgba(19, 22, 34, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.25);
   color: #FFFFFF;
-  font-size: 2rem;
   width: 52px;
   height: 52px;
   border-radius: 50%;
@@ -842,6 +917,11 @@
 
 .btn-lightbox-nav.next {
   right: -70px;
+}
+
+.svg-nav-icon {
+  width: 22px;
+  height: 22px;
 }
 
 .lightbox-counter {
