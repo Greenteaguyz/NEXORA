@@ -96,7 +96,7 @@
 .legal-nav-links {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 18px;
   flex-wrap: wrap;
 }
 
@@ -110,12 +110,6 @@
 .legal-link:hover {
   color: var(--accent-400);
   text-decoration: underline;
-}
-
-.legal-dot {
-  color: var(--border-glow);
-  font-size: 0.76rem;
-  user-select: none;
 }
 
 @media (max-width: 768px) {
