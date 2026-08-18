@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, HostListener } from '@angular/core';
+import { Component, inject, OnInit, HostListener, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Game } from '../../core/models/game.model';
@@ -46,6 +46,17 @@ export class GameDetailComponent implements OnInit {
   creator: User | null = null;
   loading = true;
   isWishlisted = false;
+
+  constructor() {
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (!user) {
+        this.isWishlisted = false;
+      } else if (this.game) {
+        this.checkWishlist(this.game.id);
+      }
+    });
+  }
 
   // Media Gallery Stage & Lightbox
   selectedStageIndex = 0;

@@ -1,4 +1,4 @@
-import { Component, Input, inject, OnInit } from '@angular/core';
+import { Component, Input, inject, OnInit, OnChanges, SimpleChanges, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { Game } from '../../../core/models/game.model';
@@ -12,7 +12,7 @@ import { WISHLIST_DATA } from '../../../core/data/tokens';
   templateUrl: './game-card.component.html',
   styleUrls: ['./game-card.component.css']
 })
-export class GameCardComponent implements OnInit {
+export class GameCardComponent implements OnInit, OnChanges {
   @Input({ required: true }) game!: Game;
 
   authService = inject(AuthService);
@@ -21,17 +21,35 @@ export class GameCardComponent implements OnInit {
 
   isWishlisted = false;
 
+  constructor() {
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (!user) {
+        this.isWishlisted = false;
+      } else if (this.game) {
+        this.checkWishlistStatus(user.id);
+      }
+    });
+  }
+
   ngOnInit(): void {
     this.checkWishlistStatus();
   }
 
-  checkWishlistStatus(): void {
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['game'] && !changes['game'].firstChange) {
+      this.checkWishlistStatus();
+    }
+  }
+
+  checkWishlistStatus(userId?: string): void {
     const user = this.authService.currentUser();
-    if (!user) {
+    const uid = userId || user?.id;
+    if (!uid || !this.game) {
       this.isWishlisted = false;
       return;
     }
-    this.wishlistData.isWishlisted(user.id, this.game.id).subscribe(inWishlist => {
+    this.wishlistData.isWishlisted(uid, this.game.id).subscribe(inWishlist => {
       this.isWishlisted = inWishlist;
     });
   }
