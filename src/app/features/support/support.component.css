@@ -550,15 +550,200 @@
   line-height: 1.5;
 }
 
-.select-wrapper {
+/* Custom Category Dropdown with SVG Icons */
+.custom-category-select {
   position: relative;
 }
 
-.form-select {
+.custom-dropdown-container {
+  position: relative;
+}
+
+.custom-dropdown-trigger {
   width: 100%;
-  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-card);
+  padding: 8px 14px;
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-family: inherit;
   cursor: pointer;
-  padding-right: 32px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  text-align: left;
+}
+
+.custom-dropdown-trigger:hover {
+  border-color: var(--border-glow);
+}
+
+.custom-dropdown-trigger.open,
+.custom-dropdown-trigger:focus-visible {
+  border-color: var(--accent-400);
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+:host-context([data-theme="light"]) .custom-dropdown-trigger {
+  background: #F8FAFC;
+}
+
+.selected-category-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.selected-category-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.category-icon-box {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.category-icon-box.green {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--emerald-400);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.category-icon-box.purple {
+  background: rgba(124, 58, 237, 0.15);
+  color: var(--accent-400);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+}
+
+.category-icon-box.cyan {
+  background: rgba(34, 211, 238, 0.15);
+  color: var(--cyan-400);
+  border: 1px solid rgba(34, 211, 238, 0.25);
+}
+
+.category-icon-box.amber {
+  background: rgba(245, 158, 11, 0.15);
+  color: #F59E0B;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.dropdown-chevron-svg {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
+}
+
+.dropdown-chevron-svg.rotated {
+  transform: rotate(180deg);
+  color: var(--accent-400);
+}
+
+/* Dropdown Menu Popover */
+.custom-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius-lg);
+  padding: 6px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  animation: dropdownFade 0.15s ease-out;
+}
+
+:host-context([data-theme="light"]) .custom-dropdown-menu {
+  background: #FFFFFF;
+  border-color: var(--border-card);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-option-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+.dropdown-option-item:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border-card);
+}
+
+.dropdown-option-item.selected {
+  background: rgba(124, 58, 237, 0.08);
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+:host-context([data-theme="light"]) .dropdown-option-item:hover {
+  background: #F1F5F9;
+}
+
+:host-context([data-theme="light"]) .dropdown-option-item.selected {
+  background: rgba(109, 40, 217, 0.06);
+  border-color: rgba(109, 40, 217, 0.25);
+}
+
+.option-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.option-title {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.option-desc {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.option-check-svg {
+  width: 16px;
+  height: 16px;
+  color: var(--accent-400);
+  flex-shrink: 0;
 }
 
 .btn-submit-ticket {

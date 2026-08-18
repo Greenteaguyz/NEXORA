@@ -255,15 +255,101 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="ticketCategorySelect" class="form-label">Issue Category</label>
-            <div class="select-wrapper">
-              <select id="ticketCategorySelect" name="ticketCategory" [(ngModel)]="ticketCategory" class="form-select">
-                <option value="technical">🎮 Game Download & Offline Play Issue</option>
-                <option value="creator">🛠️ Creator Studio & Publishing Question</option>
-                <option value="billing">💳 Simulated Purchase & Library Question</option>
-                <option value="feedback">💡 Feedback & Feature Suggestion</option>
-              </select>
+          <!-- Custom Category Dropdown with Crisp SVG Icons -->
+          <div class="form-group custom-category-select">
+            <label class="form-label" id="categorySelectLabel">Issue Category</label>
+            <div class="custom-dropdown-container">
+              <button 
+                type="button" 
+                class="custom-dropdown-trigger" 
+                [class.open]="categoryDropdownOpen"
+                (click)="toggleCategoryDropdown()"
+                aria-haspopup="listbox"
+                [attr.aria-expanded]="categoryDropdownOpen"
+                aria-labelledby="categorySelectLabel">
+                <div class="selected-category-display">
+                  <div class="category-icon-box" [ngClass]="selectedCategoryItem.color" aria-hidden="true">
+                    @if (selectedCategoryItem.icon === 'gamepad') {
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="6" y1="12" x2="10" y2="12"/>
+                        <line x1="8" y1="10" x2="8" y2="14"/>
+                        <line x1="15" y1="13" x2="15.01" y2="13"/>
+                        <line x1="18" y1="11" x2="18.01" y2="11"/>
+                        <rect x="2" y="6" width="20" height="12" rx="6"/>
+                      </svg>
+                    } @else if (selectedCategoryItem.icon === 'tools') {
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                      </svg>
+                    } @else if (selectedCategoryItem.icon === 'card') {
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                        <line x1="1" y1="10" x2="23" y2="10"/>
+                      </svg>
+                    } @else if (selectedCategoryItem.icon === 'lightbulb') {
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18h6"/>
+                        <path d="M10 22h4"/>
+                        <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/>
+                      </svg>
+                    }
+                  </div>
+                  <span class="selected-category-title">{{ selectedCategoryItem.label }}</span>
+                </div>
+                <svg class="dropdown-chevron-svg" [class.rotated]="categoryDropdownOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="6 9 12 15 18 9"/>
+                </svg>
+              </button>
+
+              @if (categoryDropdownOpen) {
+                <div class="custom-dropdown-menu" role="listbox">
+                  @for (cat of categories; track cat.value) {
+                    <button 
+                      type="button" 
+                      class="dropdown-option-item" 
+                      [class.selected]="cat.value === ticketCategory"
+                      (click)="selectCategory(cat.value)"
+                      role="option"
+                      [attr.aria-selected]="cat.value === ticketCategory">
+                      <div class="category-icon-box" [ngClass]="cat.color" aria-hidden="true">
+                        @if (cat.icon === 'gamepad') {
+                          <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="6" y1="12" x2="10" y2="12"/>
+                            <line x1="8" y1="10" x2="8" y2="14"/>
+                            <line x1="15" y1="13" x2="15.01" y2="13"/>
+                            <line x1="18" y1="11" x2="18.01" y2="11"/>
+                            <rect x="2" y="6" width="20" height="12" rx="6"/>
+                          </svg>
+                        } @else if (cat.icon === 'tools') {
+                          <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                          </svg>
+                        } @else if (cat.icon === 'card') {
+                          <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                          </svg>
+                        } @else if (cat.icon === 'lightbulb') {
+                          <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 18h6"/>
+                            <path d="M10 22h4"/>
+                            <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/>
+                          </svg>
+                        }
+                      </div>
+                      <div class="option-text-group">
+                        <strong class="option-title">{{ cat.label }}</strong>
+                        <span class="option-desc">{{ cat.desc }}</span>
+                      </div>
+                      @if (cat.value === ticketCategory) {
+                        <svg class="option-check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                      }
+                    </button>
+                  }
+                </div>
+              }
             </div>
           </div>
 

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, effect } from '@angular/core';
+import { Component, inject, OnInit, effect, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth/auth.service';
@@ -10,6 +10,14 @@ export interface FaqItem {
   categoryLabel: string;
   question: string;
   answer: string;
+}
+
+export interface TicketCategoryOption {
+  value: string;
+  label: string;
+  desc: string;
+  icon: 'gamepad' | 'tools' | 'card' | 'lightbulb';
+  color: 'green' | 'purple' | 'cyan' | 'amber';
 }
 
 @Component({
@@ -32,6 +40,40 @@ export class SupportComponent implements OnInit {
   loading = false;
   ticketSubmitted = false;
   generatedTicketId = '';
+
+  // Custom Category Dropdown State
+  categoryDropdownOpen = false;
+
+  categories: TicketCategoryOption[] = [
+    {
+      value: 'technical',
+      label: 'Game Download & Offline Play Issue',
+      desc: 'Installation errors, offline run issues, or compatibility',
+      icon: 'gamepad',
+      color: 'green'
+    },
+    {
+      value: 'creator',
+      label: 'Creator Studio & Publishing Question',
+      desc: 'Game uploads, screenshots, pricing, or developer tools',
+      icon: 'tools',
+      color: 'purple'
+    },
+    {
+      value: 'billing',
+      label: 'Simulated Purchase & Library Question',
+      desc: 'Sandbox transactions, library sync, or wishlist states',
+      icon: 'card',
+      color: 'cyan'
+    },
+    {
+      value: 'feedback',
+      label: 'Feedback & Feature Suggestion',
+      desc: 'Community ideas, store suggestions, or platform bug reports',
+      icon: 'lightbulb',
+      color: 'amber'
+    }
+  ];
 
   // Interactive FAQ State
   openFaqId: string | null = 'faq-1';
@@ -118,6 +160,27 @@ export class SupportComponent implements OnInit {
     if (user) {
       this.name = user.displayName;
       this.email = user.email;
+    }
+  }
+
+  get selectedCategoryItem(): TicketCategoryOption {
+    return this.categories.find(c => c.value === this.ticketCategory) || this.categories[0];
+  }
+
+  toggleCategoryDropdown(): void {
+    this.categoryDropdownOpen = !this.categoryDropdownOpen;
+  }
+
+  selectCategory(val: string): void {
+    this.ticketCategory = val;
+    this.categoryDropdownOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.custom-category-select')) {
+      this.categoryDropdownOpen = false;
     }
   }
 
