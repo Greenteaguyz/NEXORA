@@ -75,34 +75,26 @@
 .footer-bottom {
   max-width: 1320px;
   margin: 0 auto;
-  padding-top: var(--space-5);
+  padding-top: var(--space-4);
   border-top: 1px solid var(--border-card);
   display: flex;
   justify-content: center;
   align-items: center;
-  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.825rem;
 }
 
-.copyright-legal-block {
-  display: flex;
-  flex-direction: column;
+.badge-drm {
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  max-width: 780px;
-}
-
-.legal-text {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  line-height: 1.5;
-  margin: 0;
-}
-
-.legal-subtext {
+  gap: 6px;
+  background-color: rgba(52, 211, 153, 0.1);
+  color: var(--emerald-400);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
   font-size: 0.75rem;
-  color: var(--text-muted);
-  opacity: 0.85;
-  margin: 0;
+  font-weight: 600;
 }
 
 @media (max-width: 768px) {
