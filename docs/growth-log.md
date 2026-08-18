@@ -136,19 +136,20 @@
 
 ---
 
-## [Pattern] Streamlined Storefront Architecture: High Signal-to-Noise Ratio UI
+---
+
+## [Pattern] Steam-Style Storefront Architecture for PC Gaming Marketplaces
 
 ### Context
-- Game detail and product showcase pages can easily accumulate redundant labels, headers, and repetitive feature cards that increase cognitive load and page scroll length.
+- Digital game distribution storefronts require high above-the-fold engagement, immediate purchase clarity, and structured technical specifications.
 
 ### Root Cause / Core Insight
-- Users on modern digital distribution platforms (Steam, GOG, Epic Games) value fast scanability:
-  1. **Edge-to-Edge Media Viewer**: Visual assets (screenshots/trailers) speak for themselves; verbose section headers (`"Media Showcase / High-Definition Visuals"`) add visual noise.
-  2. **Unified Action Card**: Merging disparate sidebar cards (Price, Technical Information, Developer) into a single sticky panel reduces visual hopping and puts the primary CTA, key specs (`DRM-Free`, package size, OS), and verified creator metadata in one glanceable block.
-  3. **3-Pill Highlights Ribbon**: Replacing 6 giant boilerplate cards with a compact horizontal badge bar delivers store guarantees (`100% DRM-Free`, `Instant Offline Play`, `Controller Ready`) in < 40px of vertical space.
-  4. **Strict Tag-to-Spec Resolution**: Disambiguating 2D retro titles from 3D action games via strict tag matching prevents incorrect hardware specs from rendering.
+- Adapting the battle-tested Steam storefront layout dramatically optimizes the browsing and acquisition experience:
+  1. **Upper Showcase Stage (65/35 Split)**: Unifies screenshot/video preview with the game cover capsule, 2-line story pitch, overall review rating, formatted release date, developer link, package size, and category tags—all visible above the fold in a single 450px viewport.
+  2. **Iconic Full-Width Purchase Banner**: Sits right below the media stage where user eyes land after scanning visuals. Provides an unambiguous price tag, high-visibility gradient CTA (`Download Free` / `Buy Now`), and instant wishlist toggle.
+  3. **Lower Deep-Dive Section (70/30 Split)**: Left side contains full narrative lore, 4 key distribution highlight cards (`100% DRM-Free`, `Instant Offline Execution`, `Full Controller Ready`, `Direct Creator Revenue`), and a tabbed system requirements matrix (Minimum vs Recommended). The right sidebar displays a clean feature checklist and developer spotlight.
 
 ### The Pattern (Transferable)
-- Consolidate multi-card sidebars into a single unified CTA panel and replace verbose selling-point grids with compact horizontal highlight ribbons to maximize purchase intent clarity and scanability.
+- Use a 2-column upper media/capsule stage, full-width purchase bar, and deep-dive lower grid for game detail and rich media product showcases to maximize conversion and information hierarchy.
 
 
