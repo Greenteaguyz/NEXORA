@@ -480,23 +480,22 @@
           </ul>
         </div>
 
-        <!-- Creator Profile Panel -->
+        <!-- Minimalist Developer Profile Badge -->
         @if (creator) {
           <div class="steam-side-panel creator-panel">
             <h3 class="panel-header-title">Developer</h3>
-            <div class="creator-box">
-              <img [src]="creator.avatarUrl || 'assets/logo-icon.svg'" [alt]="creator.displayName + ' avatar'" class="creator-avatar-steam">
-              <div class="creator-info-steam">
-                <a [routerLink]="['/creators', creator.id]" class="creator-title-link" [attr.aria-label]="'View developer: ' + creator.displayName">{{ creator.displayName }}</a>
-                <span class="creator-badge-steam">Verified Studio</span>
+            <a [routerLink]="['/creators', creator.id]" class="creator-compact-badge" [attr.aria-label]="'Visit ' + creator.displayName + ' studio storefront'">
+              <img [src]="creator.avatarUrl || 'assets/logo-icon.svg'" [alt]="creator.displayName + ' avatar'" class="creator-avatar-compact">
+              <div class="creator-meta-compact">
+                <span class="creator-name-compact">{{ creator.displayName }}</span>
+                <span class="creator-badge-compact">
+                  <svg class="svg-icon-xs icon-verified" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                  Verified Studio
+                </span>
               </div>
-            </div>
-            @if (creator.bio) {
-              <p class="creator-bio-steam">{{ creator.bio }}</p>
-            }
-            <a [routerLink]="['/creators', creator.id]" class="btn-creator-storefront" [attr.aria-label]="'Visit ' + creator.displayName + ' storefront'">
-              <span>View Creator Storefront</span>
-              <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <svg class="svg-arrow-compact" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
             </a>
