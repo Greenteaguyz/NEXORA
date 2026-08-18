@@ -140,19 +140,23 @@
 
 ---
 
-## [Pattern] Dual-Theme Contrast & Layout Whitespace Rhythm
+## [Pattern] WCAG 2.1 AAA Accessibility & Focus Rhythm in Media-Heavy Storefronts
 
 ### Context
-- Rich PC gaming storefront pages designed primarily with neon dark aesthetics can suffer from poor contrast or invisible elements when users toggle to Light Mode, and compacting layouts too aggressively can crowd essential narrative blocks.
+- Media-rich storefronts (interactive video players, screenshot lightboxes, spec switcher tabs, purchase CTAs) often introduce accessibility traps if keyboard listeners, ARIA dialogs, and high-visibility focus indicators are not systematically integrated.
 
 ### Root Cause / Core Insight
-- Strict design system tokens (`var(--text-primary)`, `var(--bg-surface)`, `var(--bg-elevated)`, `var(--border-card)`) ensure seamless semantic contrast across both themes without hardcoded hex values.
-- Dynamic theme adaptations for complex CTA containers:
-  - Dark Mode: Electric glow gradient (`linear-gradient(90deg, #131622 0%, #1E1738 100%)`).
-  - Light Mode: Crisp white-to-violet gradient (`linear-gradient(90deg, #FFFFFF 0%, #F5F3FF 100%)`) with `rgba(124, 58, 237, 0.35)` borders.
-- Maintaining an intentional vertical whitespace rhythm (`--space-6` to `--space-8`) around the "About This Game" story lead, Key Highlights grid, and System Requirements cards preserves high scanability and visual breathing room.
+- **Full Keyboard Trapping & Navigation**:
+  - Global `HostListener` on `window:keydown` handles modal closing (`Escape`) and screenshot cycling (`ArrowLeft` / `ArrowRight`) when lightbox is active.
+  - Interactive media viewers require `role="button"`, `tabindex="0"`, and `(keydown)="handleStageKeydown($event)"` for keyboard parity with mouse clicks.
+- **ARIA Semantics for State Switching**:
+  - System Requirements switcher uses `role="tablist"` + `role="tab"` + `aria-selected` + `aria-controls` linked to the spec panel `role="tabpanel"`.
+  - Dynamic Wishlist buttons update `aria-label` based on active saved state (`Add ... to wishlist` vs `Remove ... from wishlist`).
+- **High-Visibility Focus Indicators & Reduced Motion**:
+  - `:focus-visible` outline rings (`2px solid var(--accent-500)`) with `2px` offset ensure users navigating by keyboard can always track active focus without interfering with mouse click aesthetics.
+  - `@media (prefers-reduced-motion: reduce)` disables image transforms and transitions.
 
 ### The Pattern (Transferable)
-- Always test complex gradient containers and nested tables across both light and dark token palettes, using elevated background layers and generous section gaps to maintain layout elegance.
+- Pair every modal overlay and interactive media switcher with explicit keyboard event handlers (`Escape`, arrow keys), distinct `:focus-visible` styling, dynamic ARIA labels, and reduced-motion fallbacks.
 
 
