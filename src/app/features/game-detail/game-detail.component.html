@@ -1,4 +1,4 @@
-<div class="game-detail-page">
+<div class="steam-game-detail-page">
   @if (loading) {
     <app-loading-spinner size="lg" label="Loading game showcase..."></app-loading-spinner>
   } @else if (!game) {
@@ -10,152 +10,274 @@
       [routerLink]="['/catalog']">
     </app-empty-state>
   } @else {
-    <!-- Breadcrumb Navigation -->
-    <nav class="detail-nav" aria-label="Breadcrumb">
-      <a routerLink="/catalog" class="back-link">
-        <svg class="svg-icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 19l-7-7 7-7"/>
-        </svg>
-        <span>Store Catalog</span>
-      </a>
-      <span class="nav-divider">/</span>
-      <span class="nav-current-title">{{ game.title }}</span>
-    </nav>
+    <!-- Breadcrumb & Header Bar -->
+    <header class="steam-top-header">
+      <nav class="steam-breadcrumbs" aria-label="Breadcrumb">
+        <a routerLink="/catalog" class="breadcrumb-link">
+          <svg class="svg-icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          <span>All Games</span>
+        </a>
+        <span class="breadcrumb-sep">/</span>
+        <a [routerLink]="['/catalog']" [queryParams]="{ tag: game.tags[0] }" class="breadcrumb-link">{{ game.tags[0] }}</a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current">{{ game.title }}</span>
+      </nav>
 
-    <!-- Hero Showcase Section -->
-    <header class="showcase-hero">
-      <div class="hero-image-container">
-        <img [src]="game.coverImageUrl" [alt]="game.title" class="hero-cover-img">
-        <div class="hero-image-gradient"></div>
-        
-        <div class="hero-header-overlay">
-          <div class="hero-title-group">
-            <div class="hero-meta-badge-row">
-              <span class="hero-rating-badge">
+      <h1 class="steam-game-title">{{ game.title }}</h1>
+    </header>
+
+    <!-- STEAM-STYLE UPPER SHOWCASE: Media Stage (Left) + Capsule Metadata (Right) -->
+    <section class="steam-showcase-stage">
+      <!-- Left: Interactive Screenshots & Video Stage -->
+      <div class="steam-media-col">
+        <div class="steam-main-viewer" (click)="openLightbox(selectedStageIndex)">
+          <img 
+            [src]="galleryImages[selectedStageIndex]" 
+            [alt]="game.title + ' preview screenshot ' + (selectedStageIndex + 1)" 
+            class="steam-stage-img">
+          
+          <div class="steam-viewer-overlay">
+            <span class="steam-expand-badge">
+              <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+              </svg>
+              <span>Click to Enlarge Lightbox</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Thumbnail Selector Strip -->
+        <div class="steam-thumb-strip">
+          @for (shot of galleryImages; track shot; let idx = $index) {
+            <button 
+              type="button" 
+              class="steam-thumb-btn" 
+              [class.active]="selectedStageIndex === idx"
+              (click)="selectStageImage(idx)"
+              [title]="'View preview ' + (idx + 1)">
+              <img [src]="shot" [alt]="'Thumbnail ' + (idx + 1)" class="steam-thumb-img">
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Right: Game Header Capsule & Quick Specs -->
+      <aside class="steam-capsule-col">
+        <div class="steam-capsule-card">
+          <!-- Cover Banner Art -->
+          <div class="capsule-image-wrap">
+            <img [src]="game.coverImageUrl" [alt]="game.title + ' Cover'" class="capsule-cover-img">
+          </div>
+
+          <!-- Elevator Pitch / Short Blurb -->
+          <p class="capsule-pitch">{{ game.description }}</p>
+
+          <!-- Key Metadata Rows -->
+          <div class="capsule-meta-table">
+            <div class="capsule-meta-row">
+              <span class="meta-label">Overall Reviews:</span>
+              <span class="meta-val highlight-gold">
                 <svg class="svg-icon-xs star-fill" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
-                4.9 · Very Positive
+                Very Positive (4.9 / 5.0)
               </span>
-              
-              <span class="hero-platform-badge">
+            </div>
+
+            <div class="capsule-meta-row">
+              <span class="meta-label">Release Date:</span>
+              <span class="meta-val">{{ releaseDate }}</span>
+            </div>
+
+            <div class="capsule-meta-row">
+              <span class="meta-label">Developer:</span>
+              @if (creator) {
+                <a [routerLink]="['/creators', creator.id]" class="meta-link-creator">
+                  {{ creator.displayName }}
+                </a>
+              } @else {
+                <span class="meta-val">Independent Studio</span>
+              }
+            </div>
+
+            <div class="capsule-meta-row">
+              <span class="meta-label">Package Size:</span>
+              <span class="meta-val">{{ packageSize }} Standalone</span>
+            </div>
+
+            <div class="capsule-meta-row">
+              <span class="meta-label">Platform:</span>
+              <span class="meta-val">
                 <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
                   <line x1="8" y1="21" x2="16" y2="21"/>
                   <line x1="12" y1="17" x2="12" y2="21"/>
                 </svg>
-                Windows & Linux
+                Windows & Linux (DRM-Free)
               </span>
             </div>
-            
-            <h1 class="hero-game-title">{{ game.title }}</h1>
-            
-            <div class="hero-tags">
+          </div>
+
+          <!-- Tags Bar -->
+          <div class="capsule-tags-row">
+            <span class="tags-label">Popular Tags:</span>
+            <div class="capsule-tags-list">
               @for (tag of game.tags; track tag) {
-                <a [routerLink]="['/catalog']" [queryParams]="{ tag: tag }" class="detail-tag-chip">
-                  #{{ tag }}
+                <a [routerLink]="['/catalog']" [queryParams]="{ tag: tag }" class="steam-tag-pill">
+                  {{ tag }}
                 </a>
               }
             </div>
           </div>
         </div>
+      </aside>
+    </section>
+
+    <!-- STEAM-STYLE FULL-WIDTH PURCHASE / ACQUISITION BANNER -->
+    <section class="steam-purchase-banner" [class.free-banner]="game.price === 0">
+      <div class="purchase-banner-content">
+        <div class="purchase-banner-title-wrap">
+          <h2 class="purchase-game-title">
+            {{ game.price === 0 ? 'Download ' + game.title : 'Buy ' + game.title }}
+          </h2>
+          <span class="purchase-sub-note">
+            Includes standalone DRM-Free installer binaries for Windows 10/11 & Linux.
+          </span>
+        </div>
+
+        <div class="purchase-action-group">
+          <div class="purchase-price-tag" [class.free]="game.price === 0">
+            {{ game.price === 0 ? 'FREE' : '$' + game.price.toFixed(2) }}
+          </div>
+
+          <button 
+            type="button" 
+            class="btn-steam-buy"
+            [class.free]="game.price === 0"
+            [class.paid]="game.price > 0"
+            (click)="handleActionClick()">
+            @if (game.price === 0) {
+              <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Download Free Package</span>
+            } @else {
+              <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+              <span>Buy Now · ${{ game.price.toFixed(2) }}</span>
+            }
+          </button>
+
+          <button 
+            type="button" 
+            class="btn-steam-wishlist"
+            [class.active]="isWishlisted"
+            (click)="toggleWishlist()"
+            [title]="isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'">
+            <svg class="btn-wishlist-svg" viewBox="0 0 24 24" [attr.fill]="isWishlisted ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <span>{{ isWishlisted ? 'In Wishlist' : 'Wishlist' }}</span>
+          </button>
+        </div>
       </div>
-    </header>
+    </section>
 
-    <!-- 2-Column Main Layout -->
-    <div class="detail-grid">
-      <!-- Left Column: Media Stage, Story & System Specs -->
-      <main class="detail-main-col">
-        <!-- Interactive Media Stage Showcase (Clean & Edge-to-Edge) -->
-        <section class="detail-card gallery-stage-card">
-          <div class="stage-viewer" (click)="openLightbox(selectedStageIndex)">
-            <img 
-              [src]="galleryImages[selectedStageIndex]" 
-              [alt]="game.title + ' preview ' + (selectedStageIndex + 1)" 
-              class="stage-main-image">
-            
-            <div class="stage-overlay-hover">
-              <span class="stage-zoom-badge">
-                <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-                </svg>
-                Click to Enlarge
-              </span>
-            </div>
+    <!-- STEAM-STYLE LOWER SECTION: Deep Dive (Left) + Features & Dev (Right) -->
+    <div class="steam-lower-grid">
+      <!-- Left Main Column: Narrative, Key Features & System Requirements -->
+      <main class="steam-main-details">
+        <!-- About This Game -->
+        <section class="steam-detail-block">
+          <div class="block-header">
+            <h3 class="block-title">About This Game</h3>
           </div>
 
-          <!-- Thumbnail Selector Strip (if multiple previews) -->
-          @if (galleryImages.length > 1) {
-            <div class="stage-thumb-strip">
-              @for (shot of galleryImages; track shot; let idx = $index) {
-                <button 
-                  type="button"
-                  class="stage-thumb-button"
-                  [class.active]="selectedStageIndex === idx"
-                  (click)="selectStageImage(idx)"
-                  [title]="'View preview ' + (idx + 1)">
-                  <img [src]="shot" [alt]="'Preview ' + (idx + 1)" class="stage-thumb-img">
-                </button>
-              }
-            </div>
-          }
-        </section>
+          <div class="block-content">
+            <p class="story-lead">{{ game.description }}</p>
 
-        <!-- Synopsis & Compact Key Highlights -->
-        <section class="detail-card synopsis-card">
-          <div class="card-header-row">
-            <h2 class="card-section-title">About the Game</h2>
-            <span class="card-badge-accent">Indie Release</span>
-          </div>
+            <h4 class="sub-block-title">Key Distribution Highlights</h4>
+            <div class="highlights-grid">
+              <div class="highlight-item">
+                <div class="highlight-icon-box green">
+                  <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="M9 12l2 2 4-4"/>
+                  </svg>
+                </div>
+                <div class="highlight-text">
+                  <strong class="highlight-heading">100% DRM-Free</strong>
+                  <span class="highlight-sub">No invasive background launchers, telemetry, or activation checks.</span>
+                </div>
+              </div>
 
-          <p class="synopsis-lead-text">{{ game.description }}</p>
+              <div class="highlight-item">
+                <div class="highlight-icon-box cyan">
+                  <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                </div>
+                <div class="highlight-text">
+                  <strong class="highlight-heading">Instant Offline Execution</strong>
+                  <span class="highlight-sub">Run locally anywhere on desktop, laptop, or Steam Deck.</span>
+                </div>
+              </div>
 
-          <!-- 3-Pill Sleek Highlights Bar -->
-          <div class="highlights-pill-bar">
-            <div class="highlight-pill">
-              <svg class="pill-svg green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <path d="M9 12l2 2 4-4"/>
-              </svg>
-              <span>100% DRM-Free</span>
-            </div>
+              <div class="highlight-item">
+                <div class="highlight-icon-box orange">
+                  <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="6" y1="12" x2="10" y2="12"/>
+                    <line x1="8" y1="10" x2="8" y2="14"/>
+                    <line x1="15" y1="13" x2="15.01" y2="13"/>
+                    <line x1="18" y1="11" x2="18.01" y2="11"/>
+                    <rect x="2" y="6" width="20" height="12" rx="6"/>
+                  </svg>
+                </div>
+                <div class="highlight-text">
+                  <strong class="highlight-heading">Full Controller Ready</strong>
+                  <span class="highlight-sub">Native mapping for Xbox, PlayStation DualSense, and generic USB gamepads.</span>
+                </div>
+              </div>
 
-            <div class="highlight-pill">
-              <svg class="pill-svg cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-              </svg>
-              <span>Instant Offline Play</span>
-            </div>
-
-            <div class="highlight-pill">
-              <svg class="pill-svg orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="6" y1="12" x2="10" y2="12"/>
-                <line x1="8" y1="10" x2="8" y2="14"/>
-                <line x1="15" y1="13" x2="15.01" y2="13"/>
-                <line x1="18" y1="11" x2="18.01" y2="11"/>
-                <rect x="2" y="6" width="20" height="12" rx="6"/>
-              </svg>
-              <span>Controller Ready</span>
+              <div class="highlight-item">
+                <div class="highlight-icon-box purple">
+                  <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 3h12l4 6-10 13L2 9z"/>
+                    <path d="M11 3L8 9l4 13 4-13-3-6"/>
+                    <path d="M2 9h20"/>
+                  </svg>
+                </div>
+                <div class="highlight-text">
+                  <strong class="highlight-heading">Direct Creator Revenue</strong>
+                  <span class="highlight-sub">Over 90% of every sale goes directly to support independent developers.</span>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        <!-- System Requirements & Hardware Specs Card -->
-        <section class="detail-card specs-card">
-          <div class="card-header-row">
-            <h2 class="card-section-title">System Specifications</h2>
+        <!-- System Requirements -->
+        <section class="steam-detail-block specs-block">
+          <div class="block-header">
+            <h3 class="block-title">System Requirements</h3>
             
-            <div class="specs-tabs-switch">
+            <div class="specs-tab-toggle">
               <button 
                 type="button" 
-                class="specs-tab-btn" 
+                class="tab-btn" 
                 [class.active]="selectedSpecsTab === 'minimum'"
                 (click)="setSpecsTab('minimum')">
-                Minimum
+                Minimum Specs
               </button>
               <button 
                 type="button" 
-                class="specs-tab-btn" 
+                class="tab-btn" 
                 [class.active]="selectedSpecsTab === 'recommended'"
                 (click)="setSpecsTab('recommended')">
                 Recommended
@@ -163,144 +285,134 @@
             </div>
           </div>
 
-          @if (selectedSpecsTab === 'minimum') {
-            <div class="specs-table">
-              <div class="spec-row">
-                <span class="spec-label">OS</span>
-                <span class="spec-val">Windows 10 / 11 (64-bit) or Ubuntu 22.04 LTS</span>
+          <div class="block-content">
+            @if (selectedSpecsTab === 'minimum') {
+              <div class="specs-table-grid">
+                <div class="spec-cell">
+                  <span class="spec-k">OS:</span>
+                  <span class="spec-v">Windows 10 / 11 (64-bit) or Ubuntu 22.04 LTS</span>
+                </div>
+                <div class="spec-cell">
+                  <span class="spec-k">Processor:</span>
+                  <span class="spec-v">{{ isRetro2D ? 'Intel Core 2 Duo / AMD Athlon 64 (2.0 GHz)' : 'Intel Core i5-4460 / AMD FX-6300 (3.2 GHz)' }}</span>
+                </div>
+                <div class="spec-cell">
+                  <span class="spec-k">Memory:</span>
+                  <span class="spec-v">{{ isRetro2D ? '2 GB RAM' : '8 GB System RAM' }}</span>
+                </div>
+                <div class="spec-cell">
+                  <span class="spec-k">Graphics:</span>
+                  <span class="spec-v">{{ isRetro2D ? 'Intel HD Graphics 4000 (OpenGL 3.0)' : 'NVIDIA GeForce GTX 960 (4GB) / AMD Radeon R9 280' }}</span>
+                </div>
+                <div class="spec-cell">
+                  <span class="spec-k">DirectX:</span>
+                  <span class="spec-v">{{ isRetro2D ? 'Version 9.0c' : 'Version 11 or Vulkan 1.2' }}</span>
+                </div>
+                <div class="spec-cell">
+                  <span class="spec-k">Storage:</span>
+                  <span class="spec-v">{{ isRetro2D ? '500 MB Available Storage' : '4.5 GB Available Storage (SSD Recommended)' }}</span>
+                </div>
               </div>
-              <div class="spec-row">
-                <span class="spec-label">Processor</span>
-                <span class="spec-val">{{ isRetro2D ? 'Intel Core 2 Duo / AMD Athlon 64' : 'Intel Core i5-4460 / AMD FX-6300' }}</span>
+            } @else {
+              <div class="specs-table-grid">
+                <div class="spec-cell">
+                  <span class="spec-k">OS:</span>
+                  <span class="spec-v">Windows 11 (64-bit) or Arch Linux 6.x</span>
+                </div>
+                <div class="spec-cell">
+                  <span class="spec-k">Processor:</span>
+                  <span class="spec-v">{{ isRetro2D ? 'Intel Core i3 / AMD Ryzen 3 (Quad-core)' : 'Intel Core i7-8700K / AMD Ryzen 5 3600X (6 Cores)' }}</span>
+                </div>
+                <div class="spec-cell">
+                  <span class="spec-k">Memory:</span>
+                  <span class="spec-v">{{ isRetro2D ? '4 GB RAM' : '16 GB Dual-Channel DDR4/DDR5' }}</span>
+                </div>
+                <div class="spec-cell">
+                  <span class="spec-k">Graphics:</span>
+                  <span class="spec-v">{{ isRetro2D ? 'NVIDIA GeForce GT 1030 / AMD Radeon RX 550' : 'NVIDIA GeForce RTX 3060 (8GB) / AMD Radeon RX 6600 XT' }}</span>
+                </div>
+                <div class="spec-cell">
+                  <span class="spec-k">DirectX:</span>
+                  <span class="spec-v">{{ isRetro2D ? 'Version 11' : 'Version 12 Ultimate' }}</span>
+                </div>
+                <div class="spec-cell">
+                  <span class="spec-k">Storage:</span>
+                  <span class="spec-v">{{ isRetro2D ? '1 GB High-Speed Storage' : '4.5 GB High-Speed NVMe Solid State Drive' }}</span>
+                </div>
               </div>
-              <div class="spec-row">
-                <span class="spec-label">Memory</span>
-                <span class="spec-val">{{ isRetro2D ? '2 GB RAM' : '8 GB RAM' }}</span>
-              </div>
-              <div class="spec-row">
-                <span class="spec-label">Graphics</span>
-                <span class="spec-val">{{ isRetro2D ? 'Intel HD Graphics 4000' : 'NVIDIA GTX 960 (4GB) / AMD R9 280' }}</span>
-              </div>
-              <div class="spec-row">
-                <span class="spec-label">DirectX</span>
-                <span class="spec-val">{{ isRetro2D ? 'Version 9.0c' : 'Version 11 or Vulkan' }}</span>
-              </div>
-              <div class="spec-row">
-                <span class="spec-label">Storage</span>
-                <span class="spec-val">{{ isRetro2D ? '500 MB Available Storage' : '4.5 GB Available Storage' }}</span>
-              </div>
-            </div>
-          } @else {
-            <div class="specs-table">
-              <div class="spec-row">
-                <span class="spec-label">OS</span>
-                <span class="spec-val">Windows 11 (64-bit) or Arch Linux</span>
-              </div>
-              <div class="spec-row">
-                <span class="spec-label">Processor</span>
-                <span class="spec-val">{{ isRetro2D ? 'Intel Core i3 / AMD Ryzen 3' : 'Intel Core i7-8700K / AMD Ryzen 5 3600X' }}</span>
-              </div>
-              <div class="spec-row">
-                <span class="spec-label">Memory</span>
-                <span class="spec-val">{{ isRetro2D ? '4 GB RAM' : '16 GB RAM' }}</span>
-              </div>
-              <div class="spec-row">
-                <span class="spec-label">Graphics</span>
-                <span class="spec-val">{{ isRetro2D ? 'NVIDIA GT 1030 / AMD RX 550' : 'NVIDIA RTX 3060 / AMD RX 6600 XT' }}</span>
-              </div>
-              <div class="spec-row">
-                <span class="spec-label">DirectX</span>
-                <span class="spec-val">{{ isRetro2D ? 'Version 11' : 'Version 12' }}</span>
-              </div>
-              <div class="spec-row">
-                <span class="spec-label">Storage</span>
-                <span class="spec-val">{{ isRetro2D ? '1 GB SSD' : '4.5 GB High-Speed NVMe SSD' }}</span>
-              </div>
-            </div>
-          }
+            }
+          </div>
         </section>
       </main>
 
-      <!-- Right Column: Unified Acquisition & Info Panel (Sticky) -->
-      <aside class="detail-sidebar-col">
-        <!-- Unified Purchase & Overview Card -->
-        <div class="sidebar-card unified-store-card">
-          <!-- Price Header -->
-          <div class="price-header">
-            <span class="price-type-label">Ownership</span>
-            @if (game.price === 0) {
-              <span class="price-display free">FREE</span>
-            } @else {
-              <span class="price-display paid">${{ game.price.toFixed(2) }}</span>
-            }
-          </div>
-
-          <!-- Actions -->
-          <div class="action-buttons-group">
-            <button 
-              type="button" 
-              class="btn-action-main"
-              [class.free]="game.price === 0"
-              [class.paid]="game.price > 0"
-              (click)="handleActionClick()">
-              @if (game.price === 0) {
-                <svg class="btn-action-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7 10 12 15 17 10"/>
-                  <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                <span>Download Free</span>
-              } @else {
-                <svg class="btn-action-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                  <line x1="1" y1="10" x2="23" y2="10"/>
-                </svg>
-                <span>Buy Now · ${{ game.price.toFixed(2) }}</span>
-              }
-            </button>
-
-            <button 
-              type="button" 
-              class="btn-wishlist-action" 
-              [class.active]="isWishlisted"
-              (click)="toggleWishlist()">
-              <svg class="btn-wishlist-svg" viewBox="0 0 24 24" [attr.fill]="isWishlisted ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
-              <span>{{ isWishlisted ? 'In Wishlist' : 'Add to Wishlist' }}</span>
-            </button>
-          </div>
-
-          <!-- Quick Specs Badges Bar -->
-          <div class="sidebar-badges-row">
-            <span class="spec-pill">
-              <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <!-- Right Column: Steam-style Feature Checklist & Creator Card -->
+      <aside class="steam-sidebar-details">
+        <!-- Feature Checklist Box -->
+        <div class="steam-side-panel features-panel">
+          <h4 class="panel-header-title">Game Features</h4>
+          <ul class="steam-feature-list">
+            <li class="steam-feature-item">
+              <svg class="feature-item-svg green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M9 12l2 2 4-4"/>
               </svg>
-              DRM-Free
-            </span>
-            <span class="spec-pill">{{ packageSize }}</span>
-            <span class="spec-pill">v1.2.4</span>
-            <span class="spec-pill">Win / Linux</span>
-          </div>
+              <span>Single-player</span>
+            </li>
+            <li class="steam-feature-item">
+              <svg class="feature-item-svg cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+              <span>100% DRM-Free Offline Play</span>
+            </li>
+            <li class="steam-feature-item">
+              <svg class="feature-item-svg orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="6" y1="12" x2="10" y2="12"/>
+                <line x1="8" y1="10" x2="8" y2="14"/>
+                <line x1="15" y1="13" x2="15.01" y2="13"/>
+                <line x1="18" y1="11" x2="18.01" y2="11"/>
+                <rect x="2" y="6" width="20" height="12" rx="6"/>
+              </svg>
+              <span>Full Controller Support</span>
+            </li>
+            <li class="steam-feature-item">
+              <svg class="feature-item-svg purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+              </svg>
+              <span>Open Save File Management</span>
+            </li>
+            <li class="steam-feature-item">
+              <svg class="feature-item-svg pink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              </svg>
+              <span>Windows & Linux Binaries</span>
+            </li>
+          </ul>
+        </div>
 
-          <!-- Divider -->
-          <div class="sidebar-inner-divider"></div>
-
-          <!-- Creator Mini Section -->
-          @if (creator) {
-            <div class="creator-mini-section">
-              <span class="creator-mini-label">Developer</span>
-              <div class="creator-mini-row">
-                <img [src]="creator.avatarUrl || 'assets/logo-icon.svg'" [alt]="creator.displayName" class="creator-avatar-sm">
-                <div class="creator-mini-meta">
-                  <a [routerLink]="['/creators', creator.id]" class="creator-mini-name">{{ creator.displayName }}</a>
-                  <span class="creator-mini-badge">Verified Studio</span>
-                </div>
+        <!-- Creator Profile Panel -->
+        @if (creator) {
+          <div class="steam-side-panel creator-panel">
+            <h4 class="panel-header-title">Developer</h4>
+            <div class="creator-box">
+              <img [src]="creator.avatarUrl || 'assets/logo-icon.svg'" [alt]="creator.displayName" class="creator-avatar-steam">
+              <div class="creator-info-steam">
+                <a [routerLink]="['/creators', creator.id]" class="creator-title-link">{{ creator.displayName }}</a>
+                <span class="creator-badge-steam">Verified Studio</span>
               </div>
             </div>
-          }
-        </div>
+            @if (creator.bio) {
+              <p class="creator-bio-steam">{{ creator.bio }}</p>
+            }
+            <a [routerLink]="['/creators', creator.id]" class="btn-creator-storefront">
+              <span>View Creator Storefront</span>
+              <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </a>
+          </div>
+        }
       </aside>
     </div>
 
