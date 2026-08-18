@@ -159,4 +159,20 @@
 ### The Pattern (Transferable)
 - Pair every modal overlay and interactive media switcher with explicit keyboard event handlers (`Escape`, arrow keys), distinct `:focus-visible` styling, dynamic ARIA labels, and reduced-motion fallbacks.
 
+---
+
+## [Pattern] Legal Footer Architecture & Angular Router Fragment Anchor Deep-Linking
+
+### Context
+- Public storefronts require standard legal disclaimer blocks (copyright, trademarks, jurisdiction clauses) and direct navigation links to Privacy Policy and Terms of Service.
+- Rather than maintaining separate static empty policy pages, deep-linking directly to a comprehensive trust section on `/support#privacy` streamlines maintenance and enhances user trust.
+
+### Root Cause / Core Insight
+- Standard router navigation doesn't automatically trigger anchor scrolling on lazy-loaded components if route fragments are resolved after component initialization.
+- Combining `withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' })` in `app.config.ts` with an active `this.route.fragment.subscribe()` in the target component (`SupportComponent`) ensures smooth, reliable scrolling to `#privacy` even upon initial deep-link arrival.
+
+### The Pattern (Transferable)
+- For in-app legal links, configure router memory scrolling and subscribe to `route.fragment` with `element.scrollIntoView({ behavior: 'smooth', block: 'start' })`.
+- Style legal footer blocks with a subtle separation border, left-aligned muted disclaimer text (`font-size: 0.78rem; color: var(--text-muted)`), and clean whitespace-separated links (`gap: 18px`).
+
 

@@ -71,7 +71,7 @@ const SEED_USERS: User[] = [
     displayName: 'Bob Mercer',
     roles: ['buyer'],
     avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
-    bio: 'Avid collector of DRM-free indie RPGs.',
+    bio: 'Avid collector of standalone indie RPGs.',
     createdAt: '2024-03-20T11:30:00.000Z'
   },
   {
