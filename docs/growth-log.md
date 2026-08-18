@@ -134,15 +134,18 @@
 
 ---
 
-## [Pattern] In-Memory Domain Regression Harness for Rapid Pre-Commit AI Verification
+## [Pattern] Cross-Game Layout Consistency and Adaptive Media Stages
 
 ### Context
-- AI-assisted development cycles risk subtle regression hazards: contract drift between mock services and TypeScript models, session leakage across user switches, and broken fulfillment states.
+- Game detail showcases have varying data profiles: some titles have 3+ high-res screenshots, others have only 1 screenshot or just a cover image, and system requirements vary wildly from lightweight 2D pixel platformers to 3D cyberpunk sims.
 
 ### Root Cause / Core Insight
-- Full browser E2E suites can be slow to run on every minor change. A dedicated, fast in-memory domain regression harness (`comprehensive-unit-and-integration.spec.ts`) verifies data persistence, catalog filtering, auth state machines, wishlist lifecycle, and order fulfillment in < 20ms using pure Node.js runtime.
+- Hardcoding static arrays or layouts leads to awkward UI gaps (e.g. empty thumbnail strips, truncated cards, or out-of-viewport CTAs on desktop).
+- Providing an adaptive `galleryImages` getter with automatic fallback to `[coverImageUrl]` guarantees consistent 16:9 stage rendering across all catalog items.
+- Applying `position: sticky; top: 88px; align-self: start;` to the sidebar keeps purchase CTAs, metadata, and developer cards permanently accessible during long page scrolls without causing layout shifts.
+- Dynamic hardware specs mapping (`isRetro2D`) tailors minimum and recommended system requirements to match the game's actual architecture and tags.
 
 ### The Pattern (Transferable)
-- Build a lightweight in-memory domain runner alongside E2E tests to execute continuous, sub-second regression checks across all business logic contracts before every major git commit or milestone transition.
+- Use fallback getters for media stages and responsive sticky sidebar positioning to ensure consistent visual balance and CTA visibility across heterogeneous product catalogs.
 
 

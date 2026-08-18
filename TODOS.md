@@ -9,7 +9,7 @@ This document tracks all implementation tasks for the **NEXORA** cyberpunk and i
 | Phase | Scope | Status | Verification |
 | :--- | :--- | :--- | :--- |
 | **Phase 1** (Tasks 1–2) | Project scaffold, auth, guards, mock data | ✅ Complete | 12/12 E2E tests passed |
-| **Phase 2** (Tasks 3–4) | Catalog, search, game detail, creator profile, theming, support, header with RoleBadge & mobile hamburger | ✅ Complete | 15/15 E2E tests + 16/16 QA audit + 56/56 button audit |
+| **Phase 2** (Tasks 3–4) | Catalog, search, game detail, creator profile, theming, support, header with RoleBadge & mobile hamburger | ✅ Complete | 15/15 E2E tests + 16/16 QA audit + 56/56 button audit + Game detail cross-game layout consistency verified |
 | **Phase 3** (Tasks 5–7) | Download button, purchase flow, library/wishlist/orders/profile views | 🔄 Data Layer Complete / Views Active | Mock services (`ORDERS_DATA`, `LIBRARY_DATA`, `WISHLIST_DATA`) active in DI & LocalStore; 20/20 AI regression tests passed |
 | **Phase 4** (Tasks 8–10) | Error handling, creator studio, polish & tests | 🔄 In Progress | `ownershipGuard` & routes active; build clean (92 kB transfer, 0 warnings) |
 | **Deployment & Ops** | Cloud hosting, tunnels & performance budgets | ✅ Ready | `vercel.json` SPA rewrites active, Cloudflare tunnel verified, 15kb CSS budget, `/benchmark` Grade A+ (98/100) |
