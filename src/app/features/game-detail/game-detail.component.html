@@ -60,6 +60,8 @@
           <img 
             [src]="galleryImages[selectedStageIndex]" 
             [alt]="game.title + ' gameplay screenshot ' + (selectedStageIndex + 1)" 
+            loading="eager"
+            decoding="sync"
             class="steam-stage-img">
           
           <div class="steam-viewer-overlay" aria-hidden="true">
@@ -81,7 +83,7 @@
               [class.active]="selectedStageIndex === idx"
               (click)="selectStageImage(idx)"
               [attr.aria-label]="'Select screenshot ' + (idx + 1) + (selectedStageIndex === idx ? ' (Selected)' : '')">
-              <img [src]="shot" [alt]="'Thumbnail preview ' + (idx + 1)" class="steam-thumb-img">
+              <img [src]="shot" [alt]="'Thumbnail preview ' + (idx + 1)" loading="lazy" class="steam-thumb-img">
             </button>
           }
         </div>
@@ -92,7 +94,7 @@
         <div class="steam-capsule-card">
           <!-- Cover Banner Art -->
           <div class="capsule-image-wrap">
-            <img [src]="game.coverImageUrl" [alt]="game.title + ' Cover Art'" class="capsule-cover-img">
+            <img [src]="game.coverImageUrl" [alt]="game.title + ' Cover Art'" loading="eager" decoding="sync" class="capsule-cover-img">
           </div>
 
           <!-- Elevator Pitch / Short Blurb -->
