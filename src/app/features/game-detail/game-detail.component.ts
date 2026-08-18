@@ -85,6 +85,9 @@ export class GameDetailComponent implements OnInit {
 
   loadGame(id: string): void {
     this.loading = true;
+    this.selectedStageIndex = 0;
+    this.activeScreenshotIndex = 0;
+    this.selectedSpecsTab = 'minimum';
     this.gamesData.getGameById(id).subscribe(game => {
       if (!game) {
         this.game = null;
@@ -101,7 +104,15 @@ export class GameDetailComponent implements OnInit {
 
   private loadCreator(ownerId: string): void {
     this.usersData.getUser(ownerId).subscribe(user => {
-      this.creator = user || null;
+      this.creator = user || {
+        id: ownerId,
+        email: 'creator@nexora.io',
+        displayName: 'Independent Studio',
+        roles: ['creator'],
+        avatarUrl: 'assets/logo-icon.svg',
+        bio: 'Independent game development studio published on NEXORA.',
+        createdAt: new Date().toISOString()
+      };
     });
   }
 

@@ -109,7 +109,9 @@ export const SEED_GAMES: Game[] = [
     price: 6.99,
     coverImageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=800&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1200&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/echoes-of-the-void.zip',
     createdAt: '2024-06-01T18:00:00.000Z',
@@ -124,7 +126,9 @@ export const SEED_GAMES: Game[] = [
     price: 0,
     coverImageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/grid-runner.zip',
     createdAt: '2024-06-12T14:40:00.000Z',
@@ -139,7 +143,9 @@ export const SEED_GAMES: Game[] = [
     price: 0,
     coverImageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1200&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/quantum-shift.zip',
     createdAt: '2024-07-01T10:15:00.000Z',
@@ -154,7 +160,9 @@ export const SEED_GAMES: Game[] = [
     price: 2.99,
     coverImageUrl: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=800&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=800&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1200&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=1200&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/vaporwave-dungeon.zip',
     createdAt: '2024-07-15T16:00:00.000Z',
@@ -169,7 +177,9 @@ export const SEED_GAMES: Game[] = [
     price: 0,
     coverImageUrl: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1200&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/cyber-tavern.zip',
     createdAt: '2024-08-01T11:00:00.000Z',
@@ -184,7 +194,9 @@ export const SEED_GAMES: Game[] = [
     price: 0,
     coverImageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/byte-mech.zip',
     createdAt: '2024-08-10T13:30:00.000Z',
