@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Game } from '../../core/models/game.model';
@@ -156,7 +156,7 @@ export class GameDetailComponent implements OnInit {
     alert(`Acquisition flow for ${this.game.title} (Phase 3 gated download).`);
   }
 
-  // Lightbox Modal Controls
+  // Lightbox Modal Controls & Keyboard Accessibility
   openLightbox(index: number): void {
     this.activeScreenshotIndex = index;
     this.lightboxActive = true;
@@ -174,6 +174,26 @@ export class GameDetailComponent implements OnInit {
   prevScreenshot(): void {
     if (this.galleryImages.length === 0) return;
     this.activeScreenshotIndex = (this.activeScreenshotIndex - 1 + this.galleryImages.length) % this.galleryImages.length;
+  }
+
+  handleStageKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.openLightbox(this.selectedStageIndex);
+    }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleGlobalKeydown(event: KeyboardEvent): void {
+    if (!this.lightboxActive) return;
+
+    if (event.key === 'Escape') {
+      this.closeLightbox();
+    } else if (event.key === 'ArrowRight') {
+      this.nextScreenshot();
+    } else if (event.key === 'ArrowLeft') {
+      this.prevScreenshot();
+    }
   }
 }
 

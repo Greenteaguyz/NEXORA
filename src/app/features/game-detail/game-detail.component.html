@@ -14,28 +14,28 @@
     <header class="steam-top-header">
       <nav class="steam-breadcrumbs" aria-label="Breadcrumb">
         <a routerLink="/catalog" class="breadcrumb-link">
-          <svg class="svg-icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="svg-icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
           <span>Store Catalog</span>
         </a>
-        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-sep" aria-hidden="true">/</span>
         <a [routerLink]="['/catalog']" [queryParams]="{ tag: game.tags[0] }" class="breadcrumb-link">{{ game.tags[0] }}</a>
-        <span class="breadcrumb-sep">/</span>
-        <span class="breadcrumb-current">{{ game.title }}</span>
+        <span class="breadcrumb-sep" aria-hidden="true">/</span>
+        <span class="breadcrumb-current" aria-current="page">{{ game.title }}</span>
       </nav>
 
       <div class="steam-title-row">
         <h1 class="steam-game-title">{{ game.title }}</h1>
         <div class="steam-title-badges">
-          <span class="badge-pill rating">
-            <svg class="svg-icon-xs star-fill" viewBox="0 0 24 24" fill="currentColor">
+          <span class="badge-pill rating" title="Community Rating">
+            <svg class="svg-icon-xs star-fill" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
             4.9 · Very Positive
           </span>
-          <span class="badge-pill platform">
-            <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <span class="badge-pill platform" title="Supported Platforms">
+            <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
               <line x1="8" y1="21" x2="16" y2="21"/>
               <line x1="12" y1="17" x2="12" y2="21"/>
@@ -47,46 +47,52 @@
     </header>
 
     <!-- STEAM UPPER SHOWCASE: Media Viewer (Left) + Capsule Metadata (Right) -->
-    <section class="steam-showcase-stage">
+    <section class="steam-showcase-stage" aria-label="Game Media and Quick Info">
       <!-- Left: Interactive Screenshots & Video Stage -->
       <div class="steam-media-col">
-        <div class="steam-main-viewer" (click)="openLightbox(selectedStageIndex)">
+        <div 
+          class="steam-main-viewer" 
+          role="button"
+          tabindex="0"
+          [attr.aria-label]="'Enlarge screenshot ' + (selectedStageIndex + 1) + ' for ' + game.title + ' (Press Enter)'"
+          (click)="openLightbox(selectedStageIndex)"
+          (keydown)="handleStageKeydown($event)">
           <img 
             [src]="galleryImages[selectedStageIndex]" 
-            [alt]="game.title + ' preview ' + (selectedStageIndex + 1)" 
+            [alt]="game.title + ' gameplay screenshot ' + (selectedStageIndex + 1)" 
             class="steam-stage-img">
           
-          <div class="steam-viewer-overlay">
+          <div class="steam-viewer-overlay" aria-hidden="true">
             <span class="steam-expand-badge">
               <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
               </svg>
-              <span>Click to Enlarge Lightbox</span>
+              <span>Click or Press Enter to Enlarge</span>
             </span>
           </div>
         </div>
 
         <!-- Thumbnail Selector Strip -->
-        <div class="steam-thumb-strip">
+        <div class="steam-thumb-strip" role="group" aria-label="Screenshot thumbnails">
           @for (shot of galleryImages; track shot; let idx = $index) {
             <button 
               type="button" 
               class="steam-thumb-btn" 
               [class.active]="selectedStageIndex === idx"
               (click)="selectStageImage(idx)"
-              [title]="'View preview ' + (idx + 1)">
-              <img [src]="shot" [alt]="'Thumbnail ' + (idx + 1)" class="steam-thumb-img">
+              [attr.aria-label]="'Select screenshot ' + (idx + 1) + (selectedStageIndex === idx ? ' (Selected)' : '')">
+              <img [src]="shot" [alt]="'Thumbnail preview ' + (idx + 1)" class="steam-thumb-img">
             </button>
           }
         </div>
       </div>
 
       <!-- Right: Game Header Capsule & Quick Specs -->
-      <aside class="steam-capsule-col">
+      <aside class="steam-capsule-col" aria-label="Game Quick Overview">
         <div class="steam-capsule-card">
           <!-- Cover Banner Art -->
           <div class="capsule-image-wrap">
-            <img [src]="game.coverImageUrl" [alt]="game.title + ' Cover'" class="capsule-cover-img">
+            <img [src]="game.coverImageUrl" [alt]="game.title + ' Cover Art'" class="capsule-cover-img">
           </div>
 
           <!-- Elevator Pitch / Short Blurb -->
@@ -97,7 +103,7 @@
             <div class="capsule-meta-row">
               <span class="meta-label">Overall Reviews:</span>
               <span class="meta-val highlight-gold">
-                <svg class="svg-icon-xs star-fill" viewBox="0 0 24 24" fill="currentColor">
+                <svg class="svg-icon-xs star-fill" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                 </svg>
                 Very Positive (4.9 / 5.0)
@@ -112,7 +118,7 @@
             <div class="capsule-meta-row">
               <span class="meta-label">Developer:</span>
               @if (creator) {
-                <a [routerLink]="['/creators', creator.id]" class="meta-link-creator">
+                <a [routerLink]="['/creators', creator.id]" class="meta-link-creator" [attr.aria-label]="'View developer profile: ' + creator.displayName">
                   {{ creator.displayName }}
                 </a>
               } @else {
@@ -134,9 +140,9 @@
           <!-- Popular Tags List -->
           <div class="capsule-tags-row">
             <span class="tags-label">Popular Tags:</span>
-            <div class="capsule-tags-list">
+            <div class="capsule-tags-list" role="list" aria-label="Game tags">
               @for (tag of game.tags; track tag) {
-                <a [routerLink]="['/catalog']" [queryParams]="{ tag: tag }" class="steam-tag-pill">
+                <a [routerLink]="['/catalog']" [queryParams]="{ tag: tag }" class="steam-tag-pill" role="listitem">
                   #{{ tag }}
                 </a>
               }
@@ -147,7 +153,7 @@
     </section>
 
     <!-- STEAM FULL-WIDTH PURCHASE / ACQUISITION BANNER -->
-    <section class="steam-purchase-banner" [class.free-banner]="game.price === 0">
+    <section class="steam-purchase-banner" [class.free-banner]="game.price === 0" aria-label="Purchase and Download Options">
       <div class="purchase-banner-content">
         <div class="purchase-banner-title-wrap">
           <h2 class="purchase-game-title">
@@ -159,7 +165,7 @@
         </div>
 
         <div class="purchase-action-group">
-          <div class="purchase-price-tag" [class.free]="game.price === 0">
+          <div class="purchase-price-tag" [class.free]="game.price === 0" [attr.aria-label]="'Price: ' + (game.price === 0 ? 'Free' : '$' + game.price.toFixed(2))">
             {{ game.price === 0 ? 'FREE' : '$' + game.price.toFixed(2) }}
           </div>
 
@@ -168,16 +174,17 @@
             class="btn-steam-buy"
             [class.free]="game.price === 0"
             [class.paid]="game.price > 0"
-            (click)="handleActionClick()">
+            (click)="handleActionClick()"
+            [attr.aria-label]="game.price === 0 ? 'Download ' + game.title + ' for free' : 'Buy ' + game.title + ' for $' + game.price.toFixed(2)">
             @if (game.price === 0) {
-              <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7 10 12 15 17 10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
               <span>Download Free Package</span>
             } @else {
-              <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
                 <line x1="1" y1="10" x2="23" y2="10"/>
               </svg>
@@ -190,8 +197,8 @@
             class="btn-steam-wishlist"
             [class.active]="isWishlisted"
             (click)="toggleWishlist()"
-            [title]="isWishlisted ? 'Saved in Wishlist' : 'Add to Wishlist'">
-            <svg class="btn-wishlist-svg" viewBox="0 0 24 24" [attr.fill]="isWishlisted ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            [attr.aria-label]="(isWishlisted ? 'Remove ' : 'Add ') + game.title + (isWishlisted ? ' from wishlist' : ' to wishlist')">
+            <svg class="btn-wishlist-svg" viewBox="0 0 24 24" [attr.fill]="isWishlisted ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
             <span>{{ isWishlisted ? 'Saved in Wishlist' : 'Add to Wishlist' }}</span>
@@ -200,14 +207,14 @@
       </div>
     </section>
 
-    <!-- STEAM LOWER GRID: About This Game (Left) + Features & Dev (Right) -->
+    <!-- STEAM LOWER GRID: About This Game & Specs (Left) + Features & Dev (Right) -->
     <div class="steam-lower-grid">
       <!-- Left Main Column: Narrative, Key Highlights & System Requirements -->
       <main class="steam-main-details">
         <!-- ABOUT THIS GAME SECTION -->
-        <section class="steam-detail-block about-game-block">
+        <section class="steam-detail-block about-game-block" aria-labelledby="heading-about-game">
           <div class="block-header">
-            <h2 class="block-title">About This Game</h2>
+            <h2 id="heading-about-game" class="block-title">About This Game</h2>
             <span class="block-subtitle-badge">Story & Overview</span>
           </div>
 
@@ -219,7 +226,7 @@
             <h3 class="sub-block-title">Key Distribution Highlights</h3>
             <div class="highlights-grid">
               <div class="highlight-item">
-                <div class="highlight-icon-box green">
+                <div class="highlight-icon-box green" aria-hidden="true">
                   <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                     <path d="M9 12l2 2 4-4"/>
@@ -232,7 +239,7 @@
               </div>
 
               <div class="highlight-item">
-                <div class="highlight-icon-box cyan">
+                <div class="highlight-icon-box cyan" aria-hidden="true">
                   <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
                   </svg>
@@ -244,7 +251,7 @@
               </div>
 
               <div class="highlight-item">
-                <div class="highlight-icon-box orange">
+                <div class="highlight-icon-box orange" aria-hidden="true">
                   <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="6" y1="12" x2="10" y2="12"/>
                     <line x1="8" y1="10" x2="8" y2="14"/>
@@ -260,7 +267,7 @@
               </div>
 
               <div class="highlight-item">
-                <div class="highlight-icon-box purple">
+                <div class="highlight-icon-box purple" aria-hidden="true">
                   <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 3h12l4 6-10 13L2 9z"/>
                     <path d="M11 3L8 9l4 13 4-13-3-6"/>
@@ -277,14 +284,18 @@
         </section>
 
         <!-- SYSTEM REQUIREMENTS SECTION -->
-        <section class="steam-detail-block specs-block">
+        <section class="steam-detail-block specs-block" aria-labelledby="heading-system-specs">
           <div class="block-header">
-            <h2 class="block-title">System Requirements</h2>
+            <h2 id="heading-system-specs" class="block-title">System Requirements</h2>
             
-            <div class="specs-tab-toggle">
+            <div class="specs-tab-toggle" role="tablist" aria-label="System requirement specifications">
               <button 
                 type="button" 
                 class="tab-btn" 
+                role="tab"
+                id="tab-minimum-specs"
+                aria-controls="specs-panel-content"
+                [attr.aria-selected]="selectedSpecsTab === 'minimum'"
                 [class.active]="selectedSpecsTab === 'minimum'"
                 (click)="setSpecsTab('minimum')">
                 Minimum Specs
@@ -292,6 +303,10 @@
               <button 
                 type="button" 
                 class="tab-btn" 
+                role="tab"
+                id="tab-recommended-specs"
+                aria-controls="specs-panel-content"
+                [attr.aria-selected]="selectedSpecsTab === 'recommended'"
                 [class.active]="selectedSpecsTab === 'recommended'"
                 (click)="setSpecsTab('recommended')">
                 Recommended
@@ -299,7 +314,7 @@
             </div>
           </div>
 
-          <div class="block-content">
+          <div class="block-content" id="specs-panel-content" role="tabpanel" [attr.aria-labelledby]="selectedSpecsTab === 'minimum' ? 'tab-minimum-specs' : 'tab-recommended-specs'">
             @if (selectedSpecsTab === 'minimum') {
               <div class="specs-table-grid">
                 <div class="spec-cell">
@@ -360,26 +375,26 @@
       </main>
 
       <!-- Right Column: Steam Features Checklist & Creator Profile -->
-      <aside class="steam-sidebar-details">
+      <aside class="steam-sidebar-details" aria-label="Game Technical Features and Creator Details">
         <!-- Feature Checklist Box -->
         <div class="steam-side-panel features-panel">
           <h3 class="panel-header-title">Game Features</h3>
-          <ul class="steam-feature-list">
-            <li class="steam-feature-item">
-              <svg class="feature-item-svg green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <ul class="steam-feature-list" role="list">
+            <li class="steam-feature-item" role="listitem">
+              <svg class="feature-item-svg green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 <path d="M9 12l2 2 4-4"/>
               </svg>
               <span>Single-player</span>
             </li>
-            <li class="steam-feature-item">
-              <svg class="feature-item-svg cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <li class="steam-feature-item" role="listitem">
+              <svg class="feature-item-svg cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
               </svg>
               <span>100% DRM-Free Offline Play</span>
             </li>
-            <li class="steam-feature-item">
-              <svg class="feature-item-svg orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <li class="steam-feature-item" role="listitem">
+              <svg class="feature-item-svg orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <line x1="6" y1="12" x2="10" y2="12"/>
                 <line x1="8" y1="10" x2="8" y2="14"/>
                 <line x1="15" y1="13" x2="15.01" y2="13"/>
@@ -388,16 +403,16 @@
               </svg>
               <span>Full Controller Support</span>
             </li>
-            <li class="steam-feature-item">
-              <svg class="feature-item-svg purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <li class="steam-feature-item" role="listitem">
+              <svg class="feature-item-svg purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <ellipse cx="12" cy="5" rx="9" ry="3"/>
                 <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
                 <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
               </svg>
               <span>Open Save File Management</span>
             </li>
-            <li class="steam-feature-item">
-              <svg class="feature-item-svg pink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <li class="steam-feature-item" role="listitem">
+              <svg class="feature-item-svg pink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
               </svg>
               <span>Windows & Linux Binaries</span>
@@ -410,18 +425,18 @@
           <div class="steam-side-panel creator-panel">
             <h3 class="panel-header-title">Developer</h3>
             <div class="creator-box">
-              <img [src]="creator.avatarUrl || 'assets/logo-icon.svg'" [alt]="creator.displayName" class="creator-avatar-steam">
+              <img [src]="creator.avatarUrl || 'assets/logo-icon.svg'" [alt]="creator.displayName + ' avatar'" class="creator-avatar-steam">
               <div class="creator-info-steam">
-                <a [routerLink]="['/creators', creator.id]" class="creator-title-link">{{ creator.displayName }}</a>
+                <a [routerLink]="['/creators', creator.id]" class="creator-title-link" [attr.aria-label]="'View developer: ' + creator.displayName">{{ creator.displayName }}</a>
                 <span class="creator-badge-steam">Verified Studio</span>
               </div>
             </div>
             @if (creator.bio) {
               <p class="creator-bio-steam">{{ creator.bio }}</p>
             }
-            <a [routerLink]="['/creators', creator.id]" class="btn-creator-storefront">
+            <a [routerLink]="['/creators', creator.id]" class="btn-creator-storefront" [attr.aria-label]="'Visit ' + creator.displayName + ' storefront'">
               <span>View Creator Storefront</span>
-              <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
             </a>
@@ -430,35 +445,52 @@
       </aside>
     </div>
 
-    <!-- Screenshot Lightbox Modal Overlay -->
+    <!-- Screenshot Lightbox Modal Overlay with Accessible Dialog Attributes -->
     @if (lightboxActive) {
-      <div class="lightbox-backdrop" (click)="closeLightbox()">
+      <div 
+        class="lightbox-backdrop" 
+        role="dialog"
+        aria-modal="true"
+        aria-label="Enlarged screenshot viewer modal"
+        (click)="closeLightbox()">
         <div class="lightbox-container" (click)="$event.stopPropagation()">
-          <button type="button" class="btn-lightbox-close" (click)="closeLightbox()" title="Close Lightbox">
-            <svg class="svg-lightbox-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <button 
+            type="button" 
+            class="btn-lightbox-close" 
+            (click)="closeLightbox()" 
+            aria-label="Close screenshot preview (Escape)">
+            <svg class="svg-lightbox-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <line x1="18" y1="6" x2="6" y2="18"/>
               <line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
           </button>
           
-          <button type="button" class="btn-lightbox-nav prev" (click)="prevScreenshot()" title="Previous Screenshot">
-            <svg class="svg-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <button 
+            type="button" 
+            class="btn-lightbox-nav prev" 
+            (click)="prevScreenshot()" 
+            aria-label="Previous screenshot (Left Arrow)">
+            <svg class="svg-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
           </button>
           
           <img 
             [src]="galleryImages[activeScreenshotIndex]" 
-            [alt]="game.title + ' enlarged preview'" 
+            [alt]="game.title + ' full-size preview ' + (activeScreenshotIndex + 1)" 
             class="lightbox-image">
           
-          <button type="button" class="btn-lightbox-nav next" (click)="nextScreenshot()" title="Next Screenshot">
-            <svg class="svg-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <button 
+            type="button" 
+            class="btn-lightbox-nav next" 
+            (click)="nextScreenshot()" 
+            aria-label="Next screenshot (Right Arrow)">
+            <svg class="svg-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polyline points="9 18 15 12 9 6"/>
             </svg>
           </button>
 
-          <div class="lightbox-counter">
+          <div class="lightbox-counter" aria-live="polite">
             {{ activeScreenshotIndex + 1 }} / {{ galleryImages.length }}
           </div>
         </div>
