@@ -10,82 +10,255 @@
       [routerLink]="['/catalog']">
     </app-empty-state>
   } @else {
-    <!-- Breadcrumb & Back -->
-    <div class="detail-nav">
-      <a routerLink="/catalog" class="back-link">← Back to Store</a>
-    </div>
+    <!-- Breadcrumb Navigation -->
+    <nav class="detail-nav" aria-label="Breadcrumb">
+      <a routerLink="/catalog" class="back-link">
+        <span class="back-arrow">←</span>
+        <span>Back to Store Catalog</span>
+      </a>
+      <span class="nav-divider">/</span>
+      <span class="nav-current-title">{{ game.title }}</span>
+    </nav>
 
     <!-- Hero Showcase Section -->
-    <div class="showcase-hero">
+    <header class="showcase-hero">
       <div class="hero-image-container">
         <img [src]="game.coverImageUrl" [alt]="game.title" class="hero-cover-img">
         <div class="hero-image-gradient"></div>
+        
         <div class="hero-header-overlay">
           <div class="hero-title-group">
+            <div class="hero-meta-badge-row">
+              <span class="hero-status-badge">⚡ Standalone Package</span>
+              <span class="hero-rating-badge">★ 4.9 · Very Positive</span>
+              <span class="hero-platform-badge">🪟 Windows · 🐧 Linux</span>
+            </div>
+            
             <h1 class="hero-game-title">{{ game.title }}</h1>
+            
             <div class="hero-tags">
               @for (tag of game.tags; track tag) {
                 <a [routerLink]="['/catalog']" [queryParams]="{ tag: tag }" class="detail-tag-chip">
-                  {{ tag }}
+                  #{{ tag }}
                 </a>
               }
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </header>
 
     <!-- 2-Column Main Layout -->
     <div class="detail-grid">
-      <!-- Left Column: Story & Screenshots -->
-      <div class="detail-main-col">
-        <!-- Synopsis Section -->
-        <section class="detail-card synopsis-card">
-          <h2 class="card-section-title">About the Game</h2>
-          <p class="synopsis-text">{{ game.description }}</p>
-
-          <div class="features-highlight">
-            <div class="highlight-item">
-              <span class="highlight-icon">✓</span>
-              <span>100% DRM-Free Standalone Package</span>
-            </div>
-            <div class="highlight-item">
-              <span class="highlight-icon">✓</span>
-              <span>Instant Offline Playability</span>
-            </div>
-            <div class="highlight-item">
-              <span class="highlight-icon">✓</span>
-              <span>Direct Support for Independent Creators</span>
-            </div>
-          </div>
-        </section>
-
-        <!-- Screenshot Gallery Carousel -->
+      <!-- Left Column: Story, Gallery & Specifications -->
+      <main class="detail-main-col">
+        <!-- Interactive Media Stage Showcase -->
         @if (game.screenshotUrls && game.screenshotUrls.length > 0) {
-          <section class="detail-card gallery-card">
+          <section class="detail-card gallery-stage-card">
             <div class="gallery-header">
-              <h2 class="card-section-title">Screenshot Gallery</h2>
-              <span class="gallery-hint">Click any image to enlarge</span>
+              <div class="gallery-title-wrapper">
+                <h2 class="card-section-title">Media Showcase</h2>
+                <span class="gallery-subtitle">High-Definition Visuals & Gameplay</span>
+              </div>
+              <button type="button" class="btn-fullscreen-trigger" (click)="openLightbox(selectedStageIndex)" title="Enlarge Image">
+                <span>🔍 Fullscreen View</span>
+              </button>
             </div>
 
-            <div class="screenshots-scroll-row">
+            <!-- Primary Large Image Stage -->
+            <div class="stage-viewer" (click)="openLightbox(selectedStageIndex)">
+              <img 
+                [src]="game.screenshotUrls[selectedStageIndex]" 
+                [alt]="game.title + ' preview ' + (selectedStageIndex + 1)" 
+                class="stage-main-image">
+              
+              <div class="stage-overlay-hover">
+                <span class="stage-zoom-badge">🔍 Click to Expand Lightbox</span>
+              </div>
+            </div>
+
+            <!-- Thumbnail Selector Strip -->
+            <div class="stage-thumb-strip">
               @for (shot of game.screenshotUrls; track shot; let idx = $index) {
-                <div class="screenshot-thumb-box" (click)="openLightbox(idx)">
-                  <img [src]="shot" [alt]="game.title + ' screenshot ' + (idx + 1)" class="screenshot-thumb">
-                  <div class="thumb-zoom-icon">🔍</div>
-                </div>
+                <button 
+                  type="button"
+                  class="stage-thumb-button"
+                  [class.active]="selectedStageIndex === idx"
+                  (click)="selectStageImage(idx)"
+                  [title]="'View screenshot ' + (idx + 1)">
+                  <img [src]="shot" [alt]="'Screenshot ' + (idx + 1)" class="stage-thumb-img">
+                </button>
               }
             </div>
           </section>
         }
-      </div>
+
+        <!-- Synopsis & Rich Feature Grid Section -->
+        <section class="detail-card synopsis-card">
+          <div class="card-header-row">
+            <h2 class="card-section-title">About the Game</h2>
+            <span class="card-badge-accent">Indie Release</span>
+          </div>
+
+          <p class="synopsis-lead-text">{{ game.description }}</p>
+
+          <div class="section-divider"></div>
+
+          <!-- Feature Cards Grid (Visual Polish) -->
+          <h3 class="features-subheading">Key Distribution Highlights</h3>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-card-icon-box drm">
+                <span class="feature-icon">🛡️</span>
+              </div>
+              <div class="feature-card-content">
+                <h4 class="feature-title">100% DRM-Free</h4>
+                <p class="feature-desc">Standalone installer package. No mandatory launchers, always-online checks, or invasive telemetry.</p>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-card-icon-box offline">
+                <span class="feature-icon">⚡</span>
+              </div>
+              <div class="feature-card-content">
+                <h4 class="feature-title">Instant Offline Play</h4>
+                <p class="feature-desc">Full single-player execution anywhere. Play uninterrupted on your desktop, laptop, or portable setup.</p>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-card-icon-box creator">
+                <span class="feature-icon">💎</span>
+              </div>
+              <div class="feature-card-content">
+                <h4 class="feature-title">Direct Creator Support</h4>
+                <p class="feature-desc">Over 90% of every transaction flows directly to independent developers to fund future creations.</p>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-card-icon-box controller">
+                <span class="feature-icon">🎮</span>
+              </div>
+              <div class="feature-card-content">
+                <h4 class="feature-title">Full Controller Ready</h4>
+                <p class="feature-desc">Plug-and-play mapping for Xbox, DualSense, Steam Deck, and generic USB gamepads.</p>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-card-icon-box save">
+                <span class="feature-icon">💾</span>
+              </div>
+              <div class="feature-card-content">
+                <h4 class="feature-title">Open Save Management</h4>
+                <p class="feature-desc">Non-proprietary JSON/binary save files with zero vendor lock-in and seamless portable backup.</p>
+              </div>
+            </div>
+
+            <div class="feature-card">
+              <div class="feature-card-icon-box multi">
+                <span class="feature-icon">📦</span>
+              </div>
+              <div class="feature-card-content">
+                <h4 class="feature-title">Multi-Platform Binaries</h4>
+                <p class="feature-desc">Engineered for 64-bit Windows 11/10 and native Linux x86_64 distributions.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- System Requirements & Hardware Specs Card -->
+        <section class="detail-card specs-card">
+          <div class="card-header-row">
+            <h2 class="card-section-title">System Specifications</h2>
+            
+            <div class="specs-tabs-switch">
+              <button 
+                type="button" 
+                class="specs-tab-btn" 
+                [class.active]="selectedSpecsTab === 'minimum'"
+                (click)="setSpecsTab('minimum')">
+                Minimum Specs
+              </button>
+              <button 
+                type="button" 
+                class="specs-tab-btn" 
+                [class.active]="selectedSpecsTab === 'recommended'"
+                (click)="setSpecsTab('recommended')">
+                Recommended
+              </button>
+            </div>
+          </div>
+
+          @if (selectedSpecsTab === 'minimum') {
+            <div class="specs-table">
+              <div class="spec-row">
+                <span class="spec-label">Operating System</span>
+                <span class="spec-val">Windows 10 / 11 (64-bit) or Ubuntu 22.04 LTS</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Processor</span>
+                <span class="spec-val">Intel Core i5-4460 / AMD FX-6300 (Quad-core 3.2 GHz)</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Memory (RAM)</span>
+                <span class="spec-val">8 GB System RAM</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Graphics Card</span>
+                <span class="spec-val">NVIDIA GeForce GTX 960 (4GB) / AMD Radeon R9 280</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">DirectX</span>
+                <span class="spec-val">Version 11 or Vulkan 1.2 Compatible</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Available Storage</span>
+                <span class="spec-val">4.5 GB High-Speed Storage (SSD Recommended)</span>
+              </div>
+            </div>
+          } @else {
+            <div class="specs-table">
+              <div class="spec-row">
+                <span class="spec-label">Operating System</span>
+                <span class="spec-val">Windows 11 (64-bit) or Arch Linux 6.x</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Processor</span>
+                <span class="spec-val">Intel Core i7-8700K / AMD Ryzen 5 3600X (6 Cores / 12 Threads)</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Memory (RAM)</span>
+                <span class="spec-val">16 GB Dual-Channel DDR4/DDR5</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Graphics Card</span>
+                <span class="spec-val">NVIDIA GeForce RTX 3060 (8GB) / AMD Radeon RX 6600 XT</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">DirectX</span>
+                <span class="spec-val">Version 12 Ultimate</span>
+              </div>
+              <div class="spec-row">
+                <span class="spec-label">Available Storage</span>
+                <span class="spec-val">4.5 GB NVMe M.2 Solid State Drive</span>
+              </div>
+            </div>
+          }
+        </section>
+      </main>
 
       <!-- Right Column: Metadata & Acquisition Sidebar -->
       <aside class="detail-sidebar-col">
         <!-- Purchase / Acquisition Card -->
         <div class="sidebar-card purchase-card">
           <div class="price-header">
-            <span class="price-label">Price</span>
+            <div class="price-title-wrap">
+              <span class="price-label">Price & License</span>
+              <span class="license-type">Perpetual Ownership</span>
+            </div>
             @if (game.price === 0) {
               <span class="price-display free">FREE</span>
             } @else {
@@ -101,7 +274,7 @@
               [class.free]="game.price === 0"
               [class.paid]="game.price > 0"
               (click)="handleActionClick()">
-              <span>{{ game.price === 0 ? '⬇ Download Free' : '💳 Buy Now · $' + game.price.toFixed(2) }}</span>
+              <span>{{ game.price === 0 ? '⬇ Download Free Package' : '💳 Buy Now · $' + game.price.toFixed(2) }}</span>
             </button>
 
             <button 
@@ -109,27 +282,59 @@
               class="btn-wishlist-action" 
               [class.active]="isWishlisted"
               (click)="toggleWishlist()">
-              <span>{{ isWishlisted ? '♥ In Wishlist' : '♡ Add to Wishlist' }}</span>
+              <span>{{ isWishlisted ? '♥ Saved in Wishlist' : '♡ Add to Wishlist' }}</span>
             </button>
+          </div>
+
+          <div class="sidebar-guarantee-note">
+            <span>🔒 Instant digital fulfillment · DRM-Free guarantee</span>
+          </div>
+        </div>
+
+        <!-- Quick Game Specs Metadata Card -->
+        <div class="sidebar-card metadata-card">
+          <h3 class="sidebar-card-title">Technical Information</h3>
+          
+          <div class="meta-info-list">
+            <div class="meta-info-item">
+              <span class="meta-key">Release Version</span>
+              <span class="meta-value highlight">v1.2.4 (Latest)</span>
+            </div>
+            <div class="meta-info-item">
+              <span class="meta-key">Package Size</span>
+              <span class="meta-value">1.84 GB Standalone</span>
+            </div>
+            <div class="meta-info-item">
+              <span class="meta-key">Distribution</span>
+              <span class="meta-value">Direct Binary Zip</span>
+            </div>
+            <div class="meta-info-item">
+              <span class="meta-key">Supported OS</span>
+              <span class="meta-value">Windows, Linux</span>
+            </div>
+            <div class="meta-info-item">
+              <span class="meta-key">Rating</span>
+              <span class="meta-value rating">★ 4.9 / 5.0</span>
+            </div>
           </div>
         </div>
 
         <!-- Creator Profile Card -->
         @if (creator) {
           <div class="sidebar-card creator-card">
-            <span class="sidebar-card-label">Developer</span>
+            <span class="sidebar-card-label">Independent Developer</span>
             <div class="creator-header">
               <img [src]="creator.avatarUrl || 'assets/logo-icon.svg'" [alt]="creator.displayName" class="creator-avatar">
               <div class="creator-details">
                 <a [routerLink]="['/creators', creator.id]" class="creator-name-link">{{ creator.displayName }}</a>
-                <span class="creator-badge">Verified Creator</span>
+                <span class="creator-badge">Verified Studio</span>
               </div>
             </div>
             @if (creator.bio) {
               <p class="creator-bio-snippet">{{ creator.bio }}</p>
             }
             <a [routerLink]="['/creators', creator.id]" class="btn-view-creator">
-              View Developer Storefront →
+              View Creator Storefront →
             </a>
           </div>
         }
@@ -159,3 +364,4 @@
     }
   }
 </div>
+

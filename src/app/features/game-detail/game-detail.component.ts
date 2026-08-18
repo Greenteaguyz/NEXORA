@@ -33,9 +33,21 @@ export class GameDetailComponent implements OnInit {
   loading = true;
   isWishlisted = false;
 
-  // Screenshot Lightbox state
+  // Media Gallery Stage & Lightbox
+  selectedStageIndex = 0;
   lightboxActive = false;
   activeScreenshotIndex = 0;
+
+  // System Requirements Tab
+  selectedSpecsTab: 'minimum' | 'recommended' = 'minimum';
+
+  setSpecsTab(tab: 'minimum' | 'recommended'): void {
+    this.selectedSpecsTab = tab;
+  }
+
+  selectStageImage(index: number): void {
+    this.selectedStageIndex = index;
+  }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
