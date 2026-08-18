@@ -15,6 +15,9 @@ dist/
 tmp/
 out-tsc/
 bazel-out/
+test-results/
+playwright-report/
+blob-report/
 
 # Environment files
 .env
