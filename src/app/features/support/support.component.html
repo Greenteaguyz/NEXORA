@@ -1,143 +1,384 @@
 <div class="support-page">
   <!-- Hero Section -->
   <header class="support-hero">
-    <div class="support-badge">Help & Documentation Center</div>
+    <div class="support-badge">
+      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+      <span>Help & Documentation Center</span>
+    </div>
     <h1 class="support-title">How Can We Help You?</h1>
     <p class="support-subtitle">
-      Find answers to common questions about DRM-free downloads, creator tools, account settings, and data safety on NEXORA.
+      Find answers about DRM-free downloads, creator publishing tools, offline installation, and sandbox data privacy on NEXORA.
     </p>
+
+    <!-- Quick-Triage Hub Cards -->
+    <div class="triage-cards-grid" role="group" aria-label="Support topic quick navigation">
+      <button type="button" class="triage-card" (click)="quickFilter('downloads')" aria-label="View Game Downloads and DRM help">
+        <div class="triage-icon-box green" aria-hidden="true">
+          <svg class="svg-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </div>
+        <div class="triage-content">
+          <strong class="triage-title">Downloads & DRM</strong>
+          <span class="triage-desc">Offline execution, save files & installers</span>
+        </div>
+        <svg class="triage-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+
+      <button type="button" class="triage-card" (click)="quickFilter('creators')" aria-label="View Creator Studio documentation">
+        <div class="triage-icon-box purple" aria-hidden="true">
+          <svg class="svg-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+        </div>
+        <div class="triage-content">
+          <strong class="triage-title">Creator Studio</strong>
+          <span class="triage-desc">Publishing games, media & 90/10 split</span>
+        </div>
+        <svg class="triage-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+
+      <button type="button" class="triage-card" (click)="quickFilter('privacy')" aria-label="View Privacy and local storage documentation">
+        <div class="triage-icon-box cyan" aria-hidden="true">
+          <svg class="svg-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="triage-content">
+          <strong class="triage-title">Privacy & Storage</strong>
+          <span class="triage-desc">IndexedDB, zero tracking & mock data</span>
+        </div>
+        <svg class="triage-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+    </div>
   </header>
 
-  <div class="support-grid">
-    <!-- FAQ Section -->
-    <section class="section-card">
+  <!-- Main Support Content Grid (70/30 on wide, 50/50 on desktop) -->
+  <div class="support-grid" id="faq-section">
+    <!-- Left Column: Interactive FAQ Hub -->
+    <section class="section-card faq-section-card" aria-labelledby="heading-faq">
       <div class="section-header">
-        <div class="section-icon">❓</div>
-        <h2 class="section-title">Frequently Asked Questions</h2>
+        <div class="section-icon purple" aria-hidden="true">
+          <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <div class="section-header-text">
+          <h2 id="heading-faq" class="section-title">Frequently Asked Questions</h2>
+          <span class="section-desc">Instant answers to platform mechanics & store policies</span>
+        </div>
       </div>
 
-      <div class="faq-list">
-        @for (faq of faqs; track faq.id) {
-          <div class="faq-item" [class.open]="openFaqId === faq.id">
-            <button type="button" class="faq-question" (click)="toggleFaq(faq.id)">
-              <span>{{ faq.question }}</span>
-              <span class="faq-toggle-icon">+</span>
+      <!-- FAQ Search Input -->
+      <div class="faq-search-wrap">
+        <div class="faq-search-input-box">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery" 
+            class="faq-search-input" 
+            placeholder="Search FAQs, DRM questions, publishing rules..." 
+            aria-label="Search FAQs">
+          @if (searchQuery) {
+            <button type="button" class="faq-clear-btn" (click)="clearSearch()" aria-label="Clear search input">✕</button>
+          }
+        </div>
+
+        <!-- Category Filter Pills -->
+        <div class="faq-filter-pills" role="tablist" aria-label="FAQ categories">
+          <button 
+            type="button" 
+            class="filter-pill-btn" 
+            [class.active]="selectedCategory === 'all'" 
+            (click)="setCategory('all')" 
+            role="tab" 
+            [attr.aria-selected]="selectedCategory === 'all'">
+            All Topics
+          </button>
+          <button 
+            type="button" 
+            class="filter-pill-btn" 
+            [class.active]="selectedCategory === 'downloads'" 
+            (click)="setCategory('downloads')" 
+            role="tab" 
+            [attr.aria-selected]="selectedCategory === 'downloads'">
+            Downloads & DRM
+          </button>
+          <button 
+            type="button" 
+            class="filter-pill-btn" 
+            [class.active]="selectedCategory === 'creators'" 
+            (click)="setCategory('creators')" 
+            role="tab" 
+            [attr.aria-selected]="selectedCategory === 'creators'">
+            Creator Studio
+          </button>
+          <button 
+            type="button" 
+            class="filter-pill-btn" 
+            [class.active]="selectedCategory === 'privacy'" 
+            (click)="setCategory('privacy')" 
+            role="tab" 
+            [attr.aria-selected]="selectedCategory === 'privacy'">
+            Privacy & Storage
+          </button>
+        </div>
+      </div>
+
+      <!-- FAQ Accordion List -->
+      <div class="faq-list" role="list">
+        @if (filteredFaqs.length === 0) {
+          <div class="faq-empty-state">
+            <svg class="svg-empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              <line x1="8" y1="11" x2="14" y2="11"/>
+            </svg>
+            <p class="empty-title">No matching help articles found</p>
+            <p class="empty-sub">Try adjusting your search terms or send us a direct ticket using the form on the right.</p>
+            <button type="button" class="btn-clear-filters" (click)="clearSearch(); setCategory('all')">
+              Reset Filters
             </button>
-            @if (openFaqId === faq.id) {
-              <div class="faq-answer">
-                {{ faq.answer }}
-              </div>
-            }
           </div>
+        } @else {
+          @for (faq of filteredFaqs; track faq.id) {
+            <div class="faq-item" [class.open]="openFaqId === faq.id" role="listitem">
+              <button 
+                type="button" 
+                class="faq-question" 
+                (click)="toggleFaq(faq.id)" 
+                [attr.aria-expanded]="openFaqId === faq.id"
+                [attr.aria-controls]="'faq-answer-' + faq.id">
+                <div class="faq-question-title-group">
+                  <span class="faq-cat-tag">{{ faq.categoryLabel }}</span>
+                  <span class="faq-question-text">{{ faq.question }}</span>
+                </div>
+                <div class="faq-chevron-box" aria-hidden="true">
+                  <svg class="faq-chevron-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                  </svg>
+                </div>
+              </button>
+              @if (openFaqId === faq.id) {
+                <div [id]="'faq-answer-' + faq.id" class="faq-answer" role="region">
+                  <p class="faq-answer-text">{{ faq.answer }}</p>
+                </div>
+              }
+            </div>
+          }
         }
       </div>
     </section>
 
-    <!-- Support Ticket Form -->
-    <section class="section-card">
+    <!-- Right Column: Support Ticket Desk -->
+    <section class="section-card ticket-section-card" aria-labelledby="heading-ticket">
       <div class="section-header">
-        <div class="section-icon">✉️</div>
-        <h2 class="section-title">Submit a Support Ticket</h2>
+        <div class="section-icon green" aria-hidden="true">
+          <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+        <div class="section-header-text">
+          <h2 id="heading-ticket" class="section-title">Submit a Support Ticket</h2>
+          <span class="section-desc">Direct assistance from NEXORA platform support</span>
+        </div>
       </div>
 
       @if (ticketSubmitted) {
-        <div class="ticket-success">
-          <strong>✓ Ticket #{{ generatedTicketId }} Created Successfully</strong><br>
-          Our team has received your message and will respond to <em>{{ email }}</em> shortly.
+        <div class="ticket-success-receipt" role="alert">
+          <div class="receipt-icon-wrap" aria-hidden="true">
+            <svg class="svg-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <h3 class="receipt-title">Ticket Created Successfully</h3>
+          <div class="receipt-id-badge">
+            <span class="receipt-lbl">Reference Code:</span>
+            <strong class="receipt-code">{{ generatedTicketId }}</strong>
+          </div>
+          <p class="receipt-desc">
+            We have registered your inquiry and dispatched a confirmation to <strong>{{ email }}</strong>. Our support team typically responds within 4 business hours.
+          </p>
+          <button type="button" class="btn-new-ticket" (click)="resetTicketForm()">
+            <span>Submit Another Ticket</span>
+            <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </button>
         </div>
+      } @else {
+        <form (ngSubmit)="submitTicket()" class="ticket-form">
+          <div class="form-row-dual">
+            <div class="form-group">
+              <label for="ticketName" class="form-label">Your Name</label>
+              <input 
+                id="ticketName" 
+                type="text" 
+                name="name" 
+                [(ngModel)]="name" 
+                class="form-input" 
+                placeholder="e.g. Alice Vance" 
+                required>
+            </div>
+
+            <div class="form-group">
+              <label for="ticketEmail" class="form-label">Email Address</label>
+              <input 
+                id="ticketEmail" 
+                type="email" 
+                name="email" 
+                [(ngModel)]="email" 
+                class="form-input" 
+                placeholder="alice@nexora.io" 
+                required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="ticketCategorySelect" class="form-label">Issue Category</label>
+            <div class="select-wrapper">
+              <select id="ticketCategorySelect" name="ticketCategory" [(ngModel)]="ticketCategory" class="form-select">
+                <option value="technical">🎮 Game Download & Offline Play Issue</option>
+                <option value="creator">🛠️ Creator Studio & Publishing Question</option>
+                <option value="billing">💳 Simulated Purchase & Library Question</option>
+                <option value="feedback">💡 Feedback & Feature Suggestion</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="ticketSubject" class="form-label">Subject</label>
+            <input 
+              id="ticketSubject" 
+              type="text" 
+              name="subject" 
+              [(ngModel)]="subject" 
+              class="form-input" 
+              placeholder="Brief summary of your inquiry..." 
+              required>
+          </div>
+
+          <div class="form-group">
+            <label for="ticketMessage" class="form-label">Message Details</label>
+            <textarea 
+              id="ticketMessage" 
+              name="message" 
+              [(ngModel)]="message" 
+              class="form-textarea" 
+              placeholder="Please describe what happened, your operating system, and any error messages..." 
+              rows="4"
+              required></textarea>
+          </div>
+
+          <button 
+            type="submit" 
+            class="btn-submit-ticket" 
+            [disabled]="loading || !email || !subject || !message">
+            @if (loading) {
+              <span class="btn-spinner" aria-hidden="true"></span>
+              <span>Submitting Ticket...</span>
+            } @else {
+              <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+              <span>Submit Support Ticket</span>
+            }
+          </button>
+        </form>
       }
-
-      <form (ngSubmit)="submitTicket()">
-        <div class="form-group">
-          <label for="ticketName" class="form-label">Your Name</label>
-          <input 
-            id="ticketName" 
-            type="text" 
-            name="name" 
-            [(ngModel)]="name" 
-            class="form-input" 
-            placeholder="Alice Vance" 
-            required>
-        </div>
-
-        <div class="form-group">
-          <label for="ticketEmail" class="form-label">Email Address</label>
-          <input 
-            id="ticketEmail" 
-            type="email" 
-            name="email" 
-            [(ngModel)]="email" 
-            class="form-input" 
-            placeholder="alice@nexora.io" 
-            required>
-        </div>
-
-        <div class="form-group">
-          <label for="ticketSubject" class="form-label">Subject</label>
-          <input 
-            id="ticketSubject" 
-            type="text" 
-            name="subject" 
-            [(ngModel)]="subject" 
-            class="form-input" 
-            placeholder="e.g. Question regarding game downloads" 
-            required>
-        </div>
-
-        <div class="form-group">
-          <label for="ticketMessage" class="form-label">Message</label>
-          <textarea 
-            id="ticketMessage" 
-            name="message" 
-            [(ngModel)]="message" 
-            class="form-textarea" 
-            placeholder="Describe your issue or feedback in detail..." 
-            required></textarea>
-        </div>
-
-        <button type="submit" class="btn-submit" [disabled]="loading || !email || !subject || !message">
-          {{ loading ? 'Submitting Ticket...' : 'Submit Support Ticket' }}
-        </button>
-      </form>
     </section>
   </div>
 
-  <!-- Privacy & Data Trust Notice -->
-  <section class="privacy-banner" id="privacy">
-    <h2 class="privacy-title">
-      <span>🛡️</span> Privacy & Data Trust Notice
-    </h2>
-    <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6;">
-      NEXORA values developer freedom and player privacy. The marketplace is engineered with transparent, zero-telemetry local storage and open distribution standards.
-    </p>
-
-    <div class="trust-points">
-      <div class="trust-item">
-        <div class="trust-item-title">100% DRM-Free</div>
-        <div class="trust-item-desc">
-          Every game package you acquire is yours forever. No launcher lock-in, no background online checks, and no activation keys required.
+  <!-- Privacy & Data Trust Notice Section -->
+  <section class="privacy-banner" id="privacy" aria-labelledby="heading-privacy">
+    <div class="privacy-header-row">
+      <div class="privacy-title-wrap">
+        <div class="privacy-icon-box" aria-hidden="true">
+          <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
         </div>
-      </div>
-      <div class="trust-item">
-        <div class="trust-item-title">Local Browser Persistence</div>
-        <div class="trust-item-desc">
-          All user sessions, library states, and wishlists are stored locally in your browser via IndexedDB & LocalStorage.
-        </div>
-      </div>
-      <div class="trust-item">
-        <div class="trust-item-title">Simulated Transactions</div>
-        <div class="trust-item-desc">
-          All monetary transactions on this prototype are 100% simulated sandbox mock purchases with zero real credit card charges.
+        <div>
+          <h2 id="heading-privacy" class="privacy-title">Privacy & Data Trust Architecture</h2>
+          <p class="privacy-lead">
+            NEXORA values developer freedom and player privacy. The marketplace is engineered with transparent, zero-telemetry local storage and open distribution standards.
+          </p>
         </div>
       </div>
     </div>
 
-    <!-- Seed Data Reset Tool -->
-    <div style="border-top: 1px solid var(--border-card); padding-top: var(--space-4); margin-top: var(--space-2); display: flex; justify-content: space-between; align-items: center;">
-      <span style="color: var(--text-muted); font-size: 0.85rem;">Need to restore default mock games and seed data?</span>
-      <button type="button" class="reset-db-btn" (click)="resetDatabase()">
-        ↺ Reset Mock Marketplace Seed Data
-      </button>
+    <!-- Trust Cards Triad -->
+    <div class="trust-points-grid">
+      <div class="trust-item-card">
+        <div class="trust-item-header">
+          <span class="trust-badge green">100% DRM-Free</span>
+        </div>
+        <p class="trust-item-desc">
+          Every game package you acquire is yours forever. No launcher lock-in, no background online heartbeat checks, and no activation keys required.
+        </p>
+      </div>
+
+      <div class="trust-item-card">
+        <div class="trust-item-header">
+          <span class="trust-badge purple">Local Browser Persistence</span>
+        </div>
+        <p class="trust-item-desc">
+          All user sessions, library states, and wishlists are stored locally in your browser via IndexedDB & LocalStorage.
+        </p>
+      </div>
+
+      <div class="trust-item-card">
+        <div class="trust-item-header">
+          <span class="trust-badge cyan">Simulated Transactions</span>
+        </div>
+        <p class="trust-item-desc">
+          All monetary transactions on this prototype are 100% simulated sandbox mock purchases with zero real credit card charges.
+        </p>
+      </div>
+    </div>
+
+    <!-- Seed Data Reset Tool & Feedback Banner -->
+    <div class="seed-reset-row">
+      <div class="seed-reset-info">
+        <strong class="seed-reset-heading">Developer & QA Testing Utility</strong>
+        <span class="seed-reset-sub">Need to wipe local modifications and restore original seed games catalog?</span>
+      </div>
+
+      <div class="seed-action-wrap">
+        @if (resetNotification) {
+          <span class="seed-reset-toast" role="status">✓ {{ resetNotification }}</span>
+        }
+        <button type="button" class="reset-db-btn" (click)="resetDatabase()" aria-label="Reset mock marketplace seed data">
+          <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+          </svg>
+          <span>Reset Marketplace Seed Data</span>
+        </button>
+      </div>
     </div>
   </section>
 </div>
