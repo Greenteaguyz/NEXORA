@@ -49,6 +49,31 @@ export class GameDetailComponent implements OnInit {
     this.selectedStageIndex = index;
   }
 
+  get galleryImages(): string[] {
+    if (!this.game) return [];
+    if (this.game.screenshotUrls && this.game.screenshotUrls.length > 0) {
+      return this.game.screenshotUrls;
+    }
+    return [this.game.coverImageUrl];
+  }
+
+  get isRetro2D(): boolean {
+    if (!this.game) return false;
+    return this.game.tags.some(t => ['Pixel Art', 'Retro', 'Platformer', 'Arcade', 'Casual'].includes(t));
+  }
+
+  get packageSize(): string {
+    if (!this.game) return '1.20 GB Standalone';
+    if (this.isRetro2D) return '340 MB Standalone';
+    return '1.84 GB Standalone';
+  }
+
+  get releaseDate(): string {
+    if (!this.game || !this.game.createdAt) return 'Recent Release';
+    const d = new Date(this.game.createdAt);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -131,13 +156,13 @@ export class GameDetailComponent implements OnInit {
   }
 
   nextScreenshot(): void {
-    if (!this.game || this.game.screenshotUrls.length === 0) return;
-    this.activeScreenshotIndex = (this.activeScreenshotIndex + 1) % this.game.screenshotUrls.length;
+    if (this.galleryImages.length === 0) return;
+    this.activeScreenshotIndex = (this.activeScreenshotIndex + 1) % this.galleryImages.length;
   }
 
   prevScreenshot(): void {
-    if (!this.game || this.game.screenshotUrls.length === 0) return;
-    this.activeScreenshotIndex = (this.activeScreenshotIndex - 1 + this.game.screenshotUrls.length) % this.game.screenshotUrls.length;
+    if (this.galleryImages.length === 0) return;
+    this.activeScreenshotIndex = (this.activeScreenshotIndex - 1 + this.galleryImages.length) % this.galleryImages.length;
   }
 }
 

@@ -71,60 +71,60 @@
 
     <!-- 2-Column Main Layout -->
     <div class="detail-grid">
-      <!-- Left Column: Story, Gallery & Specifications -->
+      <!-- Left Column: Media Showcase, Story & Specifications -->
       <main class="detail-main-col">
         <!-- Interactive Media Stage Showcase -->
-        @if (game.screenshotUrls && game.screenshotUrls.length > 0) {
-          <section class="detail-card gallery-stage-card">
-            <div class="gallery-header">
-              <div class="gallery-title-wrapper">
-                <h2 class="card-section-title">Media Showcase</h2>
-                <span class="gallery-subtitle">High-Definition Visuals & Gameplay</span>
-              </div>
-              
-              <button type="button" class="btn-fullscreen-trigger" (click)="openLightbox(selectedStageIndex)" title="Enlarge Image">
+        <section class="detail-card gallery-stage-card">
+          <div class="gallery-header">
+            <div class="gallery-title-wrapper">
+              <h2 class="card-section-title">Media Showcase</h2>
+              <span class="gallery-subtitle">High-Definition Visuals & Gameplay ({{ galleryImages.length }} view{{ galleryImages.length > 1 ? 's' : '' }})</span>
+            </div>
+            
+            <button type="button" class="btn-fullscreen-trigger" (click)="openLightbox(selectedStageIndex)" title="Enlarge Image">
+              <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+              </svg>
+              <span>Fullscreen View</span>
+            </button>
+          </div>
+
+          <!-- Primary Large Image Stage -->
+          <div class="stage-viewer" (click)="openLightbox(selectedStageIndex)">
+            <img 
+              [src]="galleryImages[selectedStageIndex]" 
+              [alt]="game.title + ' preview ' + (selectedStageIndex + 1)" 
+              class="stage-main-image">
+            
+            <div class="stage-overlay-hover">
+              <span class="stage-zoom-badge">
                 <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  <line x1="11" y1="8" x2="11" y2="14"/>
+                  <line x1="8" y1="11" x2="14" y2="11"/>
                 </svg>
-                <span>Fullscreen View</span>
-              </button>
+                Click to Expand Lightbox
+              </span>
             </div>
+          </div>
 
-            <!-- Primary Large Image Stage -->
-            <div class="stage-viewer" (click)="openLightbox(selectedStageIndex)">
-              <img 
-                [src]="game.screenshotUrls[selectedStageIndex]" 
-                [alt]="game.title + ' preview ' + (selectedStageIndex + 1)" 
-                class="stage-main-image">
-              
-              <div class="stage-overlay-hover">
-                <span class="stage-zoom-badge">
-                  <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"/>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                    <line x1="11" y1="8" x2="11" y2="14"/>
-                    <line x1="8" y1="11" x2="14" y2="11"/>
-                  </svg>
-                  Click to Expand Lightbox
-                </span>
-              </div>
-            </div>
-
-            <!-- Thumbnail Selector Strip -->
+          <!-- Thumbnail Selector Strip (rendered consistently if multiple previews) -->
+          @if (galleryImages.length > 1) {
             <div class="stage-thumb-strip">
-              @for (shot of game.screenshotUrls; track shot; let idx = $index) {
+              @for (shot of galleryImages; track shot; let idx = $index) {
                 <button 
                   type="button"
                   class="stage-thumb-button"
                   [class.active]="selectedStageIndex === idx"
                   (click)="selectStageImage(idx)"
-                  [title]="'View screenshot ' + (idx + 1)">
-                  <img [src]="shot" [alt]="'Screenshot ' + (idx + 1)" class="stage-thumb-img">
+                  [title]="'View preview ' + (idx + 1)">
+                  <img [src]="shot" [alt]="'Preview ' + (idx + 1)" class="stage-thumb-img">
                 </button>
               }
             </div>
-          </section>
-        }
+          }
+        </section>
 
         <!-- Synopsis & Rich Feature Grid Section -->
         <section class="detail-card synopsis-card">
@@ -256,23 +256,23 @@
               </div>
               <div class="spec-row">
                 <span class="spec-label">Processor</span>
-                <span class="spec-val">Intel Core i5-4460 / AMD FX-6300 (Quad-core 3.2 GHz)</span>
+                <span class="spec-val">{{ isRetro2D ? 'Intel Core 2 Duo / AMD Athlon 64 (2.0 GHz)' : 'Intel Core i5-4460 / AMD FX-6300 (Quad-core 3.2 GHz)' }}</span>
               </div>
               <div class="spec-row">
                 <span class="spec-label">Memory (RAM)</span>
-                <span class="spec-val">8 GB System RAM</span>
+                <span class="spec-val">{{ isRetro2D ? '2 GB System RAM' : '8 GB System RAM' }}</span>
               </div>
               <div class="spec-row">
                 <span class="spec-label">Graphics Card</span>
-                <span class="spec-val">NVIDIA GeForce GTX 960 (4GB) / AMD Radeon R9 280</span>
+                <span class="spec-val">{{ isRetro2D ? 'Intel HD Graphics 4000 (OpenGL 3.0)' : 'NVIDIA GeForce GTX 960 (4GB) / AMD Radeon R9 280' }}</span>
               </div>
               <div class="spec-row">
                 <span class="spec-label">DirectX</span>
-                <span class="spec-val">Version 11 or Vulkan 1.2 Compatible</span>
+                <span class="spec-val">{{ isRetro2D ? 'Version 9.0c Compatible' : 'Version 11 or Vulkan 1.2 Compatible' }}</span>
               </div>
               <div class="spec-row">
                 <span class="spec-label">Available Storage</span>
-                <span class="spec-val">4.5 GB High-Speed Storage (SSD Recommended)</span>
+                <span class="spec-val">{{ isRetro2D ? '500 MB Available Storage' : '4.5 GB High-Speed Storage (SSD Recommended)' }}</span>
               </div>
             </div>
           } @else {
@@ -283,30 +283,30 @@
               </div>
               <div class="spec-row">
                 <span class="spec-label">Processor</span>
-                <span class="spec-val">Intel Core i7-8700K / AMD Ryzen 5 3600X (6 Cores / 12 Threads)</span>
+                <span class="spec-val">{{ isRetro2D ? 'Intel Core i3-4130 / AMD Ryzen 3 1200' : 'Intel Core i7-8700K / AMD Ryzen 5 3600X (6 Cores / 12 Threads)' }}</span>
               </div>
               <div class="spec-row">
                 <span class="spec-label">Memory (RAM)</span>
-                <span class="spec-val">16 GB Dual-Channel DDR4/DDR5</span>
+                <span class="spec-val">{{ isRetro2D ? '4 GB Dual-Channel RAM' : '16 GB Dual-Channel DDR4/DDR5' }}</span>
               </div>
               <div class="spec-row">
                 <span class="spec-label">Graphics Card</span>
-                <span class="spec-val">NVIDIA GeForce RTX 3060 (8GB) / AMD Radeon RX 6600 XT</span>
+                <span class="spec-val">{{ isRetro2D ? 'NVIDIA GeForce GT 1030 / AMD Radeon RX 550' : 'NVIDIA GeForce RTX 3060 (8GB) / AMD Radeon RX 6600 XT' }}</span>
               </div>
               <div class="spec-row">
                 <span class="spec-label">DirectX</span>
-                <span class="spec-val">Version 12 Ultimate</span>
+                <span class="spec-val">{{ isRetro2D ? 'Version 11' : 'Version 12 Ultimate' }}</span>
               </div>
               <div class="spec-row">
                 <span class="spec-label">Available Storage</span>
-                <span class="spec-val">4.5 GB NVMe M.2 Solid State Drive</span>
+                <span class="spec-val">{{ isRetro2D ? '1 GB High-Speed SSD Storage' : '4.5 GB NVMe M.2 Solid State Drive' }}</span>
               </div>
             </div>
           }
         </section>
       </main>
 
-      <!-- Right Column: Metadata & Acquisition Sidebar -->
+      <!-- Right Column: Metadata & Acquisition Sidebar (Sticky Alignment) -->
       <aside class="detail-sidebar-col">
         <!-- Purchase / Acquisition Card -->
         <div class="sidebar-card purchase-card">
@@ -378,7 +378,11 @@
             </div>
             <div class="meta-info-item">
               <span class="meta-key">Package Size</span>
-              <span class="meta-value">1.84 GB Standalone</span>
+              <span class="meta-value">{{ packageSize }}</span>
+            </div>
+            <div class="meta-info-item">
+              <span class="meta-key">Release Date</span>
+              <span class="meta-value">{{ releaseDate }}</span>
             </div>
             <div class="meta-info-item">
               <span class="meta-key">Distribution</span>
@@ -443,7 +447,7 @@
           </button>
           
           <img 
-            [src]="game.screenshotUrls[activeScreenshotIndex]" 
+            [src]="galleryImages[activeScreenshotIndex]" 
             [alt]="game.title + ' enlarged preview'" 
             class="lightbox-image">
           
@@ -454,12 +458,13 @@
           </button>
 
           <div class="lightbox-counter">
-            {{ activeScreenshotIndex + 1 }} / {{ game.screenshotUrls.length }}
+            {{ activeScreenshotIndex + 1 }} / {{ galleryImages.length }}
           </div>
         </div>
       </div>
     }
   }
 </div>
+
 
 
