@@ -940,23 +940,70 @@
   background: var(--bg-elevated);
   border: 1px solid var(--border-card);
   border-radius: var(--radius);
-  padding: 16px 18px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.trust-item-card:hover {
+  border-color: var(--border-glow);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 }
 
 :host-context([data-theme="light"]) .trust-item-card {
   background: #F8FAFC;
 }
 
+:host-context([data-theme="light"]) .trust-item-card:hover {
+  background: #FFFFFF;
+  border-color: var(--accent-400);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.trust-item-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.trust-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.trust-icon-box.green {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--emerald-400);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.trust-icon-box.purple {
+  background: rgba(124, 58, 237, 0.15);
+  color: var(--accent-400);
+  border: 1px solid rgba(124, 58, 237, 0.25);
+}
+
+.trust-icon-box.cyan {
+  background: rgba(34, 211, 238, 0.15);
+  color: var(--cyan-400);
+  border: 1px solid rgba(34, 211, 238, 0.25);
+}
+
 .trust-badge {
   display: inline-block;
-  font-size: 0.74rem;
+  font-size: 0.76rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 3px 8px;
+  padding: 4px 10px;
   border-radius: var(--radius-sm);
 }
 
@@ -976,9 +1023,9 @@
 }
 
 .trust-item-desc {
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   color: var(--text-secondary);
-  line-height: 1.55;
+  line-height: 1.6;
   margin: 0;
 }
 

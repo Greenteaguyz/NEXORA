@@ -16,7 +16,7 @@
 
     <!-- Quick-Triage Hub Cards -->
     <div class="triage-cards-grid" role="group" aria-label="Support topic quick navigation">
-      <button type="button" class="triage-card" (click)="quickFilter('downloads')" aria-label="View Game Downloads and DRM help">
+      <button type="button" class="triage-card" (click)="quickFilter('downloads')" aria-label="View Game Downloads and True Ownership help">
         <div class="triage-icon-box green" aria-hidden="true">
           <svg class="svg-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -25,8 +25,8 @@
           </svg>
         </div>
         <div class="triage-content">
-          <strong class="triage-title">Downloads & DRM</strong>
-          <span class="triage-desc">Offline execution, save files & installers</span>
+          <strong class="triage-title">Downloads & Ownership</strong>
+          <span class="triage-desc">Offline play, save files & standalone installers</span>
         </div>
         <svg class="triage-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <polyline points="9 18 15 12 9 6"/>
@@ -58,7 +58,7 @@
         </div>
         <div class="triage-content">
           <strong class="triage-title">Privacy & Storage</strong>
-          <span class="triage-desc">IndexedDB, zero tracking & mock data</span>
+          <span class="triage-desc">IndexedDB, zero tracking & sandbox data</span>
         </div>
         <svg class="triage-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <polyline points="9 18 15 12 9 6"/>
@@ -67,7 +67,7 @@
     </div>
   </header>
 
-  <!-- Main Support Content Grid (70/30 on wide, 50/50 on desktop) -->
+  <!-- Main Support Content Grid -->
   <div class="support-grid" id="faq-section">
     <!-- Left Column: Interactive FAQ Hub -->
     <section class="section-card faq-section-card" aria-labelledby="heading-faq">
@@ -96,7 +96,7 @@
             type="text" 
             [(ngModel)]="searchQuery" 
             class="faq-search-input" 
-            placeholder="Search FAQs, DRM questions, publishing rules..." 
+            placeholder="Search FAQs, game ownership, publishing rules..." 
             aria-label="Search FAQs">
           @if (searchQuery) {
             <button type="button" class="faq-clear-btn" (click)="clearSearch()" aria-label="Clear search input">✕</button>
@@ -121,7 +121,7 @@
             (click)="setCategory('downloads')" 
             role="tab" 
             [attr.aria-selected]="selectedCategory === 'downloads'">
-            Downloads & DRM
+            Downloads & Ownership
           </button>
           <button 
             type="button" 
@@ -397,7 +397,7 @@
     </section>
   </div>
 
-  <!-- Privacy & Data Trust Notice Section -->
+  <!-- Platform Trust & True Ownership Commitments -->
   <section class="privacy-banner" id="privacy" aria-labelledby="heading-privacy">
     <div class="privacy-header-row">
       <div class="privacy-title-wrap">
@@ -408,40 +408,59 @@
           </svg>
         </div>
         <div>
-          <h2 id="heading-privacy" class="privacy-title">Privacy & Data Trust Architecture</h2>
+          <h2 id="heading-privacy" class="privacy-title">Our Privacy & True Ownership Guarantee</h2>
           <p class="privacy-lead">
-            NEXORA values developer freedom and player privacy. The marketplace is engineered with transparent, zero-telemetry local storage and open distribution standards.
+            NEXORA values developer freedom and player privacy. Built with zero mandatory launchers, transparent local storage, and simulated prototype transactions.
           </p>
         </div>
       </div>
     </div>
 
-    <!-- Trust Cards Triad -->
+    <!-- Trust Cards Triad with Vector Icons -->
     <div class="trust-points-grid">
       <div class="trust-item-card">
-        <div class="trust-item-header">
-          <span class="trust-badge green">100% DRM-Free</span>
+        <div class="trust-item-top">
+          <div class="trust-icon-box green" aria-hidden="true">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+            </svg>
+          </div>
+          <span class="trust-badge green">100% Yours Forever</span>
         </div>
         <p class="trust-item-desc">
-          Every game package you acquire is yours forever. No launcher lock-in, no background online heartbeat checks, and no activation keys required.
+          Every game you acquire is yours to keep, back up, and play forever. No launcher lock-in, no background online checks, and no activation keys.
         </p>
       </div>
 
       <div class="trust-item-card">
-        <div class="trust-item-header">
-          <span class="trust-badge purple">Local Browser Persistence</span>
+        <div class="trust-item-top">
+          <div class="trust-icon-box purple" aria-hidden="true">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+          </div>
+          <span class="trust-badge purple">Local Browser Storage</span>
         </div>
         <p class="trust-item-desc">
-          All user sessions, library states, and wishlists are stored locally in your browser via IndexedDB & LocalStorage.
+          Your game library, wishlist, and session data are stored directly inside your browser via IndexedDB with zero background telemetry or user tracking.
         </p>
       </div>
 
       <div class="trust-item-card">
-        <div class="trust-item-header">
-          <span class="trust-badge cyan">Simulated Transactions</span>
+        <div class="trust-item-top">
+          <div class="trust-icon-box cyan" aria-hidden="true">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+              <line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+          </div>
+          <span class="trust-badge cyan">Sandbox Sandbox Mode</span>
         </div>
         <p class="trust-item-desc">
-          All monetary transactions on this prototype are 100% simulated sandbox mock purchases with zero real credit card charges.
+          All monetary transactions across this marketplace prototype are 100% simulated mock purchases with zero real credit card charges.
         </p>
       </div>
     </div>
@@ -449,7 +468,7 @@
     <!-- Seed Data Reset Tool & Feedback Banner -->
     <div class="seed-reset-row">
       <div class="seed-reset-info">
-        <strong class="seed-reset-heading">Developer & QA Testing Utility</strong>
+        <strong class="seed-reset-heading">Developer Sandbox Utility</strong>
         <span class="seed-reset-sub">Need to wipe local modifications and restore original seed games catalog?</span>
       </div>
 

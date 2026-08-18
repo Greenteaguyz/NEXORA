@@ -87,21 +87,21 @@ export class SupportComponent implements OnInit {
     {
       id: 'faq-1',
       category: 'downloads',
-      categoryLabel: 'Downloads & DRM',
-      question: 'Are all games on NEXORA really 100% DRM-free?',
-      answer: 'Yes! Every game downloaded from NEXORA is completely DRM-free. You receive the standalone install archive, and you own the file directly. No continuous DRM checks, no mandatory third-party background launchers, and no telemetry are required.'
+      categoryLabel: 'Downloads & Ownership',
+      question: 'Do I truly own the games I get on NEXORA?',
+      answer: 'Yes! Every game downloaded from NEXORA is 100% yours forever. You receive clean standalone install files with zero launcher requirements, no continuous online checks, and full offline freedom.'
     },
     {
       id: 'faq-2',
       category: 'downloads',
-      categoryLabel: 'Downloads & DRM',
+      categoryLabel: 'Downloads & Ownership',
       question: 'How do paid and free game downloads work?',
       answer: 'Free games can be claimed and downloaded instantly with a single click. Paid games require a one-time simulated purchase confirmation in this prototype, after which the package is permanently bound to your personal Library with direct offline download access.'
     },
     {
       id: 'faq-3',
       category: 'downloads',
-      categoryLabel: 'Downloads & DRM',
+      categoryLabel: 'Downloads & Ownership',
       question: 'Can I back up my game installers and save files?',
       answer: 'Absolutely. Because all packages are standalone, you can back up zip installers or save directories to external hard drives, USB drives, or personal cloud storage without losing access.'
     },
