@@ -10,14 +10,14 @@
       [routerLink]="['/catalog']">
     </app-empty-state>
   } @else {
-    <!-- Breadcrumb & Header Bar -->
+    <!-- Breadcrumb & Title Header -->
     <header class="steam-top-header">
       <nav class="steam-breadcrumbs" aria-label="Breadcrumb">
         <a routerLink="/catalog" class="breadcrumb-link">
-          <svg class="svg-icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <svg class="svg-icon-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M19 12H5M12 19l-7-7 7-7"/>
           </svg>
-          <span>All Games</span>
+          <span>Store Catalog</span>
         </a>
         <span class="breadcrumb-sep">/</span>
         <a [routerLink]="['/catalog']" [queryParams]="{ tag: game.tags[0] }" class="breadcrumb-link">{{ game.tags[0] }}</a>
@@ -25,17 +25,35 @@
         <span class="breadcrumb-current">{{ game.title }}</span>
       </nav>
 
-      <h1 class="steam-game-title">{{ game.title }}</h1>
+      <div class="steam-title-row">
+        <h1 class="steam-game-title">{{ game.title }}</h1>
+        <div class="steam-title-badges">
+          <span class="badge-pill rating">
+            <svg class="svg-icon-xs star-fill" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            4.9 · Very Positive
+          </span>
+          <span class="badge-pill platform">
+            <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+            Win / Linux
+          </span>
+        </div>
+      </div>
     </header>
 
-    <!-- STEAM-STYLE UPPER SHOWCASE: Media Stage (Left) + Capsule Metadata (Right) -->
+    <!-- STEAM UPPER SHOWCASE: Media Viewer (Left) + Capsule Metadata (Right) -->
     <section class="steam-showcase-stage">
       <!-- Left: Interactive Screenshots & Video Stage -->
       <div class="steam-media-col">
         <div class="steam-main-viewer" (click)="openLightbox(selectedStageIndex)">
           <img 
             [src]="galleryImages[selectedStageIndex]" 
-            [alt]="game.title + ' preview screenshot ' + (selectedStageIndex + 1)" 
+            [alt]="game.title + ' preview ' + (selectedStageIndex + 1)" 
             class="steam-stage-img">
           
           <div class="steam-viewer-overlay">
@@ -74,7 +92,7 @@
           <!-- Elevator Pitch / Short Blurb -->
           <p class="capsule-pitch">{{ game.description }}</p>
 
-          <!-- Key Metadata Rows -->
+          <!-- Key Metadata Table -->
           <div class="capsule-meta-table">
             <div class="capsule-meta-row">
               <span class="meta-label">Overall Reviews:</span>
@@ -108,25 +126,18 @@
             </div>
 
             <div class="capsule-meta-row">
-              <span class="meta-label">Platform:</span>
-              <span class="meta-val">
-                <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                  <line x1="8" y1="21" x2="16" y2="21"/>
-                  <line x1="12" y1="17" x2="12" y2="21"/>
-                </svg>
-                Windows & Linux (DRM-Free)
-              </span>
+              <span class="meta-label">Distribution:</span>
+              <span class="meta-val highlight-emerald">100% DRM-Free</span>
             </div>
           </div>
 
-          <!-- Tags Bar -->
+          <!-- Popular Tags List -->
           <div class="capsule-tags-row">
             <span class="tags-label">Popular Tags:</span>
             <div class="capsule-tags-list">
               @for (tag of game.tags; track tag) {
                 <a [routerLink]="['/catalog']" [queryParams]="{ tag: tag }" class="steam-tag-pill">
-                  {{ tag }}
+                  #{{ tag }}
                 </a>
               }
             </div>
@@ -135,7 +146,7 @@
       </aside>
     </section>
 
-    <!-- STEAM-STYLE FULL-WIDTH PURCHASE / ACQUISITION BANNER -->
+    <!-- STEAM FULL-WIDTH PURCHASE / ACQUISITION BANNER -->
     <section class="steam-purchase-banner" [class.free-banner]="game.price === 0">
       <div class="purchase-banner-content">
         <div class="purchase-banner-title-wrap">
@@ -143,7 +154,7 @@
             {{ game.price === 0 ? 'Download ' + game.title : 'Buy ' + game.title }}
           </h2>
           <span class="purchase-sub-note">
-            Includes standalone DRM-Free installer binaries for Windows 10/11 & Linux.
+            Includes standalone DRM-Free installer binaries for Windows 10/11 & native Linux x86_64.
           </span>
         </div>
 
@@ -179,30 +190,33 @@
             class="btn-steam-wishlist"
             [class.active]="isWishlisted"
             (click)="toggleWishlist()"
-            [title]="isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'">
+            [title]="isWishlisted ? 'Saved in Wishlist' : 'Add to Wishlist'">
             <svg class="btn-wishlist-svg" viewBox="0 0 24 24" [attr.fill]="isWishlisted ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
-            <span>{{ isWishlisted ? 'In Wishlist' : 'Wishlist' }}</span>
+            <span>{{ isWishlisted ? 'Saved in Wishlist' : 'Add to Wishlist' }}</span>
           </button>
         </div>
       </div>
     </section>
 
-    <!-- STEAM-STYLE LOWER SECTION: Deep Dive (Left) + Features & Dev (Right) -->
+    <!-- STEAM LOWER GRID: About This Game (Left) + Features & Dev (Right) -->
     <div class="steam-lower-grid">
-      <!-- Left Main Column: Narrative, Key Features & System Requirements -->
+      <!-- Left Main Column: Narrative, Key Highlights & System Requirements -->
       <main class="steam-main-details">
-        <!-- About This Game -->
-        <section class="steam-detail-block">
+        <!-- ABOUT THIS GAME SECTION -->
+        <section class="steam-detail-block about-game-block">
           <div class="block-header">
-            <h3 class="block-title">About This Game</h3>
+            <h2 class="block-title">About This Game</h2>
+            <span class="block-subtitle-badge">Story & Overview</span>
           </div>
 
           <div class="block-content">
-            <p class="story-lead">{{ game.description }}</p>
+            <p class="story-lead-text">{{ game.description }}</p>
 
-            <h4 class="sub-block-title">Key Distribution Highlights</h4>
+            <div class="section-hairline"></div>
+
+            <h3 class="sub-block-title">Key Distribution Highlights</h3>
             <div class="highlights-grid">
               <div class="highlight-item">
                 <div class="highlight-icon-box green">
@@ -225,7 +239,7 @@
                 </div>
                 <div class="highlight-text">
                   <strong class="highlight-heading">Instant Offline Execution</strong>
-                  <span class="highlight-sub">Run locally anywhere on desktop, laptop, or Steam Deck.</span>
+                  <span class="highlight-sub">Run locally anywhere on desktop, laptop, or portable setup.</span>
                 </div>
               </div>
 
@@ -262,10 +276,10 @@
           </div>
         </section>
 
-        <!-- System Requirements -->
+        <!-- SYSTEM REQUIREMENTS SECTION -->
         <section class="steam-detail-block specs-block">
           <div class="block-header">
-            <h3 class="block-title">System Requirements</h3>
+            <h2 class="block-title">System Requirements</h2>
             
             <div class="specs-tab-toggle">
               <button 
@@ -289,55 +303,55 @@
             @if (selectedSpecsTab === 'minimum') {
               <div class="specs-table-grid">
                 <div class="spec-cell">
-                  <span class="spec-k">OS:</span>
+                  <span class="spec-k">Operating System</span>
                   <span class="spec-v">Windows 10 / 11 (64-bit) or Ubuntu 22.04 LTS</span>
                 </div>
                 <div class="spec-cell">
-                  <span class="spec-k">Processor:</span>
-                  <span class="spec-v">{{ isRetro2D ? 'Intel Core 2 Duo / AMD Athlon 64 (2.0 GHz)' : 'Intel Core i5-4460 / AMD FX-6300 (3.2 GHz)' }}</span>
+                  <span class="spec-k">Processor (CPU)</span>
+                  <span class="spec-v">{{ isRetro2D ? 'Intel Core 2 Duo / AMD Athlon 64 (2.0 GHz)' : 'Intel Core i5-4460 / AMD FX-6300 (Quad-core 3.2 GHz)' }}</span>
                 </div>
                 <div class="spec-cell">
-                  <span class="spec-k">Memory:</span>
-                  <span class="spec-v">{{ isRetro2D ? '2 GB RAM' : '8 GB System RAM' }}</span>
+                  <span class="spec-k">Memory (RAM)</span>
+                  <span class="spec-v">{{ isRetro2D ? '2 GB System RAM' : '8 GB System RAM' }}</span>
                 </div>
                 <div class="spec-cell">
-                  <span class="spec-k">Graphics:</span>
+                  <span class="spec-k">Graphics (GPU)</span>
                   <span class="spec-v">{{ isRetro2D ? 'Intel HD Graphics 4000 (OpenGL 3.0)' : 'NVIDIA GeForce GTX 960 (4GB) / AMD Radeon R9 280' }}</span>
                 </div>
                 <div class="spec-cell">
-                  <span class="spec-k">DirectX:</span>
-                  <span class="spec-v">{{ isRetro2D ? 'Version 9.0c' : 'Version 11 or Vulkan 1.2' }}</span>
+                  <span class="spec-k">DirectX / API</span>
+                  <span class="spec-v">{{ isRetro2D ? 'Version 9.0c Compatible' : 'Version 11 or Vulkan 1.2 Compatible' }}</span>
                 </div>
                 <div class="spec-cell">
-                  <span class="spec-k">Storage:</span>
-                  <span class="spec-v">{{ isRetro2D ? '500 MB Available Storage' : '4.5 GB Available Storage (SSD Recommended)' }}</span>
+                  <span class="spec-k">Storage Space</span>
+                  <span class="spec-v">{{ isRetro2D ? '500 MB Available Storage' : '4.5 GB High-Speed Storage (SSD Recommended)' }}</span>
                 </div>
               </div>
             } @else {
               <div class="specs-table-grid">
                 <div class="spec-cell">
-                  <span class="spec-k">OS:</span>
+                  <span class="spec-k">Operating System</span>
                   <span class="spec-v">Windows 11 (64-bit) or Arch Linux 6.x</span>
                 </div>
                 <div class="spec-cell">
-                  <span class="spec-k">Processor:</span>
-                  <span class="spec-v">{{ isRetro2D ? 'Intel Core i3 / AMD Ryzen 3 (Quad-core)' : 'Intel Core i7-8700K / AMD Ryzen 5 3600X (6 Cores)' }}</span>
+                  <span class="spec-k">Processor (CPU)</span>
+                  <span class="spec-v">{{ isRetro2D ? 'Intel Core i3-4130 / AMD Ryzen 3 1200' : 'Intel Core i7-8700K / AMD Ryzen 5 3600X (6 Cores / 12 Threads)' }}</span>
                 </div>
                 <div class="spec-cell">
-                  <span class="spec-k">Memory:</span>
-                  <span class="spec-v">{{ isRetro2D ? '4 GB RAM' : '16 GB Dual-Channel DDR4/DDR5' }}</span>
+                  <span class="spec-k">Memory (RAM)</span>
+                  <span class="spec-v">{{ isRetro2D ? '4 GB Dual-Channel RAM' : '16 GB Dual-Channel DDR4/DDR5' }}</span>
                 </div>
                 <div class="spec-cell">
-                  <span class="spec-k">Graphics:</span>
+                  <span class="spec-k">Graphics (GPU)</span>
                   <span class="spec-v">{{ isRetro2D ? 'NVIDIA GeForce GT 1030 / AMD Radeon RX 550' : 'NVIDIA GeForce RTX 3060 (8GB) / AMD Radeon RX 6600 XT' }}</span>
                 </div>
                 <div class="spec-cell">
-                  <span class="spec-k">DirectX:</span>
+                  <span class="spec-k">DirectX / API</span>
                   <span class="spec-v">{{ isRetro2D ? 'Version 11' : 'Version 12 Ultimate' }}</span>
                 </div>
                 <div class="spec-cell">
-                  <span class="spec-k">Storage:</span>
-                  <span class="spec-v">{{ isRetro2D ? '1 GB High-Speed Storage' : '4.5 GB High-Speed NVMe Solid State Drive' }}</span>
+                  <span class="spec-k">Storage Space</span>
+                  <span class="spec-v">{{ isRetro2D ? '1 GB High-Speed Storage' : '4.5 GB High-Speed NVMe M.2 Solid State Drive' }}</span>
                 </div>
               </div>
             }
@@ -345,11 +359,11 @@
         </section>
       </main>
 
-      <!-- Right Column: Steam-style Feature Checklist & Creator Card -->
+      <!-- Right Column: Steam Features Checklist & Creator Profile -->
       <aside class="steam-sidebar-details">
         <!-- Feature Checklist Box -->
         <div class="steam-side-panel features-panel">
-          <h4 class="panel-header-title">Game Features</h4>
+          <h3 class="panel-header-title">Game Features</h3>
           <ul class="steam-feature-list">
             <li class="steam-feature-item">
               <svg class="feature-item-svg green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -394,7 +408,7 @@
         <!-- Creator Profile Panel -->
         @if (creator) {
           <div class="steam-side-panel creator-panel">
-            <h4 class="panel-header-title">Developer</h4>
+            <h3 class="panel-header-title">Developer</h3>
             <div class="creator-box">
               <img [src]="creator.avatarUrl || 'assets/logo-icon.svg'" [alt]="creator.displayName" class="creator-avatar-steam">
               <div class="creator-info-steam">
