@@ -59,13 +59,13 @@ export class GameDetailComponent implements OnInit {
 
   get isRetro2D(): boolean {
     if (!this.game) return false;
-    return this.game.tags.some(t => ['Pixel Art', 'Retro', 'Platformer', 'Arcade', 'Casual'].includes(t));
+    return this.game.tags.includes('Pixel Art') && !this.game.tags.includes('Racing') && !this.game.tags.includes('Strategy');
   }
 
   get packageSize(): string {
-    if (!this.game) return '1.20 GB Standalone';
-    if (this.isRetro2D) return '340 MB Standalone';
-    return '1.84 GB Standalone';
+    if (!this.game) return '1.20 GB';
+    if (this.isRetro2D) return '340 MB';
+    return '1.84 GB';
   }
 
   get releaseDate(): string {
