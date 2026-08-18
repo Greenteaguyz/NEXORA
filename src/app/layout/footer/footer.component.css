@@ -75,26 +75,47 @@
 .footer-bottom {
   max-width: 1320px;
   margin: 0 auto;
-  padding-top: var(--space-4);
+  padding-top: var(--space-6);
   border-top: 1px solid var(--border-card);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: var(--text-muted);
-  font-size: 0.825rem;
 }
 
-.badge-drm {
-  display: inline-flex;
+.footer-legal-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.legal-disclaimer {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 960px;
+}
+
+.legal-nav-links {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  background-color: rgba(52, 211, 153, 0.1);
-  color: var(--emerald-400);
-  border: 1px solid rgba(52, 211, 153, 0.25);
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: 600;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.legal-link {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.legal-link:hover {
+  color: var(--accent-400);
+  text-decoration: underline;
+}
+
+.legal-dot {
+  color: var(--border-glow);
+  font-size: 0.76rem;
+  user-select: none;
 }
 
 @media (max-width: 768px) {
