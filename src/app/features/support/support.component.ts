@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, effect, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { GAMES_DATA } from '../../core/data/tokens';
 
@@ -30,6 +31,7 @@ export interface TicketCategoryOption {
 export class SupportComponent implements OnInit {
   authService = inject(AuthService);
   private gamesData = inject(GAMES_DATA);
+  private route = inject(ActivatedRoute);
 
   // Form State
   name = '';
@@ -161,6 +163,17 @@ export class SupportComponent implements OnInit {
       this.name = user.displayName;
       this.email = user.email;
     }
+
+    this.route.fragment.subscribe(fragment => {
+      if (fragment === 'privacy') {
+        setTimeout(() => {
+          const el = document.getElementById('privacy');
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 150);
+      }
+    });
   }
 
   get selectedCategoryItem(): TicketCategoryOption {
