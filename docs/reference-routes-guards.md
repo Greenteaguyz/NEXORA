@@ -1,127 +1,90 @@
-This document covers the routing configuration, route guards, and authorization matrix for **NEXORA**. It defines the route table, details the behavior of the `authGuard`, `roleGuard`, and `ownershipGuard`, and explains the return URL flow used to redirect users back to their intended destination after authentication.
+# Routes & guards reference
 
-## Route Table
+This document defines the routing configuration, route guard execution hierarchy, authorization matrix, and deep-linked `returnUrl` behavior in NEXORA.
 
-The application uses the following route structure. Each route dictates the required feature, the applied guards, and the necessary user role.
+---
 
-| Path                     | Feature        | Guard(s)                                             | Role required              |
-|--------------------------|----------------|------------------------------------------------------|----------------------------|
-| `/`                      | game-catalog   | none (redirects to `/catalog`)                       | —                          |
-| `/catalog`               | game-catalog   | none                                                 | —                          |
-| `/genres`                | genres         | none                                                 | —                          |
-| `/games/:id`             | game-detail    | none                                                 | —                          |
-| `/creators/:id`          | creator-profile| none                                                 | —                          |
-| `/login`                 | auth           | none                                                 | —                          |
-| `/register`              | auth           | none                                                 | —                          |
-| `/forgot-password`       | auth           | none                                                 | —                          |
-| `/library`               | library        | `authGuard`                                          | any authenticated user     |
-| `/wishlist`              | wishlist       | `authGuard`                                          | any authenticated user     |
-| `/orders`                | orders         | `authGuard`                                          | any authenticated user     |
-| `/profile`               | profile        | `authGuard`                                          | any authenticated user     |
-| `/studio`                | creator-studio | `authGuard`, `roleGuard('creator')`                  | creator                    |
-| `/studio/games/new`      | creator-studio | `authGuard`, `roleGuard('creator')`                  | creator                    |
-| `/studio/games/:id/edit` | creator-studio | `authGuard`, `roleGuard('creator')`, `ownershipGuard` | creator (own listing only) |
-| `/support`               | support        | none                                                 | —                          |
-| `/not-found`             | not-found      | none                                                 | —                          |
-| `**`                     | not-found      | none (wildcard redirect to `/not-found`)             | —                          |
+## Route table
 
-Note that `/studio/games/new` only requires `authGuard` and `roleGuard('creator')` — `ownershipGuard` does not apply because there is no existing game record to check ownership against until the form is submitted.
+The following table lists all application routes, associated feature components, applied guards, and role permissions:
 
-## Route Guards
+| Path | Feature | Guard(s) | Required Role |
+| :--- | :--- | :--- | :--- |
+| `/` | Game Catalog | None (redirects to `/catalog`) | Public |
+| `/catalog` | Game Catalog | None | Public |
+| `/genres` | Genres Explorer | None | Public |
+| `/games/:id` | Game Detail | None | Public |
+| `/creators/:id` | Creator Profile | None | Public |
+| `/login` | Authentication | None | Public |
+| `/register` | Authentication | None | Public |
+| `/forgot-password` | Authentication | None | Public |
+| `/library` | User Library | `authGuard` | Authenticated account |
+| `/wishlist` | Wishlist | `authGuard` | Authenticated account |
+| `/orders` | Order History | `authGuard` | Authenticated account |
+| `/profile` | User Profile | `authGuard` | Authenticated account |
+| `/studio` | Creator Studio | `authGuard`, `roleGuard('creator')` | Creator |
+| `/studio/games/new` | Creator Studio | `authGuard`, `roleGuard('creator')` | Creator |
+| `/studio/games/:id/edit`| Creator Studio | `authGuard`, `roleGuard('creator')`, `ownershipGuard` | Creator (owner only) |
+| `/support` | Support | None | Public |
+| `/not-found` | Not Found | None | Public |
+| `**` | Not Found | None (redirects to `/not-found`) | Public |
 
-The application implements three functional route guards to enforce the authorization matrix.
+**Note:** `/studio/games/new` requires `authGuard` and `roleGuard('creator')` only. `ownershipGuard` is not attached because no game ID exists prior to initial submission.
 
-### `authGuard`
+---
 
-Ensures that a user is authenticated before accessing a route.
+## Functional route guards
 
-*   **Behavior**: If the user is logged in, allows navigation.
-*   **Redirect**: If anonymous, redirects the user to `/login`. It appends a `returnUrl` query parameter capturing the route the user attempted to access.
+NEXORA implements three functional `CanActivateFn` guards in `src/app/core/auth/`:
 
-### `roleGuard(role: string)`
+### authGuard
 
-A factory function that returns a guard verifying if the authenticated user possesses a specific role.
+Protects private member routes from unauthenticated access:
+* **Allowed**: User session exists (`currentUser() !== null`).
+* **Redirect**: Anonymous users are redirected to `/login?returnUrl=<ATTEMPTED_PATH>`.
 
-*   **Behavior**: Checks the `roles` array on the current `User` object. If the specified role is present, allows navigation.
-*   **Redirect**: If the user lacks the required role, redirects to `/catalog`.
-*   **Prerequisite**: Should always be placed after `authGuard` in the route configuration.
+### roleGuard(requiredRole: 'buyer' | 'creator')
 
-### `ownershipGuard`
+Validates role-specific access (e.g., Creator Studio):
+* **Allowed**: Authenticated user's `roles` array contains `requiredRole`.
+* **Redirect**: Users lacking the role are redirected to `/catalog`.
 
-Prevents creators from editing game listings they do not own.
+### ownershipGuard
 
-*   **Behavior**: Inspects the `:id` route parameter, fetches the corresponding game, and compares the `Game.ownerId` against the currently authenticated user's ID. Allows navigation if they match.
-*   **Redirect**: If the user is not the owner, redirects to `/catalog`.
-*   **Prerequisite**: Should follow `authGuard` and `roleGuard`.
+Prevents creators from modifying game listings owned by another user:
+* **Allowed**: Current user `id === game.ownerId`.
+* **Redirect**: Unauthorized users are redirected to `/studio`.
 
-## Authorization Matrix
+---
 
-The following matrix defines which actions are permitted based on the user's authentication status and roles.
+## Authorization matrix
 
-| Action                          | Anonymous              | Buyer              | Creator (own listing) | Creator (others' listing) |
-|---------------------------------|------------------------|--------------------|-----------------------|---------------------------|
-| Browse catalog                  | ✅                     | ✅                 | ✅                    | ✅                        |
-| View game detail                | ✅                     | ✅                 | ✅                    | ✅                        |
-| Download a free game            | ❌ (redirect to login) | ✅                 | ✅                    | ✅                        |
-| Purchase + download a paid game | ❌ (redirect to login) | ✅ (confirm step)  | ✅ (confirm step)     | ✅ (confirm step)         |
-| View library                    | ❌                     | ✅                 | ✅                    | ✅                        |
-| Create listing                  | ❌                     | ❌                 | ✅                    | —                         |
-| Edit listing                    | ❌                     | ❌                 | ✅                    | ❌                        |
-| Delete listing                  | ❌                     | ❌                 | ✅                    | ❌                        |
+| Action | Anonymous | Buyer | Creator (Own Listing) | Creator (Other Listing) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Browse catalog** | Allowed | Allowed | Allowed | Allowed |
+| **View game detail** | Allowed | Allowed | Allowed | Allowed |
+| **Download free game** | Redirects to `/login` | Allowed | Allowed | Allowed |
+| **Purchase & download paid game** | Redirects to `/login` | Allowed (modal) | Allowed (modal) | Allowed (modal) |
+| **Access library** | Redirects to `/login` | Allowed | Allowed | Allowed |
+| **Access Creator Studio** | Redirects to `/login` | Redirects to `/catalog` | Allowed | Allowed |
+| **Publish new game** | Redirects to `/login` | Redirects to `/catalog` | Allowed | Allowed |
+| **Edit / delete listing** | Redirects to `/login` | Redirects to `/catalog` | Allowed | Redirects to `/studio` |
 
-## Return URL Flow
+---
 
-To improve user experience, actions that require authentication (like attempting to download a game while anonymous or navigating directly to `/library`) utilize a return URL flow.
+## Return URL workflow
 
-1.  The `authGuard` or component intercepts the action.
-2.  The user is redirected to `/login?returnUrl=/previous-path`.
-3.  Upon successful authentication, the login component reads the `returnUrl` query parameter.
-4.  The router navigates the user to the parsed `returnUrl`, falling back to `/catalog` if absent.
+When an anonymous user triggers a protected action, NEXORA captures the target path to restore user flow after login:
 
-## Code Examples
+1. `authGuard` intercepts the navigation request.
+2. The user is redirected to `/login?returnUrl=/target-path`.
+3. Upon login, `LoginComponent` parses `returnUrl` from `ActivatedRoute.queryParams`.
+4. The router navigates directly to `returnUrl`, falling back to `/catalog` if omitted.
 
-**Applying Guards in Route Configuration**
-```typescript
-import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
-import { roleGuard } from './core/guards/role.guard';
+---
 
-export const routes: Routes = [
-  { 
-    path: 'library', 
-    component: LibraryComponent,
-    canActivate: [authGuard] 
-  },
-  { 
-    path: 'studio', 
-    component: StudioComponent,
-    canActivate: [authGuard, roleGuard('creator')] 
-  }
-];
-```
+## Related documentation
 
-**authGuard Implementation (Simplified)**
-```typescript
-import { inject } from '@angular/core';
-import { Router, CanActivateFn } from '@angular/router';
-import { AuthService } from './auth.service';
-
-export const authGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-
-  if (authService.isLoggedIn()) {
-    return true;
-  }
-  
-  return router.createUrlTree(['/login'], { 
-    queryParams: { returnUrl: state.url } 
-  });
-};
-```
-
-## Related Documentation
-
-*   [How-to: Authentication System](howto-auth-system.md)
-*   [Tutorial: Download Flow](tutorial-download-flow.md)
-*   [Explanation: Download Flow](explanation-download-flow.md)
+* [How to Set Up the Auth & Guard System](./howto-auth-system.md)
+* [Architecture of the Gated Download Flow](./explanation-download-flow.md)
+* [Tutorial: Implementing the Gated Download Flow](./tutorial-download-flow.md)

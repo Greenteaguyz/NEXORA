@@ -107,6 +107,28 @@ html, body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
+.main-content {
+  position: relative;
+  min-height: calc(100vh - 140px);
+}
+
+:has(.modal-backdrop, .receipt-backdrop) app-header {
+  pointer-events: none !important;
+  z-index: 1 !important;
+}
+
+:has(.modal-backdrop, .receipt-backdrop) .main-content {
+  z-index: 999999 !important;
+}
+
+.modal-backdrop,
+.receipt-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+}
+
 /* Accessible Skip-to-Content link */
 .skip-to-content {
   position: absolute;

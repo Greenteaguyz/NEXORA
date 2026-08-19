@@ -1,40 +1,50 @@
-# How to build the creator studio
+# How to implement the Creator Studio
 
-This guide details how to build the dashboard where creators manage their games. See the [Routes and Guards Reference](reference-routes-guards.md) for how access to these routes is controlled.
+This guide explains how to build the Creator Studio dashboard where creators manage, publish, edit, and soft-delete game listings in NEXORA.
 
-## Steps
+For route definitions and authorization guards, see the [Routes & Guards Reference](./reference-routes-guards.md).
 
-### 1. Create the Studio List Page
+---
 
-Build the `StudioListComponent`. Use an HTML `<table>` to display the creator's games. Include columns for:
-- Title
-- Price
-- Date created
-- Actions (Edit and Delete buttons)
+## Procedure
 
-### 2. Create the Game Form Component
+### 1. Create the studio list view
 
-Build a standalone `GameFormComponent` using Angular reactive forms.
-- Include inputs for title, description, price, and image URLs.
-- Build a custom chip input for tags (type a word, press Enter to add).
-- Add validation rules (e.g., title is required, price must be positive).
+Build `StudioListComponent` using a data table (`<table>`) to list games owned by the logged-in creator. Include the following columns:
+* **Title**: Game title linking to its detail preview.
+* **Price**: Unit price formatted in currency.
+* **Date created**: Publication timestamp.
+* **Actions**: **Edit** and **Delete** buttons.
 
-### 3. Reuse the Form for Create and Edit
+### 2. Create the reusable game form component
 
-Use the `GameFormComponent` in both `StudioCreateComponent` and `StudioEditComponent`. Pass initial data to the form via an `@Input()` when editing.
+Build a standalone `GameFormComponent` using Angular reactive forms:
+1. Include form controls for `title`, `description`, `price`, `coverImageUrl`, `samplePackageUrl`, and `screenshotUrls`.
+2. Integrate `TagChipInputComponent` for interactive tag management (type a label and press **Enter** to add).
+3. Apply validation rules (`Validators.required`, `Validators.min(0)` for price).
 
-### 4. Wire the Delete Action
+### 3. Reuse the form for creation and updates
 
-In the studio list, bind the Delete button to a method that calls `window.confirm()`. If the user confirms, call the `GamesDataService` to perform a soft delete. Set the `deletedAt` field on the game object instead of removing the record completely.
+Embed `GameFormComponent` in both `StudioCreateComponent` and `StudioEditComponent`. Pass existing game data via `@Input()` when editing, or initialize empty controls when creating.
 
-### 5. Add the ownershipGuard
+### 4. Wire the soft-delete operation
 
-Protect the edit route (`/studio/games/:id/edit`) with the `ownershipGuard`. This ensures a creator cannot manually type an ID in the URL to edit another creator's game. This is the only creator route that needs `ownershipGuard` — see the [Routes and Guards Reference](reference-routes-guards.md#route-table) for the full guard list per route, and why `/studio/games/new` is excluded.
+In `StudioListComponent`, bind the **Delete** button to open a confirmation dialog. When confirmed, call `GamesDataService.deleteGame(id)` to perform a soft-delete:
+* Sets `deletedAt = new Date().toISOString()`.
+* Does not purge the database record, ensuring existing library owners maintain purchase records.
+
+### 5. Protect edit routes with ownershipGuard
+
+Apply `ownershipGuard` to `/studio/games/:id/edit`. This functional guard checks whether the authenticated user's ID matches the game's `ownerId`, preventing unauthorized URL tampering.
+
+---
 
 ## Verification
 
-1. Log in as a creator.
-2. Navigate to the studio and create a new game.
-3. Verify the game appears in the studio list and the public catalog.
-4. Edit the game and save. Verify the changes reflect in the list.
-5. Delete the game. Verify it no longer appears in the catalog, and any user who previously added it to their library now sees it marked as 'Unavailable'.
+1. Sign in using a creator account (`creator@nexora.io`).
+2. Navigate to [`http://localhost:4200/studio`](http://localhost:4200/studio).
+3. Click **Add New Game**, fill in the form fields, and submit.
+4. Verify that the game appears in both the Creator Studio table and the public catalog.
+5. Click **Edit**, modify the price or title, and verify that changes persist.
+6. Click **Delete** and confirm the dialog.
+7. Verify that the game is excluded from the public catalog and marked as **Unavailable** in libraries.

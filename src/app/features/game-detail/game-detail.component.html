@@ -27,16 +27,6 @@
 
       <div class="steam-title-row">
         <h1 class="steam-game-title">{{ game.title }}</h1>
-        <div class="steam-title-badges">
-          <span class="badge-pill platform" title="Supported Platforms">
-            <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-              <line x1="8" y1="21" x2="16" y2="21"/>
-              <line x1="12" y1="17" x2="12" y2="21"/>
-            </svg>
-            Win / Linux
-          </span>
-        </div>
       </div>
     </header>
 
@@ -152,12 +142,84 @@
     <section class="steam-purchase-banner" [class.free-banner]="game.price === 0" aria-label="Purchase and Download Options">
       <div class="purchase-banner-content">
         <div class="purchase-banner-title-wrap">
-          <h2 class="purchase-game-title">
-            {{ game.price === 0 ? 'Download ' + game.title : 'Buy ' + game.title }}
-          </h2>
+          <div class="purchase-header-row">
+            <h2 class="purchase-game-title">
+              {{ game.price === 0 ? 'Download ' + game.title : 'Buy ' + game.title }}
+            </h2>
+            <!-- Multi-Platform Build Selector with Vector SVG Icons -->
+            <div class="platform-selector-pill-group" role="group" aria-label="Target Build Platform">
+              <button 
+                type="button" 
+                class="platform-pill" 
+                [class.active]="selectedDownloadPlatform === 'windows'" 
+                (click)="setDownloadPlatform('windows')"
+                aria-label="Windows Build">
+                <svg class="pill-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.901-1.801"/>
+                </svg>
+                <span>Windows 64-bit</span>
+              </button>
+              <button 
+                type="button" 
+                class="platform-pill" 
+                [class.active]="selectedDownloadPlatform === 'linux'" 
+                (click)="setDownloadPlatform('linux')"
+                aria-label="Linux Build">
+                <svg class="pill-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12.003 2c-2.76 0-4.996 2.235-4.996 4.994 0 .97.28 1.874.764 2.639C6.44 10.375 5.5 12.07 5.5 14c0 1.258.397 2.423 1.074 3.383-.357.734-.574 1.558-.574 2.43 0 .42.052.827.148 1.217.155.629.742 1.05 1.385.97 1.077-.133 1.98-.679 2.583-1.468.604.301 1.28.468 1.884.468s1.28-.167 1.884-.468c.603.789 1.506 1.335 2.583 1.468.643.08 1.23-.341 1.385-.97.096-.39.148-.797.148-1.217 0-.872-.217-1.696-.574-2.43.677-.96 1.074-2.125 1.074-3.383 0-1.93-.94-3.625-2.271-4.367.484-.765.764-1.669.764-2.639 0-2.759-2.236-4.994-4.996-4.994z"/>
+                </svg>
+                <span>Linux x86_64</span>
+              </button>
+              <button 
+                type="button" 
+                class="platform-pill" 
+                [class.active]="selectedDownloadPlatform === 'steamdeck'" 
+                (click)="setDownloadPlatform('steamdeck')"
+                aria-label="Steam Deck Proton Build">
+                <svg class="pill-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="2" y="6" width="20" height="12" rx="4"/>
+                  <circle cx="7" cy="12" r="2"/>
+                  <circle cx="17" cy="12" r="2"/>
+                  <line x1="7" y1="9" x2="7" y2="9.01"/>
+                  <line x1="17" y1="9" x2="17" y2="9.01"/>
+                </svg>
+                <span>Steam Deck</span>
+              </button>
+            </div>
+          </div>
           <span class="purchase-sub-note">
-            Includes standalone installer binaries for Windows 10/11 & native Linux x86_64 with zero extra launchers.
+            Includes standalone DRM-free installer packages with zero mandatory clients, launch scripts, and offline validation.
           </span>
+
+          <!-- Package Metadata & Checksum Trust Strip with Vector SVG Icons -->
+          <div class="package-meta-strip">
+            <div class="meta-item">
+              <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                <line x1="12" y1="22.08" x2="12" y2="12"/>
+              </svg>
+              <span class="meta-label">Download:</span>
+              <strong class="meta-val">1.85 GB (Offline Game)</strong>
+            </div>
+            <div class="meta-item">
+              <svg class="meta-svg highlight-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+              <strong class="meta-val highlight-green">100% DRM-Free</strong>
+            </div>
+            <div class="meta-item checksum-item" (click)="copyChecksum()" title="Click to copy file checksum" role="button" tabindex="0">
+              <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="7.5" cy="15.5" r="4.5"/>
+                <path d="m21 3-9.5 9.5"/>
+                <path d="m15.5 7.5 3 3"/>
+              </svg>
+              <span class="meta-label">Checksum:</span>
+              <code class="meta-code">a8f4c2...1f90</code>
+              <span class="copy-badge">{{ copiedChecksum ? '✓ Copied!' : 'Copy' }}</span>
+            </div>
+          </div>
         </div>
 
         <div class="purchase-action-group">
@@ -165,28 +227,15 @@
             {{ game.price === 0 ? 'FREE' : '$' + game.price.toFixed(2) }}
           </div>
 
-          <button 
-            type="button" 
-            class="btn-steam-buy"
-            [class.free]="game.price === 0"
-            [class.paid]="game.price > 0"
-            (click)="handleActionClick()"
-            [attr.aria-label]="game.price === 0 ? 'Download ' + game.title + ' for free' : 'Buy ' + game.title + ' for $' + game.price.toFixed(2)">
-            @if (game.price === 0) {
-              <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              <span>Download Free Package</span>
-            } @else {
-              <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                <line x1="1" y1="10" x2="23" y2="10"/>
-              </svg>
-              <span>Buy Now · ${{ game.price.toFixed(2) }}</span>
-            }
-          </button>
+          <app-download-button
+            [game]="game"
+            [isOwned]="isOwned"
+            [platform]="selectedDownloadPlatform"
+            size="md"
+            (loginRequired)="onLoginRequired()"
+            (download)="onDownload()"
+            (purchaseConfirmed)="onPurchaseConfirmed()">
+          </app-download-button>
 
           <button 
             type="button" 
@@ -203,78 +252,78 @@
       </div>
     </section>
 
+    <!-- Purchase Confirmation Modal -->
+    @if (showPurchaseModal) {
+      <app-purchase-confirm-modal
+        [game]="game"
+        [processing]="purchaseProcessing"
+        (confirm)="onModalConfirm()"
+        (cancel)="onModalCancel()">
+      </app-purchase-confirm-modal>
+    }
+
     <!-- STEAM LOWER GRID: About This Game & Specs (Left) + Features & Dev (Right) -->
     <div class="steam-lower-grid">
       <!-- Left Main Column: Narrative, Key Highlights & System Requirements -->
       <main class="steam-main-details">
-        <!-- ABOUT THIS GAME SECTION -->
+        <!-- ABOUT THIS GAME SECTION (Steam Standard) -->
         <section class="steam-detail-block about-game-block" aria-labelledby="heading-about-game">
           <div class="block-header">
             <h2 id="heading-about-game" class="block-title">About This Game</h2>
-            <span class="block-subtitle-badge">Story & Overview</span>
+            <span class="block-subtitle-badge">Overview</span>
           </div>
 
           <div class="block-content">
+            <!-- Narrative Description -->
             <p class="story-lead-text">{{ game.description }}</p>
 
             <div class="section-hairline"></div>
 
-            <h3 class="sub-block-title">Key Distribution Highlights</h3>
-            <div class="highlights-grid">
-              <div class="highlight-item">
-                <div class="highlight-icon-box green" aria-hidden="true">
-                  <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                    <path d="M9 12l2 2 4-4"/>
-                  </svg>
+            <!-- Key Features (Concise, Scannable Bullets) -->
+            <h3 class="sub-block-title">Key Features</h3>
+            <div class="key-features-grid">
+              @for (feat of keyFeatures; track feat.title) {
+                <div class="feature-card">
+                  <div class="feature-icon-box" aria-hidden="true">
+                    @if (feat.icon === 'speed') {
+                      <svg class="feat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                      </svg>
+                    } @else if (feat.icon === 'circuits' || feat.icon === 'world') {
+                      <svg class="feat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="2" y1="12" x2="22" y2="12"/>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                      </svg>
+                    } @else if (feat.icon === 'tuning' || feat.icon === 'craft' || feat.icon === 'gear') {
+                      <svg class="feat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                      </svg>
+                    } @else if (feat.icon === 'controller') {
+                      <svg class="feat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="6" y1="12" x2="10" y2="12"/>
+                        <line x1="8" y1="10" x2="8" y2="14"/>
+                        <line x1="15" y1="13" x2="15.01" y2="13"/>
+                        <line x1="18" y1="11" x2="18.01" y2="11"/>
+                        <rect x="2" y="6" width="20" height="12" rx="6"/>
+                      </svg>
+                    } @else if (feat.icon === 'combat' || feat.icon === 'strategy' || feat.icon === 'override') {
+                      <svg class="feat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <polyline points="9 12 11 14 15 10"/>
+                      </svg>
+                    } @else {
+                      <svg class="feat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                      </svg>
+                    }
+                  </div>
+                  <div class="feature-text">
+                    <strong class="feature-title">{{ feat.title }}</strong>
+                    <span class="feature-desc">{{ feat.desc }}</span>
+                  </div>
                 </div>
-                <div class="highlight-text">
-                  <strong class="highlight-heading">100% Yours Forever</strong>
-                  <span class="highlight-sub">Buy once, keep forever. No mandatory launchers, telemetry, or online heartbeat checks.</span>
-                </div>
-              </div>
-
-              <div class="highlight-item">
-                <div class="highlight-icon-box cyan" aria-hidden="true">
-                  <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                  </svg>
-                </div>
-                <div class="highlight-text">
-                  <strong class="highlight-heading">Instant Offline Execution</strong>
-                  <span class="highlight-sub">Run locally anywhere on desktop, laptop, or portable setup.</span>
-                </div>
-              </div>
-
-              <div class="highlight-item">
-                <div class="highlight-icon-box orange" aria-hidden="true">
-                  <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="6" y1="12" x2="10" y2="12"/>
-                    <line x1="8" y1="10" x2="8" y2="14"/>
-                    <line x1="15" y1="13" x2="15.01" y2="13"/>
-                    <line x1="18" y1="11" x2="18.01" y2="11"/>
-                    <rect x="2" y="6" width="20" height="12" rx="6"/>
-                  </svg>
-                </div>
-                <div class="highlight-text">
-                  <strong class="highlight-heading">Full Controller Ready</strong>
-                  <span class="highlight-sub">Native mapping for Xbox, PlayStation DualSense, and generic USB gamepads.</span>
-                </div>
-              </div>
-
-              <div class="highlight-item">
-                <div class="highlight-icon-box purple" aria-hidden="true">
-                  <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 3h12l4 6-10 13L2 9z"/>
-                    <path d="M11 3L8 9l4 13 4-13-3-6"/>
-                    <path d="M2 9h20"/>
-                  </svg>
-                </div>
-                <div class="highlight-text">
-                  <strong class="highlight-heading">Direct Creator Revenue</strong>
-                  <span class="highlight-sub">Over 90% of every sale goes directly to support independent developers.</span>
-                </div>
-              </div>
+              }
             </div>
           </div>
         </section>
@@ -426,26 +475,95 @@
             }
           </div>
         </section>
+
+        <!-- Steam-Style Verified Player Reviews Section -->
+        <section class="steam-detail-block reviews-block" aria-labelledby="heading-reviews">
+          <div class="block-header">
+            <h2 id="heading-reviews" class="block-title">Community Reviews</h2>
+            <span class="reviews-summary-badge">96% Positive (1,420 Reviews)</span>
+          </div>
+
+          <div class="community-reviews-grid">
+            <div class="review-card">
+              <div class="review-header">
+                <div class="reviewer-meta">
+                  <span class="reviewer-name">Kira_99</span>
+                  <span class="reviewer-badge verified">Verified Owner</span>
+                </div>
+                <div class="review-recommend">
+                  <svg class="thumbs-up-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                  </svg>
+                  <span>Recommended</span>
+                </div>
+              </div>
+              <p class="review-quote">
+                "Silky smooth 60+ FPS on Linux and Steam Deck out of the box. Zero launcher bloat, fast load times, and true offline DRM-free ownership."
+              </p>
+            </div>
+
+            <div class="review-card">
+              <div class="review-header">
+                <div class="reviewer-meta">
+                  <span class="reviewer-name">CyberDrifter</span>
+                  <span class="reviewer-badge verified">Verified Owner</span>
+                </div>
+                <div class="review-recommend">
+                  <svg class="thumbs-up-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+                  </svg>
+                  <span>Recommended</span>
+                </div>
+              </div>
+              <p class="review-quote">
+                "The synthwave soundtrack and track physics are top notch. Being able to keep the installer and OST backed up on my external SSD is great."
+              </p>
+            </div>
+          </div>
+        </section>
       </main>
 
-      <!-- Right Column: Steam Features Checklist & Creator Profile -->
+      <!-- Right Column: Developer Spotlight & Features Sidebar -->
       <aside class="steam-sidebar-details" aria-label="Game Technical Features and Creator Details">
+        <!-- Developer Spotlight Box (Steam Standard) -->
+        <div class="steam-side-panel developer-panel">
+          <h3 class="panel-header-title">Developer Spotlight</h3>
+          @if (creator) {
+            <div class="dev-spotlight-card">
+              <div class="dev-avatar-row">
+                <img [src]="creator.avatarUrl" [alt]="creator.displayName + ' Avatar'" class="dev-avatar-img">
+                <div class="dev-meta">
+                  <strong class="dev-name">{{ creator.displayName }}</strong>
+                  <span class="dev-role-badge">Verified Creator</span>
+                </div>
+              </div>
+              <p class="dev-bio">{{ creator.bio }}</p>
+              <a [routerLink]="['/creators', creator.id]" class="dev-profile-btn" [attr.aria-label]="'View full profile for ' + creator.displayName">
+                <span>View Creator Profile</span>
+                <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+          }
+        </div>
+
         <!-- Feature Checklist Box -->
         <div class="steam-side-panel features-panel">
           <h3 class="panel-header-title">Game Features</h3>
           <ul class="steam-feature-list" role="list">
             <li class="steam-feature-item" role="listitem">
-              <svg class="feature-item-svg green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <path d="M9 12l2 2 4-4"/>
-              </svg>
-              <span>Single-player</span>
-            </li>
-            <li class="steam-feature-item" role="listitem">
               <svg class="feature-item-svg cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
               </svg>
-              <span>100% Offline & Yours Forever</span>
+              <span>Single-Player Campaign</span>
+            </li>
+            <li class="steam-feature-item" role="listitem">
+              <svg class="feature-item-svg green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+              <span>100% DRM-Free Offline Play</span>
             </li>
             <li class="steam-feature-item" role="listitem">
               <svg class="feature-item-svg orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -455,46 +573,16 @@
                 <line x1="18" y1="11" x2="18.01" y2="11"/>
                 <rect x="2" y="6" width="20" height="12" rx="6"/>
               </svg>
-              <span>Full Controller Support</span>
+              <span>Full Controller & Gamepad Support</span>
             </li>
             <li class="steam-feature-item" role="listitem">
               <svg class="feature-item-svg purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <ellipse cx="12" cy="5" rx="9" ry="3"/>
-                <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
-                <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
-              </svg>
-              <span>Open Save File Management</span>
-            </li>
-            <li class="steam-feature-item" role="listitem">
-              <svg class="feature-item-svg pink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
               </svg>
-              <span>Windows & Linux Binaries</span>
+              <span>Direct Standalone Binaries</span>
             </li>
           </ul>
         </div>
-
-        <!-- Minimalist Developer Profile Badge -->
-        @if (creator) {
-          <div class="steam-side-panel creator-panel">
-            <h3 class="panel-header-title">Developer</h3>
-            <a [routerLink]="['/creators', creator.id]" class="creator-compact-badge" [attr.aria-label]="'Visit ' + creator.displayName + ' studio storefront'">
-              <img [src]="creator.avatarUrl || 'assets/logo-icon.svg'" [alt]="creator.displayName + ' avatar'" class="creator-avatar-compact">
-              <div class="creator-meta-compact">
-                <span class="creator-name-compact">{{ creator.displayName }}</span>
-                <span class="creator-badge-compact">
-                  <svg class="svg-icon-xs icon-verified" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                  </svg>
-                  Verified Studio
-                </span>
-              </div>
-              <svg class="svg-arrow-compact" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
-            </a>
-          </div>
-        }
       </aside>
     </div>
 

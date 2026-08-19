@@ -1,13 +1,105 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { Game } from '../../core/models/game.model';
+import { Order } from '../../core/models/order.model';
+import { ORDERS_DATA, GAMES_DATA } from '../../core/data/tokens';
+import { AuthService } from '../../core/auth/auth.service';
+import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
+import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+
+export interface OrderDisplayItem {
+  order: Order;
+  game?: Game;
+}
 
 @Component({
   selector: 'app-orders',
   standalone: true,
-  template: `
-    <div style="max-width: 1320px; margin: 0 auto; padding: 32px 24px;">
-      <h1 style="font-size: 2rem; font-weight: 800;">Order History</h1>
-      <p style="margin-top: 16px; color: var(--color-text-secondary);">Your past purchases.</p>
-    </div>
-  `
+  imports: [
+    CommonModule, 
+    RouterLink, 
+    LoadingSpinnerComponent, 
+    EmptyStateComponent
+  ],
+  templateUrl: './orders.component.html',
+  styleUrls: ['./orders.component.css']
 })
-export class OrdersComponent {}
+export class OrdersComponent implements OnInit {
+  private ordersData = inject(ORDERS_DATA);
+  private gamesData = inject(GAMES_DATA);
+  private auth = inject(AuthService);
+
+  items: OrderDisplayItem[] = [];
+  loading = true;
+  selectedReceiptOrder: OrderDisplayItem | null = null;
+
+  ngOnInit(): void {
+    this.loadOrders();
+  }
+
+  loadOrders(): void {
+    const user = this.auth.currentUser();
+    if (!user) {
+      this.items = [];
+      this.loading = false;
+      return;
+    }
+
+    this.loading = true;
+    this.ordersData.getOrders(user.id).pipe(
+      switchMap(orders => {
+        if (!orders || orders.length === 0) {
+          return of([]);
+        }
+
+        const requests = orders.map(order =>
+          this.gamesData.getGameById(order.gameId).pipe(
+            map(game => ({ order, game: game || undefined }))
+          )
+        );
+
+        return forkJoin(requests);
+      })
+    ).subscribe({
+      next: (displayItems) => {
+        this.items = displayItems;
+        this.loading = false;
+      },
+      error: () => {
+        this.items = [];
+        this.loading = false;
+      }
+    });
+  }
+
+  get totalSpent(): number {
+    return this.items.reduce((sum, item) => sum + item.order.price, 0);
+  }
+
+  formatOrderDate(dateString: string): string {
+    if (!dateString) return 'N/A';
+    const d = new Date(dateString);
+    return d.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  viewReceipt(item: OrderDisplayItem): void {
+    this.selectedReceiptOrder = item;
+  }
+
+  closeReceipt(): void {
+    this.selectedReceiptOrder = null;
+  }
+
+  printReceipt(): void {
+    window.print();
+  }
+}

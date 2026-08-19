@@ -13,5 +13,5 @@ export interface Game {
   updatedAt: string;
 }
 
-export type CreateGameDto = Omit<Game, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>;
+export type CreateGameDto = Omit<Game, 'id' | 'ownerId' | 'createdAt' | 'updatedAt' | 'deletedAt'>;
 export type UpdateGameDto = Partial<CreateGameDto>;

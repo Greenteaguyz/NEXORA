@@ -1,0 +1,55 @@
+<div class="tag-chip-input-container" [class.disabled]="disabled">
+  <!-- Interactive Tag Input Box -->
+  <div class="tag-chips-box" [class.has-error]="!!errorMessage">
+    @for (tag of tags(); track tag; let idx = $index) {
+      <span class="tag-chip">
+        <span class="tag-label">#{{ tag }}</span>
+        <button 
+          type="button" 
+          class="btn-remove-chip" 
+          (click)="removeTag(idx)" 
+          [disabled]="disabled"
+          [attr.aria-label]="'Remove tag ' + tag">
+          ✕
+        </button>
+      </span>
+    }
+
+    @if (tags().length < maxTags) {
+      <input 
+        type="text" 
+        [(ngModel)]="inputValue" 
+        (keydown)="handleKeydown($event)" 
+        (blur)="addTagFromInput()"
+        [placeholder]="tags().length === 0 ? placeholder : 'Add another tag...'" 
+        [disabled]="disabled"
+        class="chip-inline-input"
+        aria-label="New tag name">
+    }
+  </div>
+
+  <!-- Error or Helper Message -->
+  @if (errorMessage) {
+    <div class="tag-error-text" role="alert">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <!-- Quick Suggestion Chips -->
+  <div class="suggestions-section">
+    <span class="suggestions-title">Popular suggestions:</span>
+    <div class="suggestions-list" role="group" aria-label="Suggested game tags">
+      @for (suggestion of popularSuggestions; track suggestion) {
+        <button 
+          type="button" 
+          class="suggestion-btn" 
+          [class.added]="isSuggestionAdded(suggestion)"
+          (click)="toggleSuggestion(suggestion)"
+          [disabled]="disabled || (!isSuggestionAdded(suggestion) && tags().length >= maxTags)">
+          <span>{{ isSuggestionAdded(suggestion) ? '✓' : '+' }}</span>
+          <span>#{{ suggestion }}</span>
+        </button>
+      }
+    </div>
+  </div>
+</div>

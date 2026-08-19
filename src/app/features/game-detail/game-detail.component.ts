@@ -3,10 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Game } from '../../core/models/game.model';
 import { User } from '../../core/models/user.model';
-import { GAMES_DATA, USERS_DATA, WISHLIST_DATA } from '../../core/data/tokens';
+import { GAMES_DATA, USERS_DATA, WISHLIST_DATA, LIBRARY_DATA, ORDERS_DATA } from '../../core/data/tokens';
 import { AuthService } from '../../core/auth/auth.service';
+import { DownloadService } from '../../core/services/download.service';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+import { DownloadButtonComponent } from '../../shared/ui/download-button/download-button.component';
+import { PurchaseConfirmModalComponent } from '../../shared/ui/purchase-confirm-modal/purchase-confirm-modal.component';
 
 export interface SpecItem {
   icon: 'os' | 'cpu' | 'ram' | 'gpu' | 'directx' | 'storage';
@@ -29,7 +32,9 @@ export interface SpecTier {
     CommonModule, 
     RouterLink, 
     LoadingSpinnerComponent, 
-    EmptyStateComponent
+    EmptyStateComponent,
+    DownloadButtonComponent,
+    PurchaseConfirmModalComponent
   ],
   templateUrl: './game-detail.component.html',
   styleUrls: ['./game-detail.component.css']
@@ -40,20 +45,30 @@ export class GameDetailComponent implements OnInit {
   private gamesData = inject(GAMES_DATA);
   private usersData = inject(USERS_DATA);
   private wishlistData = inject(WISHLIST_DATA);
+  private libraryData = inject(LIBRARY_DATA);
+  private ordersData = inject(ORDERS_DATA);
+  private downloadService = inject(DownloadService);
   authService = inject(AuthService);
 
   game: Game | null = null;
   creator: User | null = null;
   loading = true;
   isWishlisted = false;
+  isOwned = false;
+
+  // Purchase Modal State
+  showPurchaseModal = false;
+  purchaseProcessing = false;
 
   constructor() {
     effect(() => {
       const user = this.authService.currentUser();
       if (!user) {
         this.isWishlisted = false;
+        this.isOwned = false;
       } else if (this.game) {
         this.checkWishlist(this.game.id);
+        this.checkOwnership(this.game.id);
       }
     });
   }
@@ -66,6 +81,22 @@ export class GameDetailComponent implements OnInit {
   // System Requirements State
   selectedOs: 'windows' | 'linux' = 'windows';
   selectedSpecsTab: 'minimum' | 'recommended' = 'minimum';
+
+  // Target Download Platform Build
+  selectedDownloadPlatform: 'windows' | 'linux' | 'steamdeck' = 'windows';
+  copiedChecksum = false;
+
+  setDownloadPlatform(platform: 'windows' | 'linux' | 'steamdeck'): void {
+    this.selectedDownloadPlatform = platform;
+  }
+
+  copyChecksum(): void {
+    navigator.clipboard.writeText('a8f4c29188e734190b2847d9c0e5a9f2430198642bb3e721a947d10e83461f90');
+    this.copiedChecksum = true;
+    setTimeout(() => {
+      this.copiedChecksum = false;
+    }, 2500);
+  }
 
   setOs(os: 'windows' | 'linux'): void {
     this.selectedOs = os;
@@ -92,14 +123,52 @@ export class GameDetailComponent implements OnInit {
     return this.game.tags.includes('Pixel Art') && !this.game.tags.includes('Racing') && !this.game.tags.includes('Strategy');
   }
 
+  get keyFeatures(): { icon: string; title: string; desc: string }[] {
+    if (!this.game) return [];
+    const tags = this.game.tags.map(t => t.toLowerCase());
+
+    if (tags.includes('racing') || tags.includes('arcade')) {
+      return [
+        { icon: 'speed', title: 'Precision Drift & Physics', desc: 'Anti-gravity vehicle handling, supersonic nitro boosts, and high-G banked turns.' },
+        { icon: 'circuits', title: 'Dynamic Megacity Circuits', desc: '12 neon-drenched tracks with dynamic hazards, shortcut routes, and weather.' },
+        { icon: 'tuning', title: 'Modular Rig Customization', desc: 'Fine-tune thruster aerodynamics, cooling manifolds, and chassis underglow.' },
+        { icon: 'controller', title: 'Full Controller & Deck Support', desc: 'Flawless 60+ FPS performance out of the box with zero launcher bloat.' }
+      ];
+    }
+
+    if (tags.includes('strategy') || tags.includes('hacking') || tags.includes('tactics')) {
+      return [
+        { icon: 'strategy', title: 'Turn-Based Infiltration', desc: 'Deploy cyber-agents, hijack automated turrets, and execute silent data exfiltration.' },
+        { icon: 'override', title: 'Tactical Neural Overrides', desc: 'Manipulate grid topology, overload biometric sensors, and bypass ICE.' },
+        { icon: 'gear', title: 'Synergistic Squad Builds', desc: 'Equip black-market cyberware, custom exploit scripts, and EMP weapons.' },
+        { icon: 'offline', title: '100% Offline Single-Player', desc: 'Complete standalone campaign playable anywhere with unencrypted open saves.' }
+      ];
+    }
+
+    if (tags.includes('rpg') || tags.includes('roguelike') || tags.includes('action')) {
+      return [
+        { icon: 'combat', title: 'Kinetic Real-Time Combat', desc: 'Fluid melee combos, precision gunplay, and kinetic dash abilities.' },
+        { icon: 'world', title: 'Procedural Districts', desc: 'Branching encounters and hidden black markets across dense neon alleyways.' },
+        { icon: 'craft', title: '50+ Weapon & Mod Synergies', desc: 'Experiment with unique cybernetic implants and tactical gear sets.' },
+        { icon: 'controller', title: 'Seamless Gamepad Controls', desc: 'Responsive controls with full controller vibration and remap support.' }
+      ];
+    }
+
+    return [
+      { icon: 'world', title: 'Handcrafted Indie Experience', desc: 'Atmospheric synthwave art, intricate levels, and rich environmental storytelling.' },
+      { icon: 'speed', title: 'Skill-Driven Gameplay', desc: 'Tight, responsive controls designed for both gamepad and keyboard/mouse.' },
+      { icon: 'offline', title: 'DRM-Free Standalone Package', desc: 'Download once, keep forever on any drive with zero online check-ins.' }
+    ];
+  }
+
   get packageSize(): string {
     if (!this.game) return '1.20 GB';
     if (this.isRetro2D) return '340 MB';
-    return '1.84 GB';
+    return '1.85 GB';
   }
 
   get releaseDate(): string {
-    if (!this.game || !this.game.createdAt) return 'Recent Release';
+    if (!this.game || !this.game.createdAt) return 'Aug 15, 2026';
     const d = new Date(this.game.createdAt);
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
@@ -219,6 +288,7 @@ export class GameDetailComponent implements OnInit {
       this.game = game;
       this.loadCreator(game.ownerId);
       this.checkWishlist(game.id);
+      this.checkOwnership(game.id);
       this.loading = false;
     });
   }
@@ -248,11 +318,22 @@ export class GameDetailComponent implements OnInit {
     });
   }
 
+  private checkOwnership(gameId: string): void {
+    const user = this.authService.currentUser();
+    if (!user) {
+      this.isOwned = false;
+      return;
+    }
+    this.libraryData.isOwned(user.id, gameId).subscribe(owned => {
+      this.isOwned = owned;
+    });
+  }
+
   toggleWishlist(): void {
     if (!this.game) return;
     const user = this.authService.currentUser();
     if (!user) {
-      this.router.navigate(['/login'], { queryParams: { returnUrl: `/games/${this.game.id}` } });
+      this.onLoginRequired();
       return;
     }
 
@@ -267,14 +348,70 @@ export class GameDetailComponent implements OnInit {
     }
   }
 
-  handleActionClick(): void {
+  onLoginRequired(): void {
+    if (!this.game) return;
+    this.router.navigate(['/login'], { queryParams: { returnUrl: `/games/${this.game.id}` } });
+  }
+
+  onDownload(): void {
     if (!this.game) return;
     const user = this.authService.currentUser();
     if (!user) {
-      this.router.navigate(['/login'], { queryParams: { returnUrl: `/games/${this.game.id}` } });
+      this.onLoginRequired();
       return;
     }
-    alert(`Acquisition flow for ${this.game.title} (Phase 3 gated download).`);
+
+    if (this.isOwned) {
+      this.downloadService.downloadGameFile(this.game, this.selectedDownloadPlatform);
+      return;
+    }
+
+    // Free game direct acquisition
+    if (this.game.price === 0) {
+      this.libraryData.addToLibrary(user.id, this.game.id).subscribe(() => {
+        this.isOwned = true;
+        this.downloadService.downloadGameFile(this.game!, this.selectedDownloadPlatform);
+      });
+    }
+  }
+
+  onPurchaseConfirmed(): void {
+    this.showPurchaseModal = true;
+  }
+
+  onModalConfirm(): void {
+    if (!this.game) return;
+    const user = this.authService.currentUser();
+    if (!user) {
+      this.showPurchaseModal = false;
+      this.onLoginRequired();
+      return;
+    }
+
+    this.purchaseProcessing = true;
+    this.ordersData.createOrder(user.id, this.game.id, this.game.price).subscribe({
+      next: (order) => {
+        this.libraryData.addToLibrary(user.id, this.game!.id, order.id).subscribe({
+          next: () => {
+            this.isOwned = true;
+            this.purchaseProcessing = false;
+            this.showPurchaseModal = false;
+            this.downloadService.downloadGameFile(this.game!, this.selectedDownloadPlatform);
+          },
+          error: () => {
+            this.purchaseProcessing = false;
+          }
+        });
+      },
+      error: () => {
+        this.purchaseProcessing = false;
+      }
+    });
+  }
+
+  onModalCancel(): void {
+    this.showPurchaseModal = false;
+    this.purchaseProcessing = false;
   }
 
   // Lightbox Modal Controls & Keyboard Accessibility

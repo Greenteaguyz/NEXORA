@@ -1,0 +1,104 @@
+<div 
+  class="modal-backdrop" 
+  role="dialog" 
+  aria-modal="true" 
+  [attr.aria-label]="'Confirm Purchase of ' + game.title"
+  (click)="onCancel()">
+  
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-icon-wrap" aria-hidden="true">
+        <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+          <line x1="1" y1="10" x2="23" y2="10"/>
+        </svg>
+      </div>
+      <div class="header-text">
+        <h2 class="modal-title">Confirm Purchase</h2>
+        <p class="modal-subtitle">Instant DRM-Free Acquisition</p>
+      </div>
+      <button 
+        type="button" 
+        class="modal-close-btn" 
+        (click)="onCancel()" 
+        aria-label="Close modal (Escape)">
+        <svg class="close-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body / Summary -->
+    <div class="modal-body">
+      <div class="game-summary-card">
+        <img [src]="game.coverImageUrl" [alt]="game.title + ' Cover'" class="game-thumb">
+        <div class="game-info">
+          <h3 class="game-title">{{ game.title }}</h3>
+          <div class="game-tags">
+            @for (tag of game.tags.slice(0, 3); track tag) {
+              <span class="tag-pill">#{{ tag }}</span>
+            }
+          </div>
+          <div class="game-price-tag">
+            ${{ game.price.toFixed(2) }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Perks / DRM-Free Guarantee -->
+      <div class="perks-list">
+        <div class="perk-row">
+          <svg class="perk-icon green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          <span>Permanent ownership added directly to your NEXORA Library</span>
+        </div>
+        <div class="perk-row">
+          <svg class="perk-icon cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Immediate standalone offline package file delivery</span>
+        </div>
+        <div class="perk-row">
+          <svg class="perk-icon purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          <span>100% DRM-Free with 90%+ direct creator revenue share</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="modal-footer">
+      <button 
+        type="button" 
+        class="btn-cancel" 
+        (click)="onCancel()" 
+        [disabled]="processing">
+        Cancel
+      </button>
+
+      <button 
+        #confirmBtn 
+        type="button" 
+        class="btn-confirm" 
+        (click)="onConfirm()" 
+        [disabled]="processing">
+        @if (processing) {
+          <span class="spinner-inline"></span>
+          <span>Processing...</span>
+        } @else {
+          <svg class="confirm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Authorize & Buy · ${{ game.price.toFixed(2) }}</span>
+        }
+      </button>
+    </div>
+  </div>
+</div>

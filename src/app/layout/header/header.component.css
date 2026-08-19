@@ -85,11 +85,11 @@
 .nav-item a {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   color: var(--text-secondary);
   font-weight: 600;
-  font-size: clamp(0.82rem, 0.88vw, 0.9rem);
-  padding: 6px clamp(8px, 0.8vw, 12px);
+  font-size: clamp(0.78rem, 0.84vw, 0.86rem);
+  padding: 5px clamp(7px, 0.65vw, 10px);
   border-radius: var(--radius-full);
   transition: all 0.2s ease;
   text-decoration: none;
@@ -276,30 +276,106 @@
 .user-profile-menu {
   display: flex;
   align-items: center;
-  gap: clamp(6px, 0.9vw, 12px);
+  gap: 8px;
 }
 
-.user-badge-group {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  min-width: 100px;
-}
-
-.user-name {
-  font-size: clamp(0.8rem, 0.88vw, 0.875rem);
-  font-weight: 600;
-  color: var(--text-primary);
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 3px 10px 3px 4px;
+  background-color: var(--bg-void);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
 }
 
-.avatar-img {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-full);
-  border: 2px solid var(--border-glow);
+.user-chip:hover {
+  background-color: rgba(139, 92, 246, 0.1);
+  border-color: var(--accent-500);
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.25);
+  transform: translateY(-1px);
+}
+
+.user-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
+  border: 1.5px solid var(--accent-500);
+  background-color: var(--bg-surface);
+}
+
+.user-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.role-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1;
+  user-select: none;
+}
+
+.role-tag.creator {
+  background: rgba(139, 92, 246, 0.2);
+  color: #C084FC;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+}
+
+.role-tag.buyer {
+  background: rgba(6, 182, 212, 0.15);
+  color: #22D3EE;
+  border: 1px solid rgba(6, 182, 212, 0.35);
+}
+
+:host-context([data-theme="light"]) .role-tag.creator {
+  background: #EDE9FE;
+  color: #7C3AED;
+  border-color: #DDD6FE;
+}
+
+:host-context([data-theme="light"]) .role-tag.buyer {
+  background: #ECFEFF;
+  color: #0891B2;
+  border-color: #CFFAFE;
+}
+
+.btn-logout {
+  background: var(--bg-void);
+  border: 1px solid var(--border-card);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-logout:hover {
+  color: var(--rose-500);
+  border-color: var(--rose-500);
+  background: rgba(244, 63, 94, 0.08);
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .btn-primary {
@@ -307,7 +383,7 @@
   color: #FFF;
   font-weight: 600;
   font-size: clamp(0.82rem, 0.9vw, 0.9rem);
-  padding: 7px clamp(10px, 1.1vw, 16px);
+  padding: 6px 14px;
   border-radius: var(--radius);
   text-decoration: none;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
@@ -327,7 +403,7 @@
   color: var(--text-secondary);
   font-weight: 500;
   font-size: clamp(0.82rem, 0.9vw, 0.9rem);
-  padding: 7px clamp(8px, 1vw, 14px);
+  padding: 6px 12px;
   border-radius: var(--radius);
   border: 1px solid var(--border-card);
   text-decoration: none;
@@ -343,26 +419,11 @@
   border-color: var(--border-glow);
 }
 
-.btn-logout {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 0.825rem;
-  padding: 4px 6px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: color 0.15s ease;
-  white-space: nowrap;
-}
-
-.btn-logout:hover {
-  color: var(--rose-500);
-}
-
 /* ==========================================================================
    Mobile Hamburger Button
    ========================================================================== */
-.hamburger-btn {
+.hamburger-btn,
+.mobile-menu-toggle {
   display: none;
   align-items: center;
   justify-content: center;
@@ -377,7 +438,8 @@
   flex-shrink: 0;
 }
 
-.hamburger-btn:hover {
+.hamburger-btn:hover,
+.mobile-menu-toggle:hover {
   border-color: var(--accent-500);
   background-color: rgba(139, 92, 246, 0.1);
   box-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
@@ -535,9 +597,11 @@
   box-shadow: 0 0 12px rgba(124, 58, 237, 0.35);
 }
 
-.nav-emoji {
-  font-size: 1.1rem;
-  line-height: 1;
+.nav-svg-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: inherit;
 }
 
 .mobile-drawer-footer {
@@ -640,6 +704,12 @@
 /* ==========================================================================
    Responsive Breakpoints
    ========================================================================== */
+@media (max-width: 1280px) {
+  .demo-switcher {
+    display: none;
+  }
+}
+
 @media (max-width: 1024px) {
   .header-container {
     display: flex;
@@ -654,7 +724,8 @@
     display: none;
   }
 
-  .hamburger-btn {
+  .hamburger-btn,
+  .mobile-menu-toggle {
     display: flex;
   }
 }
@@ -664,7 +735,7 @@
     padding: 0 var(--space-4);
   }
 
-  .user-profile-menu .user-badge-group {
+  .user-info {
     display: none;
   }
 }

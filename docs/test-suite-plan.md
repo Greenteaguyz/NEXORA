@@ -1,26 +1,21 @@
-# Test Suite Plan — NEXORA
+# Test suite master plan
 
-> ⚠️ **Status as of 2026-08-17: aspirational / post-capstone reference material — NOT a build requirement.**
-> This document describes a full four-framework test pyramid (Jest, Cucumber.js + Playwright, Playwright E2E, Stryker Mutator) with a CI-gated 90% coverage / 90% mutation-score bar. That's a reasonable target for a team with a production deploy target and months of runway — it is not achievable alongside auth, CRUD, the gated download flow, and 10+ documentation files in a **solo, 10-working-day capstone**. Per `design_doc.md`'s Document Precedence section (which is authoritative on scope), the *only* testing commitment for this capstone is `design_doc.md` Task 10.1: Jest unit tests for `DownloadButtonComponent`'s 5 states and the three route guards. If extra time remains after the graded competencies are demoable, pull individual test cases from Section 2 below (the Jest specs) — do not stand up the BDD, E2E, or mutation-testing layers under this deadline.
->
-> **Status:** DRAFT — awaiting approval; kept as a reference for post-capstone / production hardening
-> **Stack:** Angular 17+ · Jest · Cucumber.js + Playwright · Playwright · Stryker Mutator
-> **Coverage Target:** 90% (statements, branches, functions, lines) — reference target only, not required for capstone submission
+**Note:** This document serves as an architectural reference blueprint for testing frameworks (Jest, Cucumber.js + Playwright, and Stryker Mutator) and target quality metrics. For immediate capstone evaluation criteria, see the [Test Plan & Verification Matrix](./test-plan.md).
 
 ---
 
-## Table of Contents
+## Table of contents
 
-1. [Tooling & Setup](#1-tooling--setup)
-2. [Unit Tests (Jest)](#2-unit-tests-jest)
-3. [Gherkin / BDD Tests (Cucumber.js + Playwright)](#3-gherkin--bdd-tests-cucumberjs--playwright)
-4. [QA / E2E Tests (Playwright)](#4-qa--e2e-tests-playwright)
-5. [Quality Metrics](#5-quality-metrics)
-6. [Mutation Testing (Stryker Mutator)](#6-mutation-testing-stryker-mutator)
-7. [Test Coverage Enforcement](#7-test-coverage-enforcement)
-8. [Directory Structure](#8-directory-structure)
-9. [NPM Scripts](#9-npm-scripts)
-10. [CI Integration Notes](#10-ci-integration-notes)
+1. [Tooling and setup](#1-tooling-and-setup)
+2. [Unit tests (Jest)](#2-unit-tests-jest)
+3. [Gherkin / BDD tests (Cucumber.js + Playwright)](#3-gherkin--bdd-tests-cucumberjs--playwright)
+4. [QA / E2E tests (Playwright)](#4-qa--e2e-tests-playwright)
+5. [Quality metrics](#5-quality-metrics)
+6. [Mutation testing (Stryker Mutator)](#6-mutation-testing-stryker-mutator)
+7. [Test coverage enforcement](#7-test-coverage-enforcement)
+8. [Directory structure](#8-directory-structure)
+9. [npm scripts](#9-npm-scripts)
+10. [CI integration notes](#10-ci-integration-notes)
 
 ---
 

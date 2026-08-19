@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of, delay } from 'rxjs';
+import { Observable, of, throwError, delay } from 'rxjs';
 import { Game, CreateGameDto, UpdateGameDto } from '../../models/game.model';
 import { GamesDataService, GameFilters } from '../tokens';
 import { LocalStoreService } from '../../persistence/local-store.service';
@@ -31,7 +31,18 @@ export class MockGamesDataService implements GamesDataService {
     this.localStore.setItem(this.STORAGE_KEY, this.games);
   }
 
+  private shouldSimulateError(): boolean {
+    if (typeof window !== 'undefined' && window.location && window.location.search) {
+      return window.location.search.includes('simulateErrors=true');
+    }
+    return false;
+  }
+
   getGames(filters?: GameFilters): Observable<Game[]> {
+    if (this.shouldSimulateError()) {
+      return throwError(() => new Error('Simulated API network failure (?simulateErrors=true)')).pipe(delay(100));
+    }
+
     let result = this.games.filter(g => !g.deletedAt);
 
     if (filters?.tag) {
@@ -48,16 +59,25 @@ export class MockGamesDataService implements GamesDataService {
   }
 
   getGameById(id: string): Observable<Game | undefined> {
+    if (this.shouldSimulateError()) {
+      return throwError(() => new Error('Simulated API network failure (?simulateErrors=true)')).pipe(delay(100));
+    }
     const game = this.games.find(g => g.id === id);
     return of(game);
   }
 
   getGamesByOwnerId(ownerId: string): Observable<Game[]> {
+    if (this.shouldSimulateError()) {
+      return throwError(() => new Error('Simulated API network failure (?simulateErrors=true)')).pipe(delay(100));
+    }
     const result = this.games.filter(g => g.ownerId === ownerId);
     return of(result);
   }
 
   createGame(dto: CreateGameDto, ownerId: string): Observable<Game> {
+    if (this.shouldSimulateError()) {
+      return throwError(() => new Error('Simulated API create failure (?simulateErrors=true)')).pipe(delay(100));
+    }
     const newGame: Game = {
       ...dto,
       id: 'game_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5),
@@ -71,6 +91,9 @@ export class MockGamesDataService implements GamesDataService {
   }
 
   updateGame(id: string, dto: UpdateGameDto): Observable<Game> {
+    if (this.shouldSimulateError()) {
+      return throwError(() => new Error('Simulated API update failure (?simulateErrors=true)')).pipe(delay(100));
+    }
     const index = this.games.findIndex(g => g.id === id);
     if (index === -1) {
       throw new Error(`Game with id ${id} not found`);
@@ -86,6 +109,9 @@ export class MockGamesDataService implements GamesDataService {
   }
 
   deleteGame(id: string): Observable<void> {
+    if (this.shouldSimulateError()) {
+      return throwError(() => new Error('Simulated API delete failure (?simulateErrors=true)')).pipe(delay(100));
+    }
     const index = this.games.findIndex(g => g.id === id);
     if (index !== -1) {
       this.games[index] = {

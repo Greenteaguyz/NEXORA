@@ -1,0 +1,142 @@
+<div class="library-page-container">
+  <!-- Top Header Banner -->
+  <header class="library-header">
+    <div class="library-header-main">
+      <div class="title-cluster">
+        <div class="header-icon-box" aria-hidden="true">
+          <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="library-title">My Game Library</h1>
+          <p class="library-subtitle">All your games, ready to download and play offline anytime.</p>
+        </div>
+      </div>
+
+      <div class="library-stats-pill" aria-label="Owned games count">
+        <span class="stats-count">{{ items.length }}</span>
+        <span class="stats-label">{{ items.length === 1 ? 'Game' : 'Games' }}</span>
+      </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    @if (items.length > 0) {
+      <div class="library-toolbar">
+        <div class="search-input-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery" 
+            placeholder="Search your games..." 
+            class="library-search-input"
+            aria-label="Filter games by title or tag">
+          @if (searchQuery) {
+            <button type="button" class="btn-clear-search" (click)="searchQuery = ''" aria-label="Clear search">✕</button>
+          }
+        </div>
+
+        @if (availableTags.length > 0) {
+          <div class="tag-filters-row" role="group" aria-label="Filter by genre">
+            <button 
+              type="button" 
+              class="filter-tag-chip" 
+              [class.active]="selectedTag === 'all'" 
+              (click)="selectedTag = 'all'">
+              All Games
+            </button>
+            @for (tag of availableTags; track tag) {
+              <button 
+                type="button" 
+                class="filter-tag-chip" 
+                [class.active]="selectedTag === tag" 
+                (click)="selectedTag = tag">
+                {{ tag }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+  </header>
+
+  <!-- Main Content Stage -->
+  <main class="library-main-content">
+    @if (loading) {
+      <app-loading-spinner size="lg" label="Loading your games..."></app-loading-spinner>
+    } @else if (items.length === 0) {
+      <app-empty-state 
+        icon="🎮" 
+        title="Your Library is Empty" 
+        message="You haven't added any games yet. Explore the store to find games to play."
+        actionLabel="Browse Games"
+        [routerLink]="['/catalog']">
+      </app-empty-state>
+    } @else if (filteredItems.length === 0) {
+      <app-empty-state 
+        icon="🔍" 
+        title="No Matching Games" 
+        message="No games in your collection match your search."
+        actionLabel="Clear Filters"
+        (action)="searchQuery = ''; selectedTag = 'all'">
+      </app-empty-state>
+    } @else {
+      <div class="library-grid" role="list" aria-label="Owned games collection">
+        @for (item of filteredItems; track item.entry.id) {
+          <div class="library-card" role="listitem">
+            <!-- Cover Art with Link -->
+            <a [routerLink]="['/games', item.game.id]" class="card-cover-wrap" [attr.aria-label]="'View details for ' + item.game.title">
+              <img [src]="item.game.coverImageUrl" [alt]="item.game.title + ' Cover'" class="card-cover-img" loading="lazy">
+              <div class="card-overlay" aria-hidden="true">
+                <span class="overlay-badge">View Game</span>
+              </div>
+            </a>
+
+            <!-- Card Details -->
+            <div class="card-body">
+              <div class="card-header-row">
+                <a [routerLink]="['/games', item.game.id]" class="card-game-title">
+                  {{ item.game.title }}
+                </a>
+              </div>
+
+              <!-- Tags -->
+              <div class="card-tags-list">
+                @for (tag of item.game.tags.slice(0, 3); track tag) {
+                  <span class="card-tag">#{{ tag }}</span>
+                }
+              </div>
+
+              <!-- Metadata info -->
+              <div class="card-meta-row">
+                <span class="card-acquired-date">
+                  <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  Acquired {{ formatAcquiredDate(item.entry.acquiredAt) }}
+                </span>
+                <span class="card-ownership-pill">100% Owned</span>
+              </div>
+
+              <!-- Action Bar -->
+              <div class="card-actions-row">
+                <app-download-button
+                  [game]="item.game"
+                  [isOwned]="true"
+                  [fullWidth]="true"
+                  size="sm"
+                  (download)="onDownload(item.game)">
+                </app-download-button>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </main>
+</div>

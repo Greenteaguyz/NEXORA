@@ -175,4 +175,26 @@
 - For in-app legal links, configure router memory scrolling and subscribe to `route.fragment` with `element.scrollIntoView({ behavior: 'smooth', block: 'start' })`.
 - Style legal footer blocks with a subtle separation border, left-aligned muted disclaimer text (`font-size: 0.78rem; color: var(--text-muted)`), and clean whitespace-separated links (`gap: 18px`).
 
+---
+
+## [Pattern] Steam & itch.io UX Simplification — Anti-Pattern Elimination in Game Distribution
+
+### Context
+- Early iterations of game detail and catalog views can suffer from feature bloat: redundant benefit badges, overlapping guarantee cards, and walls of marketing text that overwhelm players.
+- Players browsing indie game marketplaces want high visual clarity, fast scannability, platform compatibility, and direct purchasing without friction.
+
+### Root Cause / Core Insight
+- **The Anti-Pattern (Cognitive Overload)**:
+  - 5+ separate repetitive boxes below the fold (e.g. *Glance Badges*, *Story Lead*, *Gameplay Pillars*, *Package Contents*, *Guarantee Box*, *Highlights Grid*) create visual exhaustion and dilute core conversion signals.
+- **The Steam + itch.io Solution**:
+  1. **Upper Showcase (65/35 Split)**: Interactive media stage on the left, quick-spec capsule on the right with overall rating, release date, developer link, and standalone size.
+  2. **1-Click Platform & Purchase Banner**: Standalone itch.io-style banner featuring platform selectors (`Windows`, `Linux`, `Steam Deck`), unit price tag, direct download CTA, DRM-free badge, and 1-click SHA-256 checksum copy.
+  3. **Key Features Grid**: Replaces text walls with a clean 2-column grid of punchy cards featuring genre-adaptive vector icons.
+  4. **Developer Spotlight**: Dedicated sidebar card featuring creator avatar, `Verified Creator` badge, bio, and direct profile navigation.
+
+### The Pattern (Transferable)
+- In game distribution and e-commerce interfaces, ruthlessly consolidate repetitive copy into a 2-part content architecture: a concise narrative lead + a scannable 4-item Key Features grid.
+- Keep sidebar interactions focused on developer discovery and hardware compatibility.
+
+
 

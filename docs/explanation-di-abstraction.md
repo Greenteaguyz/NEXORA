@@ -1,30 +1,53 @@
-# Explanation: DI Abstraction Layer
+# Why We Use a Dependency Injection Abstraction Layer
 
-This document explains why **NEXORA** uses an abstraction layer for its data services. Read the [How to add a new data service](howto-data-layer.md) guide for implementation details.
+This document explains the architectural rationale behind the data service abstraction layer in NEXORA.
 
-## The Problem
+For step-by-step instructions on implementing services with this pattern, see [How to Add and Swap Data Services via DI](./howto-data-layer.md).
 
-The capstone project is a frontend-only prototype. It needs to function completely in the browser without a real backend API. However, building components that directly couple to mock data logic creates massive technical debt. If the prototype succeeds and becomes a real application, developers would need to rewrite every component that fetches data.
+---
 
-## The Approach
+## The architectural challenge
 
-We use interface-driven services and Angular `InjectionTokens` to decouple components from data sources. Components inject a token, not a class. We provide a mock implementation in the root configuration.
+NEXORA is designed as a fully functional standalone frontend prototype that runs entirely in the browser without an active backend server. 
 
-```text
-+-------------------+       +-------------------+       +-----------------------+
-|  Feature Component| ----> |  InjectionToken   | <---- | MockDataService (Impl)|
-+-------------------+       +-------------------+       +-----------------------+
-                                        ^
-                                        |
-                                +-----------------------+
-                                | HTTPDataService (Impl)|
-                                +-----------------------+
+Directly coupling UI components to mock data creates technical debt: when a production backend is introduced, every component requiring data fetching would need modifications.
+
+---
+
+## The solution: Interface-driven InjectionTokens
+
+NEXORA decouples UI components from concrete data implementations using TypeScript interfaces and Angular `InjectionToken` definitions. Components depend solely on the token contract:
+
+```
+┌───────────────────┐        ┌──────────────────┐        ┌─────────────────────────┐
+│ Feature Component │ ────►  │  InjectionToken  │  ◄──── │ MockGamesDataService    │
+└───────────────────┘        └──────────────────┘        └─────────────────────────┘
+                                       ▲
+                                       │
+                             ┌─────────────────────────┐
+                             │ HttpGamesDataService    │
+                             └─────────────────────────┘
 ```
 
-## The Trade-off
+### Architectural benefits
 
-Setting up interfaces and tokens takes about two hours of upfront work. The benefit is a zero-touch backend swap later. When the HTTP API is ready, we swap the provider in `app.config.ts`. The components never know the difference.
+1. **Zero component modification**: Swapping mock services for live HTTP services requires updating only the provider definition in `src/app/app.config.ts`.
+2. **Simplified unit testing**: Test suites inject lightweight stub implementations into components without spinning up HTTP interceptors or mock servers.
+3. **Decoupled data contracts**: Backend schema changes are isolated to service adapter implementations.
 
-## Why It Matters for the Capstone
+---
 
-This pattern demonstrates architectural maturity. It shows an understanding of enterprise Angular patterns and dependency inversion. It serves as an excellent talking point for a grading panel defense, highlighting forward-thinking design rather than just making a screen look nice.
+## Architectural trade-offs
+
+| Factor | Trade-off |
+| :--- | :--- |
+| **Initial setup overhead** | Requires declaring interfaces, token constants, and provider bindings upfront. |
+| **Long-term flexibility** | Eliminates refactoring costs when migrating to REST or GraphQL APIs in production. |
+
+---
+
+## Related documentation
+
+* [How to Add and Swap Data Services via DI](./howto-data-layer.md)
+* [API & Data Services Reference](./reference-api-services.md)
+* [Data Models Reference](./reference-data-models.md)

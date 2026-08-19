@@ -1,41 +1,53 @@
-# Tutorial: Getting Started with NEXORA
+# Tutorial: Getting started with NEXORA
 
-Welcome to **NEXORA**! This tutorial walks you through setting up the project from zero to a running application. 
+This tutorial walks you through setting up NEXORA from scratch to a running Angular 17+ application.
 
-## Prerequisites
+---
 
-Before you begin, ensure you have the following installed:
-* Node.js (v18 or later)
-* Angular CLI (v17 or later)
+## Before you begin
 
-Verify your installation:
+Verify that your system meets the following requirements:
+
+* **Node.js**: Version 18.13.0 or later.
+* **Angular CLI**: Version 17.0.0 or later.
+
+Run the following commands to check your installed versions:
+
 ```bash
 node -v
 ng version
 ```
 
-## Step 1: Create the Angular Project
+---
 
-We use Angular's standalone components for this project. Create the new project using the Angular CLI:
+## Step 1: Create the Angular application
+
+NEXORA uses Angular standalone components. Create the workspace using the Angular CLI:
 
 ```bash
 ng new nexora --standalone
 cd nexora
 ```
 
-## Step 2: Start the Development Server
+---
 
-Let's verify everything works. Start the Angular development server:
+## Step 2: Start the development server
+
+Start the Angular local development server:
 
 ```bash
 ng serve
 ```
 
-Open your browser and navigate to `http://localhost:4200`. You will see the default Angular welcome page. 
+Open your browser and navigate to [`http://localhost:4200`](http://localhost:4200). The default Angular landing page displays.
 
-## Step 3: Set Up the Folder Structure
+Press `Ctrl+C` in your terminal to stop the server before continuing to the next step.
 
-Stop the development server (`Ctrl+C`). We structure our application by feature. Create the core folders:
+---
+
+## Step 3: Configure the folder structure
+
+NEXORA organizes code by feature and architectural layer. Create the core folders:
 
 ```bash
 mkdir src/app/core
@@ -44,11 +56,11 @@ mkdir src/app/features
 mkdir src/app/layout
 ```
 
-## Step 4: Create Design Tokens
+---
 
-We use plain CSS with design tokens tailored to the **NEXORA** modern cyberpunk/indie game distribution theme. Open `src/styles.css` and define the custom properties:
+## Step 4: Configure CSS design tokens
 
-These are the same tokens used throughout the rest of the app — see the full [Design Tokens Reference](./site_architecture.md#design-tokens-reference) for the complete void/neon/spacing scale.
+NEXORA uses custom CSS properties for its cyberpunk and indie game theme. Open `src/styles.css` and define the custom properties:
 
 ```css
 :root {
@@ -65,7 +77,7 @@ These are the same tokens used throughout the rest of the app — see the full [
   --emerald-500:   #10B981;
   --rose-500:      #F43F5E;
 
-  /* Surfaces & Backgrounds */
+  /* Surfaces and Backgrounds */
   --bg-void:       #0B0D13;
   --bg-surface:    #131622;
   --bg-elevated:   #1A1E2E;
@@ -76,7 +88,7 @@ These are the same tokens used throughout the rest of the app — see the full [
   --text-secondary: #94A3B8;
   --text-muted:     #64748B;
 
-  /* Borders & Glow Effects */
+  /* Borders and Glow Effects */
   --border-card:    #1E2438;
   --border-subtle:  rgba(139, 92, 246, 0.15);
   --border-glow:    rgba(139, 92, 246, 0.4);
@@ -107,9 +119,11 @@ body {
 }
 ```
 
-## Step 5: Create the First Data Model
+---
 
-Let's define what a game looks like in our marketplace. Create a new file `src/app/core/models/game.model.ts`:
+## Step 5: Create the game data model
+
+Define the TypeScript interface representing a game listing. Create `src/app/core/models/game.model.ts`:
 
 ```typescript
 export interface Game {
@@ -128,114 +142,108 @@ export interface Game {
 }
 ```
 
-Note there is no `isFree` boolean and no `developer` string on this model:
-- Free vs. paid is always derived from `price === 0` — see `DownloadButtonComponent`'s `isFree` computed signal in the [Download Flow Tutorial](./tutorial-download-flow.md).
-- The creator's display name is resolved separately, by looking up `ownerId` through `UsersDataService` — see [How to Build Catalog & Game Detail Views](./howto-catalog-detail.md#6-resolve-the-creator-display-name).
+**Note:** The model does not include an `isFree` boolean or a `developer` string:
+* Free status is computed dynamically where `price === 0`.
+* The creator's display name is resolved through `UsersDataService` using `ownerId`.
 
-This is the full model you'll use for the rest of the project — see the [Data Models Reference](./reference-data-models.md) for field-by-field details, validation rules, and the soft-delete pattern (`deletedAt`).
+For complete interface definitions, see the [Data Models Reference](./reference-data-models.md).
 
-## Step 6: Create the DI Token and Mock Service
+---
 
-We use Angular's Dependency Injection (DI) to abstract our data layer. This allows us to easily swap out the mock implementation later. For more details, see the [DI Abstraction Explanation](./explanation-di-abstraction.md).
+## Step 6: Create the DI token and mock service
 
-> Naming note: every data service in this project follows the `{DOMAIN}_DATA` token / `{Domain}DataService` interface / `Mock{Domain}DataService` class convention, registered under `core/data/`. This is the convention used in every later guide and reference doc — see the [API Services Reference](./reference-api-services.md) and the [Pages & Components Map](./pages_components_map.md#file-path-summary) — so we use it starting here rather than introducing a one-off name.
+NEXORA abstracts data sources using Angular `InjectionToken` definitions. This enables swapping mock data for live HTTP endpoints without modifying UI components.
 
-First, create the token `src/app/core/data/tokens.ts`:
+1. Create `src/app/core/data/tokens.ts`:
+   ```typescript
+   import { InjectionToken } from '@angular/core';
+   import { Game } from '../models/game.model';
+   import { Observable } from 'rxjs';
 
-```typescript
-import { InjectionToken } from '@angular/core';
-import { Game } from '../models/game.model';
-import { Observable } from 'rxjs';
+   export interface GamesDataService {
+     getGames(): Observable<Game[]>;
+   }
 
-export interface GamesDataService {
-  getGames(): Observable<Game[]>;
-}
+   export const GAMES_DATA = new InjectionToken<GamesDataService>('GAMES_DATA');
+   ```
 
-export const GAMES_DATA = new InjectionToken<GamesDataService>('GAMES_DATA');
-```
+2. Generate the mock service:
+   ```bash
+   ng generate service core/data/games/mock-games-data
+   ```
 
-Next, generate the mock service:
+3. Update `src/app/core/data/games/mock-games-data.service.ts`:
+   ```typescript
+   import { Injectable } from '@angular/core';
+   import { Observable, of } from 'rxjs';
+   import { GamesDataService } from '../tokens';
+   import { Game } from '../../models/game.model';
 
-```bash
-ng generate service core/data/games/mock-games-data
-```
+   @Injectable({
+     providedIn: 'root'
+   })
+   export class MockGamesDataService implements GamesDataService {
+     getGames(): Observable<Game[]> {
+       return of([
+         {
+           id: '1',
+           ownerId: 'usr_1',
+           title: 'Neon Racer',
+           description: 'An arcade-style racer with a synthwave soundtrack.',
+           tags: ['racing', 'arcade'],
+           price: 0,
+           coverImageUrl: '/assets/neon-racer.jpg',
+           screenshotUrls: [],
+           samplePackageUrl: 'assets/sample-packages/neon-racer.zip',
+           createdAt: new Date().toISOString(),
+           updatedAt: new Date().toISOString()
+         }
+       ]);
+     }
+   }
+   ```
 
-Update `src/app/core/data/games/mock-games-data.service.ts` to implement the interface:
+---
 
-```typescript
-import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { GamesDataService } from '../tokens';
-import { Game } from '../../models/game.model';
+## Step 7: Build for production and deployment
 
-@Injectable({
-  providedIn: 'root'
-})
-export class MockGamesDataService implements GamesDataService {
-  getGames(): Observable<Game[]> {
-    return of([
-      {
-        id: '1',
-        ownerId: 'usr_1',
-        title: 'Neon Racer',
-        description: 'An arcade-style racer with a synthwave soundtrack.',
-        tags: ['racing', 'arcade'],
-        price: 0,
-        coverImageUrl: '/assets/neon-racer.jpg',
-        screenshotUrls: [],
-        samplePackageUrl: 'assets/sample-packages/neon-racer.zip',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }
-    ]);
-  }
-}
-```
+### 1. Build the production assets
+Compile the optimized production bundles:
 
-```
-
-## Step 6: Building for Production & Cloud Deployment
-
-### 1. Build & Optimize
-To compile the production-ready optimized application:
 ```bash
 npm run build
 ```
-Compiled bundles are generated in `dist/nexora/browser` with sub-3-second esbuild compilation and inlined critical CSS.
 
-### 2. Testing on Mobile Devices (Local Network)
-To test responsive layouts and touch interactions on a physical smartphone:
+Compiled bundles output to `dist/nexora/browser`.
+
+### 2. Preview on mobile devices (Local network)
+Test touch interactions and responsive layouts on a physical mobile device over local Wi-Fi:
+
 ```bash
 npm start -- --host 0.0.0.0
 ```
-Open `http://<YOUR_COMPUTER_IP>:4200` in your mobile phone's browser.
 
-### 3. Testing Publicly via Cloudflare Quick Tunnel
-To test on remote devices worldwide without port forwarding:
-```bash
-# 1. Start the lightweight production server:
-node dist/serve.js
+Open `http://YOUR_LOCAL_IP:4200` in your mobile browser.
 
-# 2. In another terminal, launch Cloudflare Quick Tunnel:
-.\cloudflared.exe tunnel --url http://127.0.0.1:4200
-```
+### 3. Deploy to Vercel
+Deploy the build using the included [`vercel.json`](../vercel.json):
 
-### 4. Deploy to Vercel
-The project includes [`vercel.json`](../vercel.json) to handle Single Page App (SPA) client-side routing.
 ```bash
 npx vercel --prod
 ```
 
-## What You Built
+---
 
-You have successfully:
-1. Created an Angular 17+ standalone project with Vite/esbuild Application Builder
-2. Established the feature-based Clean Architecture structure
-3. Configured the Cyberpunk dual-mode design tokens
-4. Created the base `Game` model and DI `InjectionToken` abstraction layer
-5. Set up a mock data layer using `LocalStoreService` persistence
-6. Configured production build budgets, Cloudflare remote tunneling, and Vercel SPA deployment
+## Summary and next steps
 
-Next, check out [Tutorial: Download Flow](./tutorial-download-flow.md) to build the core marketplace functionality, or review the [API Services Reference](./reference-api-services.md).
+You have completed the initial setup:
+1. Created an Angular 17+ standalone project.
+2. Structured directories using feature modules and clean architecture.
+3. Configured cyberpunk theme design tokens in `src/styles.css`.
+4. Defined the `Game` interface and `GAMES_DATA` injection token.
+5. Implemented a mock data service.
+6. Compiled production assets and verified deployment settings.
+
+To build the gated download button, proceed to [Tutorial: Implementing the Gated Download Flow](./tutorial-download-flow.md).
 
 

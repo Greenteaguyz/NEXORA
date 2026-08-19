@@ -7,10 +7,13 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "test": "ng test --no-watch --no-progress --browsers=ChromeHeadless",
+    "test:watch": "ng test",
+    "test:regression": "npx tsc src/app/core/tests/comprehensive-unit-and-integration.spec.ts --outDir dist/tests --module commonjs --target es2022 --skipLibCheck && node dist/tests/comprehensive-unit-and-integration.spec.js",
+    "verify": "npm run build && npm run test:regression",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
-    "perf:measure": "tsx scripts/measure-perf.ts"
+    "perf:measure": "npx tsx scripts/measure-perf.ts"
   },
   "dependencies": {
     "@angular/animations": "^18.2.0",

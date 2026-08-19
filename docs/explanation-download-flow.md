@@ -1,38 +1,38 @@
-# Explanation: Download Flow
+# Architecture of the gated download flow
 
-This document explains the logic behind the game download flow. For step-by-step guidance on implementing the UI, see the [Download Flow Tutorial](tutorial-download-flow.md).
+This document details the state machine, decision logic, and architectural rationale behind the gated download flow in NEXORA.
 
-## The Problem
+For step-by-step implementation instructions, see [Tutorial: Implementing the Gated Download Flow](./tutorial-download-flow.md).
 
-We need to gate game downloads. Free games require ownership tracking. Paid games require purchase confirmation. All games require authentication. The flow must gracefully handle deleted games that users already own.
+---
 
-## The Design
+## Architectural requirements
 
-We chose a strict, single-branch path for the download action. Every download requires authentication. There is no special "guest download" path for free games. 
+The download flow satisfies four core requirements:
+1. **Universal authentication**: All downloads require an authenticated user session.
+2. **Dynamic acquisition path**: Free titles require instant library tracking; paid titles require purchase confirmation.
+3. **Session persistence**: Unauthenticated users must return to their intended download flow after logging in.
+4. **Soft-deletion resilience**: Titles soft-deleted by creators must disable downloads while preserving library records for previous owners.
 
-Ownership is tracked via a `LibraryEntry` record, not a boolean field on the `Game` itself. This decouples the catalog from user state.
+---
 
-### Download Button States
+## Download state machine
 
-The download button manages five distinct states:
+The download component manages five distinct operational states:
 
-1. **Anonymous:** User is not logged in. Clicking prompts a redirect to the login page.
-2. **Free + Unowned:** Game is free. Clicking adds a `LibraryEntry` and starts the download.
-3. **Paid + Unowned:** Game costs money. Clicking opens the purchase confirmation modal.
-4. **Owned:** User has a `LibraryEntry` for the game. Clicking downloads the file immediately.
-5. **Deleted:** Game was soft-deleted by the creator. If the user owns it, the button shows "Unavailable" and is disabled.
+| State | Condition | Display Label | Action on Click |
+| :--- | :--- | :--- | :--- |
+| **Anonymous** | Unauthenticated user | **Download** | Redirects to `/login?returnUrl=...` |
+| **Free, Unowned** | `currentUser` + `price === 0` + unowned | **Download Free** | Adds title to library and initiates download |
+| **Paid, Unowned** | `currentUser` + `price > 0` + unowned | **Buy $X.XX** | Opens confirmation modal before acquisition |
+| **Owned** | `isOwned === true` | **Download** | Initiates file delivery immediately |
+| **Soft-deleted** | `deletedAt !== undefined` | **Unavailable** | Disabled (no action) |
 
-### The Free vs. Paid Branch
+---
 
-The flow diverges at the initial click for unowned games:
-- Free games immediately create a library entry.
-- Paid games open a modal (Title, Price, Confirm/Cancel). No fake payment fields are required.
+## Decision tree and sequence flow
 
-The flow converges after the specific action completes. Both branches end by creating a `LibraryEntry` and transitioning the button to the "Owned" state.
-
-## Trade-off
-
-Requiring an account to download free games adds friction for users. However, it simplifies the architecture by forcing all downloads through the same auth-gated pipeline. This exercises more code paths (registration, library tracking) and keeps the data model consistent.
+The following diagram illustrates how authentication, ownership, and pricing checks branch during the download process:
 
 ```mermaid
 flowchart TD
@@ -77,3 +77,17 @@ flowchart TD
     class DL_DIRECT,AUTO_DL,UPDATE_SIGNAL_FREE,UPDATE_SIGNAL_PAID success;
     class CLOSE_MODAL cancel;
 ```
+
+---
+
+## Architectural trade-offs
+
+Requiring user registration prior to downloading free titles introduces minor friction for first-time visitors. However, this design ensures that all library acquisitions, download telemetry, and user ownership records flow through a single verified pipeline.
+
+---
+
+## Related documentation
+
+* [Tutorial: Implementing the Gated Download Flow](./tutorial-download-flow.md)
+* [Routes & Guards Reference](./reference-routes-guards.md)
+* [Data Models Reference](./reference-data-models.md)

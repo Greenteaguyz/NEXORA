@@ -1,0 +1,231 @@
+<div class="orders-page-container">
+  <!-- Top Header Banner -->
+  <header class="orders-header">
+    <div class="orders-header-main">
+      <div class="title-cluster">
+        <div class="header-icon-box" aria-hidden="true">
+          <svg class="header-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+        </div>
+        <div>
+          <h1 class="orders-title">Purchase History</h1>
+          <p class="orders-subtitle">Review your past orders and view official receipts.</p>
+        </div>
+      </div>
+
+      <div class="orders-stats-cluster">
+        <div class="orders-stats-pill" aria-label="Total orders">
+          <span class="stats-count">{{ items.length }}</span>
+          <span class="stats-label">{{ items.length === 1 ? 'Purchase' : 'Purchases' }}</span>
+        </div>
+        <div class="orders-stats-pill total" aria-label="Total spent">
+          <span class="stats-count highlight">${{ totalSpent.toFixed(2) }}</span>
+          <span class="stats-label">Total Spent</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Stage -->
+  <main class="orders-main-content">
+    @if (loading) {
+      <app-loading-spinner size="lg" label="Loading your orders..."></app-loading-spinner>
+    } @else if (items.length === 0) {
+      <app-empty-state 
+        icon="🧾" 
+        title="No Orders Yet" 
+        message="You haven't made any game purchases yet. When you buy or download games, your receipts will appear here."
+        actionLabel="Explore Games"
+        [routerLink]="['/catalog']">
+      </app-empty-state>
+    } @else {
+      <!-- Desktop & Tablet Orders Table -->
+      <div class="orders-table-wrapper" role="region" aria-label="Order history table">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th scope="col">Order ID</th>
+              <th scope="col">Game Title</th>
+              <th scope="col">Date</th>
+              <th scope="col">Amount</th>
+              <th scope="col">Status</th>
+              <th scope="col" class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of items; track item.order.id) {
+              <tr class="order-row">
+                <!-- Order ID -->
+                <td class="cell-id">
+                  <span class="order-id-code">{{ item.order.id }}</span>
+                </td>
+
+                <!-- Game Info -->
+                <td class="cell-game">
+                  @if (item.game) {
+                    <div class="game-cell-wrap">
+                      <img [src]="item.game.coverImageUrl" [alt]="item.game.title" class="game-cell-thumb">
+                      <div>
+                        <a [routerLink]="['/games', item.game.id]" class="game-cell-title">
+                          {{ item.game.title }}
+                        </a>
+                        <div class="game-cell-tags">
+                          @for (t of item.game.tags.slice(0, 2); track t) {
+                            <span class="cell-tag">#{{ t }}</span>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  } @else {
+                    <span class="game-fallback-text">Archived Title (ID: {{ item.order.gameId }})</span>
+                  }
+                </td>
+
+                <!-- Date -->
+                <td class="cell-date">
+                  {{ formatOrderDate(item.order.createdAt) }}
+                </td>
+
+                <!-- Amount -->
+                <td class="cell-price">
+                  <span class="price-value" [class.free]="item.order.price === 0">
+                    {{ item.order.price === 0 ? 'FREE' : '$' + item.order.price.toFixed(2) }}
+                  </span>
+                </td>
+
+                <!-- Status -->
+                <td class="cell-status">
+                  <span class="status-badge" [class.confirmed]="item.order.status === 'confirmed'">
+                    <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    {{ item.order.status === 'confirmed' ? 'Completed' : item.order.status }}
+                  </span>
+                </td>
+
+                <!-- Actions -->
+                <td class="cell-actions text-right">
+                  <button 
+                    type="button" 
+                    class="btn-view-receipt" 
+                    (click)="viewReceipt(item)"
+                    [attr.aria-label]="'View receipt for order ' + item.order.id">
+                    <svg class="receipt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                    </svg>
+                    <span>Receipt</span>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </main>
+
+  <!-- Detailed Receipt Modal -->
+  @if (selectedReceiptOrder) {
+    <div 
+      class="receipt-backdrop" 
+      role="dialog" 
+      aria-modal="true" 
+      aria-label="Order Receipt"
+      (click)="closeReceipt()">
+      
+      <div class="receipt-modal-card" (click)="$event.stopPropagation()">
+        <!-- Receipt Header -->
+        <div class="receipt-modal-header">
+          <div class="receipt-brand">
+            <span class="brand-name">NEXORA</span>
+            <span class="receipt-stamp">OFFICIAL RECEIPT</span>
+          </div>
+          <button type="button" class="btn-close-receipt" (click)="closeReceipt()" aria-label="Close receipt">✕</button>
+        </div>
+
+        <!-- Receipt Content -->
+        <div class="receipt-modal-body">
+          <div class="receipt-meta-grid">
+            <div class="meta-item">
+              <span class="meta-title">Order ID</span>
+              <span class="meta-content mono">{{ selectedReceiptOrder.order.id }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-title">Date & Time</span>
+              <span class="meta-content">{{ formatOrderDate(selectedReceiptOrder.order.createdAt) }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-title">Payment Method</span>
+              <span class="meta-content">Direct Checkout</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-title">License</span>
+              <span class="meta-content highlight-emerald">100% DRM-Free</span>
+            </div>
+          </div>
+
+          <div class="receipt-divider"></div>
+
+          <!-- Item Details -->
+          <div class="receipt-item-row">
+            <div class="receipt-item-info">
+              <strong class="item-title">{{ selectedReceiptOrder.game?.title || 'Game Package' }}</strong>
+              <span class="item-desc">Standalone Game for Windows & Linux</span>
+            </div>
+            <div class="receipt-item-price">
+              ${{ selectedReceiptOrder.order.price.toFixed(2) }}
+            </div>
+          </div>
+
+          <div class="receipt-divider"></div>
+
+          <!-- Total Calculation -->
+          <div class="receipt-calc-table">
+            <div class="calc-row">
+              <span>Subtotal</span>
+              <span>${{ selectedReceiptOrder.order.price.toFixed(2) }}</span>
+            </div>
+            <div class="calc-row">
+              <span>Developer Share (90%)</span>
+              <span>${{ (selectedReceiptOrder.order.price * 0.9).toFixed(2) }}</span>
+            </div>
+            <div class="calc-row">
+              <span>Platform Fee (10%)</span>
+              <span>${{ (selectedReceiptOrder.order.price * 0.1).toFixed(2) }}</span>
+            </div>
+            <div class="calc-row total-row">
+              <strong>Total Paid</strong>
+              <strong class="total-amount">${{ selectedReceiptOrder.order.price.toFixed(2) }}</strong>
+            </div>
+          </div>
+
+          <div class="receipt-security-note">
+            <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span>Verified receipt from NEXORA.</span>
+          </div>
+        </div>
+
+        <!-- Receipt Actions -->
+        <div class="receipt-modal-footer">
+          <button type="button" class="btn-print" (click)="printReceipt()">
+            <svg class="print-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 6 2 18 2 18 9"/>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+              <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+            <span>Print Receipt</span>
+          </button>
+          <button type="button" class="btn-done" (click)="closeReceipt()">Done</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

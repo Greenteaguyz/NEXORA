@@ -7,11 +7,11 @@
         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
         <line x1="12" y1="17" x2="12.01" y2="17"/>
       </svg>
-      <span>Help & Documentation Center</span>
+      <span>Help Center</span>
     </div>
-    <h1 class="support-title">How Can We Help You?</h1>
+    <h1 class="support-title">How Can We Help?</h1>
     <p class="support-subtitle">
-      Explore platform guides, troubleshoot issues, or connect with our support team.
+      Find quick answers about downloads, game files, accounts, and publishing.
     </p>
 
     <!-- Quick-Triage Hub Cards -->
@@ -25,8 +25,8 @@
           </svg>
         </div>
         <div class="triage-content">
-          <strong class="triage-title">Downloads & Ownership</strong>
-          <span class="triage-desc">Offline play, save files & standalone installers</span>
+          <strong class="triage-title">Downloads & Offline Play</strong>
+          <span class="triage-desc">Installing games, save files & playing offline</span>
         </div>
         <svg class="triage-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <polyline points="9 18 15 12 9 6"/>
@@ -42,7 +42,7 @@
         </div>
         <div class="triage-content">
           <strong class="triage-title">Creator Studio</strong>
-          <span class="triage-desc">Publishing games, media & 90/10 split</span>
+          <span class="triage-desc">Publishing games, artwork & earnings</span>
         </div>
         <svg class="triage-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <polyline points="9 18 15 12 9 6"/>
@@ -58,7 +58,7 @@
         </div>
         <div class="triage-content">
           <strong class="triage-title">Privacy & Storage</strong>
-          <span class="triage-desc">IndexedDB, zero tracking & sandbox data</span>
+          <span class="triage-desc">No tracking, local storage & security</span>
         </div>
         <svg class="triage-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <polyline points="9 18 15 12 9 6"/>
@@ -81,7 +81,7 @@
         </div>
         <div class="section-header-text">
           <h2 id="heading-faq" class="section-title">Frequently Asked Questions</h2>
-          <span class="section-desc">Instant answers to platform mechanics & store policies</span>
+          <span class="section-desc">Quick answers to common questions</span>
         </div>
       </div>
 
@@ -96,7 +96,7 @@
             type="text" 
             [(ngModel)]="searchQuery" 
             class="faq-search-input" 
-            placeholder="Search FAQs, game ownership, publishing rules..." 
+            placeholder="Search questions or topics..." 
             aria-label="Search FAQs">
           @if (searchQuery) {
             <button type="button" class="faq-clear-btn" (click)="clearSearch()" aria-label="Clear search input">✕</button>

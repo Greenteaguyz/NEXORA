@@ -8,7 +8,12 @@
 
     <!-- 1-Click Demo Account Autofill Box -->
     <div class="demo-box">
-      <div class="demo-box-label">⚡ 1-Click Demo Quick-Fill</div>
+      <div class="demo-box-label">
+        <svg class="demo-bolt-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        <span>1-Click Demo Quick-Fill</span>
+      </div>
       <div class="demo-account-pills">
         <button type="button" class="demo-btn" (click)="fillDemo('alice@nexora.io')">Alice (Creator)</button>
         <button type="button" class="demo-btn" (click)="fillDemo('bob@nexora.io')">Bob (Buyer)</button>

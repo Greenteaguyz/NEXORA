@@ -1,29 +1,38 @@
-# Tutorial: Implementing the Download Flow
+# Tutorial: Implementing the gated download flow
 
-The gated download flow is the showcase feature of **NEXORA**. This tutorial walks you through building the complete chain, from an anonymous user clicking a download button to delivering the file.
+The gated download flow is a core feature in NEXORA. This tutorial walks you through building the complete download chain, from an unauthenticated user clicking the download button to delivering a local file.
 
-For architectural context, review the [Download Flow Explanation](./explanation-download-flow.md).
+For architectural design context, see [Architecture of the Gated Download Flow](./explanation-download-flow.md).
 
-## What You Will Build
+---
 
-You will implement a **presentational** `DownloadButtonComponent` and wire it into `GameDetailComponent`, which owns the actual auth, library, order, and file-download service calls. The button only knows about the `game` and `isOwned` inputs it's given; it emits `download`, `loginRequired`, or `purchaseConfirmed` events, and the page component listens for those events to perform the corresponding data mutation. This keeps the button reusable on both the Game Detail and Library pages — see its full input/output contract in the [Pages & Components Map](./pages_components_map.md).
+## Before you begin
 
-You will implement all five states:
-1. Anonymous user (redirects to login)
-2. Free, unowned game (adds to library, triggers download)
-3. Paid, unowned game (opens purchase confirmation, adds to library, triggers download)
-4. Owned game (triggers download directly)
-5. Deleted game (shows unavailable status)
+Ensure you have completed [Tutorial: Getting Started](./tutorial-getting-started.md) and created the core data models and service tokens.
 
-## Step 1: Create the Download Button Component
+---
 
-Generate a new standalone component for the button:
+## Download state machine
+
+The download button component manages five distinct states:
+
+1. **Anonymous user**: Directs user to the login screen with a `returnUrl` parameter.
+2. **Free, unowned game**: Adds the game to the user's library and initiates the download.
+3. **Paid, unowned game**: Opens the purchase confirmation modal, creates an order, adds the title to the library, and initiates the download.
+4. **Owned game**: Directly initiates the file download.
+5. **Deleted game**: Displays an "Unavailable" disabled state.
+
+---
+
+## Step 1: Create the download button component
+
+Generate a standalone component for the button:
 
 ```bash
 ng generate component shared/ui/download-button
 ```
 
-Update `src/app/shared/ui/download-button/download-button.component.ts`. The button computes its label and disabled state purely from its `game` and `isOwned` inputs, plus the shared `currentUser` signal it reads (but never mutates) from `AuthService`:
+Update `src/app/shared/ui/download-button/download-button.component.ts`. The component calculates its label and disabled state based on its `game` and `isOwned` inputs, as well as the active `currentUser` signal from `AuthService`:
 
 ```typescript
 import { Component, Input, Output, EventEmitter, computed, inject } from '@angular/core';
@@ -51,10 +60,8 @@ export class DownloadButtonComponent {
 
   private auth = inject(AuthService);
 
-  // `deletedAt` (not a `status` string) marks a soft-deleted game — see reference-data-models.md
   isDeleted = computed(() => !!this.game.deletedAt);
   isLoggedIn = computed(() => this.auth.currentUser() !== null);
-  // `price === 0` (not a separate `isFree` flag) marks a free game — see reference-data-models.md
   isFree = computed(() => this.game.price === 0);
 
   buttonText = computed(() => {
@@ -82,18 +89,16 @@ export class DownloadButtonComponent {
       return;
     }
 
-    // Paid + unowned: the button doesn't own the purchase modal (see Step 4),
-    // it just tells the parent the buy flow should start.
     this.purchaseConfirmed.emit();
   }
 }
 ```
 
-Notice this component never injects `Router`, `LibraryDataService`, `OrderService`, or `DownloadService` — those all belong to the page component that hosts the button, wired up next.
+---
 
-## Step 2: Handle Login Redirects in GameDetailComponent
+## Step 2: Handle login redirects in GameDetailComponent
 
-`GameDetailComponent` owns navigation. It listens for the button's `loginRequired` output and redirects, preserving the current page via `returnUrl`.
+`GameDetailComponent` manages page-level navigation. It captures the button's `loginRequired` event and navigates to the login route, preserving the current page via query parameters:
 
 ```typescript
 import { Component, inject, signal } from '@angular/core';
@@ -103,7 +108,7 @@ import { DownloadButtonComponent } from '../../shared/ui/download-button/downloa
 @Component({
   selector: 'app-game-detail',
   standalone: true,
-  imports: [DownloadButtonComponent /* ...other imports */],
+  imports: [DownloadButtonComponent],
   template: `
     <app-download-button
       [game]="game()!"
@@ -125,11 +130,13 @@ export class GameDetailComponent {
 }
 ```
 
-For more details on routing, see the [Routes and Guards Reference](./reference-routes-guards.md).
+For routing rules, see the [Routes & Guards Reference](./reference-routes-guards.md).
 
-## Step 3: Implement the Free & Owned Download Paths
+---
 
-The button emits `download` in two cases: the game is already owned, or it's free and unowned. `GameDetailComponent` injects the `LIBRARY_DATA` token and a `DownloadService` to complete either path.
+## Step 3: Implement free and owned download paths
+
+When an owned or free game is clicked, the button emits `download`. `GameDetailComponent` injects `LIBRARY_DATA` and `DownloadService` to process the file delivery:
 
 ```typescript
 import { inject } from '@angular/core';
@@ -151,8 +158,6 @@ export class GameDetailComponent {
       return;
     }
 
-    // Unowned only reaches here for free games — the button routes paid +
-    // unowned clicks to purchaseConfirmed() instead (see Step 4).
     this.library.addToLibrary(userId, game.id).subscribe(() => {
       this.isOwned.set(true);
       this.triggerDownload(game.id);
@@ -165,9 +170,11 @@ export class GameDetailComponent {
 }
 ```
 
-## Step 4: Implement the Paid Purchase Path
+---
 
-For paid games, `purchaseConfirmed` tells `GameDetailComponent` to open `PurchaseConfirmModalComponent`. The modal is rendered as a sibling of the download button, not nested inside it — this is what lets the same `DownloadButtonComponent` be reused on the Library page, which never needs a purchase modal.
+## Step 4: Implement the paid purchase flow
+
+For paid games, `purchaseConfirmed` signals `GameDetailComponent` to open `PurchaseConfirmModalComponent`:
 
 ```typescript
 import { signal, inject } from '@angular/core';
@@ -210,68 +217,68 @@ export class GameDetailComponent {
 }
 ```
 
-## Step 5: Wire the Library Page
+---
 
-The library page displays the user's owned games. Every entry here is, by definition, owned — `LibraryComponent` always passes `[isOwned]="true"` and only needs to handle the `download` output, since `loginRequired` and `purchaseConfirmed` can never fire behind `authGuard`.
+## Step 5: Wire the library page
 
-Generate the component:
+The Library page displays games that the user already owns. `LibraryComponent` passes `[isOwned]="true"` and binds the `download` output event:
 
-```bash
-ng generate component features/library
-```
+1. Generate the library component:
+   ```bash
+   ng generate component features/library
+   ```
 
-Update `src/app/features/library/library.component.ts`:
+2. Update `src/app/features/library/library.component.ts`:
+   ```typescript
+   import { Component, inject } from '@angular/core';
+   import { CommonModule } from '@angular/common';
+   import { LIBRARY_DATA } from '../../core/data/tokens';
+   import { DownloadService } from '../../core/services/download.service';
+   import { DownloadButtonComponent } from '../../shared/ui/download-button/download-button.component';
 
-```typescript
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { LIBRARY_DATA } from '../../core/data/tokens';
-import { DownloadService } from '../../core/services/download.service';
-import { DownloadButtonComponent } from '../../shared/ui/download-button/download-button.component';
+   @Component({
+     selector: 'app-library',
+     standalone: true,
+     imports: [CommonModule, DownloadButtonComponent],
+     template: `
+       <div class="library-container">
+         <h2>My Games</h2>
+         <div class="game-grid">
+           @for (entry of libraryEntries(); track entry.game.id) {
+             <div class="game-card">
+               <h3>{{ entry.game.title }}</h3>
+               <app-download-button
+                 [game]="entry.game"
+                 [isOwned]="true"
+                 (download)="downloadService.downloadGameFile(entry.game.id)">
+               </app-download-button>
+             </div>
+           }
+         </div>
+       </div>
+     `
+   })
+   export class LibraryComponent {
+     private libraryData = inject(LIBRARY_DATA);
+     protected downloadService = inject(DownloadService);
+     libraryEntries = /* ... */ null!;
+   }
+   ```
 
-@Component({
-  selector: 'app-library',
-  standalone: true,
-  imports: [CommonModule, DownloadButtonComponent],
-  template: `
-    <div class="library-container">
-      <h2>My Games</h2>
-      <div class="game-grid">
-        @for (entry of libraryEntries(); track entry.game.id) {
-          <div class="game-card">
-            <h3>{{ entry.game.title }}</h3>
-            <app-download-button
-              [game]="entry.game"
-              [isOwned]="true"
-              (download)="downloadService.downloadGameFile(entry.game.id)">
-            </app-download-button>
-          </div>
-        }
-      </div>
-    </div>
-  `
-})
-export class LibraryComponent {
-  private libraryData = inject(LIBRARY_DATA);
-  protected downloadService = inject(DownloadService);
-  // Enriched signal combining LibraryEntry with its resolved Game record —
-  // see LIBRARY_DATA.getLibrary() and GAMES_DATA.getGameById() in
-  // reference-api-services.md.
-  libraryEntries = /* ... */ null!;
-}
-```
+---
 
-## Step 6: Handle Soft-Deleted Games
+## Step 6: Verify soft-deletion handling
 
-Creators can unpublish games via the soft-delete pattern described in the [Data Models Reference](./reference-data-models.md): `deleteGame()` sets `Game.deletedAt` rather than removing the record. Because `DownloadButtonComponent`'s `isDeleted` signal already reads `game.deletedAt` (Step 1), the button automatically disables itself and displays "Unavailable" once a game's `deletedAt` field is populated — on the Game Detail page and on the Library page alike. No extra wiring is needed here.
+When creators unpublish a game, `deleteGame()` assigns a timestamp to `Game.deletedAt`. Because `DownloadButtonComponent` computes `isDeleted = computed(() => !!this.game.deletedAt)`, the button automatically disables itself and displays **Unavailable** without requiring custom logic on parent views.
 
-## What You Built
+---
 
-You successfully implemented a robust download flow that gracefully handles all possible states:
+## Summary and next steps
 
-1. **Authentication:** The button emits `loginRequired`; the page owns the redirect and the `returnUrl`.
-2. **Purchasing:** The button emits `purchaseConfirmed`; the page owns the modal, the order creation, and the library entry.
-3. **Library Management:** Both the free and paid paths converge on the same `LIBRARY_DATA.addToLibrary()` call.
-4. **Resiliency:** `game.deletedAt` disables the button no matter which page renders it.
+You have implemented:
+1. Presentational state rendering in `DownloadButtonComponent`.
+2. Auth redirection with query parameter preservation in `GameDetailComponent`.
+3. Unified library acquisition for free and paid titles.
+4. Download integration on both catalog and library pages.
 
-Next, check out the [Data Models Reference](./reference-data-models.md) or explore the details of the [DI Abstraction](./explanation-di-abstraction.md).
+To review service contracts, see the [API & Data Services Reference](./reference-api-services.md).

@@ -1,0 +1,149 @@
+:host {
+  display: inline-block;
+}
+
+.nexora-download-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  border-radius: var(--radius);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  user-select: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-decoration: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.nexora-download-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Progress Fill Overlay */
+.progress-bar-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(52, 211, 153, 0.4) 0%, rgba(16, 185, 129, 0.85) 100%);
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 0;
+  border-radius: var(--radius);
+}
+
+:host-context([data-theme="light"]) .progress-bar-fill {
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.3) 0%, rgba(5, 150, 105, 0.9) 100%);
+}
+
+.phase-completed .progress-bar-fill {
+  background: linear-gradient(90deg, #059669 0%, #10B981 100%);
+}
+
+.btn-label, .btn-icon {
+  position: relative;
+  z-index: 2;
+}
+
+/* Size Variants */
+.btn-sm {
+  padding: 6px 14px;
+  font-size: 0.825rem;
+  border-radius: var(--radius-sm);
+  min-height: 32px;
+}
+.btn-sm .btn-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.btn-md {
+  padding: 10px 22px;
+  font-size: 0.95rem;
+  min-height: 42px;
+}
+.btn-md .btn-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-lg {
+  padding: 14px 30px;
+  font-size: 1.1rem;
+  border-radius: var(--radius-lg);
+  min-height: 52px;
+}
+.btn-lg .btn-icon {
+  width: 22px;
+  height: 22px;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+/* State Themes */
+.btn-primary, .btn-download {
+  background: linear-gradient(135deg, var(--accent-600) 0%, var(--accent-700) 100%);
+  color: #FFFFFF;
+  border-color: rgba(167, 139, 250, 0.4);
+}
+.btn-primary:hover:not(:disabled), .btn-download:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--accent-500) 0%, var(--accent-600) 100%);
+  box-shadow: 0 0 16px rgba(124, 58, 237, 0.5);
+  border-color: rgba(167, 139, 250, 0.8);
+}
+
+.btn-buy {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: #FFFFFF;
+  border-color: rgba(52, 211, 153, 0.4);
+}
+.btn-buy:hover:not(:disabled) {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.5);
+  border-color: rgba(52, 211, 153, 0.8);
+}
+
+.btn-unavailable {
+  background: var(--bg-elevated);
+  color: var(--text-muted);
+  border-color: var(--border-card);
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+}
+.btn-unavailable:hover {
+  transform: none;
+}
+
+.check-icon {
+  color: #A7F3D0;
+}
+
+/* Dynamic Animation States */
+.spinner-animated {
+  animation: spin 1s linear infinite;
+}
+
+.checkmark-animated {
+  color: #FFFFFF;
+  animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.6); opacity: 0; }
+  70% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}

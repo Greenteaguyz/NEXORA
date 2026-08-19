@@ -60,7 +60,9 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  max-width: 1040px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
 }
 
@@ -1103,7 +1105,25 @@
 .svg-icon-sm { width: 18px; height: 18px; }
 .svg-icon-md { width: 22px; height: 22px; }
 
-@media (max-width: 960px) {
+.triage-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-card);
+  outline: none;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1100px) {
   .triage-cards-grid {
     grid-template-columns: 1fr;
   }
@@ -1119,5 +1139,14 @@
 
   .form-row-dual {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .support-page {
+    padding: 16px 12px;
+  }
+  .topic-card {
+    padding: 14px 12px;
   }
 }

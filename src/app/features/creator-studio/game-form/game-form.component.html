@@ -1,0 +1,193 @@
+<div class="game-form-page-container">
+  <!-- Top Navigation & Header -->
+  <header class="form-header">
+    <a routerLink="/studio" class="back-to-studio-link">
+      <svg class="arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"/>
+        <polyline points="12 19 5 12 12 5"/>
+      </svg>
+      <span>Back to Creator Studio</span>
+    </a>
+
+    <div class="form-title-wrap">
+      <h1 class="form-title">
+        {{ isEditMode ? 'Edit Game Listing' : 'Publish New Game' }}
+      </h1>
+      <p class="form-subtitle">
+        {{ isEditMode ? 'Update your store showcase, adjust pricing, or refine game tags.' : 'Fill out your game metadata, configure DRM-free pricing, and publish directly to the NEXORA catalog.' }}
+      </p>
+    </div>
+  </header>
+
+  @if (loading) {
+    <app-loading-spinner size="lg" label="Loading game data..."></app-loading-spinner>
+  } @else {
+    <!-- Main Form & Live Preview Layout -->
+    <div class="form-layout-grid">
+      <!-- Left: Interactive Form -->
+      <form [formGroup]="gameForm" (ngSubmit)="onSubmit()" class="game-editor-form" novalidate>
+        @if (errorMessage) {
+          <div class="alert-banner danger" role="alert">
+            <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <span>{{ errorMessage }}</span>
+          </div>
+        }
+
+        <!-- General Info Section -->
+        <section class="form-section">
+          <h2 class="section-title">1. General Information</h2>
+          
+          <div class="form-field">
+            <label for="title" class="field-label">Game Title <span class="req">*</span></label>
+            <input 
+              id="title" 
+              type="text" 
+              formControlName="title" 
+              placeholder="e.g. Cyberpunk: Neon Shadow" 
+              class="form-input"
+              [class.field-error]="gameForm.get('title')?.invalid && gameForm.get('title')?.touched">
+            @if (gameForm.get('title')?.invalid && gameForm.get('title')?.touched) {
+              <span class="field-error-msg">Title is required (2–100 characters).</span>
+            }
+          </div>
+
+          <div class="form-field">
+            <label for="description" class="field-label">Game Description / Story <span class="req">*</span></label>
+            <textarea 
+              id="description" 
+              formControlName="description" 
+              rows="4" 
+              placeholder="Describe gameplay mechanics, world story, and standalone features..."
+              class="form-textarea"
+              [class.field-error]="gameForm.get('description')?.invalid && gameForm.get('description')?.touched"></textarea>
+            @if (gameForm.get('description')?.invalid && gameForm.get('description')?.touched) {
+              <span class="field-error-msg">Description must be at least 10 characters.</span>
+            }
+          </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="form-section">
+          <h2 class="section-title">2. Pricing & Distribution</h2>
+          <div class="form-field">
+            <label for="price" class="field-label">Unit Price ($ USD) <span class="req">*</span></label>
+            <div class="price-input-wrapper">
+              <span class="currency-prefix">$</span>
+              <input 
+                id="price" 
+                type="number" 
+                step="0.01" 
+                min="0" 
+                formControlName="price" 
+                class="form-input price-input"
+                [class.field-error]="gameForm.get('price')?.invalid && gameForm.get('price')?.touched">
+            </div>
+            <span class="field-help-text">Set to 0.00 for free distribution. You retain 90%+ of all paid sales.</span>
+            @if (gameForm.get('price')?.invalid && gameForm.get('price')?.touched) {
+              <span class="field-error-msg">Price must be 0 or greater.</span>
+            }
+          </div>
+        </section>
+
+        <!-- Tags Section -->
+        <section class="form-section">
+          <h2 class="section-title">3. Genres & Tags</h2>
+          <div class="form-field">
+            <label class="field-label">Store Tags (1–5 tags) <span class="req">*</span></label>
+            <app-tag-chip-input formControlName="tags"></app-tag-chip-input>
+          </div>
+        </section>
+
+        <!-- Artwork & Showcase Section -->
+        <section class="form-section">
+          <h2 class="section-title">4. Cover Artwork & Visuals</h2>
+          
+          <!-- Preset Selector -->
+          <div class="preset-selector-box">
+            <span class="preset-label">Quick-select artwork theme preset:</span>
+            <div class="preset-grid">
+              @for (preset of artworkPresets; track preset.name) {
+                <button 
+                  type="button" 
+                  class="preset-card-btn" 
+                  [class.selected]="gameForm.get('coverImageUrl')?.value === preset.coverUrl"
+                  (click)="applyPreset(preset)">
+                  <img [src]="preset.coverUrl" [alt]="preset.name" class="preset-thumb">
+                  <span class="preset-name">{{ preset.name }}</span>
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="coverImageUrl" class="field-label">Cover Image Asset URL <span class="req">*</span></label>
+            <input 
+              id="coverImageUrl" 
+              type="text" 
+              formControlName="coverImageUrl" 
+              class="form-input"
+              [class.field-error]="gameForm.get('coverImageUrl')?.invalid && gameForm.get('coverImageUrl')?.touched">
+            @if (gameForm.get('coverImageUrl')?.invalid && gameForm.get('coverImageUrl')?.touched) {
+              <span class="field-error-msg">Cover image URL is required.</span>
+            }
+          </div>
+        </section>
+
+        <!-- Submit & Actions -->
+        <div class="form-actions-footer">
+          <a routerLink="/studio" class="btn-cancel">Cancel</a>
+          <button type="submit" class="btn-submit" [disabled]="submitting || gameForm.invalid">
+            @if (submitting) {
+              <span class="spinner-sm"></span>
+              <span>Saving Listing...</span>
+            } @else {
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>{{ isEditMode ? 'Update Listing' : 'Publish Game Listing' }}</span>
+            }
+          </button>
+        </div>
+      </form>
+
+      <!-- Right: Live Storefront Card Preview -->
+      <aside class="form-preview-aside" aria-label="Live Storefront Preview">
+        <div class="preview-sticky-wrap">
+          <div class="preview-header-tag">
+            <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <span>Live Catalog Preview</span>
+          </div>
+
+          <!-- Card Mockup -->
+          <div class="preview-game-card">
+            <div class="preview-cover-wrap">
+              <img [src]="previewCover" [alt]="previewTitle + ' Preview'" class="preview-cover-img">
+              <span class="preview-price-badge" [class.free]="previewPrice === 0">
+                {{ previewPrice === 0 ? 'FREE' : '$' + previewPrice.toFixed(2) }}
+              </span>
+            </div>
+
+            <div class="preview-card-body">
+              <h3 class="preview-card-title">{{ previewTitle }}</h3>
+              <div class="preview-tags-row">
+                @for (t of previewTags.slice(0, 3); track t) {
+                  <span class="preview-tag">#{{ t }}</span>
+                }
+              </div>
+              <div class="preview-footer">
+                <span class="preview-distribution">100% DRM-Free Standalone</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  }
+</div>

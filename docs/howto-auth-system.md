@@ -1,18 +1,25 @@
-# How to set up the auth system
+# How to set up the authentication and guard system
 
-This guide explains how to set up the authentication and authorization system for **NEXORA**. For context on route protection, see the [Routes and Guards Reference](reference-routes-guards.md). For getting started, see the [Getting Started Tutorial](tutorial-getting-started.md).
+This guide explains how to configure the authentication and authorization system in NEXORA using Angular Signals and functional router guards.
 
-## Prerequisites
+For routing configuration details, see the [Routes & Guards Reference](./reference-routes-guards.md).
 
-- A `core/auth/` folder to contain auth-related logic.
-- An `AuthService` interface defined.
-- The persistence layer configured (e.g., IndexedDB/localStorage).
+---
 
-## Steps
+## Before you begin
 
-### 1. Create AuthService with Signals
+Verify that you have:
+* Created the `src/app/core/auth/` directory.
+* Defined the `User` model interface in `src/app/core/models/user.model.ts`.
+* Configured local state persistence in `LocalStoreService`.
 
-Implement the `AuthService` using Angular signals to store the current user state. This allows components to reactively update when the user logs in or out.
+---
+
+## Procedure
+
+### 1. Create AuthService using Angular Signals
+
+Implement `AuthService` with a private writable signal and public readonly signal for reactive user state:
 
 ```typescript
 @Injectable({ providedIn: 'root' })
@@ -23,37 +30,57 @@ export class MockAuthService implements AuthService {
 }
 ```
 
-### 2. Implement the Mock Auth Logic
+### 2. Implement the mock authentication provider
 
-Create `auth.mock.ts`. The mock login checks the email against the seeded users in `UsersDataService`. It ignores the password entirely. Display demo account pills (`alice@nexora.io`, `bob@nexora.io`, `carol@nexora.io`) on the login screen to help users find the demo accounts.
+Create `src/app/core/auth/auth.mock.ts`. The mock authentication provider verifies emails against seeded users in `UsersDataService`. Display demo account pills (`alice@nexora.io`, `bob@nexora.io`, `carol@nexora.io`) on the login screen to allow single-click login during testing.
 
 ### 3. Create the authGuard
 
-Create `authGuard` to protect private routes. If the user is not authenticated, redirect them to the login page and pass the requested URL in a `returnUrl` query parameter.
+Create `src/app/core/auth/auth.guard.ts` to protect private routes. If a user is unauthenticated, redirect them to `/login` and pass the attempted URL in the `returnUrl` query parameter:
+
+```typescript
+export const authGuard: CanActivateFn = (route, state) => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (auth.currentUser()) {
+    return true;
+  }
+
+  return router.createUrlTree(['/login'], {
+    queryParams: { returnUrl: state.url }
+  });
+};
+```
 
 ### 4. Create the roleGuard
 
-Create `roleGuard` to protect routes that require specific roles (like the creator studio). Check the `roles` array on the user object (`roles: ('buyer' | 'creator')[]`). If a buyer attempts to access a creator route, redirect them to `/catalog`.
+Create `roleGuard` to restrict access to creator routes such as Creator Studio. Verify that `currentUser().roles` contains `'creator'`. If an unauthorized buyer accesses the route, redirect them to `/catalog`.
 
 ### 5. Create the ownershipGuard
 
-Create `ownershipGuard` to protect creator edit routes. Inject the `GAMES_DATA` InjectionToken. Check if the current user ID matches the game's `ownerId`. If not, redirect or show an error.
+Create `ownershipGuard` to protect creator edit routes. Inject the `GAMES_DATA` injection token, retrieve the game ID from route params, and verify that `currentUser().id === game.ownerId`. If the IDs do not match, redirect to `/studio`.
 
-### 6. Wire the Registration & Social Auth Form
+### 6. Wire registration and social authentication
 
-Build the auth form that supports:
-1. Standard email, password, and the "I want to publish games (Creator Studio)" toggle.
-2. **Google & Apple Social Sign-In buttons** styled as clean outline action buttons using inline SVG vector icons (no PNG image files).
-3. Clicking Google or Apple simulates an OAuth authentication handshake, auto-hydrates the mock session in `AuthService`, and redirects the user to their `returnUrl`.
+Configure the registration component:
+1. Provide form fields for email, password, and the **I want to publish games (Creator Studio)** toggle.
+2. Add **Google** and **Apple** social sign-in buttons with inline SVG icons.
+3. Simulate OAuth authentication on click, auto-hydrate the mock user session in `AuthService`, and redirect to `returnUrl`.
 
-## Verification
+---
 
-1. Start the application.
-2. Log in using a seeded buyer email (e.g., `bob@nexora.io`).
-3. Verify the navigation bar updates to show buyer-specific links.
-4. Try accessing `/studio` directly in the URL bar. Verify it redirects you to the catalog.
+## Verify your configuration
+
+1. Start the development server using `npm start`.
+2. Sign in using a buyer account (`bob@nexora.io`).
+3. Verify that the navigation header updates to show buyer links.
+4. Navigate manually to `/studio` in your browser address bar.
+5. Verify that the router redirects you to `/catalog`.
+
+---
 
 ## Troubleshooting
 
-- **`returnUrl` not working:** Check that the `authGuard` properly reads the `RouterStateSnapshot.url` and passes it to `createUrlTree`.
-- **Role mismatch after login:** Ensure the mock login function properly sets the user object in the signal and that local storage correctly persists the `roles` array.
+* **`returnUrl` is not preserved:** Verify that `authGuard` extracts `state.url` from `RouterStateSnapshot` and includes it in `createUrlTree`.
+* **Role mismatch after login:** Ensure that `currentUserSignal.set(user)` executes properly and that `LocalStoreService` persists the `roles` array.

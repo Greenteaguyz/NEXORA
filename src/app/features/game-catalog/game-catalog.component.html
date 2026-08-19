@@ -1,24 +1,27 @@
 <div class="catalog-page">
   <!-- Hero Banner -->
   <header class="catalog-hero">
-    <div class="hero-badge">Cyberpunk & Indie Distribution</div>
-    <h1 class="hero-title">Discover Indie Games — Yours Forever</h1>
+    <div class="hero-badge">Indie & DRM-Free Games</div>
+    <h1 class="hero-title">Discover Great Indie Games</h1>
     <p class="hero-subtitle">
-      Explore cutting-edge synthwave adventures, tactical roguelikes, and immersive cyberpunk worlds. Standalone downloads with true gamer ownership.
+      Download and play offline anytime. Buy once, own forever with no extra launchers required.
     </p>
 
     <!-- Search Bar & Filters -->
     <div class="search-bar-container">
       <div class="search-input-wrapper">
-        <span class="search-icon">🔍</span>
+        <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
         <input 
           type="text" 
           id="catalog-search"
           name="search"
-          aria-label="Search games by title, genre, or keywords"
+          aria-label="Search games by title or genre"
           autocomplete="off"
           class="search-input" 
-          placeholder="Search games by title, genre, or keywords..."
+          placeholder="Search games by title or genre..."
           [value]="searchTerm" 
           (input)="onSearchInput($event)">
         @if (searchTerm) {
@@ -51,23 +54,23 @@
     <span class="results-count" aria-live="polite" aria-atomic="true">
       Showing <strong>{{ filteredGames.length }}</strong> {{ filteredGames.length === 1 ? 'game' : 'games' }}
       @if (selectedTag !== 'All') {
-        in <span class="active-tag-label">#{{ selectedTag }}</span>
+        in <span class="active-tag-label">{{ selectedTag }}</span>
       }
     </span>
     @if (selectedTag !== 'All' || searchTerm) {
       <button type="button" class="btn-reset-filters" (click)="resetAllFilters()">
-        ↺ Clear Filters
+        Clear Filters
       </button>
     }
   </div>
 
   <!-- Main Game Cards Grid -->
   @if (loading) {
-    <app-loading-spinner size="lg" label="Loading game grid..."></app-loading-spinner>
+    <app-loading-spinner size="lg" label="Loading games..."></app-loading-spinner>
   } @else if (filteredGames.length === 0) {
     <app-empty-state 
-      icon="👾"
-      title="No matching games found"
+      icon="🎮"
+      title="No games found"
       message="We couldn't find any games matching your current search or genre filters."
       actionLabel="View All Games"
       (actionClicked)="resetAllFilters()">

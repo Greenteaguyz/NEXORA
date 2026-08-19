@@ -1,114 +1,130 @@
-This document covers the core data service interfaces that make up the data layer of **NEXORA**. It details the methods, parameters, and return types for `GamesDataService`, `LibraryDataService`, `OrdersDataService`, `UsersDataService`, and `WishlistDataService`. It also outlines the dependency injection tokens used to provide these services and the pattern for swapping between mock data and HTTP implementations.
+# API & data services reference
 
-## Data Service Interfaces
+This document defines the core data service interfaces, methods, parameters, return types, and `InjectionToken` constants in NEXORA.
+
+---
+
+## Service interfaces
 
 ### GamesDataService
 
-Manages CRUD operations and catalog retrieval for game listings.
+Manages game catalog querying, detail retrieval, creation, updates, and soft deletion.
 
-*   **`getGames(filters?: { tag?: string; search?: string })`**
-    *   **Returns**: `Observable<Game[]>`
-    *   **Behavior**: Retrieves a list of active games. If `filters` are provided, it narrows the results by tag or title search. Soft-deleted games are excluded.
-*   **`getGameById(id: string)`**
-    *   **Returns**: `Observable<Game | undefined>`
-    *   **Behavior**: Retrieves a specific game by its ID. Returns `undefined` if the game does not exist.
-*   **`createGame(dto: Omit<Game, 'id' | 'createdAt' | 'updatedAt'>)`**
-    *   **Returns**: `Observable<Game>`
-    *   **Behavior**: Creates a new game listing. The implementation assigns a new ID and current timestamps for `createdAt` and `updatedAt`.
-*   **`updateGame(id: string, dto: Partial<Game>)`**
-    *   **Returns**: `Observable<Game>`
-    *   **Behavior**: Patches an existing game with the provided fields and updates the `updatedAt` timestamp.
-*   **`deleteGame(id: string)`**
-    *   **Returns**: `Observable<void>`
-    *   **Behavior**: Performs a soft delete by setting the `deletedAt` timestamp on the specified game.
-
-### LibraryDataService
-
-Manages user ownership and access to games.
-
-*   **`getLibrary(userId: string)`**
-    *   **Returns**: `Observable<LibraryEntry[]>`
-    *   **Behavior**: Retrieves all library entries belonging to the specified user.
-*   **`addToLibrary(userId: string, gameId: string, orderId?: string)`**
-    *   **Returns**: `Observable<LibraryEntry>`
-    *   **Behavior**: Grants a user access to a game by creating a `LibraryEntry`. The `acquiredAt` timestamp is set immediately. For paid games, the `orderId` must be provided.
-*   **`isOwned(userId: string, gameId: string)`**
-    *   **Returns**: `Observable<boolean>`
-    *   **Behavior**: Convenience method that returns `true` if a library entry exists matching both the user ID and game ID.
-
-### OrdersDataService
-
-Handles the creation and retrieval of purchase transactions.
-
-*   **`createOrder(userId: string, gameId: string)`**
-    *   **Returns**: `Observable<Order>`
-    *   **Behavior**: Processes a purchase. It snapshots the current `Game.price` into the new order, sets the status to `'confirmed'`, and generates an ID and timestamp.
-*   **`getOrders(userId: string)`**
-    *   **Returns**: `Observable<Order[]>`
-    *   **Behavior**: Retrieves the purchase history for a specific user.
-
-### UsersDataService
-
-Provides access to user profile information.
-
-*   **`getUser(id: string)`**
-    *   **Returns**: `Observable<User | undefined>`
-    *   **Behavior**: Retrieves a user record by ID. Returns `undefined` if not found.
-
-### WishlistDataService
-
-Manages a user's bookmarked (not-yet-owned) games. Added to close a gap where `WishlistComponent` previously called `LocalStoreService` directly instead of going through the same DI-token pattern as every other data-backed feature — see [Data Models Reference](reference-data-models.md#wishlistentry).
-
-*   **`getWishlist(userId: string)`**
-    *   **Returns**: `Observable<WishlistEntry[]>`
-    *   **Behavior**: Retrieves all wishlist entries belonging to the specified user.
-*   **`addToWishlist(userId: string, gameId: string)`**
-    *   **Returns**: `Observable<WishlistEntry>`
-    *   **Behavior**: Bookmarks a game for a user by creating a `WishlistEntry`. The `addedAt` timestamp is set immediately.
-*   **`removeFromWishlist(userId: string, gameId: string)`**
-    *   **Returns**: `Observable<void>`
-    *   **Behavior**: Removes the matching `WishlistEntry` for the given user and game.
-
-## Dependency Injection Tokens and Mock Swap Pattern
-
-To decouple components from concrete implementations, the application uses Angular `InjectionToken`s for each service interface. This allows seamless swapping between a mock data service (used for the capstone project) and a real HTTP client implementation later.
-
-**Injection Tokens:**
-*   `GAMES_DATA`
-*   `LIBRARY_DATA`
-*   `ORDERS_DATA`
-*   `USERS_DATA`
-*   `WISHLIST_DATA`
-
-## Code Examples
-
-**Defining and Providing a Token**
 ```typescript
-import { InjectionToken } from '@angular/core';
-
-export const GAMES_DATA = new InjectionToken<GamesDataService>('GAMES_DATA');
-
-// In app.config.ts
-providers: [
-  { provide: GAMES_DATA, useClass: MockGamesDataService }
-]
-```
-
-**Consuming a Service in a Component**
-```typescript
-import { Component, inject } from '@angular/core';
-
-@Component({...})
-export class CatalogComponent {
-  private gamesService = inject(GAMES_DATA);
-  
-  games$ = this.gamesService.getGames();
+export interface GamesDataService {
+  getGames(filters?: { tag?: string; search?: string }): Observable<Game[]>;
+  getGameById(id: string): Observable<Game | undefined>;
+  createGame(dto: Omit<Game, 'id' | 'createdAt' | 'updatedAt'>): Observable<Game>;
+  updateGame(id: string, dto: Partial<Game>): Observable<Game>;
+  deleteGame(id: string): Observable<void>;
 }
 ```
 
-## Related Documentation
+* **`getGames(filters)`**: Returns an `Observable<Game[]>` of active game listings matching the optional tag or search query. Excludes soft-deleted games.
+* **`getGameById(id)`**: Returns an `Observable<Game | undefined>` matching the provided identifier.
+* **`createGame(dto)`**: Creates a new game record, assigning an identifier and initial timestamps.
+* **`updateGame(id, dto)`**: Patches fields on an existing game and updates `updatedAt`.
+* **`deleteGame(id)`**: Populates `deletedAt` with the current ISO timestamp to soft-delete the record.
 
-*   [Explanation: Dependency Injection Abstraction](explanation-di-abstraction.md)
-*   [How-to: Data Layer Setup](howto-data-layer.md)
-*   [How-to: Creator Studio](howto-creator-studio.md)
-*   [Data Models Reference](reference-data-models.md) — see `WishlistEntry`
+---
+
+### LibraryDataService
+
+Tracks game acquisitions and ownership verification for user accounts.
+
+```typescript
+export interface LibraryDataService {
+  getLibrary(userId: string): Observable<LibraryEntry[]>;
+  addToLibrary(userId: string, gameId: string, orderId?: string): Observable<LibraryEntry>;
+  isOwned(userId: string, gameId: string): Observable<boolean>;
+}
+```
+
+* **`getLibrary(userId)`**: Returns all `LibraryEntry` records associated with the user ID.
+* **`addToLibrary(userId, gameId, orderId?)`**: Creates a new ownership record with the current timestamp.
+* **`isOwned(userId, gameId)`**: Returns `true` if a matching library record exists for the user and game.
+
+---
+
+### OrdersDataService
+
+Handles purchase transaction records for paid game acquisitions.
+
+```typescript
+export interface OrdersDataService {
+  createOrder(userId: string, gameId: string): Observable<Order>;
+  getOrders(userId: string): Observable<Order[]>;
+}
+```
+
+* **`createOrder(userId, gameId)`**: Captures a snapshot of the current game price, assigns status `'confirmed'`, and returns the completed `Order`.
+* **`getOrders(userId)`**: Returns the purchase history for a given user.
+
+---
+
+### UsersDataService
+
+Provides user account lookups and creator profile resolution.
+
+```typescript
+export interface UsersDataService {
+  getUser(id: string): Observable<User | undefined>;
+}
+```
+
+* **`getUser(id)`**: Retrieves a `User` entity by identifier.
+
+---
+
+### WishlistDataService
+
+Manages bookmarked titles for authenticated accounts.
+
+```typescript
+export interface WishlistDataService {
+  getWishlist(userId: string): Observable<WishlistEntry[]>;
+  addToWishlist(userId: string, gameId: string): Observable<WishlistEntry>;
+  removeFromWishlist(userId: string, gameId: string): Observable<void>;
+}
+```
+
+* **`getWishlist(userId)`**: Retrieves all saved wishlist items for the specified user.
+* **`addToWishlist(userId, gameId)`**: Creates a new `WishlistEntry`.
+* **`removeFromWishlist(userId, gameId)`**: Removes the corresponding wishlist record.
+
+---
+
+## Dependency injection tokens
+
+NEXORA registers data services using Angular `InjectionToken` instances declared in `src/app/core/data/tokens.ts`:
+
+| Injection Token | Bound Service Interface | Default Mock Implementation |
+| :--- | :--- | :--- |
+| `GAMES_DATA` | `GamesDataService` | `MockGamesDataService` |
+| `LIBRARY_DATA` | `LibraryDataService` | `MockLibraryDataService` |
+| `ORDERS_DATA` | `OrdersDataService` | `MockOrdersDataService` |
+| `USERS_DATA` | `UsersDataService` | `MockUsersDataService` |
+| `WISHLIST_DATA` | `WishlistDataService` | `MockWishlistDataService` |
+
+### Provider registration example
+
+```typescript
+// src/app/app.config.ts
+import { ApplicationConfig } from '@angular/core';
+import { GAMES_DATA } from './core/data/tokens';
+import { MockGamesDataService } from './core/data/games/mock-games-data.service';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    { provide: GAMES_DATA, useClass: MockGamesDataService }
+  ]
+};
+```
+
+---
+
+## Related documentation
+
+* [Why We Use a Dependency Injection Abstraction Layer](./explanation-di-abstraction.md)
+* [How to Add and Swap Data Services via DI](./howto-data-layer.md)
+* [Data Models Reference](./reference-data-models.md)

@@ -1,16 +1,105 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
+import { Game } from '../../core/models/game.model';
+import { GAMES_DATA } from '../../core/data/tokens';
+import { AuthService } from '../../core/auth/auth.service';
+import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
+import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-creator-studio',
   standalone: true,
-  imports: [CommonModule, RouterLink],
-  template: `
-    <div style="max-width: 1320px; margin: 0 auto; padding: 32px 24px;">
-      <h1 style="font-size: 2rem; font-weight: 800;">Creator Studio</h1>
-      <a routerLink="/studio/games/new" style="display: inline-block; margin-top: 16px; background: var(--accent-600); color: #fff; padding: 8px 16px; border-radius: var(--radius);">Publish New Game</a>
-    </div>
-  `
+  imports: [
+    CommonModule, 
+    RouterLink, 
+    LoadingSpinnerComponent, 
+    EmptyStateComponent
+  ],
+  templateUrl: './creator-studio.component.html',
+  styleUrls: ['./creator-studio.component.css']
 })
-export class CreatorStudioComponent {}
+export class CreatorStudioComponent implements OnInit {
+  private gamesData = inject(GAMES_DATA);
+  auth = inject(AuthService);
+  private router = inject(Router);
+
+  games: Game[] = [];
+  loading = true;
+
+  // Soft-Delete Modal State
+  gameToDelete: Game | null = null;
+  deleting = false;
+  deleteSuccess = false;
+
+  ngOnInit(): void {
+    this.loadStudioGames();
+  }
+
+  loadStudioGames(): void {
+    const user = this.auth.currentUser();
+    if (!user) {
+      this.games = [];
+      this.loading = false;
+      return;
+    }
+
+    this.loading = true;
+    this.gamesData.getGamesByOwnerId(user.id).subscribe({
+      next: (list) => {
+        this.games = list;
+        this.loading = false;
+      },
+      error: () => {
+        this.games = [];
+        this.loading = false;
+      }
+    });
+  }
+
+  get activeGamesCount(): number {
+    return this.games.filter(g => !g.deletedAt).length;
+  }
+
+  get unpublishedGamesCount(): number {
+    return this.games.filter(g => !!g.deletedAt).length;
+  }
+
+  get catalogValue(): number {
+    return this.games.filter(g => !g.deletedAt).reduce((sum, g) => sum + g.price, 0);
+  }
+
+  formatDate(dateString: string): string {
+    if (!dateString) return 'N/A';
+    const d = new Date(dateString);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  openDeleteModal(game: Game, event: MouseEvent): void {
+    event.stopPropagation();
+    this.gameToDelete = game;
+  }
+
+  closeDeleteModal(): void {
+    if (this.deleting) return;
+    this.gameToDelete = null;
+  }
+
+  confirmSoftDelete(): void {
+    if (!this.gameToDelete) return;
+
+    this.deleting = true;
+    this.gamesData.deleteGame(this.gameToDelete.id).subscribe({
+      next: () => {
+        this.deleting = false;
+        this.gameToDelete = null;
+        this.deleteSuccess = true;
+        this.loadStudioGames();
+        setTimeout(() => { this.deleteSuccess = false; }, 3500);
+      },
+      error: () => {
+        this.deleting = false;
+      }
+    });
+  }
+}
