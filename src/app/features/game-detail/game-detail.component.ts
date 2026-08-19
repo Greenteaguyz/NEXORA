@@ -178,39 +178,39 @@ export class GameDetailComponent implements OnInit {
     const isWin = this.selectedOs === 'windows';
     return {
       tierId: 'minimum',
-      title: 'Minimum Specs',
+      title: 'MINIMUM:',
       targetBadge: is2D ? '720p @ 60 FPS' : '1080p @ 30 FPS',
-      targetDesc: 'Low / Medium Graphics Settings',
+      targetDesc: 'Low / Medium Settings',
       items: [
         {
           icon: 'os',
-          label: 'Operating System',
-          value: isWin ? 'Windows 10 / 11 (64-bit)' : 'Ubuntu 22.04 LTS / Debian 12 / Arch (glibc 2.35+)'
+          label: 'OS',
+          value: isWin ? 'Windows 10 (64-bit)' : 'Ubuntu 22.04 LTS / Debian 12 (64-bit)'
         },
         {
           icon: 'cpu',
-          label: 'Processor (CPU)',
-          value: is2D ? 'Intel Core 2 Duo E8400 / AMD Athlon 64 (2.0 GHz)' : 'Intel Core i5-4460 / AMD FX-6300 (Quad-core 3.2 GHz)'
+          label: 'Processor',
+          value: is2D ? 'Intel Core 2 Duo E8400 / AMD Athlon 64' : 'Intel Core i5-4460 / AMD FX-6300'
         },
         {
           icon: 'ram',
-          label: 'Memory (RAM)',
-          value: is2D ? '2 GB High-Speed RAM' : '8 GB Dual-Channel System RAM'
+          label: 'Memory',
+          value: is2D ? '2 GB RAM' : '8 GB RAM'
         },
         {
           icon: 'gpu',
-          label: 'Graphics (GPU)',
-          value: is2D ? 'Intel HD Graphics 4000 (OpenGL 3.0 / Vulkan 1.1)' : 'NVIDIA GeForce GTX 960 (4GB) / AMD Radeon R9 280 (3GB)'
+          label: 'Graphics',
+          value: is2D ? 'Intel HD Graphics 4000' : 'NVIDIA GeForce GTX 960 (4GB) / AMD Radeon R9 280 (3GB)'
         },
         {
           icon: 'directx',
-          label: isWin ? 'DirectX / API' : 'Graphics API',
-          value: isWin ? (is2D ? 'DirectX 9.0c Compatible' : 'DirectX 11 or Vulkan 1.2 Compatible') : 'Vulkan 1.2+ / Mesa 22.0+ Native'
+          label: isWin ? 'DirectX' : 'Graphics API',
+          value: isWin ? (is2D ? 'Version 9.0c' : 'Version 11 or Vulkan 1.2') : 'Vulkan 1.2+ / Mesa 22.0+'
         },
         {
           icon: 'storage',
-          label: 'Storage Space',
-          value: is2D ? '500 MB Available Storage' : '4.5 GB Storage (SSD Recommended)'
+          label: 'Storage',
+          value: is2D ? '500 MB available space' : '4.5 GB available space'
         }
       ]
     };
@@ -221,39 +221,39 @@ export class GameDetailComponent implements OnInit {
     const isWin = this.selectedOs === 'windows';
     return {
       tierId: 'recommended',
-      title: 'Recommended Specs',
+      title: 'RECOMMENDED:',
       targetBadge: is2D ? '1080p @ 60 FPS' : '1440p+ @ 60 FPS',
-      targetDesc: 'High / Ultra Ray-Traced Settings',
+      targetDesc: 'High / Ultra Settings',
       items: [
         {
           icon: 'os',
-          label: 'Operating System',
-          value: isWin ? 'Windows 11 (64-bit latest build)' : 'Arch Linux 6.x / Fedora 40 (Wayland Native)'
+          label: 'OS',
+          value: isWin ? 'Windows 11 (64-bit)' : 'Arch Linux / Fedora 40 (64-bit)'
         },
         {
           icon: 'cpu',
-          label: 'Processor (CPU)',
-          value: is2D ? 'Intel Core i3-4130 / AMD Ryzen 3 1200' : 'Intel Core i7-8700K / AMD Ryzen 5 3600X (6 Cores / 12 Threads)'
+          label: 'Processor',
+          value: is2D ? 'Intel Core i3-4130 / AMD Ryzen 3 1200' : 'Intel Core i7-8700K / AMD Ryzen 5 3600X'
         },
         {
           icon: 'ram',
-          label: 'Memory (RAM)',
-          value: is2D ? '4 GB Dual-Channel RAM' : '16 GB Dual-Channel DDR4/DDR5'
+          label: 'Memory',
+          value: is2D ? '4 GB RAM' : '16 GB RAM'
         },
         {
           icon: 'gpu',
-          label: 'Graphics (GPU)',
+          label: 'Graphics',
           value: is2D ? 'NVIDIA GeForce GT 1030 / AMD Radeon RX 550' : 'NVIDIA GeForce RTX 3060 (8GB) / AMD Radeon RX 6600 XT (8GB)'
         },
         {
           icon: 'directx',
-          label: isWin ? 'DirectX / API' : 'Graphics API',
-          value: isWin ? (is2D ? 'DirectX 11' : 'DirectX 12 Ultimate (Feature Level 12_2)') : 'Vulkan 1.3 Native / Proton GE Experimental'
+          label: isWin ? 'DirectX' : 'Graphics API',
+          value: isWin ? (is2D ? 'Version 11' : 'Version 12 Ultimate') : 'Vulkan 1.3 Native / Proton GE'
         },
         {
           icon: 'storage',
-          label: 'Storage Space',
-          value: is2D ? '1 GB High-Speed Storage' : '4.5 GB High-Speed NVMe M.2 Solid State Drive'
+          label: 'Storage',
+          value: is2D ? '1 GB available space' : '4.5 GB available space (SSD recommended)'
         }
       ]
     };
