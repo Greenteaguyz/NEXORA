@@ -443,31 +443,8 @@
         </section>
       </main>
 
-      <!-- Right Column: Developer Spotlight & Features Sidebar -->
-      <aside class="steam-sidebar-details" aria-label="Game Technical Features and Creator Details">
-        <!-- Developer Spotlight Box (Steam Standard) -->
-        <div class="steam-side-panel developer-panel">
-          <h3 class="panel-header-title">Developer Spotlight</h3>
-          @if (creator) {
-            <div class="dev-spotlight-card">
-              <div class="dev-avatar-row">
-                <img [src]="creator.avatarUrl" [alt]="creator.displayName + ' Avatar'" class="dev-avatar-img">
-                <div class="dev-meta">
-                  <strong class="dev-name">{{ creator.displayName }}</strong>
-                  <span class="dev-role-badge">Verified Creator</span>
-                </div>
-              </div>
-              <p class="dev-bio">{{ creator.bio }}</p>
-              <a [routerLink]="['/creators', creator.id]" class="dev-profile-btn" [attr.aria-label]="'View full profile for ' + creator.displayName">
-                <span>View Creator Profile</span>
-                <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </a>
-            </div>
-          }
-        </div>
-
+      <!-- Right Column: Features Sidebar -->
+      <aside class="steam-sidebar-details" aria-label="Game Features and Technical Details">
         <!-- Feature Checklist Box -->
         <div class="steam-side-panel features-panel">
           <h3 class="panel-header-title">Game Features</h3>
