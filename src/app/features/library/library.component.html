@@ -70,19 +70,19 @@
       <app-loading-spinner size="lg" label="Loading your games..."></app-loading-spinner>
     } @else if (items.length === 0) {
       <app-empty-state 
-        icon="🎮" 
+        icon="gamepad" 
         title="Your Library is Empty" 
         message="You haven't added any games yet. Explore the store to find games to play."
         actionLabel="Browse Games"
-        [routerLink]="['/catalog']">
+        routerLink="/catalog">
       </app-empty-state>
     } @else if (filteredItems.length === 0) {
       <app-empty-state 
-        icon="🔍" 
+        icon="search" 
         title="No Matching Games" 
         message="No games in your collection match your search."
         actionLabel="Clear Filters"
-        (action)="searchQuery = ''; selectedTag = 'all'">
+        (actionClicked)="searchQuery = ''; selectedTag = 'all'">
       </app-empty-state>
     } @else {
       <div class="library-grid" role="list" aria-label="Owned games collection">

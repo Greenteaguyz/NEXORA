@@ -3,11 +3,11 @@
     <app-loading-spinner size="lg" label="Loading game showcase..."></app-loading-spinner>
   } @else if (!game) {
     <app-empty-state 
-      icon="⚠️" 
+      icon="warning" 
       title="Game Not Found" 
-      message="The requested game listing could not be found or may have been removed."
-      actionLabel="Back to Catalog"
-      [routerLink]="['/catalog']">
+      message="We couldn't find the game you are looking for in our catalog."
+      actionLabel="Return to Store"
+      routerLink="/catalog">
     </app-empty-state>
   } @else {
     <!-- Breadcrumb & Title Header -->

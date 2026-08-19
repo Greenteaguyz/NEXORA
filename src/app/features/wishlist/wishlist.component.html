@@ -27,11 +27,11 @@
       <app-loading-spinner size="lg" label="Loading your wishlist..."></app-loading-spinner>
     } @else if (items.length === 0) {
       <app-empty-state 
-        icon="💖" 
+        icon="heart" 
         title="Your Wishlist is Empty" 
         message="Keep track of games you like. Explore the store and click the heart on any game to save it here."
         actionLabel="Explore Games"
-        [routerLink]="['/catalog']">
+        routerLink="/catalog">
       </app-empty-state>
     } @else {
       <div class="wishlist-grid" role="list" aria-label="Wishlisted games collection">

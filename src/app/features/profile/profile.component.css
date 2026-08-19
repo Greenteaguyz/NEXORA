@@ -527,6 +527,19 @@
   font-weight: 700;
 }
 
+.modal-danger-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-danger-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--rose-400);
+  flex-shrink: 0;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

@@ -37,11 +37,11 @@
       <app-loading-spinner size="lg" label="Loading your orders..."></app-loading-spinner>
     } @else if (items.length === 0) {
       <app-empty-state 
-        icon="🧾" 
+        icon="receipt" 
         title="No Orders Yet" 
         message="You haven't made any game purchases yet. When you buy or download games, your receipts will appear here."
         actionLabel="Explore Games"
-        [routerLink]="['/catalog']">
+        routerLink="/catalog">
       </app-empty-state>
     } @else {
       <!-- Desktop & Tablet Orders Table -->

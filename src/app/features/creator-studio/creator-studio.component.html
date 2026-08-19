@@ -61,11 +61,11 @@
       <app-loading-spinner size="lg" label="Loading your games..."></app-loading-spinner>
     } @else if (games.length === 0) {
       <app-empty-state 
-        icon="🚀" 
+        icon="rocket" 
         title="No Games Added Yet" 
         message="You haven't listed any games yet. Add your first game to start sharing with players."
         actionLabel="Add First Game"
-        [routerLink]="['/studio/games/new']">
+        routerLink="/studio/games/new">
       </app-empty-state>
     } @else {
       <!-- Clean Minimal Table Format for Graded CRUD Spec -->

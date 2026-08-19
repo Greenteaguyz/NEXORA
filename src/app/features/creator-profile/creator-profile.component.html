@@ -3,11 +3,11 @@
     <app-loading-spinner size="lg" label="Loading creator profile..."></app-loading-spinner>
   } @else if (!creator) {
     <app-empty-state 
-      icon="🔍" 
+      icon="search" 
       title="Creator Not Found" 
       message="We couldn't locate the developer profile you requested."
       actionLabel="Explore Catalog"
-      [routerLink]="['/catalog']">
+      routerLink="/catalog">
     </app-empty-state>
   } @else {
     <!-- Breadcrumb -->
@@ -46,7 +46,7 @@
 
       @if (creatorGames.length === 0) {
         <app-empty-state 
-          icon="🎮"
+          icon="gamepad"
           title="No games published yet"
           message="This creator hasn't published any games to the NEXORA catalog yet. Check back soon!">
         </app-empty-state>
