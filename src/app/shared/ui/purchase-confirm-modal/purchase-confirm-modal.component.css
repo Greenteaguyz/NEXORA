@@ -148,6 +148,241 @@
   margin-top: 4px;
 }
 
+/* Payment Method Selector */
+.payment-method-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--bg-input);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius);
+  padding: var(--space-4);
+}
+
+.section-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.secure-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--emerald-400);
+}
+
+.lock-svg {
+  width: 12px;
+  height: 12px;
+}
+
+.card-brand-switcher {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.card-brand-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-card);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  outline: none;
+}
+
+.card-brand-btn:hover {
+  border-color: var(--accent-400);
+  transform: translateY(-1px);
+}
+
+.card-brand-btn.active {
+  border-color: var(--accent-500);
+  background: rgba(124, 58, 237, 0.1);
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.25);
+}
+
+.brand-logo-wrap {
+  width: 42px;
+  height: 26px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brand-logo-wrap.visa {
+  background: #1A1F71;
+}
+
+.visa-logo-text {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: 0.05em;
+  font-style: italic;
+}
+
+.brand-logo-wrap.mastercard {
+  background: #222222;
+}
+
+.mastercard-circles {
+  display: inline-flex;
+  position: relative;
+  width: 24px;
+  height: 15px;
+}
+
+.mastercard-circles .circle {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+}
+
+.mastercard-circles .circle.red {
+  background: #EB001B;
+  left: 0;
+}
+
+.mastercard-circles .circle.orange {
+  background: #F79E1B;
+  right: 0;
+  opacity: 0.9;
+}
+
+.brand-text-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.brand-name-title {
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.brand-digits {
+  font-size: 0.725rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.radio-indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-card);
+  position: relative;
+  flex-shrink: 0;
+}
+
+.card-brand-btn.active .radio-indicator {
+  border-color: var(--accent-500);
+}
+
+.card-brand-btn.active .radio-indicator::after {
+  content: '';
+  position: absolute;
+  inset: 2.5px;
+  border-radius: 50%;
+  background: var(--accent-500);
+}
+
+/* Virtual Card Strip Preview */
+.virtual-card-strip {
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.virtual-card-strip.visa-mode {
+  background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  box-shadow: 0 4px 14px rgba(49, 46, 129, 0.3);
+}
+
+.virtual-card-strip.mc-mode {
+  background: linear-gradient(135deg, #451A03 0%, #78350F 100%);
+  border: 1px solid rgba(251, 146, 60, 0.4);
+  box-shadow: 0 4px 14px rgba(120, 53, 15, 0.3);
+}
+
+.card-strip-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-chip-icon {
+  width: 20px;
+  height: 14px;
+  background: linear-gradient(135deg, #FDE047 0%, #CA8A04 100%);
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.card-brand-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #FFFFFF;
+  opacity: 0.9;
+}
+
+.card-strip-number {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #FFFFFF;
+}
+
+.card-strip-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.strip-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  display: block;
+}
+
+.strip-val {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #FFFFFF;
+}
+
 .perks-list {
   display: flex;
   flex-direction: column;

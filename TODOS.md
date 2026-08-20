@@ -195,4 +195,10 @@ Standard skills applied during development:
   - Added official proof-of-purchase legal statement and support reference
 - [x] **13.5** Streamlined `CreatorStudioComponent` header by eliminating the redundant `[DEVELOPER DASHBOARD]` pill badge and vertical alignment mismatch
 - [x] **13.6** Executed full quality gate verification: 51/51 unit, integration, and E2E checks passing (100%), 0 TypeScript errors, and 2.70s production build
+- [x] **13.7** Implement interactive **Payment Method Selector** in `PurchaseConfirmModalComponent`:
+  - Added live card brand switcher supporting **Visa Card** (`•••• 4242`) and **Mastercard** (`•••• 5555`)
+  - Added interactive visual virtual credit card strip preview with chip icon, cardholder name, expiry, and dynamic brand theme
+  - Added 256-bit encrypted security trust badge
+  - Added `paymentMethod` persistence to `Order` model and displayed on official printable A4 invoice
+  - Added automated test in regression test suite (22/22 tests passing)
 

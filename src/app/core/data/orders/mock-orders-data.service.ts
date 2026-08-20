@@ -31,12 +31,13 @@ export class MockOrdersDataService implements OrdersDataService {
     this.localStore.setItem(this.STORAGE_KEY, this.orders);
   }
 
-  createOrder(userId: string, gameId: string, price: number): Observable<Order> {
+  createOrder(userId: string, gameId: string, price: number, paymentMethod?: string): Observable<Order> {
     const newOrder: Order = {
       id: 'ord_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5),
       userId,
       gameId,
       price,
+      paymentMethod: paymentMethod || 'Credit Card (Visa •••• 4242)',
       status: 'confirmed',
       createdAt: new Date().toISOString()
     };

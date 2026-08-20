@@ -47,6 +47,80 @@
         </div>
       </div>
 
+      <!-- Payment Method Selector Section -->
+      <div class="payment-method-section">
+        <div class="section-label-row">
+          <span class="section-label">Payment Method</span>
+          <span class="secure-badge">
+            <svg class="lock-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            256-bit Encrypted
+          </span>
+        </div>
+
+        <div class="card-brand-switcher" role="radiogroup" aria-label="Credit Card Type">
+          <!-- Visa Card Option -->
+          <button 
+            type="button" 
+            class="card-brand-btn" 
+            [class.active]="selectedCardBrand === 'visa'"
+            (click)="setCardBrand('visa')"
+            role="radio"
+            [attr.aria-checked]="selectedCardBrand === 'visa'">
+            <div class="brand-logo-wrap visa">
+              <span class="visa-logo-text">VISA</span>
+            </div>
+            <div class="brand-text-wrap">
+              <span class="brand-name-title">Visa Card</span>
+              <span class="brand-digits">•••• 4242</span>
+            </div>
+            <div class="radio-indicator"></div>
+          </button>
+
+          <!-- Mastercard Option -->
+          <button 
+            type="button" 
+            class="card-brand-btn" 
+            [class.active]="selectedCardBrand === 'mastercard'"
+            (click)="setCardBrand('mastercard')"
+            role="radio"
+            [attr.aria-checked]="selectedCardBrand === 'mastercard'">
+            <div class="brand-logo-wrap mastercard">
+              <span class="mastercard-circles">
+                <span class="circle red"></span>
+                <span class="circle orange"></span>
+              </span>
+            </div>
+            <div class="brand-text-wrap">
+              <span class="brand-name-title">Mastercard</span>
+              <span class="brand-digits">•••• 5555</span>
+            </div>
+            <div class="radio-indicator"></div>
+          </button>
+        </div>
+
+        <!-- Interactive Virtual Card Chip Strip -->
+        <div class="virtual-card-strip" [class.visa-mode]="selectedCardBrand === 'visa'" [class.mc-mode]="selectedCardBrand === 'mastercard'">
+          <div class="card-strip-top">
+            <span class="card-chip-icon"></span>
+            <span class="card-brand-badge">{{ selectedCardBrand === 'visa' ? 'VISA CREDIT / DEBIT' : 'MASTERCARD WORLD' }}</span>
+          </div>
+          <div class="card-strip-number">{{ cardNumber }}</div>
+          <div class="card-strip-bottom">
+            <div>
+              <span class="strip-label">Card Holder</span>
+              <span class="strip-val">{{ cardHolder }}</span>
+            </div>
+            <div>
+              <span class="strip-label">Expires</span>
+              <span class="strip-val">{{ cardExpiry }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Perks / DRM-Free Guarantee -->
       <div class="perks-list">
         <div class="perk-row">

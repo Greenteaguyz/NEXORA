@@ -9,7 +9,7 @@ import { DownloadService } from '../../core/services/download.service';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { DownloadButtonComponent } from '../../shared/ui/download-button/download-button.component';
-import { PurchaseConfirmModalComponent } from '../../shared/ui/purchase-confirm-modal/purchase-confirm-modal.component';
+import { PurchaseConfirmModalComponent, PurchaseConfirmationEvent } from '../../shared/ui/purchase-confirm-modal/purchase-confirm-modal.component';
 
 export interface SpecItem {
   icon: 'os' | 'cpu' | 'ram' | 'gpu' | 'directx' | 'storage';
@@ -447,7 +447,7 @@ export class GameDetailComponent implements OnInit {
     this.showPurchaseModal = true;
   }
 
-  onModalConfirm(): void {
+  onModalConfirm(event?: PurchaseConfirmationEvent): void {
     if (!this.game) return;
     const user = this.authService.currentUser();
     if (!user) {
@@ -456,8 +456,9 @@ export class GameDetailComponent implements OnInit {
       return;
     }
 
+    const paymentMethod = event?.paymentMethod || 'Credit Card (Visa •••• 4242)';
     this.purchaseProcessing = true;
-    this.ordersData.createOrder(user.id, this.game.id, this.game.price).subscribe({
+    this.ordersData.createOrder(user.id, this.game.id, this.game.price, paymentMethod).subscribe({
       next: (order) => {
         this.libraryData.addToLibrary(user.id, this.game!.id, order.id).subscribe({
           next: () => {

@@ -2,6 +2,10 @@ import { Component, Input, Output, EventEmitter, HostListener, OnInit, ElementRe
 import { CommonModule } from '@angular/common';
 import { Game } from '../../../core/models/game.model';
 
+export interface PurchaseConfirmationEvent {
+  paymentMethod: string;
+}
+
 @Component({
   selector: 'app-purchase-confirm-modal',
   standalone: true,
@@ -13,10 +17,16 @@ export class PurchaseConfirmModalComponent implements OnInit {
   @Input({ required: true }) game!: Game;
   @Input() processing = false;
 
-  @Output() confirm = new EventEmitter<void>();
+  @Output() confirm = new EventEmitter<PurchaseConfirmationEvent>();
   @Output() cancel = new EventEmitter<void>();
 
   @ViewChild('confirmBtn') confirmBtn?: ElementRef<HTMLButtonElement>;
+
+  selectedCardBrand: 'visa' | 'mastercard' = 'visa';
+  cardNumber = '•••• •••• •••• 4242';
+  cardHolder = 'Bob (Verified)';
+  cardExpiry = '08/29';
+  cardCvc = '•••';
 
   ngOnInit(): void {
     // Prevent background scrolling while modal is open
@@ -30,9 +40,24 @@ export class PurchaseConfirmModalComponent implements OnInit {
     document.body.style.overflow = '';
   }
 
+  setCardBrand(brand: 'visa' | 'mastercard'): void {
+    this.selectedCardBrand = brand;
+    if (brand === 'visa') {
+      this.cardNumber = '•••• •••• •••• 4242';
+    } else {
+      this.cardNumber = '•••• •••• •••• 5555';
+    }
+  }
+
+  get formattedPaymentMethod(): string {
+    return this.selectedCardBrand === 'visa' 
+      ? 'Credit Card (Visa •••• 4242)' 
+      : 'Credit Card (Mastercard •••• 5555)';
+  }
+
   onConfirm(): void {
     if (this.processing) return;
-    this.confirm.emit();
+    this.confirm.emit({ paymentMethod: this.formattedPaymentMethod });
   }
 
   onCancel(): void {

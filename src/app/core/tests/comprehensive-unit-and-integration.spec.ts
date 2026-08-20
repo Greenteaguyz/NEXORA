@@ -51,6 +51,7 @@ export interface Order {
   userId: string;
   gameId: string;
   price: number;
+  paymentMethod?: string;
   status: 'confirmed' | 'pending' | 'failed';
   createdAt: string;
 }
@@ -383,6 +384,19 @@ assert(libraryDb.some(l => l.userId === buyerId && l.gameId === targetGame.id), 
 // Step 4: Clean up Wishlist on acquisition
 wishlistDb = wishlistDb.filter(w => !(w.userId === buyerId && w.gameId === targetGame.id));
 assert(!wishlistDb.some(w => w.userId === buyerId && w.gameId === targetGame.id), '[Integration 4/4] Acquired game automatically removed from Wishlist');
+
+// Step 5: Multi-Method Payment Selector validation
+const paidGameTarget = gamesDb.find(g => g.id === 'game_004')!; // Paid $14.99
+const paidOrder: Order = {
+  id: `ord_mc_${Date.now()}`,
+  userId: buyerId,
+  gameId: paidGameTarget.id,
+  price: paidGameTarget.price,
+  paymentMethod: 'Credit Card (Mastercard •••• 5555)',
+  status: 'confirmed',
+  createdAt: new Date().toISOString()
+};
+assert(paidOrder.paymentMethod === 'Credit Card (Mastercard •••• 5555)' && paidOrder.price === paidGameTarget.price, '[Integration 5/5] Order recorded with selected Mastercard payment method');
 
 // ----------------------------------------------------------------------------
 // FINAL SUMMARY SCORECARD

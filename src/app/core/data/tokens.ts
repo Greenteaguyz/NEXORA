@@ -42,7 +42,7 @@ export const LIBRARY_DATA = new InjectionToken<LibraryDataService>('LIBRARY_DATA
    3. Orders Data Service & Injection Token
    ========================================================================== */
 export interface OrdersDataService {
-  createOrder(userId: string, gameId: string, price: number): Observable<Order>;
+  createOrder(userId: string, gameId: string, price: number, paymentMethod?: string): Observable<Order>;
   getOrders(userId: string): Observable<Order[]>;
 }
 
