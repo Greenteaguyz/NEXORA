@@ -153,7 +153,7 @@
         type="button" 
         class="btn-cancel" 
         (click)="onCancel()" 
-        [disabled]="processing">
+        [disabled]="isBusy">
         Cancel
       </button>
 
@@ -162,8 +162,8 @@
         type="button" 
         class="btn-confirm" 
         (click)="onConfirm()" 
-        [disabled]="processing">
-        @if (processing) {
+        [disabled]="isBusy">
+        @if (isBusy) {
           <span class="spinner-inline"></span>
           <span>Processing...</span>
         } @else {

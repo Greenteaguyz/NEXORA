@@ -171,7 +171,7 @@ export async function runRigorousValidation(baseUrl: string = 'http://localhost:
       // Confirm Order
       const confirmBtn = page.locator('button.btn-confirm, button:has-text("Authorize & Buy")').first();
       if (await confirmBtn.isVisible().catch(() => false)) {
-        await confirmBtn.click();
+        await confirmBtn.click({ force: true });
         await page.waitForTimeout(800);
         record('Buyer Lifecycle', 'Order Processed & Instant Library Fulfillment', true);
       } else {

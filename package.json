@@ -7,10 +7,16 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test --no-watch --no-progress --browsers=ChromeHeadless",
-    "test:watch": "ng test",
+    "test": "npm run test:all",
+    "test:all": "npx tsc tests/test-runner.ts --rootDir . --outDir dist --module commonjs --target es2022 --skipLibCheck && node dist/tests/test-runner.js",
+    "test:unit": "npx tsc tests/unit/unit-tests.spec.ts --rootDir . --outDir dist --module commonjs --target es2022 --skipLibCheck && node dist/tests/unit/unit-tests.spec.js",
+    "test:integration": "npx tsc tests/integration/integration-tests.spec.ts --rootDir . --outDir dist --module commonjs --target es2022 --skipLibCheck && node dist/tests/integration/integration-tests.spec.js",
+    "test:a11y": "npx tsc tests/audit/a11y-axe-audit.spec.ts --rootDir . --outDir dist --module commonjs --target es2022 --skipLibCheck && node dist/tests/audit/a11y-axe-audit.spec.js",
+    "test:crawler": "npx tsc tests/audit/broken-links-crawler.spec.ts --rootDir . --outDir dist --module commonjs --target es2022 --skipLibCheck && node dist/tests/audit/broken-links-crawler.spec.js",
+    "test:perf": "npx tsc tests/audit/performance-vitals.spec.ts --rootDir . --outDir dist --module commonjs --target es2022 --skipLibCheck && node dist/tests/audit/performance-vitals.spec.js",
+    "test:seo": "npx tsc tests/audit/seo-meta-audit.spec.ts --rootDir . --outDir dist --module commonjs --target es2022 --skipLibCheck && node dist/tests/audit/seo-meta-audit.spec.js",
     "test:regression": "npx tsc src/app/core/tests/comprehensive-unit-and-integration.spec.ts --outDir dist/tests --module commonjs --target es2022 --skipLibCheck && node dist/tests/comprehensive-unit-and-integration.spec.js",
-    "verify": "npm run build && npm run test:regression",
+    "verify": "npm run build && npm run test:all",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "perf:measure": "npx tsx scripts/measure-perf.ts"
@@ -32,6 +38,7 @@
     "@angular-devkit/build-angular": "^18.2.0",
     "@angular/cli": "^18.2.0",
     "@angular/compiler-cli": "^18.2.0",
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.62.1",
     "typescript": "~5.5.2"
   }

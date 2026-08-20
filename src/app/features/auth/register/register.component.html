@@ -76,8 +76,8 @@
           <span class="toggle-title">Creator Account</span>
           <span class="toggle-desc">Enable Creator Studio to upload and sell games</span>
         </div>
-        <label class="switch">
-          <input type="checkbox" name="isCreator" [checked]="isCreator" (change)="onCreatorToggle($event)">
+        <label class="switch" for="isCreatorCheckbox" aria-label="Enable Creator Account">
+          <input id="isCreatorCheckbox" type="checkbox" name="isCreator" [checked]="isCreator" (change)="onCreatorToggle($event)" aria-label="Enable Creator Account">
           <span class="slider"></span>
         </label>
       </div>
