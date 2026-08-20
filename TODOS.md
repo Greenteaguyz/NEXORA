@@ -201,4 +201,5 @@ Standard skills applied during development:
   - Added 256-bit encrypted security trust badge
   - Added `paymentMethod` persistence to `Order` model and displayed on official printable A4 invoice
   - Added automated test in regression test suite (22/22 tests passing)
+- [x] **13.8** Add interactive **Password Visibility Toggle** (`[ 👁️ / 👁️‍🗨️ ]` eye button) to both **Sign In** (`/login`) and **Register** (`/register`) forms with dynamic `type="password" <-> "text"` switching, full accessibility attributes, and keyboard controls
 

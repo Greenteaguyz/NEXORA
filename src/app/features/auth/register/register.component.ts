@@ -18,9 +18,14 @@ export class RegisterComponent {
   displayName = '';
   email = '';
   password = '';
+  showPassword = false;
   isCreator = false;
   loading = false;
   errorMessage = '';
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   onDisplayNameChange(event: Event): void {
     const target = event.target as HTMLInputElement;

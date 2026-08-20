@@ -18,8 +18,13 @@ export class LoginComponent {
 
   email = '';
   password = '';
+  showPassword = false;
   loading = false;
   errorMessage = '';
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   fillDemo(demoEmail: string): void {
     this.email = demoEmail;
