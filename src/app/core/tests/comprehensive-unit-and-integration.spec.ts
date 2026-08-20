@@ -89,12 +89,17 @@ const SEED_GAMES: Game[] = [
   {
     id: 'game_001',
     ownerId: 'usr_alice',
-    title: 'Neon Drift: 2088',
-    description: 'High-speed synthwave hovercraft racing.',
-    tags: ['Cyberpunk', 'Racing', 'Arcade', 'Synthwave'],
+    title: 'Marvel Rivals',
+    description: 'An explosive team-based 6v6 superhero PVP shooter.',
+    tags: ['Action', 'Hero Shooter', 'Third-Person', 'Sci-Fi', 'Tactics', 'PvP'],
     price: 4.99,
-    coverImageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800',
-    screenshotUrls: ['https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200'],
+    coverImageUrl: 'assets/images/marvel-rivals-capsule.jpg',
+    screenshotUrls: [
+      'assets/images/marvel-rivals-wide-hero.jpg',
+      'assets/images/marvel-rivals-bg.jpg',
+      'assets/images/marvel-rivals-hero.jpg',
+      'assets/images/marvel-rivals-poster.jpg'
+    ],
     createdAt: '2024-04-01T10:00:00.000Z',
     updatedAt: '2024-04-01T10:00:00.000Z'
   },
@@ -121,6 +126,30 @@ const SEED_GAMES: Game[] = [
     screenshotUrls: ['https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200'],
     createdAt: '2024-04-15T09:30:00.000Z',
     updatedAt: '2024-04-15T09:30:00.000Z'
+  },
+  {
+    id: 'game_004',
+    ownerId: 'usr_carol',
+    title: 'Shadow Circuit',
+    description: 'An intense rogue-like bullet-hell set inside a corrupted AI neural core.',
+    tags: ['Rogue-like', 'Action', 'Sci-Fi', 'Bullet Hell'],
+    price: 3.49,
+    coverImageUrl: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800',
+    screenshotUrls: ['https://images.unsplash.com/photo-1563089145-599997674d42?w=1200'],
+    createdAt: '2024-05-15T11:00:00.000Z',
+    updatedAt: '2024-05-15T11:00:00.000Z'
+  },
+  {
+    id: 'game_006',
+    ownerId: 'usr_carol',
+    title: 'Grid Runner: Overdrive',
+    description: 'Endless rhythm-based runner with pulsating synthwave tracks.',
+    tags: ['Arcade', 'Rhythm', 'Cyberpunk', 'Music'],
+    price: 0,
+    coverImageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800',
+    screenshotUrls: ['https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200'],
+    createdAt: '2024-06-12T14:40:00.000Z',
+    updatedAt: '2024-06-12T14:40:00.000Z'
   },
   {
     id: 'game_008',
@@ -210,7 +239,7 @@ assert(gamesDb.length >= 4, 'Games database contains seed catalog', `Count: ${ga
 
 // Test 2.2: ID Lookup
 const game1 = gamesDb.find(g => g.id === 'game_001');
-assert(!!game1 && game1.title === 'Neon Drift: 2088', 'Lookup game by ID (game_001 -> Neon Drift: 2088)');
+assert(!!game1 && game1.title === 'Marvel Rivals', 'Lookup game by ID (game_001 -> Marvel Rivals)');
 
 // Test 2.3: Tag Filtering
 const cyberpunkGames = gamesDb.filter(g => g.tags.map(t => t.toLowerCase()).includes('cyberpunk'));

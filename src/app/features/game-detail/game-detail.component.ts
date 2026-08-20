@@ -83,10 +83,10 @@ export class GameDetailComponent implements OnInit {
   selectedSpecsTab: 'minimum' | 'recommended' = 'minimum';
 
   // Target Download Platform Build
-  selectedDownloadPlatform: 'windows' | 'linux' | 'steamdeck' = 'windows';
+  selectedDownloadPlatform: 'windows' | 'linux' = 'windows';
   copiedChecksum = false;
 
-  setDownloadPlatform(platform: 'windows' | 'linux' | 'steamdeck'): void {
+  setDownloadPlatform(platform: 'windows' | 'linux'): void {
     this.selectedDownloadPlatform = platform;
   }
 

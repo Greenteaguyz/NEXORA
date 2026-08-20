@@ -3,52 +3,72 @@
     <div class="genres-badge">Category Directory</div>
     <h1 class="genres-title">Browse Games by Genre</h1>
     <p class="genres-subtitle">
-      Filter our curated catalog by game style, themes, and mechanics to find your next favorite title.
+      Explore indie titles across specialized subgenres, themes, and gameplay styles.
     </p>
+
+    <!-- Quick Search Bar -->
+    <div class="search-bar-wrap">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input
+        type="text"
+        class="genre-search-input"
+        placeholder="Quick search genres (e.g. RPG, Horror, Retro, Strategy)..."
+        [value]="searchQuery"
+        (input)="onSearch($event)"
+      />
+      @if (searchQuery) {
+        <button class="clear-search-btn" (click)="clearSearch()" aria-label="Clear search">✕</button>
+      }
+    </div>
   </header>
 
   @if (loading) {
     <app-loading-spinner size="lg" label="Loading genres..."></app-loading-spinner>
   } @else {
-    <!-- 1. Featured Top Categories -->
-    <section class="featured-section">
-      <div class="section-header">
-        <div class="section-title-wrap">
-          <div class="section-icon-box orange" aria-hidden="true">
-            <svg class="section-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
-            </svg>
+    <!-- 1. Featured Top Categories (Shown when not searching) -->
+    @if (!searchQuery.trim()) {
+      <section class="featured-section">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <div class="section-icon-box orange" aria-hidden="true">
+              <svg class="section-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+              </svg>
+            </div>
+            <h2 class="section-title">Popular Categories</h2>
           </div>
-          <h2 class="section-title">Popular Categories</h2>
+          <p class="section-desc">Our most active game collections with the largest catalogs.</p>
         </div>
-        <p class="section-desc">Our most active game collections with the largest catalogs.</p>
-      </div>
 
-      <div class="featured-grid">
-        @for (genre of featuredGenres; track genre.name) {
-          <a [routerLink]="['/catalog']" [queryParams]="{ tag: genre.name }" class="featured-card" [style.--genre-accent]="genre.accentColor">
-            <div class="featured-card-top">
-              <div class="featured-icon-box" [style.background-color]="genre.accentColor + '18'" [style.border-color]="genre.accentColor + '50'" [style.color]="genre.accentColor">
-                <span class="featured-icon" [innerHTML]="genre.iconSvg"></span>
+        <div class="featured-grid">
+          @for (genre of featuredGenres; track genre.name) {
+            <a [routerLink]="['/catalog']" [queryParams]="{ tag: genre.name }" class="featured-card" [style.--genre-accent]="genre.accentColor">
+              <div class="featured-card-top">
+                <div class="featured-icon-box" [style.background-color]="genre.accentColor + '18'" [style.border-color]="genre.accentColor + '50'" [style.color]="genre.accentColor">
+                  <span class="featured-icon" [innerHTML]="genre.iconSvg"></span>
+                </div>
+                <span class="featured-badge">{{ genre.count }} {{ genre.count === 1 ? 'game' : 'games' }}</span>
               </div>
-              <span class="featured-badge">{{ genre.count }} {{ genre.count === 1 ? 'game' : 'games' }}</span>
-            </div>
 
-            <div class="featured-card-body">
-              <h3 class="featured-name">{{ genre.name }}</h3>
-              <p class="featured-desc">{{ genre.description }}</p>
-            </div>
+              <div class="featured-card-body">
+                <h3 class="featured-name">{{ genre.name }}</h3>
+                <p class="featured-desc">{{ genre.description }}</p>
+              </div>
 
-            <div class="featured-card-footer">
-              <span class="featured-explore-link">Explore Collection</span>
-              <span class="featured-arrow">→</span>
-            </div>
-          </a>
-        }
-      </div>
-    </section>
+              <div class="featured-card-footer">
+                <span class="featured-explore-link">Explore Collection</span>
+                <span class="featured-arrow">→</span>
+              </div>
+            </a>
+          }
+        </div>
+      </section>
+    }
 
-    <!-- 2. All Categories (Symmetrical 4-Column Grid) -->
+    <!-- 2. All Categories / Search Results (Clean, easy-to-navigate cards) -->
     <section class="all-categories-section">
       <div class="section-header">
         <div class="section-title-wrap">
@@ -61,31 +81,37 @@
               <line x1="18" y1="11" x2="18.01" y2="11"/>
             </svg>
           </div>
-          <h2 class="section-title">All Genres & Tags</h2>
-          <span class="all-count-badge">{{ allGenres.length }} categories</span>
+          <h2 class="section-title">{{ searchQuery.trim() ? 'Search Results' : 'All Genres & Tags' }}</h2>
+          <span class="all-count-badge">{{ filteredAllGenres.length }} {{ filteredAllGenres.length === 1 ? 'category' : 'categories' }}</span>
         </div>
-        <p class="section-desc">Explore indie titles across specialized subgenres, themes, and gameplay styles.</p>
+        <p class="section-desc">
+          {{ searchQuery.trim() ? 'Matching categories for "' + searchQuery + '"' : 'Explore indie titles across specialized subgenres, themes, and gameplay styles.' }}
+        </p>
       </div>
 
-      <div class="all-genres-grid">
-        @for (genre of allGenres; track genre.name) {
-          <a [routerLink]="['/catalog']" [queryParams]="{ tag: genre.name }" class="genre-card" [style.--genre-accent]="genre.accentColor">
-            <div class="genre-icon-box" [style.background-color]="genre.accentColor + '18'" [style.border-color]="genre.accentColor + '50'" [style.color]="genre.accentColor">
-              <span class="genre-icon" [innerHTML]="genre.iconSvg"></span>
-            </div>
-
-            <div class="genre-info">
-              <div class="genre-title-row">
-                <h3 class="genre-name">{{ genre.name }}</h3>
-                <span class="genre-count">{{ genre.count }}</span>
+      @if (filteredAllGenres.length > 0) {
+        <div class="all-genres-grid">
+          @for (genre of filteredAllGenres; track genre.name) {
+            <a [routerLink]="['/catalog']" [queryParams]="{ tag: genre.name }" class="genre-card" [style.--genre-accent]="genre.accentColor">
+              <div class="genre-icon-box" [style.background-color]="genre.accentColor + '18'" [style.border-color]="genre.accentColor + '50'" [style.color]="genre.accentColor">
+                <span class="genre-icon" [innerHTML]="genre.iconSvg"></span>
               </div>
-              <p class="genre-desc">{{ genre.description }}</p>
-            </div>
 
-            <div class="genre-arrow">→</div>
-          </a>
-        }
-      </div>
+              <div class="genre-info">
+                <h3 class="genre-name">{{ genre.name }}</h3>
+                <span class="genre-count">{{ genre.count }} {{ genre.count === 1 ? 'game' : 'games' }}</span>
+              </div>
+
+              <div class="genre-arrow">→</div>
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="empty-search-state">
+          <p class="empty-text">No genres found matching "<strong>{{ searchQuery }}</strong>"</p>
+          <button class="btn-clear-filter" (click)="clearSearch()">Show All Categories</button>
+        </div>
+      }
     </section>
 
     <!-- 3. Bottom Store Discovery Action Banner -->

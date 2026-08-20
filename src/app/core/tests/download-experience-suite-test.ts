@@ -42,11 +42,9 @@ export async function runDownloadSuiteTest(baseUrl: string = 'http://localhost:4
     // Verify Platform Selector Pills
     const windowsPill = page.locator('.platform-pill:has-text("Windows")');
     const linuxPill = page.locator('.platform-pill:has-text("Linux")');
-    const steamdeckPill = page.locator('.platform-pill:has-text("Steam Deck")');
 
-    assert(await windowsPill.isVisible(), 'Windows 64-bit platform pill visible');
+    assert(await windowsPill.isVisible(), 'Windows 32/64-bit platform pill visible');
     assert(await linuxPill.isVisible(), 'Linux x86_64 platform pill visible');
-    assert(await steamdeckPill.isVisible(), 'Steam Deck platform pill visible');
     assert(await windowsPill.evaluate(el => el.classList.contains('active')), 'Windows is default active platform');
 
     // Switch to Linux
@@ -54,10 +52,10 @@ export async function runDownloadSuiteTest(baseUrl: string = 'http://localhost:4
     await page.waitForTimeout(100);
     assert(await linuxPill.evaluate(el => el.classList.contains('active')), 'Linux platform successfully selected');
 
-    // Switch to Steam Deck
-    await steamdeckPill.click();
+    // Switch back to Windows
+    await windowsPill.click();
     await page.waitForTimeout(100);
-    assert(await steamdeckPill.evaluate(el => el.classList.contains('active')), 'Steam Deck platform successfully selected');
+    assert(await windowsPill.evaluate(el => el.classList.contains('active')), 'Windows platform successfully re-selected');
 
     // Verify Checksum Trust Strip
     const checksumEl = page.locator('.checksum-item');

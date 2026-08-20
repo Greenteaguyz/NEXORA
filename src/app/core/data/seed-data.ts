@@ -38,17 +38,18 @@ export const SEED_GAMES: Game[] = [
   {
     id: 'game_001',
     ownerId: 'usr_alice',
-    title: 'Neon Drift: 2088',
-    description: 'High-speed synthwave hovercraft racing across neon-lit dystopian megacities. Customize your rig, master gravity-defying tracks, and outrun the grid enforcers.',
-    tags: ['Cyberpunk', 'Racing', 'Arcade', 'Synthwave'],
+    title: 'Marvel Rivals',
+    description: 'An explosive team-based 6v6 superhero PVP shooter. Assemble an all-star Marvel roster, unleash dynamic Team-Up skills, and battle across destructible environments.',
+    tags: ['Action', 'Hero Shooter', 'Third-Person', 'Sci-Fi', 'Tactics', 'PvP'],
     price: 4.99,
-    coverImageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
+    coverImageUrl: 'assets/images/marvel-rivals-capsule.jpg',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&auto=format&fit=crop&q=80'
+      'assets/images/marvel-rivals-wide-hero.jpg',
+      'assets/images/marvel-rivals-bg.jpg',
+      'assets/images/marvel-rivals-hero.jpg',
+      'assets/images/marvel-rivals-poster.jpg'
     ],
-    samplePackageUrl: 'assets/sample-packages/neon-drift-2088.zip',
+    samplePackageUrl: 'assets/sample-packages/marvel-rivals.zip',
     createdAt: '2024-04-01T10:00:00.000Z',
     updatedAt: '2024-04-01T10:00:00.000Z'
   },

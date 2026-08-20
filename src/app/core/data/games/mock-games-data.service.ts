@@ -20,7 +20,14 @@ export class MockGamesDataService implements GamesDataService {
   private initData(): void {
     const saved = this.localStore.getItem<Game[]>(this.STORAGE_KEY);
     if (saved && saved.length > 0) {
-      this.games = saved;
+      this.games = saved.map(g => {
+        if (g.id === 'game_001') {
+          const seed = SEED_GAMES.find(s => s.id === 'game_001');
+          return seed ? { ...g, ...seed } : g;
+        }
+        return g;
+      });
+      this.localStore.setItem(this.STORAGE_KEY, this.games);
     } else {
       this.games = [...SEED_GAMES];
       this.localStore.setItem(this.STORAGE_KEY, this.games);

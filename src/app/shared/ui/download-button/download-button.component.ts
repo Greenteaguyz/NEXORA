@@ -17,7 +17,7 @@ export class DownloadButtonComponent {
   @Input({ required: true }) isOwned!: boolean;
   @Input() size: 'sm' | 'md' | 'lg' = 'md';
   @Input() fullWidth = false;
-  @Input() platform: 'windows' | 'linux' | 'steamdeck' = 'windows';
+  @Input() platform: 'windows' | 'linux' = 'windows';
 
   @Output() download = new EventEmitter<void>();
   @Output() loginRequired = new EventEmitter<void>();

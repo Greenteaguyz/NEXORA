@@ -138,94 +138,47 @@
       </aside>
     </section>
 
-    <!-- STEAM FULL-WIDTH PURCHASE / ACQUISITION BANNER -->
+    <!-- STREAMLINED PURCHASE / DOWNLOAD BANNER -->
     <section class="steam-purchase-banner" [class.free-banner]="game.price === 0" aria-label="Purchase and Download Options">
-      <div class="purchase-banner-content">
-        <div class="purchase-banner-title-wrap">
-          <div class="purchase-header-row">
-            <h2 class="purchase-game-title">
-              {{ game.price === 0 ? 'Download ' + game.title : 'Buy ' + game.title }}
-            </h2>
-            <!-- Multi-Platform Build Selector with Vector SVG Icons -->
-            <div class="platform-selector-pill-group" role="group" aria-label="Target Build Platform">
-              <button 
-                type="button" 
-                class="platform-pill" 
-                [class.active]="selectedDownloadPlatform === 'windows'" 
-                (click)="setDownloadPlatform('windows')"
-                aria-label="Windows Build">
-                <svg class="pill-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.901-1.801"/>
-                </svg>
-                <span>Windows 64-bit</span>
-              </button>
-              <button 
-                type="button" 
-                class="platform-pill" 
-                [class.active]="selectedDownloadPlatform === 'linux'" 
-                (click)="setDownloadPlatform('linux')"
-                aria-label="Linux Build">
-                <svg class="pill-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12.003 2c-2.76 0-4.996 2.235-4.996 4.994 0 .97.28 1.874.764 2.639C6.44 10.375 5.5 12.07 5.5 14c0 1.258.397 2.423 1.074 3.383-.357.734-.574 1.558-.574 2.43 0 .42.052.827.148 1.217.155.629.742 1.05 1.385.97 1.077-.133 1.98-.679 2.583-1.468.604.301 1.28.468 1.884.468s1.28-.167 1.884-.468c.603.789 1.506 1.335 2.583 1.468.643.08 1.23-.341 1.385-.97.096-.39.148-.797.148-1.217 0-.872-.217-1.696-.574-2.43.677-.96 1.074-2.125 1.074-3.383 0-1.93-.94-3.625-2.271-4.367.484-.765.764-1.669.764-2.639 0-2.759-2.236-4.994-4.996-4.994z"/>
-                </svg>
-                <span>Linux x86_64</span>
-              </button>
-              <button 
-                type="button" 
-                class="platform-pill" 
-                [class.active]="selectedDownloadPlatform === 'steamdeck'" 
-                (click)="setDownloadPlatform('steamdeck')"
-                aria-label="Steam Deck Proton Build">
-                <svg class="pill-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect x="2" y="6" width="20" height="12" rx="4"/>
-                  <circle cx="7" cy="12" r="2"/>
-                  <circle cx="17" cy="12" r="2"/>
-                  <line x1="7" y1="9" x2="7" y2="9.01"/>
-                  <line x1="17" y1="9" x2="17" y2="9.01"/>
-                </svg>
-                <span>Steam Deck</span>
-              </button>
-            </div>
-          </div>
-          <span class="purchase-sub-note">
-            Includes standalone DRM-free installer packages with zero mandatory clients, launch scripts, and offline validation.
-          </span>
+      <div class="purchase-banner-main">
+        <div class="purchase-banner-info">
+          <h2 class="purchase-game-title">
+            {{ game.price === 0 ? 'Download ' + game.title : 'Buy ' + game.title }}
+          </h2>
 
-          <!-- Package Metadata & Checksum Trust Strip with Vector SVG Icons -->
-          <div class="package-meta-strip">
-            <div class="meta-item">
-              <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-                <line x1="12" y1="22.08" x2="12" y2="12"/>
+          <!-- Multi-Platform Build Selector with Vector SVG Icons -->
+          <div class="platform-selector-pill-group" role="group" aria-label="Target Build Platform">
+            <button 
+              type="button" 
+              class="platform-pill" 
+              [class.active]="selectedDownloadPlatform === 'windows'" 
+              (click)="setDownloadPlatform('windows')"
+              aria-label="Windows Build">
+              <svg class="pill-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.901-1.801"/>
               </svg>
-              <span class="meta-label">Download:</span>
-              <strong class="meta-val">1.85 GB (Offline Game)</strong>
-            </div>
-            <div class="meta-item">
-              <svg class="meta-svg highlight-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <polyline points="9 12 11 14 15 10"/>
+              <span>Windows 32/64-bit</span>
+            </button>
+            <button 
+              type="button" 
+              class="platform-pill" 
+              [class.active]="selectedDownloadPlatform === 'linux'" 
+              (click)="setDownloadPlatform('linux')"
+              aria-label="Linux Build">
+              <svg class="pill-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12.003 2c-2.76 0-4.996 2.235-4.996 4.994 0 .97.28 1.874.764 2.639C6.44 10.375 5.5 12.07 5.5 14c0 1.258.397 2.423 1.074 3.383-.357.734-.574 1.558-.574 2.43 0 .42.052.827.148 1.217.155.629.742 1.05 1.385.97 1.077-.133 1.98-.679 2.583-1.468.604.301 1.28.468 1.884.468s1.28-.167 1.884-.468c.603.789 1.506 1.335 2.583 1.468.643.08 1.23-.341 1.385-.97.096-.39.148-.797.148-1.217 0-.872-.217-1.696-.574-2.43.677-.96 1.074-2.125 1.074-3.383 0-1.93-.94-3.625-2.271-4.367.484-.765.764-1.669.764-2.639 0-2.759-2.236-4.994-4.996-4.994z"/>
               </svg>
-              <strong class="meta-val highlight-green">100% DRM-Free</strong>
-            </div>
-            <div class="meta-item checksum-item" (click)="copyChecksum()" title="Click to copy file checksum" role="button" tabindex="0">
-              <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="7.5" cy="15.5" r="4.5"/>
-                <path d="m21 3-9.5 9.5"/>
-                <path d="m15.5 7.5 3 3"/>
-              </svg>
-              <span class="meta-label">Checksum:</span>
-              <code class="meta-code">a8f4c2...1f90</code>
-              <span class="copy-badge">{{ copiedChecksum ? '✓ Copied!' : 'Copy' }}</span>
-            </div>
+              <span>Linux x86_64</span>
+            </button>
           </div>
         </div>
 
         <div class="purchase-action-group">
-          <div class="purchase-price-tag" [class.free]="game.price === 0" [attr.aria-label]="'Price: ' + (game.price === 0 ? 'Free' : '$' + game.price.toFixed(2))">
-            {{ game.price === 0 ? 'FREE' : '$' + game.price.toFixed(2) }}
-          </div>
+          @if (game.price > 0 && !isOwned) {
+            <div class="purchase-price-tag" [attr.aria-label]="'Price: $' + game.price.toFixed(2)">
+              ${{ game.price.toFixed(2) }}
+            </div>
+          }
 
           <app-download-button
             [game]="game"
@@ -246,8 +199,38 @@
             <svg class="btn-wishlist-svg" viewBox="0 0 24 24" [attr.fill]="isWishlisted ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
-            <span>{{ isWishlisted ? 'Saved in Wishlist' : 'Add to Wishlist' }}</span>
+            <span>{{ isWishlisted ? 'Saved' : 'Wishlist' }}</span>
           </button>
+        </div>
+      </div>
+
+      <!-- Package Metadata & Checksum Trust Strip with Vector SVG Icons -->
+      <div class="package-meta-strip">
+        <div class="meta-item">
+          <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+            <line x1="12" y1="22.08" x2="12" y2="12"/>
+          </svg>
+          <span class="meta-label">Download Size:</span>
+          <strong class="meta-val">1.85 GB (Offline)</strong>
+        </div>
+        <div class="meta-item">
+          <svg class="meta-svg highlight-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <polyline points="9 12 11 14 15 10"/>
+          </svg>
+          <strong class="meta-val highlight-green">100% DRM-Free</strong>
+        </div>
+        <div class="meta-item checksum-item" (click)="copyChecksum()" title="Click to copy file checksum" role="button" tabindex="0">
+          <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="7.5" cy="15.5" r="4.5"/>
+            <path d="m21 3-9.5 9.5"/>
+            <path d="m15.5 7.5 3 3"/>
+          </svg>
+          <span class="meta-label">Checksum:</span>
+          <code class="meta-code">a8f4c2...1f90</code>
+          <span class="copy-badge">{{ copiedChecksum ? '✓ Copied!' : 'Copy' }}</span>
         </div>
       </div>
     </section>

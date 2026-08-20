@@ -226,29 +226,25 @@
 .steam-tag-pill:focus-visible { outline: 2px solid var(--accent-500); outline-offset: 1px; }
 
 /* ==========================================================================
-   3. PURCHASE / ACQUISITION BANNER (Consistent Spacing & High-Contrast)
+   3. PURCHASE / ACQUISITION BANNER (Clean, Streamlined & High-Contrast)
    ========================================================================== */
 .steam-purchase-banner {
   background: linear-gradient(90deg, #131622 0%, #1E1738 100%);
   border: 1px solid var(--border-glow);
-  border-radius: var(--radius-lg);
-  padding: 24px 28px;
+  border-radius: var(--radius-xl, 16px);
+  padding: 20px 24px;
   margin-bottom: 32px;
   box-shadow: var(--shadow-card);
 }
 .steam-purchase-banner .purchase-game-title { color: #FFFFFF; }
-.steam-purchase-banner .purchase-sub-note { color: #94A3B8; }
 
 :host-context([data-theme="light"]) .steam-purchase-banner {
   background: linear-gradient(90deg, #FFFFFF 0%, #F5F3FF 100%);
-  border: 1px solid rgba(124, 58, 237, 0.4);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.35);
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
 }
 :host-context([data-theme="light"]) .steam-purchase-banner .purchase-game-title {
   color: #0F172A;
-}
-:host-context([data-theme="light"]) .steam-purchase-banner .purchase-sub-note {
-  color: #475569;
 }
 
 .steam-purchase-banner.free-banner {
@@ -260,35 +256,45 @@
   border-color: rgba(16, 185, 129, 0.45);
 }
 
-.purchase-banner-content { 
+.purchase-banner-main { 
   display: flex; 
   align-items: center; 
   justify-content: space-between; 
   gap: 20px; 
   flex-wrap: wrap; 
 }
-.purchase-banner-title-wrap { display: flex; flex-direction: column; min-width: 0; max-width: 100%; flex: 1; }
-.purchase-header-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: 6px;
+
+.purchase-banner-info { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 8px;
+  min-width: 280px; 
+  flex: 1; 
 }
+
+.purchase-game-title { 
+  font-size: 1.35rem; 
+  font-weight: 800; 
+  margin: 0; 
+  letter-spacing: -0.01em; 
+  word-break: break-word; 
+}
+
 .platform-selector-pill-group {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: rgba(0, 0, 0, 0.4);
-  padding: 4px;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 3px 4px;
   border-radius: var(--radius-full);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  width: fit-content;
 }
 :host-context([data-theme="light"]) .platform-selector-pill-group {
   background: #F1F5F9;
   border-color: var(--border-card);
 }
+
 .platform-pill {
   display: inline-flex;
   align-items: center;
@@ -297,8 +303,8 @@
   border: none;
   color: var(--text-secondary);
   font-size: 0.78rem;
-  font-weight: 700;
-  padding: 5px 12px;
+  font-weight: 600;
+  padding: 4px 12px;
   border-radius: var(--radius-full);
   cursor: pointer;
   transition: all 0.15s ease;
@@ -318,18 +324,19 @@
   color: #FFFFFF;
   box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
 }
+
 .package-meta-strip {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
   flex-wrap: wrap;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  font-size: 0.8rem;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.82rem;
 }
 :host-context([data-theme="light"]) .package-meta-strip {
-  border-top-color: rgba(0, 0, 0, 0.06);
+  border-top-color: rgba(0, 0, 0, 0.08);
 }
 .meta-item {
   display: inline-flex;
@@ -371,21 +378,27 @@
 }
 .highlight-green {
   color: var(--emerald-400);
-  font-weight: 800;
+  font-weight: 700;
 }
 .meta-svg.highlight-green {
   color: var(--emerald-400);
 }
-.purchase-game-title { font-size: 1.4rem; font-weight: 900; margin: 0; letter-spacing: -0.01em; word-break: break-word; }
-.purchase-sub-note { font-size: 0.84rem; line-height: 1.45; }
-.purchase-action-group { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+
+.purchase-action-group { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  flex-shrink: 0;
+  flex-wrap: wrap; 
+}
+
 .purchase-price-tag {
-  font-size: 1.4rem;
-  font-weight: 900;
+  font-size: 1.25rem;
+  font-weight: 800;
   color: var(--accent-400);
-  padding: 9px 18px;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: var(--radius);
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 :host-context([data-theme="light"]) .purchase-price-tag {
@@ -854,6 +867,42 @@
   border: 1px solid var(--border-card);
   padding: 4px 14px;
   border-radius: var(--radius-full);
+}
+
+/* Light Mode Fullscreen Image Lightbox — Soft Slate Gray with Backdrop Blur */
+:host-context([data-theme="light"]) .lightbox-backdrop {
+  background-color: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+:host-context([data-theme="light"]) .lightbox-image {
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.35);
+}
+
+:host-context([data-theme="light"]) .btn-lightbox-close {
+  background: rgba(30, 41, 59, 0.88);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+}
+
+:host-context([data-theme="light"]) .btn-lightbox-nav {
+  background-color: rgba(30, 41, 59, 0.88);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #FFFFFF;
+}
+
+:host-context([data-theme="light"]) .btn-lightbox-nav:hover {
+  background-color: var(--accent-600);
+  border-color: var(--accent-500);
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
+}
+
+:host-context([data-theme="light"]) .lightbox-counter {
+  background-color: rgba(30, 41, 59, 0.88);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
 }
 
 /* ==========================================================================

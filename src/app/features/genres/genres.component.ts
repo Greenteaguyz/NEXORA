@@ -27,7 +27,28 @@ export class GenresComponent implements OnInit {
   genresList: GenreSummary[] = [];
   featuredGenres: GenreSummary[] = [];
   allGenres: GenreSummary[] = [];
+  searchQuery = '';
   loading = true;
+
+  get filteredAllGenres(): GenreSummary[] {
+    if (!this.searchQuery.trim()) {
+      return this.allGenres;
+    }
+    const q = this.searchQuery.toLowerCase().trim();
+    return this.genresList.filter(g =>
+      g.name.toLowerCase().includes(q) ||
+      g.description.toLowerCase().includes(q)
+    );
+  }
+
+  onSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchQuery = input?.value || '';
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+  }
 
   private genreMeta: Record<string, { svg: string; description: string; color: string }> = {
     'Cyberpunk': {
@@ -174,6 +195,21 @@ export class GenresComponent implements OnInit {
       svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8.01" y2="16"/><line x1="16" y1="16" x2="16.01" y2="16"/><path d="M9 2v3"/><path d="M15 2v3"/></svg>`,
       description: 'Armored walking tanks, heavy loadouts, and mechanized combat.',
       color: '#64748B'
+    },
+    'Hero Shooter': {
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>`,
+      description: 'Team-based character abilities, ultimate synergy, and dynamic power loadouts.',
+      color: '#8B5CF6'
+    },
+    'Third-Person': {
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M5.5 21v-2a6.5 6.5 0 0 1 13 0v2"/></svg>`,
+      description: 'Over-the-shoulder action, full character visibility, and dynamic spatial awareness.',
+      color: '#06B6D4'
+    },
+    'PvP': {
+      svg: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/><path d="M14.5 6.5L18 3h3v3l-9.5 9.5"/></svg>`,
+      description: 'Player-versus-player competitive arenas, team matches, and ranked ladder combat.',
+      color: '#EF4444'
     }
   };
 

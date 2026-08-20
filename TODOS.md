@@ -150,3 +150,18 @@ Standard skills applied during development:
 - [x] **10.2** Final UI polish (consistent typography, button hover micro-interactions, responsive padding)
 - [x] **10.3** Execute full automated deep testing battery (253 total checks passing)
 - [x] **10.4** Launch Cloudflare public tunnel for live mobile and external validation
+
+---
+
+## Phase 6: UX Streamlining, Hero Shooter Data, & Light Mode Polish (Task 11)
+
+### Task 11: UX Optimization, Hero Data, and Responsive Polish
+- [x] **11.1** Optimize Genres Directory (`/genres`) with live search bar, clear action, and clean auto-fill grid layout
+- [x] **11.2** Streamline Game Details acquisition banner into clean 2-tier layout with direct action controls and trust spec strip
+- [x] **11.3** Update platform builds to **Windows 32/64-bit** and **Linux x86_64** (removed Steam Deck option)
+- [x] **11.4** Replace `game_001` with real *Marvel Rivals* title, third-person superhero action description, and accurate genre taxonomy (`Action`, `Hero Shooter`, `Third-Person`, `Sci-Fi`, `Tactics`, `PvP`)
+- [x] **11.5** Bundle official high-res Marvel Rivals cover art, wide hero banner, environment background, and showcase screenshots in `src/assets/images/`
+- [x] **11.6** Enhance Light Mode full-screen screenshot lightbox with frosted soft slate gray backdrop blur (`rgba(15, 23, 42, 0.75)`)
+- [x] **11.7** Implement pixel-perfect vector SVG animated hamburger menu button for mobile navigation
+- [x] **11.8** Execute regression test suite (100% pass) and production build validation
+

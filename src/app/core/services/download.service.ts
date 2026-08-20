@@ -4,7 +4,7 @@ import { GAMES_DATA } from '../data/tokens';
 import { ToastService } from './toast.service';
 import { firstValueFrom } from 'rxjs';
 
-export type DownloadPlatform = 'windows' | 'linux' | 'steamdeck';
+export type DownloadPlatform = 'windows' | 'linux';
 
 @Injectable({
   providedIn: 'root'
@@ -43,13 +43,10 @@ export class DownloadService {
 
     const slug = game.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     let ext = 'zip';
-    let platformLabel = 'Windows 64-bit Standalone';
+    let platformLabel = 'Windows 32/64-bit Standalone';
     if (platform === 'linux') {
       ext = 'tar.gz';
       platformLabel = 'Linux x86_64 Native';
-    } else if (platform === 'steamdeck') {
-      ext = 'zip';
-      platformLabel = 'Steam Deck (Proton Verified)';
     }
 
     const filename = `${slug}-v1.0.0-${platform}.${ext}`;
@@ -68,7 +65,7 @@ export class DownloadService {
       version: '1.0.0',
       distribution: 'NEXORA 100% DRM-Free Standalone',
       targetPlatform: platformLabel,
-      platforms: ['Windows 10/11 x64', 'Linux x86_64', 'SteamDeck (Proton Verified)'],
+      platforms: ['Windows 32/64-bit', 'Linux x86_64'],
       tags: game.tags,
       buildTimestamp: new Date().toISOString(),
       drmFreeVerification: 'VERIFIED_NEXORA_STANDALONE_RELEASE',

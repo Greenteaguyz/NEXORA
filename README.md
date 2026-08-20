@@ -54,6 +54,16 @@ Navigate to [`http://localhost:4200`](http://localhost:4200) in your web browser
 
 ---
 
+## Overview & Key Features
+
+* **Store Catalog & Genres Directory**: Real-time substring search, live tag filtering, quick-search genre catalog, and responsive auto-fill category grids with game counts.
+* **Game Acquisition & Download Experience**: Streamlined 2-tier acquisition banner, dual-platform options (**Windows 32/64-bit** and **Linux x86_64**), SHA-256 integrity checksum verification, and animated download progress overlays.
+* **Rich Media & Visual Polish**: Official high-res game assets (featuring *Marvel Rivals*), dual-theme system (Dark & Light modes), Light Mode soft slate frosted backdrop blur for full-screen screenshot lightbox viewing, and responsive layout scaling.
+* **Mobile-First UX**: Pixel-perfect vector SVG animated hamburger menu, slide-out navigation drawer with role-aware account actions, and zero-overflow touch interfaces.
+* **Role-Based Access Control**: Instant demo persona switching (Alice - Creator/Buyer, Bob - Buyer, Carol - Creator), creator upload studio, library management, and purchase fulfillment.
+
+---
+
 ## Demo credentials
 
 Use the following preconfigured accounts to test role-based access control and user workflows:
