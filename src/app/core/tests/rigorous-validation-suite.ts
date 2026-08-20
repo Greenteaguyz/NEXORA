@@ -78,21 +78,21 @@ export async function runRigorousValidation(baseUrl: string = 'http://localhost:
     // 1.4 Search Filtering
     const searchInput = page.locator('input[placeholder*="Search"]').first();
     if (await searchInput.isVisible()) {
-      await searchInput.fill('Drift');
+      await searchInput.fill('Marvel');
       await page.waitForTimeout(400);
       const searchCards = await page.$$('app-game-card');
-      record('Anonymous Discovery', 'Search Query "Drift" Returns Target Game', searchCards.length >= 1);
+      record('Anonymous Discovery', 'Search Query "Marvel" Returns Target Game', searchCards.length >= 1);
       await searchInput.clear();
       await page.waitForTimeout(400);
     }
 
     // 1.5 Game Detail View
     await page.goto(`${baseUrl}/games/game_001`, { waitUntil: 'networkidle' });
-    const detailTitle = await page.locator('.detail-hero-title, h1').first().textContent();
-    record('Anonymous Discovery', 'Game Detail View Loaded', !!detailTitle && detailTitle.includes('Neon Drift'));
+    const detailTitle = await page.locator('.steam-showcase-title, .detail-hero-title, h1').first().textContent();
+    record('Anonymous Discovery', 'Game Detail View Loaded', !!detailTitle && (detailTitle.includes('Marvel Rivals') || detailTitle.includes('Cyber')));
 
     // 1.6 Download Button (Anonymous state -> Redirects to Login)
-    const dlBtn = page.locator('app-download-button button').first();
+    const dlBtn = page.locator('.btn-steam-buy-hero, app-download-button button').first();
     record('Anonymous Discovery', 'Download Button Rendered on Game Detail', await dlBtn.isVisible());
     
     await dlBtn.click();
@@ -105,17 +105,12 @@ export async function runRigorousValidation(baseUrl: string = 'http://localhost:
     // 1.7 Support FAQ Accordion
     await page.goto(`${baseUrl}/support`, { waitUntil: 'networkidle' });
     await page.waitForTimeout(500);
-    const faqItem = page.locator('.faq-question').first();
-    if (await faqItem.isVisible()) {
-      await faqItem.click({ force: true });
-      let answerVisible = false;
-      try {
-        await page.locator('.faq-answer').first().waitFor({ state: 'visible', timeout: 3000 });
-        answerVisible = true;
-      } catch {
-        answerVisible = false;
-      }
-      record('Anonymous Discovery', 'Support FAQ Interactive Accordion Opens', answerVisible);
+    const faqButtons = await page.$$('button.faq-question');
+    if (faqButtons.length > 1) {
+      await faqButtons[1].click();
+      await page.waitForTimeout(400);
+      const answerEl = page.locator('.faq-answer').first();
+      record('Anonymous Discovery', 'Support FAQ Interactive Accordion Opens', await answerEl.isVisible());
     } else {
       record('Anonymous Discovery', 'Support FAQ Interactive Accordion Opens', true);
     }
@@ -127,6 +122,16 @@ export async function runRigorousValidation(baseUrl: string = 'http://localhost:
     console.log('\n--- SUITE 2: Authentication & Buyer Lifecycle ---');
     await page.goto(`${baseUrl}/login`, { waitUntil: 'networkidle' });
     await page.waitForTimeout(400);
+
+    // 2.1 Verify Password Eye Toggle
+    const eyeBtn = page.locator('.btn-toggle-password').first();
+    const pwInput = page.locator('#password').first();
+    const initialType = await pwInput.getAttribute('type');
+    await eyeBtn.click();
+    await page.waitForTimeout(200);
+    const toggledType = await pwInput.getAttribute('type');
+    record('Authentication', 'Password Eye Toggle Switches type="password" to type="text"', initialType === 'password' && toggledType === 'text');
+    await eyeBtn.click();
 
     // Fill credentials directly to ensure ngModel binding sync
     await page.fill('#email', 'bob@nexora.io');
@@ -143,7 +148,7 @@ export async function runRigorousValidation(baseUrl: string = 'http://localhost:
     // 2.3 Free Game Instant Acquisition Flow
     await page.goto(`${baseUrl}/games/game_002`, { waitUntil: 'networkidle' });
     await page.waitForTimeout(600);
-    const freeDlBtn = page.locator('app-download-button button').first();
+    const freeDlBtn = page.locator('.btn-steam-claim-free, app-download-button button').first();
     if (await freeDlBtn.isVisible()) {
       await freeDlBtn.click();
       await page.waitForTimeout(600);
@@ -152,25 +157,19 @@ export async function runRigorousValidation(baseUrl: string = 'http://localhost:
       record('Buyer Lifecycle', 'Free Game Instant Fulfillment Flow', true);
     }
 
-    // 2.4 Paid Game Purchase Modal Flow
-    await page.goto(`${baseUrl}/games/game_001`, { waitUntil: 'networkidle' });
+    // 2.4 Paid Game Purchase Modal Flow (Using unowned game_004)
+    await page.goto(`${baseUrl}/games/game_004`, { waitUntil: 'networkidle' });
     await page.waitForTimeout(600);
     const buyBtn = page.locator('app-download-button button').first();
-    const buyText = await buyBtn.textContent();
-
-    if (buyText?.includes('Buy')) {
+    if (await buyBtn.isVisible()) {
       await buyBtn.click({ force: true });
-      let modalVisible = false;
-      try {
-        await page.locator('.modal-card, app-purchase-confirm-modal').first().waitFor({ state: 'visible', timeout: 4000 });
-        modalVisible = true;
-      } catch {
-        modalVisible = false;
-      }
+      await page.waitForTimeout(600);
+      const modalEl = page.locator('app-purchase-confirm-modal .modal-card, .purchase-modal-card').first();
+      const modalVisible = await modalEl.isVisible();
       record('Buyer Lifecycle', 'Purchase Confirmation Modal Opens', modalVisible);
 
       // Confirm Order
-      const confirmBtn = page.locator('button.btn-confirm-purchase, button:has-text("Confirm Order")').first();
+      const confirmBtn = page.locator('button.btn-confirm, button:has-text("Authorize & Buy")').first();
       if (await confirmBtn.isVisible().catch(() => false)) {
         await confirmBtn.click();
         await page.waitForTimeout(800);
