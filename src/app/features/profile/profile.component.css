@@ -364,6 +364,109 @@
   border-color: var(--rose-400);
 }
 
+/* System Reset Bar */
+.system-reset-bar {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  box-shadow: var(--shadow-card);
+}
+
+:host-context([data-theme="light"]) .system-reset-bar {
+  background: #FFFFFF;
+  border-color: rgba(226, 232, 240, 0.9);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+.system-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.setting-icon-box.amber {
+  background: rgba(245, 158, 11, 0.15);
+  color: #F59E0B;
+}
+
+.system-bar-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.system-bar-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.system-bar-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.system-bar-actions {
+  display: flex;
+  align-items: center;
+}
+
+.btn-reset-db {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #F59E0B;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-reset-db:hover {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #F59E0B;
+  transform: translateY(-1px);
+}
+
+.modal-body-reset {
+  margin: 16px 0;
+}
+
+.reset-warning-text {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.btn-confirm-reset {
+  background: #DC2626;
+  border: none;
+  color: #FFFFFF;
+  padding: 8px 18px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-confirm-reset:hover:not(:disabled) {
+  background: #EF4444;
+}
+
+.btn-confirm-reset:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Edit Modal */
 .modal-backdrop {
   position: fixed;
@@ -531,6 +634,25 @@
   }
 
   .btn-studio-cta, .btn-toggle-creator {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .system-reset-bar {
+    flex-direction: column;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .system-bar-left {
+    flex-direction: column;
+  }
+
+  .system-bar-actions {
+    width: 100%;
+  }
+
+  .btn-reset-db {
     width: 100%;
     justify-content: center;
   }
