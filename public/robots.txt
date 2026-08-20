@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /studio/
+Disallow: /profile/
+Disallow: /orders/
+
+Sitemap: http://localhost:4200/sitemap.xml
