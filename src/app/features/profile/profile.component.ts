@@ -7,6 +7,8 @@ import { USERS_DATA, LIBRARY_DATA, WISHLIST_DATA, ORDERS_DATA, GAMES_DATA } from
 import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.component';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 
+import { LocalStoreService } from '../../core/persistence/local-store.service';
+
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -22,6 +24,7 @@ import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading
 })
 export class ProfileComponent implements OnInit {
   auth = inject(AuthService);
+  private localStore = inject(LocalStoreService);
   private usersData = inject(USERS_DATA);
   private libraryData = inject(LIBRARY_DATA);
   private wishlistData = inject(WISHLIST_DATA);
@@ -132,13 +135,17 @@ export class ProfileComponent implements OnInit {
 
   executeResetDatabase(): void {
     this.resetting = true;
+    this.localStore.clearAll();
     this.gamesData.resetToDefaultSeed().subscribe({
       next: () => {
         this.resetting = false;
         this.showResetConfirm = false;
         this.resetSuccess = true;
         this.loadStats();
-        setTimeout(() => { this.resetSuccess = false; }, 4000);
+        setTimeout(() => {
+          this.resetSuccess = false;
+          window.location.reload();
+        }, 1200);
       },
       error: () => {
         this.resetting = false;
