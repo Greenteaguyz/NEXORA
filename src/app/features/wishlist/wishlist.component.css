@@ -1,8 +1,9 @@
 .wishlist-page-container {
-  max-width: 1320px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-6);
-  min-height: calc(100vh - 200px);
+  padding: var(--space-8) clamp(16px, 3.5vw, 56px);
+  box-sizing: border-box;
 }
 
 .wishlist-header {

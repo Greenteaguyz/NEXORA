@@ -165,3 +165,34 @@ Standard skills applied during development:
 - [x] **11.7** Implement pixel-perfect vector SVG animated hamburger menu button for mobile navigation
 - [x] **11.8** Execute regression test suite (100% pass) and production build validation
 
+---
+
+## Phase 7: Mobile Gestures, Profile Minimalism, Fluid Architecture, & Production Verification (Task 12)
+
+### Task 12: Advanced UI/UX, CRUD Workflows, and Edge-to-Edge Responsiveness
+- [x] **12.1** Implement App Store / Steam mobile gallery gestures with horizontal touch swipe detection (`onTouchStart`, `onTouchEnd`, delta > 35px), floating `1 / 4` slide counter pill, and synchronized thumbnails
+- [x] **12.2** Streamline demo personas to 2 distinct accounts (`Alice (Creator)` and `Bob (Buyer)`) across desktop navbar, mobile drawer, and `/login`
+- [x] **12.3** Refine Creator Profile (`/creators/:id`) with ambient studio key art banner, `[showCreator]="false"` on game cards to eliminate redundancy, and 1-click clipboard profile sharing
+- [x] **12.4** Rebuild User Profile (`/profile`) into a clean, minimal 1-screen hub with 3 interactive stat cards (`/library`, `/wishlist`, `/orders`), single role badge, and streamlined Creator Studio action bar
+- [x] **12.5** Enhance Creator Studio Game Form (`/studio/new`, `/studio/edit/:id`) with full CRUD tag management (`+ Add` button, live tag counter, chip suggestions, remove buttons) and live 16:9 cover artwork preview
+- [x] **12.6** Upgrade layout engine to 100% fluid edge-to-edge system (`clamp(16px, 3.5vw, 56px)`) with dynamic `repeat(auto-fill, minmax(280px, 1fr))` grid to handle ultra-wide / 4K monitors and browser zoom-out gracefully
+- [x] **12.7** Convert layout to flexbox sticky-footer architecture, removing artificial `80vh` heights and ensuring the footer remains naturally visible without empty vertical voids
+- [x] **12.8** Complete `/test-coverage`, `/verification-loop`, `/delivery-gate`, and `/living-docs-governance` protocols with 100% pass rate (50/50 tests passing, 0 type errors, clean production bundle)
+
+---
+
+## Phase 8: Library Management, Official Invoicing, & Commerce Hardening (Task 13)
+
+### Task 13: Library CRUD, Executive Invoice Printing, & Commerce Optimization
+- [x] **13.1** Implement 1-click **"Add to Library"** (Claim) and **"Remove from Library"** in `GameDetailComponent` for Free games without forcing instant large file downloads
+- [x] **13.2** Add 1-click **"Remove from Library"** on owned cards in `LibraryComponent` with live state persistence and UI sync
+- [x] **13.3** Implement `removeFromLibrary(userId, gameId)` in `LibraryDataService` and `MockLibraryDataService` with LocalStorage/IndexedDB persistence
+- [x] **13.4** Upgrade `OrdersComponent` Print Receipt into an official executive-grade 1-page A4 invoice:
+  - Added `@page { size: A4 portrait; margin: 0; }` to strip browser headers, timestamps, and localhost URL stamps completely
+  - Configured dynamic PDF document title naming (`NEXORA-Receipt-ord_XXXXX.pdf`)
+  - Added `Billed To` customer metadata (name and email)
+  - Implemented structured itemized accounting table (`Description`, `Format`, `Qty`, `Price`)
+  - Added official proof-of-purchase legal statement and support reference
+- [x] **13.5** Streamlined `CreatorStudioComponent` header by eliminating the redundant `[DEVELOPER DASHBOARD]` pill badge and vertical alignment mismatch
+- [x] **13.6** Executed full quality gate verification: 51/51 unit, integration, and E2E checks passing (100%), 0 TypeScript errors, and 2.70s production build
+

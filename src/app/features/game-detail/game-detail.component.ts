@@ -106,8 +106,48 @@ export class GameDetailComponent implements OnInit {
     this.selectedSpecsTab = tab;
   }
 
+  private touchStartX = 0;
+  private touchStartY = 0;
+
   selectStageImage(index: number): void {
     this.selectedStageIndex = index;
+  }
+
+  nextStageImage(): void {
+    const total = this.galleryImages.length;
+    if (total > 1) {
+      this.selectedStageIndex = (this.selectedStageIndex + 1) % total;
+    }
+  }
+
+  prevStageImage(): void {
+    const total = this.galleryImages.length;
+    if (total > 1) {
+      this.selectedStageIndex = (this.selectedStageIndex - 1 + total) % total;
+    }
+  }
+
+  onTouchStart(event: TouchEvent): void {
+    if (event.touches.length === 1) {
+      this.touchStartX = event.touches[0].clientX;
+      this.touchStartY = event.touches[0].clientY;
+    }
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    if (event.changedTouches.length === 1) {
+      const deltaX = event.changedTouches[0].clientX - this.touchStartX;
+      const deltaY = event.changedTouches[0].clientY - this.touchStartY;
+      
+      // Horizontal swipe detected (threshold 35px)
+      if (Math.abs(deltaX) > 35 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX < 0) {
+          this.nextStageImage();
+        } else {
+          this.prevStageImage();
+        }
+      }
+    }
   }
 
   get galleryImages(): string[] {
@@ -373,6 +413,34 @@ export class GameDetailComponent implements OnInit {
         this.downloadService.downloadGameFile(this.game!, this.selectedDownloadPlatform);
       });
     }
+  }
+
+  claimFreeToLibrary(): void {
+    if (!this.game) return;
+    const user = this.authService.currentUser();
+    if (!user) {
+      this.onLoginRequired();
+      return;
+    }
+
+    this.libraryData.addToLibrary(user.id, this.game.id).subscribe(() => {
+      this.isOwned = true;
+      if (this.isWishlisted) {
+        this.wishlistData.removeFromWishlist(user.id, this.game!.id).subscribe(() => {
+          this.isWishlisted = false;
+        });
+      }
+    });
+  }
+
+  removeFromLibrary(): void {
+    if (!this.game) return;
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    this.libraryData.removeFromLibrary(user.id, this.game.id).subscribe(() => {
+      this.isOwned = false;
+    });
   }
 
   onPurchaseConfirmed(): void {

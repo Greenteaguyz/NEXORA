@@ -115,4 +115,17 @@ export class LibraryComponent implements OnInit {
   onDownload(game: Game): void {
     this.downloadService.downloadGameFile(game);
   }
+
+  removeGame(gameId: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    const user = this.auth.currentUser();
+    if (!user) return;
+
+    this.libraryData.removeFromLibrary(user.id, gameId).subscribe(() => {
+      this.items = this.items.filter(item => item.game.id !== gameId);
+    });
+  }
 }

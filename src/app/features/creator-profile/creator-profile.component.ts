@@ -56,4 +56,16 @@ export class CreatorProfileComponent implements OnInit {
       }
     });
   }
+
+  copiedShareLink = false;
+
+  copyProfileLink(): void {
+    if (typeof window !== 'undefined') {
+      navigator.clipboard.writeText(window.location.href);
+      this.copiedShareLink = true;
+      setTimeout(() => {
+        this.copiedShareLink = false;
+      }, 2500);
+    }
+  }
 }

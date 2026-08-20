@@ -55,6 +55,12 @@ export class MockLibraryDataService implements LibraryDataService {
     return of(newEntry);
   }
 
+  removeFromLibrary(userId: string, gameId: string): Observable<void> {
+    this.entries = this.entries.filter(e => !(e.userId === userId && e.gameId === gameId));
+    this.persist();
+    return of(void 0);
+  }
+
   isOwned(userId: string, gameId: string): Observable<boolean> {
     const owned = this.entries.some(e => e.userId === userId && e.gameId === gameId);
     return of(owned);

@@ -36,12 +36,14 @@ Tracks game acquisitions and ownership verification for user accounts.
 export interface LibraryDataService {
   getLibrary(userId: string): Observable<LibraryEntry[]>;
   addToLibrary(userId: string, gameId: string, orderId?: string): Observable<LibraryEntry>;
+  removeFromLibrary(userId: string, gameId: string): Observable<void>;
   isOwned(userId: string, gameId: string): Observable<boolean>;
 }
 ```
 
 * **`getLibrary(userId)`**: Returns all `LibraryEntry` records associated with the user ID.
 * **`addToLibrary(userId, gameId, orderId?)`**: Creates a new ownership record with the current timestamp.
+* **`removeFromLibrary(userId, gameId)`**: Removes an existing ownership record from the user's account and updates local storage.
 * **`isOwned(userId, gameId)`**: Returns `true` if a matching library record exists for the user and game.
 
 ---

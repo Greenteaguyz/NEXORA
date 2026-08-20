@@ -125,12 +125,25 @@
 
           <div class="form-field">
             <label for="coverImageUrl" class="field-label">Cover Image Asset URL <span class="req">*</span></label>
-            <input 
-              id="coverImageUrl" 
-              type="text" 
-              formControlName="coverImageUrl" 
-              class="form-input"
-              [class.field-error]="gameForm.get('coverImageUrl')?.invalid && gameForm.get('coverImageUrl')?.touched">
+            <div class="cover-input-and-preview">
+              <input 
+                id="coverImageUrl" 
+                type="text" 
+                formControlName="coverImageUrl" 
+                class="form-input"
+                placeholder="https://... or assets/images/..."
+                [class.field-error]="gameForm.get('coverImageUrl')?.invalid && gameForm.get('coverImageUrl')?.touched">
+              
+              @if (gameForm.get('coverImageUrl')?.value) {
+                <div class="cover-live-preview">
+                  <img 
+                    [src]="gameForm.get('coverImageUrl')?.value" 
+                    alt="Cover artwork preview" 
+                    class="live-cover-img">
+                  <span class="preview-tag">Preview</span>
+                </div>
+              }
+            </div>
             @if (gameForm.get('coverImageUrl')?.invalid && gameForm.get('coverImageUrl')?.touched) {
               <span class="field-error-msg">Cover image URL is required.</span>
             }

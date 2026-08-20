@@ -14,6 +14,7 @@ import { WISHLIST_DATA } from '../../../core/data/tokens';
 })
 export class GameCardComponent implements OnInit, OnChanges {
   @Input({ required: true }) game!: Game;
+  @Input() showCreator = true;
 
   authService = inject(AuthService);
   private wishlistData = inject(WISHLIST_DATA);

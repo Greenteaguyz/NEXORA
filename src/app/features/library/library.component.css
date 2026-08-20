@@ -1,8 +1,9 @@
 .library-page-container {
-  max-width: 1320px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-6);
-  min-height: calc(100vh - 200px);
+  padding: var(--space-8) clamp(16px, 3.5vw, 56px);
+  box-sizing: border-box;
 }
 
 .library-header {
@@ -310,7 +311,45 @@
 }
 
 .card-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-top: var(--space-1);
+}
+
+.card-actions-row app-download-button {
+  flex: 1;
+}
+
+.btn-remove-lib-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-card);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+:host-context([data-theme="light"]) .btn-remove-lib-icon {
+  background: #F8FAFC;
+  border-color: #E2E8F0;
+}
+
+.btn-remove-lib-icon:hover {
+  background: rgba(244, 63, 94, 0.1);
+  border-color: var(--rose-500);
+  color: var(--rose-500);
+}
+
+.remove-svg {
+  width: 16px;
+  height: 16px;
 }
 
 @media (max-width: 768px) {

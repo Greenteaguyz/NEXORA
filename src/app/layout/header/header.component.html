@@ -68,12 +68,6 @@
             (click)="switchAccount('bob@nexora.io')">
             Bob (Buyer)
           </button>
-          <button 
-            class="demo-pill" 
-            [class.active]="authService.currentUser()?.email === 'carol@nexora.io'"
-            (click)="switchAccount('carol@nexora.io')">
-            Carol (Creator)
-          </button>
         </div>
 
         <!-- Apple iOS-Style Theme Switch Toggle -->
@@ -312,12 +306,6 @@
             [class.active]="authService.currentUser()?.email === 'bob@nexora.io'"
             (click)="switchAccount('bob@nexora.io')">
             Bob (Buyer)
-          </button>
-          <button 
-            class="demo-pill" 
-            [class.active]="authService.currentUser()?.email === 'carol@nexora.io'"
-            (click)="switchAccount('carol@nexora.io')">
-            Carol (Creator)
           </button>
         </div>
       </div>

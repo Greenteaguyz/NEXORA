@@ -67,27 +67,71 @@
   color: var(--rose-500);
 }
 
+.input-and-btn-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  min-width: 160px;
+}
+
 .chip-inline-input {
   flex: 1;
-  min-width: 140px;
+  min-width: 120px;
   background: transparent;
   border: none;
   color: var(--text-primary);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   padding: 4px 0;
   outline: none;
 }
 
 .chip-inline-input::placeholder {
   color: var(--text-muted);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
+}
+
+.btn-add-tag {
+  background: var(--accent-600);
+  border: none;
+  color: #FFFFFF;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-add-tag:hover:not(:disabled) {
+  background: var(--accent-500);
+  transform: scale(1.05);
+}
+
+.max-tags-indicator {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 4px 0;
+}
+
+.tag-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 18px;
+}
+
+.tag-count-text {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 .tag-error-text {
   font-size: 0.775rem;
   color: var(--rose-500);
   font-weight: 600;
-  margin-top: 2px;
 }
 
 /* Suggestions */

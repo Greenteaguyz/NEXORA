@@ -13,58 +13,6 @@
     <p class="support-subtitle">
       Find quick answers about downloads, game files, accounts, and publishing.
     </p>
-
-    <!-- Quick-Triage Hub Cards -->
-    <div class="triage-cards-grid" role="group" aria-label="Support topic quick navigation">
-      <button type="button" class="triage-card" (click)="quickFilter('downloads')" aria-label="View Game Downloads and True Ownership help">
-        <div class="triage-icon-box green" aria-hidden="true">
-          <svg class="svg-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-          </svg>
-        </div>
-        <div class="triage-content">
-          <strong class="triage-title">Downloads & Offline Play</strong>
-          <span class="triage-desc">Installing games, save files & playing offline</span>
-        </div>
-        <svg class="triage-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="9 18 15 12 9 6"/>
-        </svg>
-      </button>
-
-      <button type="button" class="triage-card" (click)="quickFilter('creators')" aria-label="View Creator Studio documentation">
-        <div class="triage-icon-box purple" aria-hidden="true">
-          <svg class="svg-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 20h9"/>
-            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-          </svg>
-        </div>
-        <div class="triage-content">
-          <strong class="triage-title">Creator Studio</strong>
-          <span class="triage-desc">Publishing games, artwork & earnings</span>
-        </div>
-        <svg class="triage-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="9 18 15 12 9 6"/>
-        </svg>
-      </button>
-
-      <button type="button" class="triage-card" (click)="quickFilter('privacy')" aria-label="View Privacy and local storage documentation">
-        <div class="triage-icon-box cyan" aria-hidden="true">
-          <svg class="svg-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <path d="M9 12l2 2 4-4"/>
-          </svg>
-        </div>
-        <div class="triage-content">
-          <strong class="triage-title">Privacy & Storage</strong>
-          <span class="triage-desc">No tracking, local storage & security</span>
-        </div>
-        <svg class="triage-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="9 18 15 12 9 6"/>
-        </svg>
-      </button>
-    </div>
   </header>
 
   <!-- Main Support Content Grid -->
@@ -462,27 +410,6 @@
         <p class="trust-item-desc">
           All monetary transactions across this marketplace prototype are 100% simulated mock purchases with zero real credit card charges.
         </p>
-      </div>
-    </div>
-
-    <!-- Seed Data Reset Tool & Feedback Banner -->
-    <div class="seed-reset-row">
-      <div class="seed-reset-info">
-        <strong class="seed-reset-heading">Developer Sandbox Utility</strong>
-        <span class="seed-reset-sub">Need to wipe local modifications and restore original seed games catalog?</span>
-      </div>
-
-      <div class="seed-action-wrap">
-        @if (resetNotification) {
-          <span class="seed-reset-toast" role="status">✓ {{ resetNotification }}</span>
-        }
-        <button type="button" class="reset-db-btn" (click)="resetDatabase()" aria-label="Reset mock marketplace seed data">
-          <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <polyline points="1 4 1 10 7 10"/>
-            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
-          </svg>
-          <span>Reset Marketplace Seed Data</span>
-        </button>
       </div>
     </div>
   </section>

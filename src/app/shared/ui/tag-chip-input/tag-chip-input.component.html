@@ -16,24 +16,39 @@
     }
 
     @if (tags().length < maxTags) {
-      <input 
-        type="text" 
-        [(ngModel)]="inputValue" 
-        (keydown)="handleKeydown($event)" 
-        (blur)="addTagFromInput()"
-        [placeholder]="tags().length === 0 ? placeholder : 'Add another tag...'" 
-        [disabled]="disabled"
-        class="chip-inline-input"
-        aria-label="New tag name">
+      <div class="input-and-btn-wrap">
+        <input 
+          type="text" 
+          [(ngModel)]="inputValue" 
+          (keydown)="handleKeydown($event)" 
+          (blur)="addTagFromInput()"
+          [placeholder]="tags().length === 0 ? placeholder : 'Type tag & press Enter...'" 
+          [disabled]="disabled"
+          class="chip-inline-input"
+          aria-label="New tag name">
+        @if (inputValue.trim()) {
+          <button type="button" class="btn-add-tag" (click)="addTagFromInput()" [disabled]="disabled">
+            + Add
+          </button>
+        }
+      </div>
+    } @else {
+      <span class="max-tags-indicator">
+        (Max {{ maxTags }} tags reached — click ✕ on any tag to remove)
+      </span>
     }
   </div>
 
-  <!-- Error or Helper Message -->
-  @if (errorMessage) {
-    <div class="tag-error-text" role="alert">
-      {{ errorMessage }}
-    </div>
-  }
+  <!-- Tag Counter & Error Message -->
+  <div class="tag-status-row">
+    @if (errorMessage) {
+      <div class="tag-error-text" role="alert">
+        {{ errorMessage }}
+      </div>
+    } @else {
+      <span class="tag-count-text">{{ tags().length }} of {{ maxTags }} tags used</span>
+    }
+  </div>
 
   <!-- Quick Suggestion Chips -->
   <div class="suggestions-section">

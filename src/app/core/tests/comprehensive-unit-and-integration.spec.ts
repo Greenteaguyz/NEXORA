@@ -97,7 +97,7 @@ const SEED_GAMES: Game[] = [
     screenshotUrls: [
       'assets/images/marvel-rivals-wide-hero.jpg',
       'assets/images/marvel-rivals-bg.jpg',
-      'assets/images/marvel-rivals-hero.jpg',
+      'assets/images/marvel-rivals-ss3.jpg',
       'assets/images/marvel-rivals-poster.jpg'
     ],
     createdAt: '2024-04-01T10:00:00.000Z',
@@ -335,6 +335,11 @@ assert(isRemovedWishlist, 'Removing game_004 from Bob\'s wishlist cleanly filter
 // Test 4.4: Library Ownership Check
 const isBobOwningGame2 = libraryDb.some(l => l.userId === 'usr_bob' && l.gameId === 'game_002');
 assert(isBobOwningGame2, 'Bob correctly owns seeded game_002 in Library');
+
+// Test 4.5: Remove Item from Library
+libraryDb = libraryDb.filter(l => !(l.userId === 'usr_bob' && l.gameId === 'game_003'));
+const isGame3RemovedFromLibrary = !libraryDb.some(l => l.userId === 'usr_bob' && l.gameId === 'game_003');
+assert(isGame3RemovedFromLibrary, 'Removing game_003 from Bob\'s Library cleanly purges entry');
 
 // ----------------------------------------------------------------------------
 // 5. INTEGRATION TESTS: FULL END-TO-END COMMERCE & ACQUISITION FLOW

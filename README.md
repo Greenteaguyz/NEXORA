@@ -57,10 +57,12 @@ Navigate to [`http://localhost:4200`](http://localhost:4200) in your web browser
 ## Overview & Key Features
 
 * **Store Catalog & Genres Directory**: Real-time substring search, live tag filtering, quick-search genre catalog, and responsive auto-fill category grids with game counts.
-* **Game Acquisition & Download Experience**: Streamlined 2-tier acquisition banner, dual-platform options (**Windows 32/64-bit** and **Linux x86_64**), SHA-256 integrity checksum verification, and animated download progress overlays.
-* **Rich Media & Visual Polish**: Official high-res game assets (featuring *Marvel Rivals*), dual-theme system (Dark & Light modes), Light Mode soft slate frosted backdrop blur for full-screen screenshot lightbox viewing, and responsive layout scaling.
-* **Mobile-First UX**: Pixel-perfect vector SVG animated hamburger menu, slide-out navigation drawer with role-aware account actions, and zero-overflow touch interfaces.
-* **Role-Based Access Control**: Instant demo persona switching (Alice - Creator/Buyer, Bob - Buyer, Carol - Creator), creator upload studio, library management, and purchase fulfillment.
+* **Game Acquisition & Download Experience**: Streamlined 2-tier acquisition banner, dual-platform options (**Windows 32/64-bit** and **Linux x86_64**), 1-click **Add to Library / Claim** for free games, SHA-256 integrity checksum verification, and animated download progress overlays.
+* **Library Management**: 1-click **Remove from Library** with live state synchronization and persistent storage.
+* **Executive Invoicing & Receipts**: High-resolution 1-page A4 printable invoice with zero browser URL stamps (`@page { margin: 0; }`), automatic PDF naming (`NEXORA-Receipt-ord_XXX.pdf`), customer metadata (`Billed To`), and itemized accounting breakdowns.
+* **Rich Media & Visual Polish**: Official high-res game assets (featuring *Marvel Rivals*), dual-theme system (Dark & Light modes), Light Mode soft slate frosted backdrop blur for full-screen screenshot lightbox viewing, and 100% fluid edge-to-edge layout scaling.
+* **Mobile-First UX**: Pixel-perfect vector SVG animated hamburger menu, horizontal touch swipe gallery gestures (`1 / 4` counter pill), and slide-out navigation drawer with role-aware account actions.
+* **Role-Based Access Control**: Instant demo persona switching (Alice - Creator/Buyer, Bob - Buyer), creator upload studio, library management, and purchase fulfillment.
 
 ---
 
@@ -72,23 +74,30 @@ Use the following preconfigured accounts to test role-based access control and u
 | :--- | :--- | :--- | :--- | :--- |
 | **Alice** | Creator + Buyer | `alice@nexora.io` | `password123` | Full access to Creator Studio, game publishing, editing owned listings, and purchasing games. |
 | **Bob** | Buyer | `bob@nexora.io` | `password123` | Browse catalog, wishlist games, complete order checkout, and manage personal library. |
-| **Carol** | Creator | `carol@nexora.io` | `password123` | Creator Studio access and management for Carol's published games. |
 
 ---
 
 ## Run automated test suites
 
-NEXORA provides a comprehensive automated testing battery with 250+ checks covering unit logic, domain integration, end-to-end browser flows, WCAG accessibility, and mobile emulation.
+NEXORA provides a comprehensive automated testing battery covering unit logic, domain integration, end-to-end browser flows, links, redirects, and auth guards.
 
-### 1. Run the domain regression suite
+### 1. Run the domain regression suite (21 Tests)
 
-Run the TypeScript domain regression test suite to verify contract parity, session isolation, and catalog fulfillment:
+Run the TypeScript domain regression test suite to verify contract parity, library CRUD, and catalog fulfillment:
 
 ```bash
 npm run test:regression
 ```
 
-### 2. Run the end-to-end workflow validation suite
+### 2. Run the complete routing & logic audit suite (30 Checks)
+
+Run the automated link, redirect, auth guard, and OS switcher audit suite:
+
+```bash
+node dist/tests/full-app-audit.spec.js
+```
+
+### 3. Run the end-to-end workflow validation suite
 
 Run the Playwright end-to-end test suite to validate catalog browsing, login, purchasing, and creator workflows:
 

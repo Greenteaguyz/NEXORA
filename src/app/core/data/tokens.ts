@@ -32,6 +32,7 @@ export const GAMES_DATA = new InjectionToken<GamesDataService>('GAMES_DATA');
 export interface LibraryDataService {
   getLibrary(userId: string): Observable<LibraryEntry[]>;
   addToLibrary(userId: string, gameId: string, orderId?: string): Observable<LibraryEntry>;
+  removeFromLibrary(userId: string, gameId: string): Observable<void>;
   isOwned(userId: string, gameId: string): Observable<boolean>;
 }
 

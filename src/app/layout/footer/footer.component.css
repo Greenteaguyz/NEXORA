@@ -6,12 +6,15 @@
 }
 
 .footer-container {
-  max-width: 1320px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
+  padding: 0 clamp(16px, 3.5vw, 56px);
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: var(--space-8);
   margin-bottom: var(--space-8);
+  box-sizing: border-box;
 }
 
 .footer-brand {
@@ -37,7 +40,7 @@
 .brand-desc {
   color: var(--text-secondary);
   font-size: 0.875rem;
-  max-width: 320px;
+  max-width: 340px;
   line-height: 1.6;
 }
 
@@ -73,10 +76,12 @@
 }
 
 .footer-bottom {
-  max-width: 1320px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding-top: var(--space-6);
+  padding: var(--space-6) clamp(16px, 3.5vw, 56px) 0;
   border-top: 1px solid var(--border-card);
+  box-sizing: border-box;
 }
 
 .footer-legal-container {
@@ -117,4 +122,18 @@
     grid-template-columns: 1fr;
     gap: var(--space-6);
   }
+}
+
+/* Light Mode Overrides */
+:host-context([data-theme="light"]) .footer-shell {
+  background-color: #FFFFFF;
+  border-top-color: #E2E8F0;
+}
+
+:host-context([data-theme="light"]) .footer-bottom {
+  border-top-color: #E2E8F0;
+}
+
+:host-context([data-theme="light"]) .col-heading {
+  color: #7C3AED;
 }

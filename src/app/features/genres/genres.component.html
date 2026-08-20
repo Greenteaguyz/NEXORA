@@ -28,47 +28,7 @@
   @if (loading) {
     <app-loading-spinner size="lg" label="Loading genres..."></app-loading-spinner>
   } @else {
-    <!-- 1. Featured Top Categories (Shown when not searching) -->
-    @if (!searchQuery.trim()) {
-      <section class="featured-section">
-        <div class="section-header">
-          <div class="section-title-wrap">
-            <div class="section-icon-box orange" aria-hidden="true">
-              <svg class="section-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
-              </svg>
-            </div>
-            <h2 class="section-title">Popular Categories</h2>
-          </div>
-          <p class="section-desc">Our most active game collections with the largest catalogs.</p>
-        </div>
-
-        <div class="featured-grid">
-          @for (genre of featuredGenres; track genre.name) {
-            <a [routerLink]="['/catalog']" [queryParams]="{ tag: genre.name }" class="featured-card" [style.--genre-accent]="genre.accentColor">
-              <div class="featured-card-top">
-                <div class="featured-icon-box" [style.background-color]="genre.accentColor + '18'" [style.border-color]="genre.accentColor + '50'" [style.color]="genre.accentColor">
-                  <span class="featured-icon" [innerHTML]="genre.iconSvg"></span>
-                </div>
-                <span class="featured-badge">{{ genre.count }} {{ genre.count === 1 ? 'game' : 'games' }}</span>
-              </div>
-
-              <div class="featured-card-body">
-                <h3 class="featured-name">{{ genre.name }}</h3>
-                <p class="featured-desc">{{ genre.description }}</p>
-              </div>
-
-              <div class="featured-card-footer">
-                <span class="featured-explore-link">Explore Collection</span>
-                <span class="featured-arrow">→</span>
-              </div>
-            </a>
-          }
-        </div>
-      </section>
-    }
-
-    <!-- 2. All Categories / Search Results (Clean, easy-to-navigate cards) -->
+    <!-- Unified Categories Directory -->
     <section class="all-categories-section">
       <div class="section-header">
         <div class="section-title-wrap">
@@ -81,11 +41,11 @@
               <line x1="18" y1="11" x2="18.01" y2="11"/>
             </svg>
           </div>
-          <h2 class="section-title">{{ searchQuery.trim() ? 'Search Results' : 'All Genres & Tags' }}</h2>
+          <h2 class="section-title">{{ searchQuery.trim() ? 'Search Results' : 'Explore All Categories' }}</h2>
           <span class="all-count-badge">{{ filteredAllGenres.length }} {{ filteredAllGenres.length === 1 ? 'category' : 'categories' }}</span>
         </div>
         <p class="section-desc">
-          {{ searchQuery.trim() ? 'Matching categories for "' + searchQuery + '"' : 'Explore indie titles across specialized subgenres, themes, and gameplay styles.' }}
+          {{ searchQuery.trim() ? 'Matching categories for "' + searchQuery + '"' : 'Complete directory of game themes, styles, and tags.' }}
         </p>
       </div>
 

@@ -10,29 +10,75 @@
       routerLink="/catalog">
     </app-empty-state>
   } @else {
-    <!-- Breadcrumb -->
+    <!-- Back Button -->
     <div class="profile-nav">
-      <a routerLink="/catalog" class="back-link">← Back to Store</a>
+      <a routerLink="/catalog" class="btn-back-pill back-link">
+        <svg class="svg-back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        <span>Back to Store</span>
+      </a>
     </div>
 
     <!-- Creator Header Banner -->
     <header class="creator-hero-card">
-      <img [src]="creator.avatarUrl || 'assets/logo-icon.svg'" [alt]="creator.displayName" class="hero-avatar">
-      <div class="hero-info">
-        <div class="name-badge-row">
-          <h1 class="creator-name">{{ creator.displayName }}</h1>
-          <app-role-badge role="creator" size="md"></app-role-badge>
+      <div class="creator-banner-strip" aria-hidden="true"></div>
+      
+      <div class="creator-card-body">
+        <div class="creator-avatar-wrap">
+          <img [src]="creator.avatarUrl || 'assets/logo-icon.svg'" [alt]="creator.displayName" class="hero-avatar">
+          <div class="avatar-glow"></div>
         </div>
-        <p class="creator-email">{{ creator.email }}</p>
-        @if (creator.bio) {
-          <p class="creator-bio">{{ creator.bio }}</p>
-        }
-        <div class="creator-stats">
-          <span class="stat-item">
-            <strong>{{ creatorGames.length }}</strong> {{ creatorGames.length === 1 ? 'Published Game' : 'Published Games' }}
-          </span>
-          <span class="stat-divider">•</span>
-          <span class="stat-item">Joined {{ creator.createdAt | date:'mediumDate' }}</span>
+
+        <div class="hero-info">
+          <div class="name-badge-row">
+            <div class="name-cluster">
+              <h1 class="creator-name">{{ creator.displayName }}</h1>
+              <app-role-badge role="creator" size="md"></app-role-badge>
+            </div>
+
+            <!-- Share Profile Action Button -->
+            <button 
+              type="button" 
+              class="btn-share-profile" 
+              (click)="copyProfileLink()" 
+              [attr.aria-label]="copiedShareLink ? 'Profile link copied to clipboard' : 'Copy creator profile link'">
+              <svg class="btn-share-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+              </svg>
+              <span>{{ copiedShareLink ? '✓ Link Copied' : 'Share Profile' }}</span>
+            </button>
+          </div>
+
+          <div class="creator-meta-pills">
+            <span class="meta-pill">
+              <svg class="pill-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              <span>{{ creator.email }}</span>
+            </span>
+            <span class="meta-pill">
+              <svg class="pill-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="6" width="20" height="12" rx="6"/>
+                <line x1="6" y1="12" x2="10" y2="12"/>
+                <line x1="8" y1="10" x2="8" y2="14"/>
+              </svg>
+              <span><strong>{{ creatorGames.length }}</strong> {{ creatorGames.length === 1 ? 'Published Game' : 'Published Games' }}</span>
+            </span>
+            <span class="meta-pill">
+              <svg class="pill-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span>Joined {{ creator.createdAt | date:'mediumDate' }}</span>
+            </span>
+          </div>
+
+          @if (creator.bio) {
+            <p class="creator-bio">{{ creator.bio }}</p>
+          }
         </div>
       </div>
     </header>
@@ -40,8 +86,10 @@
     <!-- Published Games Section -->
     <section class="portfolio-section">
       <div class="section-title-bar">
-        <h2 class="section-title">Games by {{ creator.displayName }}</h2>
-        <span class="section-count">{{ creatorGames.length }} total</span>
+        <div class="section-title-group">
+          <h2 class="section-title">Games by {{ creator.displayName }}</h2>
+          <span class="badge-count">{{ creatorGames.length }}</span>
+        </div>
       </div>
 
       @if (creatorGames.length === 0) {
@@ -53,7 +101,7 @@
       } @else {
         <div class="games-grid">
           @for (game of creatorGames; track game.id) {
-            <app-game-card [game]="game"></app-game-card>
+            <app-game-card [game]="game" [showCreator]="false"></app-game-card>
           }
         </div>
       }

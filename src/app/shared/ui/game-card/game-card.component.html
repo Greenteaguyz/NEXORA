@@ -38,9 +38,11 @@
       <h3 class="game-title">
         <a [routerLink]="['/games', game.id]">{{ game.title }}</a>
       </h3>
-      <a [routerLink]="['/creators', game.ownerId]" class="creator-link" title="View Creator Profile">
-        by {{ game.ownerId === 'usr_alice' ? 'Alice Vance' : (game.ownerId === 'usr_carol' ? 'Carol PixelForge' : 'Independent Dev') }}
-      </a>
+      @if (showCreator) {
+        <a [routerLink]="['/creators', game.ownerId]" class="creator-link" title="View Creator Profile">
+          by {{ game.ownerId === 'usr_alice' ? 'Alice Vance' : (game.ownerId === 'usr_carol' ? 'Carol PixelForge' : 'Independent Dev') }}
+        </a>
+      }
     </div>
 
     <p class="game-desc">

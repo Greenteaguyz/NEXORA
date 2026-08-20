@@ -36,25 +36,35 @@
       <div class="steam-media-col">
         <div 
           class="steam-main-viewer" 
-          role="button"
-          tabindex="0"
-          [attr.aria-label]="'Enlarge screenshot ' + (selectedStageIndex + 1) + ' for ' + game.title + ' (Press Enter)'"
-          (click)="openLightbox(selectedStageIndex)"
+          role="region"
+          aria-roledescription="carousel"
+          [attr.aria-label]="game.title + ' media gallery (Swipe left/right to browse)'"
+          (touchstart)="onTouchStart($event)"
+          (touchend)="onTouchEnd($event)"
           (keydown)="handleStageKeydown($event)">
           <img 
             [src]="galleryImages[selectedStageIndex]" 
             [alt]="game.title + ' gameplay screenshot ' + (selectedStageIndex + 1)" 
             loading="eager"
             decoding="sync"
-            class="steam-stage-img">
+            class="steam-stage-img"
+            (click)="openLightbox(selectedStageIndex)">
           
-          <div class="steam-viewer-overlay" aria-hidden="true">
-            <span class="steam-expand-badge">
-              <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-              </svg>
-              <span>Click or Press Enter to Enlarge</span>
-            </span>
+          <!-- Corner Lightbox Expand Button -->
+          <button 
+            type="button"
+            class="btn-stage-expand"
+            (click)="openLightbox(selectedStageIndex); $event.stopPropagation()"
+            [attr.aria-label]="'Enlarge screenshot ' + (selectedStageIndex + 1)">
+            <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+            </svg>
+            <span class="desktop-only-text">Enlarge</span>
+          </button>
+
+          <!-- Floating Slide Indicator Pill -->
+          <div class="gallery-counter-pill" aria-hidden="true">
+            <span class="counter-text">{{ selectedStageIndex + 1 }} / {{ galleryImages.length }}</span>
           </div>
         </div>
 
@@ -115,11 +125,6 @@
             <div class="capsule-meta-row">
               <span class="meta-label">Package Size:</span>
               <span class="meta-val">{{ packageSize }} Standalone</span>
-            </div>
-
-            <div class="capsule-meta-row">
-              <span class="meta-label">Distribution:</span>
-              <span class="meta-val highlight-emerald">100% Yours Forever</span>
             </div>
           </div>
 
@@ -190,17 +195,49 @@
             (purchaseConfirmed)="onPurchaseConfirmed()">
           </app-download-button>
 
-          <button 
-            type="button" 
-            class="btn-steam-wishlist"
-            [class.active]="isWishlisted"
-            (click)="toggleWishlist()"
-            [attr.aria-label]="(isWishlisted ? 'Remove ' : 'Add ') + game.title + (isWishlisted ? ' from wishlist' : ' to wishlist')">
-            <svg class="btn-wishlist-svg" viewBox="0 0 24 24" [attr.fill]="isWishlisted ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-            <span>{{ isWishlisted ? 'Saved' : 'Wishlist' }}</span>
-          </button>
+          @if (game.price === 0 && !isOwned) {
+            <button 
+              type="button" 
+              class="btn-claim-library" 
+              (click)="claimFreeToLibrary()"
+              title="Add to your permanent library without downloading immediately">
+              <svg class="action-btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                <line x1="12" y1="7" x2="12" y2="13"/>
+                <line x1="9" y1="10" x2="15" y2="10"/>
+              </svg>
+              <span>+ Add to Library</span>
+            </button>
+          }
+
+          @if (isOwned) {
+            <button 
+              type="button" 
+              class="btn-remove-library" 
+              (click)="removeFromLibrary()"
+              title="Remove this game from your library">
+              <svg class="action-btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+              <span>Remove</span>
+            </button>
+          }
+
+          @if (!isOwned) {
+            <button 
+              type="button" 
+              class="btn-steam-wishlist"
+              [class.active]="isWishlisted"
+              (click)="toggleWishlist()"
+              [attr.aria-label]="(isWishlisted ? 'Remove ' : 'Add ') + game.title + (isWishlisted ? ' from wishlist' : ' to wishlist')">
+              <svg class="btn-wishlist-svg" viewBox="0 0 24 24" [attr.fill]="isWishlisted ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              <span>{{ isWishlisted ? 'Saved' : 'Wishlist' }}</span>
+            </button>
+          }
         </div>
       </div>
 
@@ -245,179 +282,57 @@
       </app-purchase-confirm-modal>
     }
 
-    <!-- STEAM LOWER GRID: About This Game & Specs (Left) + Features & Dev (Right) -->
+    <!-- STEAM LOWER GRID: About This Game & Specs -->
     <div class="steam-lower-grid">
-      <!-- Left Main Column: Narrative, Key Highlights & System Requirements -->
-      <main class="steam-main-details">
-        <!-- ABOUT THIS GAME SECTION (Steam Standard) -->
+      <!-- Main Details Column -->
+      <main class="steam-main-details full-width">
+        <!-- ABOUT THIS GAME SECTION -->
         <section class="steam-detail-block about-game-block" aria-labelledby="heading-about-game">
           <div class="block-header">
             <h2 id="heading-about-game" class="block-title">About This Game</h2>
-            <span class="block-subtitle-badge">Overview</span>
           </div>
 
           <div class="block-content">
-            <!-- Narrative Description -->
             <p class="story-lead-text">{{ game.description }}</p>
-
-            <div class="section-hairline"></div>
-
-            <!-- Key Features (Concise, Scannable Bullets) -->
-            <h3 class="sub-block-title">Key Features</h3>
-            <div class="key-features-grid">
-              @for (feat of keyFeatures; track feat.title) {
-                <div class="feature-card">
-                  <div class="feature-icon-box" aria-hidden="true">
-                    @if (feat.icon === 'speed') {
-                      <svg class="feat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                      </svg>
-                    } @else if (feat.icon === 'circuits' || feat.icon === 'world') {
-                      <svg class="feat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="2" y1="12" x2="22" y2="12"/>
-                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                      </svg>
-                    } @else if (feat.icon === 'tuning' || feat.icon === 'craft' || feat.icon === 'gear') {
-                      <svg class="feat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                      </svg>
-                    } @else if (feat.icon === 'controller') {
-                      <svg class="feat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="6" y1="12" x2="10" y2="12"/>
-                        <line x1="8" y1="10" x2="8" y2="14"/>
-                        <line x1="15" y1="13" x2="15.01" y2="13"/>
-                        <line x1="18" y1="11" x2="18.01" y2="11"/>
-                        <rect x="2" y="6" width="20" height="12" rx="6"/>
-                      </svg>
-                    } @else if (feat.icon === 'combat' || feat.icon === 'strategy' || feat.icon === 'override') {
-                      <svg class="feat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                        <polyline points="9 12 11 14 15 10"/>
-                      </svg>
-                    } @else {
-                      <svg class="feat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-                      </svg>
-                    }
-                  </div>
-                  <div class="feature-text">
-                    <strong class="feature-title">{{ feat.title }}</strong>
-                    <span class="feature-desc">{{ feat.desc }}</span>
-                  </div>
-                </div>
-              }
-            </div>
           </div>
         </section>
 
-        <!-- STEAM SYSTEM REQUIREMENTS SECTION -->
+        <!-- SYSTEM REQUIREMENTS SECTION -->
         <section class="steam-detail-block specs-block" aria-labelledby="heading-system-specs">
-          <div class="specs-block-header">
+          <div class="block-header">
             <h2 id="heading-system-specs" class="block-title">System Requirements</h2>
-            
-            <!-- Platform OS Switcher (Windows vs Linux) -->
-            <div class="specs-os-toggle" role="radiogroup" aria-label="Platform Operating System">
+            <div class="os-tabs-cluster" role="tablist" aria-label="Operating system specifications">
               <button 
                 type="button" 
                 class="os-tab-btn" 
-                [class.active]="selectedOs === 'windows'"
+                [class.active]="selectedOs === 'windows'" 
                 (click)="setOs('windows')"
-                role="radio"
-                [attr.aria-checked]="selectedOs === 'windows'"
-                aria-label="Windows specifications">
-                <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M3 5.5L10 4.5V11.5H3V5.5ZM11 4.35L21 3V11.5H11V4.35ZM3 12.5H10V19.5L3 18.5V12.5ZM11 12.5H21V21L11 19.65V12.5Z"/>
-                </svg>
-                <span>Windows</span>
+                role="tab"
+                [attr.aria-selected]="selectedOs === 'windows'">
+                Windows
               </button>
               <button 
                 type="button" 
                 class="os-tab-btn" 
-                [class.active]="selectedOs === 'linux'"
+                [class.active]="selectedOs === 'linux'" 
                 (click)="setOs('linux')"
-                role="radio"
-                [attr.aria-checked]="selectedOs === 'linux'"
-                aria-label="Linux specifications">
-                <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-                  <line x1="8" y1="21" x2="16" y2="21"/>
-                  <line x1="12" y1="17" x2="12" y2="21"/>
-                </svg>
-                <span>Linux</span>
+                role="tab"
+                [attr.aria-selected]="selectedOs === 'linux'">
+                Linux
               </button>
             </div>
           </div>
 
-          <p class="specs-requirement-notice">Requires a 64-bit processor and operating system</p>
-
-          <!-- Steam Side-by-Side Spec Columns -->
-          <div class="specs-steam-grid">
-            <div class="spec-steam-col">
-              <h3 class="spec-steam-title">MINIMUM:</h3>
-              <ul class="spec-steam-list">
-                @for (item of minimumSpecs.items; track item.label) {
-                  <li>
-                    <strong class="spec-key">{{ item.label }}:</strong>
-                    <span class="spec-val">{{ item.value }}</span>
-                  </li>
-                }
-              </ul>
-            </div>
-
-            <div class="spec-steam-col">
-              <h3 class="spec-steam-title">RECOMMENDED:</h3>
-              <ul class="spec-steam-list">
-                @for (item of recommendedSpecs.items; track item.label) {
-                  <li>
-                    <strong class="spec-key">{{ item.label }}:</strong>
-                    <span class="spec-val">{{ item.value }}</span>
-                  </li>
-                }
-              </ul>
-            </div>
+          <div class="specs-steam-grid specs-simple-grid">
+            @for (item of minimumSpecs.items; track item.label) {
+              <div class="spec-simple-item">
+                <span class="spec-key">{{ item.label }}</span>
+                <span class="spec-val">{{ item.value }}</span>
+              </div>
+            }
           </div>
         </section>
       </main>
-
-      <!-- Right Column: Features Sidebar -->
-      <aside class="steam-sidebar-details" aria-label="Game Features and Technical Details">
-        <!-- Feature Checklist Box -->
-        <div class="steam-side-panel features-panel">
-          <h3 class="panel-header-title">Game Features</h3>
-          <ul class="steam-feature-list" role="list">
-            <li class="steam-feature-item" role="listitem">
-              <svg class="feature-item-svg cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-              </svg>
-              <span>Single-Player Campaign</span>
-            </li>
-            <li class="steam-feature-item" role="listitem">
-              <svg class="feature-item-svg green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <polyline points="9 12 11 14 15 10"/>
-              </svg>
-              <span>100% DRM-Free Offline Play</span>
-            </li>
-            <li class="steam-feature-item" role="listitem">
-              <svg class="feature-item-svg orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <line x1="6" y1="12" x2="10" y2="12"/>
-                <line x1="8" y1="10" x2="8" y2="14"/>
-                <line x1="15" y1="13" x2="15.01" y2="13"/>
-                <line x1="18" y1="11" x2="18.01" y2="11"/>
-                <rect x="2" y="6" width="20" height="12" rx="6"/>
-              </svg>
-              <span>Full Controller & Gamepad Support</span>
-            </li>
-            <li class="steam-feature-item" role="listitem">
-              <svg class="feature-item-svg purple" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-              </svg>
-              <span>Direct Standalone Binaries</span>
-            </li>
-          </ul>
-        </div>
-      </aside>
     </div>
 
     <!-- Screenshot Lightbox Modal Overlay with Accessible Dialog Attributes -->

@@ -142,15 +142,19 @@
       <div class="receipt-modal-card" (click)="$event.stopPropagation()">
         <!-- Receipt Header -->
         <div class="receipt-modal-header">
-          <div class="receipt-brand">
-            <span class="brand-name">NEXORA</span>
-            <span class="receipt-stamp">OFFICIAL RECEIPT</span>
+          <div class="receipt-brand-block">
+            <div class="receipt-brand">
+              <span class="brand-name">NEXORA</span>
+              <span class="receipt-stamp">OFFICIAL INVOICE</span>
+            </div>
+            <span class="store-entity-tag">DRM-Free Digital Storefront & Game Distribution</span>
           </div>
           <button type="button" class="btn-close-receipt" (click)="closeReceipt()" aria-label="Close receipt">✕</button>
         </div>
 
         <!-- Receipt Content -->
         <div class="receipt-modal-body">
+          <!-- Meta Grid -->
           <div class="receipt-meta-grid">
             <div class="meta-item">
               <span class="meta-title">Order ID</span>
@@ -161,42 +165,64 @@
               <span class="meta-content">{{ formatOrderDate(selectedReceiptOrder.order.createdAt) }}</span>
             </div>
             <div class="meta-item">
-              <span class="meta-title">Payment Method</span>
-              <span class="meta-content">Direct Checkout</span>
+              <span class="meta-title">Billed To</span>
+              <span class="meta-content">{{ currentUser?.displayName || 'Customer' }} ({{ currentUser?.email || 'Registered User' }})</span>
             </div>
             <div class="meta-item">
-              <span class="meta-title">License</span>
-              <span class="meta-content highlight-emerald">100% DRM-Free</span>
+              <span class="meta-title">Payment Method</span>
+              <span class="meta-content">Direct Checkout (Settled)</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-title">License Format</span>
+              <span class="meta-content highlight-emerald">100% DRM-Free Perpetual</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-title">Fulfillment</span>
+              <span class="meta-content">Permanent Account Access</span>
             </div>
           </div>
 
-          <div class="receipt-divider"></div>
-
-          <!-- Item Details -->
-          <div class="receipt-item-row">
-            <div class="receipt-item-info">
-              <strong class="item-title">{{ selectedReceiptOrder.game?.title || 'Game Package' }}</strong>
-              <span class="item-desc">Standalone Game for Windows & Linux</span>
-            </div>
-            <div class="receipt-item-price">
-              ${{ selectedReceiptOrder.order.price.toFixed(2) }}
-            </div>
+          <!-- Itemized Line Table -->
+          <div class="receipt-items-table-wrap">
+            <table class="receipt-items-table">
+              <thead>
+                <tr>
+                  <th scope="col" class="th-desc">Item & Description</th>
+                  <th scope="col" class="th-format">Format</th>
+                  <th scope="col" class="th-qty text-center">Qty</th>
+                  <th scope="col" class="th-price text-right">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="td-desc">
+                    <strong class="item-title">{{ selectedReceiptOrder.game?.title || 'Game Package' }}</strong>
+                    <span class="item-desc">Standalone Game for Windows & Linux (Offline DRM-Free)</span>
+                  </td>
+                  <td class="td-format">
+                    <span class="format-badge">Digital Standalone</span>
+                  </td>
+                  <td class="td-qty text-center">1</td>
+                  <td class="td-price text-right">
+                    ${{ selectedReceiptOrder.order.price.toFixed(2) }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <div class="receipt-divider"></div>
-
-          <!-- Total Calculation -->
+          <!-- Financial Calculation Breakdown -->
           <div class="receipt-calc-table">
             <div class="calc-row">
               <span>Subtotal</span>
               <span>${{ selectedReceiptOrder.order.price.toFixed(2) }}</span>
             </div>
             <div class="calc-row">
-              <span>Developer Share (90%)</span>
+              <span>Developer Revenue Share (90%)</span>
               <span>${{ (selectedReceiptOrder.order.price * 0.9).toFixed(2) }}</span>
             </div>
             <div class="calc-row">
-              <span>Platform Fee (10%)</span>
+              <span>Platform Distribution Fee (10%)</span>
               <span>${{ (selectedReceiptOrder.order.price * 0.1).toFixed(2) }}</span>
             </div>
             <div class="calc-row total-row">
@@ -205,11 +231,17 @@
             </div>
           </div>
 
+          <!-- Legal & Verification Seal Block -->
           <div class="receipt-security-note">
-            <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            </svg>
-            <span>Verified receipt from NEXORA.</span>
+            <div class="security-seal-header">
+              <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              <strong>Verified Proof of Purchase • NEXORA Commerce Protocol</strong>
+            </div>
+            <p class="security-legal-text">
+              This invoice confirms the perpetual legal license to download, install, and execute the DRM-free software listed above. Offline installation packages remain permanently available in your NEXORA library. For support, please contact <strong>support&#64;nexora.io</strong>.
+            </p>
           </div>
         </div>
 

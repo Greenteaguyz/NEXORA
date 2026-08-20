@@ -203,3 +203,27 @@
   color: #FFFFFF;
   border-color: var(--cyan-400);
 }
+
+/* Light Mode Card Contrast & Sharpness */
+:host-context([data-theme="light"]) .game-card {
+  background-color: #FFFFFF;
+  border-color: rgba(226, 232, 240, 0.9);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+:host-context([data-theme="light"]) .game-card:hover {
+  border-color: rgba(124, 58, 237, 0.45);
+  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.12);
+}
+
+:host-context([data-theme="light"]) .tag-chip {
+  background-color: rgba(14, 116, 144, 0.08);
+  color: #0E7490;
+  border-color: rgba(14, 116, 144, 0.22);
+}
+
+:host-context([data-theme="light"]) .tag-chip:hover {
+  background-color: #0E7490;
+  color: #FFFFFF;
+  border-color: #0E7490;
+}

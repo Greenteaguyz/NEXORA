@@ -196,5 +196,43 @@
 - In game distribution and e-commerce interfaces, ruthlessly consolidate repetitive copy into a 2-part content architecture: a concise narrative lead + a scannable 4-item Key Features grid.
 - Keep sidebar interactions focused on developer discovery and hardware compatibility.
 
+---
+
+## [Pattern] Executive Invoicing with Zero-Margin `@page` Print Styling & Dynamic PDF Titling
+
+### Context
+- When users print receipts or save them as PDF, browser default settings print messy URLs (`localhost:4200/orders`), timestamps, page titles, and pagination stamps across the page.
+- Fixed backdrop heights and drop shadows also cause the receipt to break across two sheets with large blank voids.
+
+### Root Cause / Core Insight
+- Browsers generate default print headers/footers based on the CSS `@page` margin. Setting `@page { size: A4 portrait; margin: 0; }` completely suppresses the browser's header/footer stamps.
+- Applying explicit document margins (`padding: 20mm 24mm;`) on the printable container (`.receipt-modal-card`) creates exact, beautiful paper margins without leaking browser metadata.
+- Setting `document.title = 'NEXORA-Receipt-' + order.id` immediately before `window.print()` and restoring it in `setTimeout` guarantees that when users click "Save as PDF", the browser automatically proposes an official, clean filename.
+
+### The Pattern (Transferable)
+- For in-browser invoicing and receipts:
+  1. Hide background page shells, navigation, and modal footer buttons with `@media print { ... display: none !important; }`.
+  2. Use `@page { size: A4 portrait; margin: 0; }` and place print margin padding on the invoice container.
+  3. Temporarily set `document.title` to the invoice ID during the `window.print()` call to provide clean PDF filenames.
+
+---
+
+## [Pattern] Non-Destructive Free Game Claiming & Full Library Lifecycle
+
+### Context
+- On digital game stores (Steam, Epic Games, itch.io), players frequently want to claim and register a free-to-play game to their account library without immediately downloading large multi-gigabyte files.
+- Users also require an easy mechanism to declutter and remove unwanted titles from their collection.
+
+### Root Cause / Core Insight
+- Binding acquisition strictly to the download trigger forces unwanted downloads and creates friction for users on mobile or limited bandwidth.
+- Providing independent `[ + Add to Library ]` (Claim) and `[ 🗑️ Remove from Library ]` actions backed by `LibraryDataService.addToLibrary()` and `removeFromLibrary()` allows users to curate their collection seamlessly.
+
+### The Pattern (Transferable)
+- For digital asset storefronts:
+  1. For Free products ($0.00), offer a direct 1-click **Add to Library / Claim** action alongside the download CTA.
+  2. For owned products, display a clear ownership status pill (`✓ In Your Library`) with optional removal controls.
+  3. Ensure library state changes synchronize reactively across all open views without requiring page reloads.
+
+
 
 

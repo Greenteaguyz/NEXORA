@@ -7,7 +7,7 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterLink],
   template: `
-    <div style="min-height: 60vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 32px 24px;">
+    <div style="padding: 64px 24px; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
       <h1 style="font-size: 5rem; font-weight: 900; color: var(--accent-500); line-height: 1;">404</h1>
       <h2 style="font-size: 1.5rem; font-weight: 700; margin: 16px 0 8px;">Level Not Found</h2>
       <p style="color: var(--text-secondary); max-width: 440px; margin-bottom: 24px; line-height: 1.5;">The page you are looking for might have been removed, renamed, or is temporarily unavailable.</p>

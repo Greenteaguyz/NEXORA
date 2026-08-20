@@ -46,7 +46,7 @@ export const SEED_GAMES: Game[] = [
     screenshotUrls: [
       'assets/images/marvel-rivals-wide-hero.jpg',
       'assets/images/marvel-rivals-bg.jpg',
-      'assets/images/marvel-rivals-hero.jpg',
+      'assets/images/marvel-rivals-ss3.jpg',
       'assets/images/marvel-rivals-poster.jpg'
     ],
     samplePackageUrl: 'assets/sample-packages/marvel-rivals.zip',

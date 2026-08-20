@@ -1,10 +1,12 @@
 .genres-page {
-  max-width: 1280px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding-top: 64px;
+  padding-top: 48px;
   padding-bottom: var(--space-16);
-  padding-left: var(--space-6);
-  padding-right: var(--space-6);
+  padding-left: clamp(16px, 3.5vw, 56px);
+  padding-right: clamp(16px, 3.5vw, 56px);
+  box-sizing: border-box;
 }
 
 .genres-hero {
@@ -192,7 +194,7 @@
 
 .featured-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--space-6);
 }
 

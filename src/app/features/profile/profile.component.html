@@ -1,6 +1,6 @@
 <div class="profile-page-container">
   @if (auth.currentUser(); as user) {
-    <!-- Top Profile Banner Card -->
+    <!-- Profile Hero Card -->
     <header class="profile-hero-card">
       <div class="profile-avatar-wrap">
         <img [src]="user.avatarUrl || 'assets/logo-icon.svg'" [alt]="user.displayName + ' avatar'" class="profile-avatar-img">
@@ -10,15 +10,26 @@
       <div class="profile-hero-info">
         <div class="name-badge-row">
           <h1 class="user-display-name">{{ user.displayName }}</h1>
-          <div class="role-badges-group">
-            @for (role of user.roles; track role) {
-              <app-role-badge [role]="role"></app-role-badge>
-            }
-          </div>
+          <app-role-badge [role]="user.roles.includes('creator') ? 'creator' : 'buyer'" size="md"></app-role-badge>
         </div>
 
-        <p class="user-email-text">{{ user.email }}</p>
-        <p class="user-member-since">{{ formatDate(user.createdAt) }}</p>
+        <div class="user-meta-row">
+          <span class="meta-item">
+            <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <span>{{ user.email }}</span>
+          </span>
+          <span class="meta-dot">•</span>
+          <span class="meta-item">
+            <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>{{ formatDate(user.createdAt) }}</span>
+          </span>
+        </div>
 
         @if (user.bio) {
           <p class="user-bio-text">{{ user.bio }}</p>
@@ -50,16 +61,7 @@
       </div>
     }
 
-    @if (resetSuccess) {
-      <div class="alert-banner success" role="status">
-        <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-        <span>Database successfully restored to default mock seed!</span>
-      </div>
-    }
-
-    <!-- Quick Stats Grid -->
+    <!-- Quick Stats Triad -->
     <section class="stats-overview-grid" aria-label="Account Overview Statistics">
       <a routerLink="/library" class="stat-card" aria-label="View your game library">
         <div class="stat-icon-wrap violet">
@@ -72,6 +74,9 @@
           <span class="stat-value">{{ ownedCount }}</span>
           <span class="stat-title">Owned Games</span>
         </div>
+        <svg class="stat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
       </a>
 
       <a routerLink="/wishlist" class="stat-card" aria-label="View your wishlisted games">
@@ -84,6 +89,9 @@
           <span class="stat-value">{{ wishlistCount }}</span>
           <span class="stat-title">Wishlisted</span>
         </div>
+        <svg class="stat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
       </a>
 
       <a routerLink="/orders" class="stat-card" aria-label="View your purchase history">
@@ -99,137 +107,48 @@
           <span class="stat-value">{{ ordersCount }}</span>
           <span class="stat-title">Orders Completed</span>
         </div>
+        <svg class="stat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
       </a>
     </section>
 
-    <!-- Settings & Management Cluster -->
-    <div class="settings-grid">
-      <!-- Creator Mode Switcher Card -->
-      <div class="setting-card">
-        <div class="setting-card-header">
-          <div class="setting-icon-box purple">
-            <svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-            </svg>
-          </div>
-          <div>
-            <h2 class="setting-heading">Creator Mode</h2>
-            <p class="setting-desc">Enable creator tools to add and manage your own game listings.</p>
-          </div>
+    <!-- Minimal Creator Studio Row -->
+    <section class="creator-studio-bar">
+      <div class="creator-bar-left">
+        <div class="setting-icon-box purple" aria-hidden="true">
+          <svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
         </div>
-
-        <div class="setting-card-body">
-          <div class="creator-status-row">
-            <div class="status-indicator">
-              <span class="status-dot" [class.active]="auth.isCreator()"></span>
-              <span class="status-text">
-                {{ auth.isCreator() ? 'Creator Mode is Active' : 'Creator Mode is Off' }}
-              </span>
-            </div>
-
-            <button 
-              type="button" 
-              class="btn-toggle-creator" 
-              [class.active]="auth.isCreator()"
-              (click)="toggleCreatorRole()">
-              <span>{{ auth.isCreator() ? 'Turn Off Creator Mode' : 'Turn On Creator Mode' }}</span>
-            </button>
-          </div>
-
-          @if (auth.isCreator()) {
-            <div class="creator-quick-link-box">
-              <a routerLink="/studio" class="btn-studio-cta">
-                <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                  <polyline points="15 3 21 3 21 9"/>
-                  <line x1="10" y1="14" x2="21" y2="3"/>
-                </svg>
-                <span>Go to Creator Studio</span>
-              </a>
-            </div>
-          }
+        <div class="creator-bar-info">
+          <strong class="creator-bar-title">Creator Studio & Publishing</strong>
+          <span class="creator-bar-desc">
+            {{ auth.isCreator() ? 'Creator tools are active. You can publish and edit game listings.' : 'Enable creator mode to publish your indie games to the marketplace.' }}
+          </span>
         </div>
       </div>
 
-      <!-- Quick Persona Switcher (For Evaluation & Demos) -->
-      <div class="setting-card">
-        <div class="setting-card-header">
-          <div class="setting-icon-box cyan">
-            <svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      <div class="creator-bar-actions">
+        @if (auth.isCreator()) {
+          <a routerLink="/studio" class="btn-studio-cta">
+            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
             </svg>
-          </div>
-          <div>
-            <h2 class="setting-heading">Switch Demo Account</h2>
-            <p class="setting-desc">Switch accounts to test different buyer and creator features.</p>
-          </div>
-        </div>
-
-        <div class="setting-card-body">
-          <div class="persona-pills-list">
-            <button 
-              type="button" 
-              class="persona-pill" 
-              [class.active]="user.email === 'alice@nexora.io'"
-              (click)="switchPersona('alice@nexora.io')">
-              <span class="persona-name">Alice</span>
-              <span class="persona-role">Buyer</span>
-            </button>
-
-            <button 
-              type="button" 
-              class="persona-pill" 
-              [class.active]="user.email === 'bob@nexora.io'"
-              (click)="switchPersona('bob@nexora.io')">
-              <span class="persona-name">Bob</span>
-              <span class="persona-role">Creator</span>
-            </button>
-
-            <button 
-              type="button" 
-              class="persona-pill" 
-              [class.active]="user.email === 'carol@nexora.io'"
-              (click)="switchPersona('carol@nexora.io')">
-              <span class="persona-name">Carol</span>
-              <span class="persona-role">Dual Role</span>
-            </button>
-          </div>
-        </div>
+            <span>Open Creator Studio</span>
+          </a>
+        }
+        <button 
+          type="button" 
+          class="btn-toggle-creator" 
+          [class.active]="auth.isCreator()"
+          (click)="toggleCreatorRole()">
+          <span>{{ auth.isCreator() ? 'Turn Off Creator Mode' : 'Become a Creator' }}</span>
+        </button>
       </div>
-
-      <!-- Demo Database Reset Danger Card -->
-      <div class="setting-card danger-card">
-        <div class="setting-card-header">
-          <div class="setting-icon-box rose">
-            <svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="1 4 1 10 7 10"/>
-              <polyline points="23 20 23 14 17 14"/>
-              <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/>
-            </svg>
-          </div>
-          <div>
-            <h2 class="setting-heading">Reset Demo Store</h2>
-            <p class="setting-desc">Restore default sample games, orders, and library data.</p>
-          </div>
-        </div>
-
-        <div class="setting-card-body">
-          <button 
-            type="button" 
-            class="btn-reset-db" 
-            (click)="confirmResetDatabase()">
-            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 6h18"/>
-              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-            </svg>
-            <span>Reset Demo Data</span>
-          </button>
-        </div>
-      </div>
-    </div>
+    </section>
 
     <!-- Edit Profile Modal -->
     @if (isEditing) {
@@ -270,36 +189,6 @@
               </button>
             </div>
           </form>
-        </div>
-      </div>
-    }
-
-    <!-- Reset Database Confirmation Modal -->
-    @if (showResetConfirm) {
-      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Confirm Reset" (click)="cancelResetDatabase()">
-        <div class="modal-card danger" (click)="$event.stopPropagation()">
-          <div class="modal-header">
-            <div class="modal-danger-title-wrap">
-              <svg class="modal-danger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-              </svg>
-              <h3 class="modal-title danger-text">Confirm Database Reset</h3>
-            </div>
-            <button type="button" class="btn-modal-close" (click)="cancelResetDatabase()" aria-label="Close">✕</button>
-          </div>
-
-          <div class="modal-body">
-            <p>This will restore all games, orders, wishlists, and library entries to their initial seed state. Any games published or purchased in this session will be reset.</p>
-          </div>
-
-          <div class="modal-actions">
-            <button type="button" class="btn-cancel" (click)="cancelResetDatabase()" [disabled]="resetting">Cancel</button>
-            <button type="button" class="btn-danger-confirm" (click)="executeResetDatabase()" [disabled]="resetting">
-              {{ resetting ? 'Resetting...' : 'Yes, Reset Everything' }}
-            </button>
-          </div>
         </div>
       </div>
     }

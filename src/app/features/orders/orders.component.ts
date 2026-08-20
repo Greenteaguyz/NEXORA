@@ -91,6 +91,10 @@ export class OrdersComponent implements OnInit {
     });
   }
 
+  get currentUser() {
+    return this.auth.currentUser();
+  }
+
   viewReceipt(item: OrderDisplayItem): void {
     this.selectedReceiptOrder = item;
   }
@@ -100,6 +104,15 @@ export class OrdersComponent implements OnInit {
   }
 
   printReceipt(): void {
+    if (!this.selectedReceiptOrder) {
+      window.print();
+      return;
+    }
+    const previousTitle = document.title;
+    document.title = `NEXORA-Receipt-${this.selectedReceiptOrder.order.id}`;
     window.print();
+    setTimeout(() => {
+      document.title = previousTitle;
+    }, 1000);
   }
 }

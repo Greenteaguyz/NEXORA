@@ -27,14 +27,15 @@
 
 .header-container {
   width: 100%;
-  max-width: 1400px;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0 clamp(12px, 2vw, 24px);
+  padding: 0 clamp(16px, 3.5vw, 56px);
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 100%;
   gap: var(--space-4);
+  box-sizing: border-box;
 }
 
 .header-left {
