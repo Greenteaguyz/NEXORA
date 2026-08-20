@@ -16,6 +16,11 @@ export interface PurchaseConfirmationEvent {
 export class PurchaseConfirmModalComponent implements OnInit {
   @Input({ required: true }) game!: Game;
   @Input() processing = false;
+  @Input() loading = false;
+
+  get isBusy(): boolean {
+    return this.processing || this.loading;
+  }
 
   @Output() confirm = new EventEmitter<PurchaseConfirmationEvent>();
   @Output() cancel = new EventEmitter<void>();
@@ -56,12 +61,12 @@ export class PurchaseConfirmModalComponent implements OnInit {
   }
 
   onConfirm(): void {
-    if (this.processing) return;
+    if (this.isBusy) return;
     this.confirm.emit({ paymentMethod: this.formattedPaymentMethod });
   }
 
   onCancel(): void {
-    if (this.processing) return;
+    if (this.isBusy) return;
     this.cancel.emit();
   }
 
