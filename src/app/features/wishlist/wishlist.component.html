@@ -2,16 +2,10 @@
   <!-- Top Header Banner -->
   <header class="wishlist-header">
     <div class="wishlist-header-main">
-      <div class="title-cluster">
-        <div class="header-icon-box" aria-hidden="true">
-          <svg class="header-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-          </svg>
-        </div>
-        <div>
-          <h1 class="wishlist-title">My Wishlist</h1>
-          <p class="wishlist-subtitle">Games you have saved for later.</p>
-        </div>
+      <div class="header-left-cluster">
+        <span class="header-eyebrow">COMMUNITY / WISHLIST</span>
+        <h1 class="wishlist-title">My Wishlist</h1>
+        <p class="wishlist-subtitle">Games you have saved to track prices and releases.</p>
       </div>
 
       <div class="wishlist-stats-pill" aria-label="Wishlisted games count">
@@ -37,13 +31,25 @@
       <div class="wishlist-grid" role="list" aria-label="Wishlisted games collection">
         @for (item of items; track item.entry.id) {
           <div class="wishlist-card" role="listitem">
-            <!-- Cover Art Thumbnail -->
-            <a [routerLink]="['/games', item.game.id]" class="card-cover-wrap" [attr.aria-label]="'View details for ' + item.game.title">
-              <img [src]="item.game.coverImageUrl" [alt]="item.game.title + ' Cover'" class="card-cover-img" loading="lazy">
-              <div class="card-overlay" aria-hidden="true">
-                <span class="overlay-badge">View Game</span>
-              </div>
-            </a>
+            <!-- Cover Art Thumbnail with remove heart button -->
+            <div class="card-cover-container">
+              <a [routerLink]="['/games', item.game.id]" class="card-cover-wrap" [attr.aria-label]="'View details for ' + item.game.title">
+                <img [src]="item.game.coverImageUrl" [alt]="item.game.title + ' Cover'" class="card-cover-img" loading="lazy">
+                <div class="card-overlay" aria-hidden="true">
+                  <span class="overlay-badge">View Game</span>
+                </div>
+              </a>
+              <button 
+                type="button" 
+                class="btn-wishlist-remove" 
+                (click)="removeFromWishlist(item.game.id, $event)"
+                [attr.aria-label]="'Remove ' + item.game.title + ' from wishlist'"
+                title="Remove from Wishlist">
+                <svg class="heart-icon-filled" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </button>
+            </div>
 
             <!-- Card Info -->
             <div class="card-body">
@@ -51,16 +57,6 @@
                 <a [routerLink]="['/games', item.game.id]" class="card-game-title">
                   {{ item.game.title }}
                 </a>
-                <button 
-                  type="button" 
-                  class="btn-remove-wishlist" 
-                  (click)="removeFromWishlist(item.game.id, $event)"
-                  [attr.aria-label]="'Remove ' + item.game.title + ' from wishlist'"
-                  title="Remove from Wishlist">
-                  <svg class="heart-icon-filled" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                  </svg>
-                </button>
               </div>
 
               <!-- Tags -->

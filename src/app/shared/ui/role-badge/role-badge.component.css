@@ -2,36 +2,35 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  border-radius: var(--radius-full, 9999px);
-  font-weight: 600;
-  letter-spacing: 0.03em;
+  border-radius: var(--radius-sm, 4px);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   user-select: none;
   transition: all 0.2s ease;
 }
 
 .size-sm {
-  font-size: 0.7rem;
-  padding: 2px 8px;
+  font-size: 0.68rem;
+  padding: 2px 7px;
 }
 
 .size-md {
-  font-size: 0.8rem;
-  padding: 4px 12px;
+  font-size: 0.76rem;
+  padding: 3px 10px;
 }
 
 .role-creator {
-  background: rgba(139, 92, 246, 0.15);
-  color: var(--accent-400, #A78BFA);
-  border: 1px solid rgba(139, 92, 246, 0.4);
-  box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+  background: rgba(102, 192, 244, 0.12);
+  color: var(--accent-400, #66C0F4);
+  border: 1px solid rgba(102, 192, 244, 0.35);
 }
 
 .role-buyer {
-  background: rgba(6, 182, 212, 0.15);
+  background: rgba(6, 182, 212, 0.12);
   color: var(--cyan-400, #22D3EE);
-  border: 1px solid rgba(6, 182, 212, 0.4);
-  box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+  border: 1px solid rgba(6, 182, 212, 0.35);
 }
 
 .role-icon {

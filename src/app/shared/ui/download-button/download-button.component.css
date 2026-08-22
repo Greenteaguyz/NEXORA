@@ -90,25 +90,25 @@
 
 /* State Themes */
 .btn-primary, .btn-download {
-  background: linear-gradient(135deg, var(--accent-600) 0%, var(--accent-700) 100%);
+  background: var(--steam-btn-gradient, linear-gradient(to right, #75B022 5%, #588A1B 95%));
   color: #FFFFFF;
-  border-color: rgba(167, 139, 250, 0.4);
+  border-color: rgba(117, 176, 34, 0.4);
 }
 .btn-primary:hover:not(:disabled), .btn-download:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--accent-500) 0%, var(--accent-600) 100%);
-  box-shadow: 0 0 16px rgba(124, 58, 237, 0.5);
-  border-color: rgba(167, 139, 250, 0.8);
+  background: var(--steam-btn-hover, linear-gradient(to right, #8ED629 5%, #6AA621 95%));
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  border-color: rgba(142, 214, 41, 0.9);
 }
 
 .btn-buy {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  background: var(--steam-btn-gradient, linear-gradient(to right, #75B022 5%, #588A1B 95%));
   color: #FFFFFF;
-  border-color: rgba(52, 211, 153, 0.4);
+  border-color: rgba(117, 176, 34, 0.4);
 }
 .btn-buy:hover:not(:disabled) {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.5);
-  border-color: rgba(52, 211, 153, 0.8);
+  background: var(--steam-btn-hover, linear-gradient(to right, #8ED629 5%, #6AA621 95%));
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  border-color: rgba(142, 214, 41, 0.9);
 }
 
 .btn-unavailable {

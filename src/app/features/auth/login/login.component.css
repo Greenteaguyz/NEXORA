@@ -1,10 +1,10 @@
 .auth-page {
-  min-height: calc(100vh - 180px);
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-8) var(--space-4);
-  background: radial-gradient(circle at 50% 20%, rgba(124, 58, 237, 0.12) 0%, transparent 60%);
+  background: radial-gradient(circle at 50% 20%, rgba(102, 192, 244, 0.12) 0%, transparent 60%);
 }
 
 .auth-card {
@@ -29,6 +29,7 @@
 }
 
 .auth-title {
+  font-family: var(--font-display);
   font-size: 1.6rem;
   font-weight: 800;
   color: var(--text-primary);
@@ -36,12 +37,13 @@
 }
 
 .auth-subtitle {
+  font-family: var(--font-sans);
   color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
 .demo-box {
-  background-color: rgba(124, 58, 237, 0.08);
+  background-color: rgba(102, 192, 244, 0.08);
   border: 1px dashed var(--border-glow);
   border-radius: var(--radius);
   padding: var(--space-3) var(--space-4);
@@ -78,16 +80,18 @@
   color: var(--text-secondary);
   border: 1px solid var(--border-card);
   padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-size: 0.8rem;
-  font-weight: 500;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
   transition: all 0.2s ease;
 }
 
 .demo-btn:hover {
   color: #FFF;
   border-color: var(--accent-500);
-  background-color: rgba(124, 58, 237, 0.2);
+  background-color: rgba(102, 192, 244, 0.2);
 }
 
 .form-group {
@@ -128,7 +132,7 @@
 
 .form-input:focus {
   border-color: var(--accent-500);
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+  box-shadow: 0 0 0 3px rgba(102, 192, 244, 0.2);
 }
 
 .password-input-wrap {
@@ -247,7 +251,7 @@
 
 .btn-social:hover {
   border-color: var(--border-glow);
-  background-color: rgba(124, 58, 237, 0.1);
+  background-color: rgba(102, 192, 244, 0.1);
 }
 
 .auth-footer {
@@ -261,3 +265,39 @@
   font-weight: 600;
   color: var(--accent-400);
 }
+
+/* Light Mode Overrides for High Visibility */
+:host-context([data-theme="light"]) .auth-card {
+  background-color: #FFFFFF;
+  border-color: #D5DCE6;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+:host-context([data-theme="light"]) .demo-box {
+  background-color: rgba(0, 120, 212, 0.06);
+  border-color: rgba(0, 120, 212, 0.25);
+}
+
+:host-context([data-theme="light"]) .demo-btn {
+  background-color: #FFFFFF;
+  border-color: #D5DCE6;
+  color: #2D3748;
+}
+
+:host-context([data-theme="light"]) .demo-btn:hover {
+  background-color: #F1F5F9;
+  color: #090D16;
+}
+
+:host-context([data-theme="light"]) .input-wrapper input {
+  background-color: #FFFFFF;
+  border-color: #D5DCE6;
+  color: #090D16;
+}
+
+:host-context([data-theme="light"]) .btn-social {
+  background-color: #FFFFFF;
+  border-color: #D5DCE6;
+  color: #090D16;
+}
+

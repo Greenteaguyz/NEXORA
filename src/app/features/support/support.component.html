@@ -1,18 +1,18 @@
 <div class="support-page">
-  <!-- Hero Section -->
-  <header class="support-hero">
-    <div class="support-badge">
-      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-        <line x1="12" y1="17" x2="12.01" y2="17"/>
-      </svg>
-      <span>Help Center</span>
+  <!-- Standardized Header Section -->
+  <header class="support-header">
+    <div class="support-header-main">
+      <div class="header-left-cluster">
+        <span class="header-eyebrow">HELP / KNOWLEDGE BASE</span>
+        <h1 class="support-title">Help & Support</h1>
+        <p class="support-subtitle">Find quick answers about downloads, game files, accounts, and publishing.</p>
+      </div>
+
+      <div class="support-stats-pill" aria-label="Support topics count">
+        <span class="stats-count">{{ categories.length }}</span>
+        <span class="stats-label">Topics</span>
+      </div>
     </div>
-    <h1 class="support-title">How Can We Help?</h1>
-    <p class="support-subtitle">
-      Find quick answers about downloads, game files, accounts, and publishing.
-    </p>
   </header>
 
   <!-- Main Support Content Grid -->
@@ -20,7 +20,7 @@
     <!-- Left Column: Interactive FAQ Hub -->
     <section class="section-card faq-section-card" aria-labelledby="heading-faq">
       <div class="section-header">
-        <div class="section-icon purple" aria-hidden="true">
+        <div class="section-icon cyan" aria-hidden="true">
           <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/>
             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
@@ -383,14 +383,14 @@
 
       <div class="trust-item-card">
         <div class="trust-item-top">
-          <div class="trust-icon-box purple" aria-hidden="true">
+          <div class="trust-icon-box cyan" aria-hidden="true">
             <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
               <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
               <line x1="12" y1="22.08" x2="12" y2="12"/>
             </svg>
           </div>
-          <span class="trust-badge purple">Local Browser Storage</span>
+          <span class="trust-badge cyan">Local Browser Storage</span>
         </div>
         <p class="trust-item-desc">
           Your game library, wishlist, and session data are stored directly inside your browser via IndexedDB with zero background telemetry or user tracking.

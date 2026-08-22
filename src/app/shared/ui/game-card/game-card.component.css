@@ -5,18 +5,17 @@
   border: 1px solid var(--border-card);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.25s cubic-bezier(0.2, 0, 0, 1), border-color 0.25s ease;
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.25s cubic-bezier(0.2, 0, 0, 1), border-color 0.2s ease;
   height: 100%;
-  transform: translateZ(0);
-  backface-visibility: hidden;
+  position: relative;
+  box-shadow: var(--shadow-card);
   contain: paint layout;
-  -webkit-font-smoothing: antialiased;
 }
 
 .game-card:hover {
-  transform: translateY(-4px) translateZ(0);
-  border-color: var(--border-glow);
-  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.2);
+  transform: translateY(-3px);
+  border-color: var(--accent-400);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
 }
 
 /* 16:9 Media Aspect Ratio */
@@ -25,7 +24,7 @@
   width: 100%;
   padding-top: 56.25%; /* 16:9 Aspect Ratio */
   overflow: hidden;
-  background-color: var(--bg-surface);
+  background-color: var(--bg-void);
 }
 
 .media-link {
@@ -41,9 +40,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.35s ease;
+  transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
   transform: translateZ(0);
-  backface-visibility: hidden;
 }
 
 .game-card:hover .cover-img {
@@ -53,92 +51,78 @@
 .media-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(11, 13, 19, 0.8) 100%);
+  background: linear-gradient(180deg, transparent 55%, rgba(7, 8, 12, 0.75) 100%);
   pointer-events: none;
 }
 
-/* Wishlist Heart Button */
+/* ==========================================================================
+   Wishlist Heart Button (Guaranteed Vibrant Rose on Wishlist)
+   ========================================================================== */
 .btn-wishlist {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 8px;
+  right: 8px;
   z-index: 5;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background-color: rgba(11, 13, 19, 0.7);
-  backdrop-filter: blur(8px);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background-color: rgba(14, 20, 27, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #FFFFFF;
-  font-size: 1.15rem;
-  transition: all 0.2s ease;
+  color: #F8FAFC;
+  transition: all 0.15s ease;
   cursor: pointer;
 }
 
+.heart-svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.15s ease, fill 0.15s ease;
+}
+
 .btn-wishlist:hover {
-  background-color: rgba(244, 63, 94, 0.2);
-  border-color: var(--rose-500);
-  color: var(--rose-500);
-  transform: scale(1.1);
+  background-color: rgba(244, 63, 94, 0.25);
+  border-color: #F43F5E;
+  color: #F43F5E;
+  transform: scale(1.05);
 }
 
-.btn-wishlist.wishlisted {
-  background-color: var(--rose-500);
-  border-color: var(--rose-500);
-  color: #FFFFFF;
-  box-shadow: 0 0 12px rgba(244, 63, 94, 0.6);
+/* Wishlisted Active State (Pure Radiant Pink/Rose across all themes) */
+.btn-wishlist.wishlisted,
+:host-context([data-theme="light"]) .btn-wishlist.wishlisted {
+  background-color: #F43F5E !important;
+  border-color: #F43F5E !important;
+  color: #FFFFFF !important;
+  box-shadow: none !important;
 }
 
-/* Price Badge */
-.price-badge-wrapper {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  z-index: 5;
-}
-
-.price-badge {
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  text-transform: uppercase;
-  backdrop-filter: blur(8px);
-}
-
-.price-badge.free {
-  background-color: rgba(52, 211, 153, 0.9);
-  color: #064E3B;
-  box-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
-}
-
-.price-badge.paid {
-  background-color: rgba(124, 58, 237, 0.9);
-  color: #FFFFFF;
-  box-shadow: 0 0 10px rgba(124, 58, 237, 0.4);
+.btn-wishlist.wishlisted .heart-svg.filled,
+:host-context([data-theme="light"]) .btn-wishlist.wishlisted .heart-svg.filled {
+  fill: #FFFFFF !important;
+  color: #FFFFFF !important;
 }
 
 /* Content Area */
 .card-content {
-  padding: var(--space-4);
+  padding: 16px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
 .card-header {
-  margin-bottom: var(--space-2);
+  margin-bottom: 6px;
 }
 
 .game-title {
-  font-size: 1.15rem;
+  font-family: var(--font-display);
+  font-size: 1.08rem;
   font-weight: 800;
   line-height: 1.3;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
+  letter-spacing: -0.01em;
 }
 
 .game-title a {
@@ -152,21 +136,22 @@
 }
 
 .creator-link {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
   text-decoration: none;
+  font-family: var(--font-mono);
   transition: color 0.15s ease;
 }
 
 .creator-link:hover {
-  color: var(--cyan-400);
+  color: var(--text-primary);
 }
 
 .game-desc {
-  font-size: 0.85rem;
+  font-size: 0.84rem;
   color: var(--text-secondary);
-  line-height: 1.4;
-  margin-bottom: var(--space-4);
+  line-height: 1.45;
+  margin-bottom: 14px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -176,24 +161,34 @@
   min-height: 2.8em;
 }
 
-/* Tags Row — Pinned to Bottom */
+/* Card Footer: Tags & Price */
+.card-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+}
+
 .tags-row {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  margin-top: auto;
-  min-height: 26px;
+  gap: 5px;
+  flex-wrap: wrap;
 }
 
 .tag-chip {
-  font-size: 0.725rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  background-color: rgba(34, 211, 238, 0.1);
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+  background-color: rgba(34, 211, 238, 0.08);
   color: var(--cyan-400);
-  border: 1px solid rgba(34, 211, 238, 0.25);
-  padding: 2px 8px;
-  border-radius: var(--radius-full);
+  border: 1px solid rgba(34, 211, 238, 0.22);
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
   text-decoration: none;
   transition: all 0.15s ease;
 }
@@ -201,29 +196,72 @@
 .tag-chip:hover {
   background-color: var(--cyan-400);
   color: #FFFFFF;
-  border-color: var(--cyan-400);
 }
 
-/* Light Mode Card Contrast & Sharpness */
+/* Price Badge */
+.price-badge-wrapper {
+  flex-shrink: 0;
+}
+
+.price-badge {
+  font-size: 0.76rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.02em;
+}
+
+.price-badge.free {
+  background-color: rgba(52, 211, 153, 0.15);
+  color: var(--emerald-400);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+}
+
+.price-badge.paid {
+  background-color: rgba(102, 192, 244, 0.15);
+  color: var(--accent-400);
+  border: 1px solid rgba(102, 192, 244, 0.35);
+}
+
+/* Light Mode Overrides for High Visibility */
 :host-context([data-theme="light"]) .game-card {
   background-color: #FFFFFF;
-  border-color: rgba(226, 232, 240, 0.9);
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+  border-color: #D5DCE6;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
 }
 
 :host-context([data-theme="light"]) .game-card:hover {
-  border-color: rgba(124, 58, 237, 0.45);
-  box-shadow: 0 12px 28px rgba(124, 58, 237, 0.12);
+  border-color: #CBD5E1;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+}
+
+:host-context([data-theme="light"]) .btn-wishlist:not(.wishlisted) {
+  background-color: rgba(255, 255, 255, 0.92);
+  border-color: #CBD5E1;
+  color: #64748B;
+}
+
+:host-context([data-theme="light"]) .btn-wishlist:not(.wishlisted):hover {
+  background-color: rgba(244, 63, 94, 0.12);
+  border-color: #F43F5E;
+  color: #F43F5E;
 }
 
 :host-context([data-theme="light"]) .tag-chip {
-  background-color: rgba(14, 116, 144, 0.08);
-  color: #0E7490;
-  border-color: rgba(14, 116, 144, 0.22);
+  background-color: rgba(2, 132, 199, 0.08);
+  color: #0284C7;
+  border-color: rgba(2, 132, 199, 0.25);
 }
 
-:host-context([data-theme="light"]) .tag-chip:hover {
-  background-color: #0E7490;
-  color: #FFFFFF;
-  border-color: #0E7490;
+:host-context([data-theme="light"]) .price-badge.free {
+  background-color: rgba(5, 150, 105, 0.12);
+  color: #047857;
+  border-color: rgba(5, 150, 105, 0.3);
+}
+
+:host-context([data-theme="light"]) .price-badge.paid {
+  background-color: rgba(0, 120, 212, 0.1);
+  color: #005A9E;
+  border-color: rgba(0, 120, 212, 0.25);
 }

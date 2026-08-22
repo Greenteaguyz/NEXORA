@@ -68,9 +68,9 @@ import { ToastService, ToastMessage } from '../../../core/services/toast.service
       background: rgba(19, 22, 34, 0.95);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid var(--border-glow);
+      border: 1px solid var(--border-card);
       border-radius: var(--radius-lg);
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6), var(--shadow-glow);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75);
       color: var(--text-primary);
       cursor: pointer;
       animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);

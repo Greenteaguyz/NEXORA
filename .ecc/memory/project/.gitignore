@@ -1,0 +1,4 @@
+# Ignore all local project memory by default to prevent secret leakage
+*
+!.gitignore
+!*.md

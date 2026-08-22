@@ -14,11 +14,11 @@
 
 .modal-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-glow);
+  border: 1px solid var(--border-card);
   border-radius: var(--radius-xl);
   width: 100%;
   max-width: 520px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(124, 58, 237, 0.25);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
   overflow: hidden;
   animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -29,15 +29,15 @@
   gap: var(--space-3);
   padding: var(--space-4) var(--space-6);
   border-bottom: 1px solid var(--border-card);
-  background: rgba(139, 92, 246, 0.05);
+  background: rgba(102, 192, 244, 0.05);
 }
 
 .header-icon-wrap {
   width: 40px;
   height: 40px;
   border-radius: var(--radius);
-  background: rgba(124, 58, 237, 0.15);
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  background: rgba(102, 192, 244, 0.15);
+  border: 1px solid rgba(102, 192, 244, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -134,7 +134,7 @@
 
 .tag-pill {
   font-size: 0.75rem;
-  background: rgba(139, 92, 246, 0.15);
+  background: rgba(102, 192, 244, 0.15);
   color: var(--accent-400);
   padding: 2px 6px;
   border-radius: var(--radius-sm);
@@ -214,8 +214,8 @@
 
 .card-brand-btn.active {
   border-color: var(--accent-500);
-  background: rgba(124, 58, 237, 0.1);
-  box-shadow: 0 0 12px rgba(124, 58, 237, 0.25);
+  background: rgba(102, 192, 244, 0.1);
+  box-shadow: inset 0 0 0 1px var(--accent-500);
 }
 
 .brand-logo-wrap {
@@ -323,9 +323,9 @@
 }
 
 .virtual-card-strip.visa-mode {
-  background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
-  border: 1px solid rgba(129, 140, 248, 0.4);
-  box-shadow: 0 4px 14px rgba(49, 46, 129, 0.3);
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  border: 1px solid rgba(102, 192, 244, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
 }
 
 .virtual-card-strip.mc-mode {
@@ -409,7 +409,7 @@
 
 .perk-icon.green { color: var(--emerald-400); }
 .perk-icon.cyan { color: var(--cyan-400); }
-.perk-icon.purple { color: var(--accent-400); }
+.perk-icon.cyan { color: var(--cyan-400); }
 
 .modal-footer {
   display: flex;
@@ -443,16 +443,17 @@
   font-size: 0.95rem;
   font-weight: 700;
   color: #FFFFFF;
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
-  border: 1px solid rgba(52, 211, 153, 0.5);
+  background: var(--steam-btn-gradient, linear-gradient(to right, #75B022 5%, #588A1B 95%));
+  border: 1px solid rgba(117, 176, 34, 0.6);
   border-radius: var(--radius);
-  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.4);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   transition: all 0.15s ease;
 }
 
 .btn-confirm:hover:not(:disabled) {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+  background: var(--steam-btn-hover, linear-gradient(to right, #8ED629 5%, #6AA621 95%));
+  border-color: rgba(142, 214, 41, 0.9);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
   transform: translateY(-1px);
 }
 

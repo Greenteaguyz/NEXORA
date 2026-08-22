@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 32px clamp(16px, 3.5vw, 56px) 64px;
+  padding: var(--space-8) clamp(16px, 3.5vw, 56px) var(--space-12);
   box-sizing: border-box;
 }
 
@@ -46,10 +46,11 @@
   flex-wrap: wrap; 
 }
 .steam-game-title { 
-  font-size: 2.25rem; 
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 2.75rem); 
   font-weight: 900; 
   color: var(--text-primary); 
-  letter-spacing: -0.01em; 
+  letter-spacing: -0.02em; 
   line-height: 1.15; 
   margin: 0; 
 }
@@ -60,8 +61,9 @@
   gap: 6px; 
   font-size: 0.78rem; 
   font-weight: 700; 
-  padding: 5px 12px; 
-  border-radius: var(--radius-full); 
+  padding: 4px 10px; 
+  border-radius: var(--radius-sm); 
+  font-family: var(--font-mono);
 }
 .badge-pill.rating { 
   background: rgba(245, 158, 11, 0.15); 
@@ -121,8 +123,8 @@
   color: #FFFFFF;
   font-size: 0.75rem;
   font-weight: 700;
-  padding: 6px 10px;
-  border-radius: var(--radius-full);
+  padding: 6px 12px;
+  border-radius: var(--radius);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
   cursor: pointer;
   z-index: 5;
@@ -154,8 +156,9 @@
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.05em;
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   pointer-events: none;
   z-index: 5;
@@ -181,7 +184,7 @@
 }
 .steam-thumb-btn:hover { border-color: var(--cyan-400); }
 .steam-thumb-btn:focus-visible { outline: 2px solid var(--accent-500); outline-offset: 2px; }
-.steam-thumb-btn.active { border-color: var(--accent-400); box-shadow: 0 0 10px rgba(124, 58, 237, 0.6); }
+.steam-thumb-btn.active { border-color: var(--accent-400); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4); }
 .steam-thumb-img { width: 100%; height: 100%; object-fit: cover; }
 
 /* Right Capsule */
@@ -237,8 +240,8 @@
 .tags-label { font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; }
 .capsule-tags-list { display: flex; flex-wrap: wrap; gap: 6px; }
 .steam-tag-pill {
-  background: rgba(124, 58, 237, 0.12);
-  border: 1px solid rgba(124, 58, 237, 0.3);
+  background: rgba(102, 192, 244, 0.12);
+  border: 1px solid rgba(102, 192, 244, 0.3);
   color: var(--accent-400);
   font-size: 0.72rem;
   font-weight: 700;
@@ -249,8 +252,8 @@
 }
 :host-context([data-theme="light"]) .steam-tag-pill {
   color: var(--accent-600);
-  background: rgba(109, 40, 217, 0.08);
-  border-color: rgba(109, 40, 217, 0.25);
+  background: rgba(0, 120, 212, 0.08);
+  border-color: rgba(0, 120, 212, 0.25);
 }
 .steam-tag-pill:hover { background: var(--accent-600); color: #FFFFFF; border-color: var(--accent-400); }
 .steam-tag-pill:focus-visible { outline: 2px solid var(--accent-500); outline-offset: 1px; }
@@ -270,7 +273,7 @@
 
 :host-context([data-theme="light"]) .steam-purchase-banner {
   background: linear-gradient(90deg, #FFFFFF 0%, #F5F3FF 100%);
-  border: 1px solid rgba(124, 58, 237, 0.35);
+  border: 1px solid rgba(102, 192, 244, 0.35);
   box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
 }
 :host-context([data-theme="light"]) .steam-purchase-banner .purchase-game-title {
@@ -316,7 +319,7 @@
   gap: 4px;
   background: rgba(0, 0, 0, 0.35);
   padding: 3px 4px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius);
   border: 1px solid rgba(255, 255, 255, 0.08);
   width: fit-content;
 }
@@ -334,8 +337,9 @@
   color: var(--text-secondary);
   font-size: 0.78rem;
   font-weight: 600;
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
@@ -352,7 +356,7 @@
 .platform-pill.active {
   background: var(--accent-600);
   color: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 2px 8px rgba(102, 192, 244, 0.4);
 }
 
 .package-meta-strip {
@@ -459,12 +463,12 @@
 .btn-steam-buy.paid {
   background: linear-gradient(135deg, var(--accent-700) 0%, var(--accent-600) 100%);
   color: #FFFFFF;
-  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 4px 14px rgba(102, 192, 244, 0.35);
 }
 .btn-steam-buy.paid:hover {
   background: linear-gradient(135deg, var(--accent-600) 0%, var(--accent-500) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.55);
+  box-shadow: 0 6px 20px rgba(102, 192, 244, 0.55);
 }
 .btn-steam-buy.free {
   background: linear-gradient(135deg, #059669 0%, #10B981 100%);
@@ -603,15 +607,16 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--accent-400);
-  background: rgba(124, 58, 237, 0.12);
-  border: 1px solid rgba(124, 58, 237, 0.3);
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
+  background: rgba(102, 192, 244, 0.12);
+  border: 1px solid rgba(102, 192, 244, 0.3);
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
 }
 :host-context([data-theme="light"]) .block-subtitle-badge {
   color: var(--accent-600);
-  background: rgba(109, 40, 217, 0.08);
-  border-color: rgba(109, 40, 217, 0.25);
+  background: rgba(0, 120, 212, 0.08);
+  border-color: rgba(0, 120, 212, 0.25);
 }
 .story-lead-text { 
   font-size: 1.02rem; 
@@ -643,7 +648,7 @@
   background: var(--bg-elevated);
   border: 1px solid var(--border-card);
   padding: 16px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   transition: all 0.2s ease;
 }
 :host-context([data-theme="light"]) .feature-card {
@@ -658,8 +663,8 @@
   width: 36px;
   height: 36px;
   border-radius: var(--radius-sm);
-  background: rgba(124, 58, 237, 0.12);
-  border: 1px solid rgba(124, 58, 237, 0.3);
+  background: rgba(102, 192, 244, 0.12);
+  border: 1px solid rgba(102, 192, 244, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -668,8 +673,8 @@
 }
 :host-context([data-theme="light"]) .feature-icon-box {
   color: var(--accent-600);
-  background: rgba(109, 40, 217, 0.08);
-  border-color: rgba(109, 40, 217, 0.25);
+  background: rgba(0, 120, 212, 0.08);
+  border-color: rgba(0, 120, 212, 0.25);
 }
 .feat-svg {
   width: 18px;
@@ -704,7 +709,7 @@
   display: inline-flex;
   background: var(--bg-elevated);
   border: 1px solid var(--border-card);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius);
   padding: 3px;
   gap: 2px;
 }
@@ -720,8 +725,9 @@
   color: var(--text-secondary);
   font-size: 0.78rem;
   font-weight: 700;
-  padding: 4px 12px;
-  border-radius: var(--radius-full);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
   cursor: pointer;
   transition: all 0.15s ease;
 }
@@ -733,19 +739,20 @@
 .os-tab-btn.active {
   background: var(--accent-600);
   color: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 2px 8px rgba(102, 192, 244, 0.35);
 }
 
 :host-context([data-theme="light"]) .os-tab-btn.active {
-  background: #7C3AED;
+  background: #75B022;
 }
 
 .specs-requirement-notice {
   font-size: 0.82rem;
   color: var(--text-muted);
   background: var(--bg-elevated);
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
+  padding: 4px 8px;
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
   border: 1px solid var(--border-card);
 }
 
@@ -755,7 +762,7 @@
   gap: 12px;
   background: var(--bg-elevated);
   border: 1px solid var(--border-card);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   padding: 16px 20px;
 }
 
@@ -831,8 +838,8 @@
   aspect-ratio: 16 / 9;
   max-height: 75vh;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-glow);
-  box-shadow: 0 0 60px rgba(124, 58, 237, 0.4);
+  border: 1px solid var(--border-card);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85);
   object-fit: cover;
 }
 .btn-lightbox-close {
@@ -891,8 +898,9 @@
   letter-spacing: 0.05em;
   background-color: rgba(19, 22, 34, 0.85);
   border: 1px solid var(--border-card);
-  padding: 4px 14px;
-  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
 }
 
 /* Light Mode Fullscreen Image Lightbox — Soft Slate Gray with Backdrop Blur */
@@ -922,7 +930,7 @@
 :host-context([data-theme="light"]) .btn-lightbox-nav:hover {
   background-color: var(--accent-600);
   border-color: var(--accent-500);
-  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
+  box-shadow: 0 4px 16px rgba(102, 192, 244, 0.4);
 }
 
 :host-context([data-theme="light"]) .lightbox-counter {
@@ -1036,3 +1044,52 @@
     transform: none !important;
   }
 }
+
+/* Light Mode Overrides for High Visibility */
+:host-context([data-theme="light"]) .steam-showcase-stage {
+  background: #FFFFFF;
+  border-color: #D5DCE6;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+
+:host-context([data-theme="light"]) .steam-purchase-banner {
+  background: #FFFFFF;
+  border-color: #D5DCE6;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+
+:host-context([data-theme="light"]) .steam-tab-btn {
+  background: #FFFFFF;
+  border-color: #D5DCE6;
+  color: #2D3748;
+}
+
+:host-context([data-theme="light"]) .steam-tab-btn:hover {
+  background: #EBEFF5;
+  color: #090D16;
+}
+
+:host-context([data-theme="light"]) .steam-tab-btn.active {
+  background: var(--accent-600);
+  color: #FFFFFF;
+  border-color: var(--accent-600);
+}
+
+:host-context([data-theme="light"]) .specs-card-wrapper {
+  background: #FFFFFF;
+  border-color: #D5DCE6;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+
+:host-context([data-theme="light"]) .review-card {
+  background: #FFFFFF;
+  border-color: #D5DCE6;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+}
+
+:host-context([data-theme="light"]) .creator-callout-card {
+  background: #FFFFFF;
+  border-color: #D5DCE6;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+

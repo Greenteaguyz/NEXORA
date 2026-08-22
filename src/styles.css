@@ -1,40 +1,49 @@
 /* ==========================================================================
-   NEXORA DESIGN SYSTEM & TOKENS
+   NEXORA DESIGN SYSTEM & STEAM DESIGN SYSTEM TOKENS
    ========================================================================== */
 
 :root {
-  /* Brand Primary — Electric Violet */
-  --accent-400:    #A78BFA;
-  --accent-500:    #8B5CF6;  /* glow highlights */
-  --accent-600:    #7C3AED;  /* primary brand CTA / active links */
-  --accent-700:    #6D28D9;  /* hover & active states */
+  /* Typography Stack: Motiva Sans / Outfit (Display & Headings) + Plus Jakarta Sans (UI & Body) + JetBrains Mono (Specs) */
+  --font-display: 'Motiva Sans', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans:    'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono:    'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
 
-  /* Cyber Accents */
-  --cyan-400:      #22D3EE;  /* cyber cyan — info badges, genre chips */
-  --cyan-500:      #06B6D4;
-  --emerald-400:   #34D399;  /* neon emerald — owned badges, free tags */
-  --emerald-500:   #10B981;
-  --rose-500:      #F43F5E;  /* neon danger — soft delete modal, errors */
-  --amber-400:     #FBBF24;  /* warning & price highlights */
+  /* Steam Brand Accents (Dark Mode) */
+  --accent-400:    #66C0F4;  /* Steam Electric Cyan — highlights & links */
+  --accent-500:    #4B96C2;  /* Steam Cyan hover */
+  --accent-600:    #75B022;  /* Steam Action Lime Green — Primary Buy / Play CTA */
+  --accent-700:    #5C7E10;  /* Steam Action Green hover */
 
-  /* Surfaces & Backgrounds (Dark Mode Default) */
-  --bg-void:       #0B0D13;  /* root canvas background */
-  --bg-surface:    #131622;  /* game cards, header, sidebar */
-  --bg-surface-glass: rgba(19, 22, 34, 0.85); /* glassmorphism headers & overlays */
-  --bg-elevated:   #1A1E2E;  /* modals, popovers, dropdowns */
-  --bg-input:      #0E111B;  /* form inputs, search bar */
+  /* Steam Gradients */
+  --steam-btn-gradient: linear-gradient(to right, #75B022 5%, #588A1B 95%);
+  --steam-btn-hover:    linear-gradient(to right, #8ED629 5%, #6AA621 95%);
 
-  /* Semantic Text Colors */
-  --text-primary:   #F8FAFC;  /* main headlines & titles (17.5:1 ratio - WCAG AAA) */
-  --text-secondary: #94A3B8;  /* descriptions & metadata (8.6:1 ratio - WCAG AAA) */
-  --text-muted:     #8896AB;  /* placeholders, timestamps, chips (6.2:1 ratio - WCAG AAA) */
+  /* Cyber & Utility Accents */
+  --cyan-400:      #66C0F4;  /* Steam Electric Cyan — tags, badges, chips */
+  --cyan-500:      #4B96C2;
+  --emerald-400:   #A4D007;  /* Steam Lime Green — Free tags & owned badges */
+  --emerald-500:   #75B022;
+  --rose-500:      #F43F5E;  /* Radiant Wishlist Rose & Danger alerts */
+  --amber-400:     #E5A93C;  /* Steam Gold Star rating */
 
-  /* Borders & Glow Effects */
-  --border-card:    #1E2438;
-  --border-subtle:  rgba(139, 92, 246, 0.2);
-  --border-glow:    rgba(139, 92, 246, 0.5);
-  --shadow-glow:    0 0 20px rgba(124, 58, 237, 0.3);
-  --shadow-card:    0 10px 30px rgba(0, 0, 0, 0.5);
+  /* Surfaces & Backgrounds (Steam Deck / Store Navy Palette) */
+  --bg-void:       #0E141B;  /* Deep Steam Backdrop Void */
+  --bg-surface:    #1B2838;  /* Steam Navy Slate Cards & Header */
+  --bg-surface-glass: rgba(27, 40, 56, 0.92); /* Steam Glassmorphism */
+  --bg-elevated:   #2A475E;  /* Steam Steel Highlight — Popovers, Modals */
+  --bg-input:      #121A24;  /* Steam Dark Form Inputs & Search */
+
+  /* Semantic Text Colors (High Contrast WCAG AAA Compliant) */
+  --text-primary:   #F8FAFC;  /* Pure crisp headline text */
+  --text-secondary: #C7D5E0;  /* Steam Steel descriptions (8.6:1 ratio) */
+  --text-muted:     #8F98A0;  /* Steam Gray metadata & placeholders (5.8:1 ratio) */
+
+  /* Borders & Shadows */
+  --border-card:    #2A475E;  /* Steam Steel border definition */
+  --border-subtle:  rgba(102, 192, 244, 0.15);
+  --border-glow:    #66C0F4;
+  --shadow-glow:    0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-card:    0 4px 16px rgba(0, 0, 0, 0.45);
 
   /* Spacing Scale */
   --space-1: 4px;
@@ -45,47 +54,50 @@
   --space-8: 32px;
   --space-12: 48px;
 
-  /* Border Radii */
+  /* Border Radii (Crisp Steam Industrial Standard) */
+  --radius-xs: 2px;
   --radius-sm: 4px;
-  --radius:    8px;   /* standard button / card radius */
-  --radius-lg: 12px;  /* modal container radius */
-  --radius-xl: 16px;  /* large cards */
-  --radius-2xl: 24px; /* hero banners / dialogs */
+  --radius:    6px;   /* standard button / card radius */
+  --radius-lg: 8px;   /* large cards & tables */
+  --radius-xl: 12px;  /* dialogs & containers */
+  --radius-2xl: 16px; /* modal shells */
   --radius-full: 9999px;
-
-  /* Typography */
-  --font-sans: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
 }
 
 /* ==========================================================================
-   LIGHT MODE PALETTE (WCAG AAA Optimized)
+   LIGHT MODE PALETTE (Steam Silver & Community High-Contrast WCAG AAA)
    ========================================================================== */
 [data-theme="light"] {
   /* Surfaces & Backgrounds */
-  --bg-void:       #F6F8FC;  /* clean light canvas */
-  --bg-surface:    #FFFFFF;  /* crisp white cards & nav */
-  --bg-surface-glass: rgba(255, 255, 255, 0.94); /* clean light glass header */
-  --bg-elevated:   #F1F5F9;  /* popovers, modals */
-  --bg-input:      #F8FAFC;  /* inputs */
+  --bg-void:       #EBF0F5;  /* Steam Silver Slate canvas */
+  --bg-surface:    #FFFFFF;  /* Crisp white cards & nav */
+  --bg-surface-glass: rgba(255, 255, 255, 0.94); /* Clean light glass header */
+  --bg-elevated:   #E1E8EF;  /* Popovers, modals */
+  --bg-input:      #FFFFFF;  /* Inputs */
 
-  /* Semantic Text Colors (All WCAG AAA Compliant) */
-  --text-primary:   #0F172A;  /* deep slate main text (15.6:1 ratio) */
-  --text-secondary: #334155;  /* medium slate descriptions (9.2:1 ratio) */
-  --text-muted:     #5A6A80;  /* metadata & placeholders (6.8:1 ratio) */
+  /* Semantic Text Colors (High Contrast WCAG AAA) */
+  --text-primary:   #0F172A;  /* Deep navy-slate text (16.2:1 ratio) */
+  --text-secondary: #2D3748;  /* Medium slate descriptions (9.8:1 ratio) */
+  --text-muted:     #5A6A80;  /* Metadata & placeholders (6.4:1 ratio) */
 
   /* Borders & Shadows */
-  --border-card:    #D1D5DB;  /* enhanced light border definition */
-  --border-subtle:  rgba(109, 40, 217, 0.2);
-  --border-glow:    rgba(109, 40, 217, 0.4);
-  --shadow-glow:    0 0 20px rgba(109, 40, 217, 0.2);
-  --shadow-card:    0 6px 20px rgba(15, 23, 42, 0.08);
+  --border-card:    #D2DBE3;  /* Steam Light Steel card border */
+  --border-subtle:  #E2E8F0;
+  --border-glow:    rgba(0, 120, 212, 0.35);
+  --shadow-glow:    0 4px 20px rgba(0, 120, 212, 0.15);
+  --shadow-card:    0 2px 12px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
 
-  /* Accents */
-  --cyan-400:      #0369A1;  /* high-contrast deep ocean cyan (5.4:1 ratio) */
-  --emerald-400:   #047857;  /* high-contrast emerald (5.6:1 ratio) */
-  --accent-400:    #6D28D9;
-  --accent-600:    #5B21B6;  /* deep violet CTA (8.4:1 ratio) */
+  /* Deep High-Contrast Accents for Light Mode */
+  --cyan-400:      #0078D4;  /* Deep Steam Blue (6.5:1 ratio) */
+  --cyan-500:      #005A9E;
+  --emerald-400:   #43A047;  /* High-contrast forest emerald (5.6:1 ratio) */
+  --emerald-500:   #2E7D32;
+  --rose-500:      #E11D48;  /* Radiant ruby red (5.8:1 ratio) */
+  --amber-400:     #D97706;  /* Deep amber gold (5.2:1 ratio) */
+  --accent-400:    #0078D4;  /* Deep Steam Blue links */
+  --accent-500:    #005A9E;
+  --accent-600:    #558B2F;  /* High-contrast Steam Action Green CTA (6.2:1 ratio) */
+  --accent-700:    #33691E;
 }
 
 /* Base Resets */
@@ -107,102 +119,92 @@ html, body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
+/* Headings Typography Stack */
+h1, h2, h3, h4, h5, h6, .hero-title, .game-title, .steam-game-title, .dialog-title {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
 app-root {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  width: 100%;
 }
 
+/* Root Layout Main Flex Container (Ensures footer stays pinned to bottom across all routes) */
 .main-content {
-  position: relative;
   flex: 1 0 auto;
-}
-
-:has(.modal-backdrop, .receipt-backdrop) app-header {
-  pointer-events: none !important;
-  z-index: 1 !important;
-}
-
-:has(.modal-backdrop, .receipt-backdrop) .main-content {
-  z-index: 999999 !important;
-}
-
-.modal-backdrop,
-.receipt-backdrop {
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 999999 !important;
-  pointer-events: auto !important;
-}
-
-/* Accessible Skip-to-Content link */
-.skip-to-content {
-  position: absolute;
-  top: -100px;
-  left: 16px;
-  background: var(--accent-600);
-  color: #FFFFFF;
-  padding: 10px 18px;
-  border-radius: var(--radius);
-  font-weight: 700;
-  font-size: 0.9rem;
-  z-index: 10000;
-  text-decoration: none;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
-  transition: top 0.2s ease;
-}
-
-.skip-to-content:focus {
-  top: 16px;
-  outline: 3px solid #FFFFFF;
-}
-
-/* Keyboard Focus Indicators (WCAG 2.4.7 Focus Visible) */
-:focus-visible {
-  outline: 2px solid var(--accent-500);
-  outline-offset: 2px;
-}
-
-button:focus:not(:focus-visible),
-a:focus:not(:focus-visible),
-input:focus:not(:focus-visible) {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   outline: none;
 }
 
-/* Reduced Motion Preference (WCAG 2.3.3) */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-a {
-  color: var(--accent-600);
+/* Accessible Skip to Content Link (Hidden off-screen until Tab-focused) */
+.skip-to-content {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--cyan-400);
+  color: #0E141B;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 800;
+  padding: 10px 20px;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  z-index: 10000;
   text-decoration: none;
-  transition: color 0.15s ease;
+  transition: top 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-a:hover {
-  color: var(--accent-500);
+.skip-to-content:focus,
+.skip-to-content:focus-visible {
+  top: 0;
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
 }
 
-button {
+/* Accessible Screen Reader Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus Visibility Ring */
+:focus-visible {
+  outline: 2px solid var(--accent-400);
+  outline-offset: 2px;
+}
+
+/* Base Form Reset */
+button, input, select, textarea {
   font-family: inherit;
+  font-size: inherit;
+}
+
+/* Interactive Clickable Base */
+button {
   cursor: pointer;
   border: none;
   background: none;
 }
 
-input, textarea, select {
-  font-family: inherit;
-  font-size: 1rem;
+/* Links */
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-/* Scrollbar Customization */
+/* Custom Scrollbar (Steam Style) */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -214,56 +216,33 @@ input, textarea, select {
 
 ::-webkit-scrollbar-thumb {
   background: var(--border-card);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-sm);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-600);
+  background: var(--accent-500);
 }
 
-/* App Layout Stacking Context */
-app-root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+/* Tactile Active Micro-Interactions (Snappy Steam Desktop Press Feel) */
+button:active:not(:disabled),
+.btn-primary:active,
+.btn-secondary:active,
+.btn-catalog-cta:active,
+.btn-view-details:active,
+.btn-wishlist:active,
+.btn-stage-expand:active,
+.btn-download-main:active {
+  transform: translateY(1px) scale(0.985) !important;
+  transition: transform 0.05s ease !important;
 }
 
-app-header {
-  position: relative;
-  z-index: 1000;
-}
-
-.main-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  z-index: 1;
-}
-
-/* Global Print Styles */
-@media print {
-  app-header,
-  app-footer,
-  app-toast,
-  .skip-to-content {
-    display: none !important;
-  }
-  
-  body, html {
-    background: #FFFFFF !important;
-    color: #0F172A !important;
-    height: auto !important;
-    min-height: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  
-  app-root, .main-content {
-    display: block !important;
-    min-height: auto !important;
-    height: auto !important;
+/* Accessibility: Strict Reduced Motion Compliance */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
+

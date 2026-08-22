@@ -18,7 +18,7 @@ export interface TicketCategoryOption {
   label: string;
   desc: string;
   icon: 'gamepad' | 'tools' | 'card' | 'lightbulb';
-  color: 'green' | 'purple' | 'cyan' | 'amber';
+  color: 'green' | 'blue' | 'cyan' | 'amber';
 }
 
 @Component({
@@ -59,7 +59,7 @@ export class SupportComponent implements OnInit {
       label: 'Creator Studio & Publishing Question',
       desc: 'Game uploads, screenshots, pricing, or developer tools',
       icon: 'tools',
-      color: 'purple'
+      color: 'blue'
     },
     {
       value: 'billing',

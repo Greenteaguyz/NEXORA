@@ -1,27 +1,37 @@
 <div class="genres-page">
-  <header class="genres-hero">
-    <div class="genres-badge">Category Directory</div>
-    <h1 class="genres-title">Browse Games by Genre</h1>
-    <p class="genres-subtitle">
-      Explore indie titles across specialized subgenres, themes, and gameplay styles.
-    </p>
+  <header class="genres-header">
+    <div class="genres-header-main">
+      <div class="header-left-cluster">
+        <span class="header-eyebrow">STORE / CATEGORIES</span>
+        <h1 class="genres-title">Browse Games by Genre</h1>
+        <p class="genres-subtitle">Explore indie titles across specialized subgenres, themes, and gameplay styles.</p>
+      </div>
 
-    <!-- Quick Search Bar -->
-    <div class="search-bar-wrap">
-      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="11" cy="11" r="8"></circle>
-        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-      </svg>
-      <input
-        type="text"
-        class="genre-search-input"
-        placeholder="Quick search genres (e.g. RPG, Horror, Retro, Strategy)..."
-        [value]="searchQuery"
-        (input)="onSearch($event)"
-      />
-      @if (searchQuery) {
-        <button class="clear-search-btn" (click)="clearSearch()" aria-label="Clear search">✕</button>
-      }
+      <div class="genres-stats-pill" aria-label="Total categories count">
+        <span class="stats-count">{{ filteredAllGenres.length }}</span>
+        <span class="stats-label">{{ filteredAllGenres.length === 1 ? 'Category' : 'Categories' }}</span>
+      </div>
+    </div>
+
+    <!-- Search Toolbar -->
+    <div class="genres-toolbar">
+      <div class="search-input-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          class="genre-search-input"
+          placeholder="Search categories (e.g. RPG, Horror, Retro, Strategy)..."
+          [value]="searchQuery"
+          (input)="onSearch($event)"
+          aria-label="Search game categories"
+        />
+        @if (searchQuery) {
+          <button type="button" class="clear-search-btn" (click)="clearSearch()" aria-label="Clear search">✕</button>
+        }
+      </div>
     </div>
   </header>
 
@@ -32,7 +42,7 @@
     <section class="all-categories-section">
       <div class="section-header">
         <div class="section-title-wrap">
-          <div class="section-icon-box purple" aria-hidden="true">
+          <div class="section-icon-box cyan" aria-hidden="true">
             <svg class="section-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="6" width="20" height="12" rx="6"/>
               <line x1="6" y1="12" x2="10" y2="12"/>

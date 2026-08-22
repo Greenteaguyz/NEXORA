@@ -1,8 +1,8 @@
 .studio-page-container {
   width: 100%;
-  max-width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: var(--space-8) clamp(16px, 3.5vw, 56px);
+  padding: var(--space-8) clamp(16px, 3.5vw, 56px) var(--space-12);
   box-sizing: border-box;
 }
 
@@ -23,35 +23,19 @@
   padding-bottom: var(--space-6);
 }
 
-.title-cluster {
+.header-left-cluster {
   display: flex;
-  align-items: center;
-  gap: var(--space-4);
+  flex-direction: column;
+  gap: 4px;
 }
 
-.header-icon-box {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.25) 0%, rgba(6, 182, 212, 0.15) 100%);
-  border: 1px solid var(--accent-500);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.header-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   color: var(--accent-400);
-  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.2);
-}
-
-:host-context([data-theme="light"]) .header-icon-box {
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.12) 0%, rgba(14, 116, 144, 0.08) 100%);
-  border-color: rgba(124, 58, 237, 0.35);
-  color: var(--accent-600);
-  box-shadow: 0 2px 10px rgba(124, 58, 237, 0.1);
-}
-
-.header-icon {
-  width: 26px;
-  height: 26px;
+  text-transform: uppercase;
 }
 
 .studio-title-badge-row {
@@ -62,11 +46,12 @@
 }
 
 .studio-title {
-  font-size: 2rem;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw, 2.6rem);
   font-weight: 900;
   letter-spacing: -0.02em;
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1.15;
   margin: 0;
 }
 
@@ -78,8 +63,9 @@
   color: var(--cyan-400);
   background: rgba(6, 182, 212, 0.12);
   border: 1px solid rgba(6, 182, 212, 0.3);
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
 }
 
 :host-context([data-theme="light"]) .verified-pill {
@@ -100,25 +86,25 @@
   align-items: center;
   gap: 8px;
   padding: 10px 22px;
-  border-radius: var(--radius-full);
-  background: linear-gradient(135deg, var(--accent-600) 0%, var(--accent-700) 100%);
+  border-radius: var(--radius);
+  background: var(--steam-btn-gradient, linear-gradient(to right, #75B022 5%, #588A1B 95%));
   color: #FFFFFF;
   font-weight: 800;
   font-size: 0.9rem;
   text-decoration: none;
-  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 4px 14px rgba(117, 176, 34, 0.35);
   transition: all 0.2s ease;
 }
 
 :host-context([data-theme="light"]) .btn-publish-new {
-  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
-  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.25);
+  background: linear-gradient(to right, #558B2F 5%, #33691E 95%);
+  box-shadow: 0 4px 14px rgba(85, 139, 47, 0.25);
 }
 
 .btn-publish-new:hover {
-  background: linear-gradient(135deg, var(--accent-500) 0%, var(--accent-600) 100%);
+  background: var(--steam-btn-hover, linear-gradient(to right, #8ED629 5%, #6AA621 95%));
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.55);
+  box-shadow: 0 6px 20px rgba(117, 176, 34, 0.5);
 }
 
 .btn-icon {
@@ -219,7 +205,7 @@
 }
 
 .game-table-row:hover {
-  background: rgba(139, 92, 246, 0.04);
+  background: rgba(102, 192, 244, 0.04);
 }
 
 .unpublished-row {
@@ -293,8 +279,10 @@
   font-size: 0.775rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
 }
 
 .status-pill.active {
@@ -315,7 +303,7 @@
   border-radius: var(--radius-full);
 }
 
-.dot.green { background: var(--emerald-400); box-shadow: 0 0 6px rgba(16, 185, 129, 0.8); }
+.dot.green { background: var(--emerald-400); }
 .dot.rose { background: var(--rose-500); }
 
 .cell-date {
@@ -370,7 +358,8 @@
 .btn-action.delete:hover {
   background: var(--rose-500);
   color: #FFFFFF;
-  box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
+  border-color: var(--rose-500);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .action-icon {
@@ -586,7 +575,7 @@
 }
 
 :host-context([data-theme="light"]) .game-table-row:hover {
-  background: rgba(124, 58, 237, 0.03);
+  background: rgba(102, 192, 244, 0.03);
 }
 
 :host-context([data-theme="light"]) .btn-action.edit {
@@ -596,8 +585,8 @@
 }
 
 :host-context([data-theme="light"]) .btn-action.edit:hover {
-  background: #7C3AED;
-  border-color: #7C3AED;
+  background: #75B022;
+  border-color: #75B022;
   color: #FFFFFF;
 }
 
