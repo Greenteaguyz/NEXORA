@@ -1,5 +1,5 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter, withComponentInputBinding, withRouterConfig, withInMemoryScrolling } from '@angular/router';
+import { provideRouter, withComponentInputBinding, withRouterConfig, withInMemoryScrolling, withPreloading, PreloadAllModules } from '@angular/router';
 import { routes } from './app.routes';
 import { GAMES_DATA, LIBRARY_DATA, ORDERS_DATA, USERS_DATA, WISHLIST_DATA } from './core/data/tokens';
 import { MockGamesDataService } from './core/data/games/mock-games-data.service';
@@ -15,7 +15,8 @@ export const appConfig: ApplicationConfig = {
       routes,
       withComponentInputBinding(),
       withRouterConfig({ onSameUrlNavigation: 'ignore' }),
-      withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' })
+      withInMemoryScrolling({ scrollPositionRestoration: 'top', anchorScrolling: 'enabled' }),
+      withPreloading(PreloadAllModules)
     ),
     { provide: GAMES_DATA, useClass: MockGamesDataService },
     { provide: LIBRARY_DATA, useClass: MockLibraryDataService },

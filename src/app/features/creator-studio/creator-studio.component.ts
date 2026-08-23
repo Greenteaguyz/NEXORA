@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { Game } from '../../core/models/game.model';
@@ -19,7 +19,7 @@ import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.com
   templateUrl: './creator-studio.component.html',
   styleUrls: ['./creator-studio.component.css']
 })
-export class CreatorStudioComponent implements OnInit {
+export class CreatorStudioComponent {
   private gamesData = inject(GAMES_DATA);
   auth = inject(AuthService);
   private router = inject(Router);
@@ -32,12 +32,15 @@ export class CreatorStudioComponent implements OnInit {
   deleting = false;
   deleteSuccess = false;
 
-  ngOnInit(): void {
-    this.loadStudioGames();
+  constructor() {
+    effect(() => {
+      const user = this.auth.currentUser();
+      this.gameToDelete = null;
+      this.loadStudioGames(user);
+    });
   }
 
-  loadStudioGames(): void {
-    const user = this.auth.currentUser();
+  loadStudioGames(user = this.auth.currentUser()): void {
     if (!user) {
       this.games = [];
       this.loading = false;

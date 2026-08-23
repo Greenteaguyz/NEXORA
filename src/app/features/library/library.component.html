@@ -34,23 +34,37 @@
         </div>
 
         @if (availableTags.length > 0) {
-          <div class="tag-filters-row" role="group" aria-label="Filter by genre">
-            <button 
-              type="button" 
-              class="filter-tag-chip" 
-              [class.active]="selectedTag === 'all'" 
-              (click)="selectedTag = 'all'">
-              All Games
-            </button>
-            @for (tag of availableTags; track tag) {
+          <div class="tag-filters-track" role="group" aria-label="Filter by genre">
+            <div class="tag-filters-scroll">
               <button 
                 type="button" 
                 class="filter-tag-chip" 
-                [class.active]="selectedTag === tag" 
-                (click)="selectedTag = tag">
-                {{ tag }}
+                [class.active]="selectedTags.size === 0" 
+                (click)="clearTags()">
+                <span>All Games</span>
+                <span class="filter-count-badge">{{ getTagCount('all') }}</span>
               </button>
-            }
+              @for (tag of availableTags; track tag) {
+                <button 
+                  type="button" 
+                  class="filter-tag-chip" 
+                  [class.active]="selectedTags.has(tag)" 
+                  (click)="toggleTag(tag)">
+                  <span>{{ tag }}</span>
+                  <span class="filter-count-badge">{{ getTagCount(tag) }}</span>
+                </button>
+              }
+              @if (selectedTags.size > 1) {
+                <button 
+                  type="button" 
+                  class="filter-tag-chip btn-clear-multi" 
+                  (click)="clearTags()"
+                  title="Clear active filters">
+                  <span>Clear ({{ selectedTags.size }})</span>
+                  <span class="clear-cross">✕</span>
+                </button>
+              }
+            </div>
           </div>
         }
       </div>
@@ -75,10 +89,10 @@
         title="No Matching Games" 
         message="No games in your collection match your search."
         actionLabel="Clear Filters"
-        (actionClicked)="searchQuery = ''; selectedTag = 'all'">
+        (actionClicked)="searchQuery = ''; clearTags()">
       </app-empty-state>
     } @else {
-      <div class="library-grid" role="list" aria-label="Owned games collection">
+      <div class="library-grid" appSpatialNav role="list" aria-label="Owned games collection">
         @for (item of filteredItems; track item.entry.id) {
           <div class="library-card" role="listitem">
             <!-- Cover Art with Link -->
@@ -128,10 +142,10 @@
                 <button 
                   type="button" 
                   class="btn-remove-lib-icon" 
-                  (click)="removeGame(item.game.id, $event)"
+                  (click)="openRemoveModal(item.game, $event)"
                   title="Remove from your Library"
                   [attr.aria-label]="'Remove ' + item.game.title + ' from library'">
-                  <svg class="remove-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg class="remove-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <polyline points="3 6 5 6 21 6"/>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                   </svg>
@@ -143,4 +157,46 @@
       </div>
     }
   </main>
+
+  <!-- Soft Deletion Confirmation Reminder Modal -->
+  @if (gameToRemove) {
+    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="removeModalTitle" (click)="closeRemoveModal()" (keydown.escape)="closeRemoveModal()">
+      <div class="modal-card danger" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="danger-header-cluster">
+            <svg class="danger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="currentColor" fill-opacity="0.15"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <h3 id="removeModalTitle" class="modal-title">Remove from Library</h3>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="closeRemoveModal()" aria-label="Close modal">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <p class="modal-lead-text">
+            Are you sure you want to remove <strong>"{{ gameToRemove.title }}"</strong> from your game library?
+          </p>
+          <div class="unpublish-info-box">
+            <div class="info-point">
+              <span class="info-bullet">✓</span>
+              <span>Your local game files and downloads on your device remain safe.</span>
+            </div>
+            <div class="info-point">
+              <span class="info-bullet">✓</span>
+              <span>You can re-acquire or re-download this title from the store anytime.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closeRemoveModal()" [disabled]="removing">Keep in Library</button>
+          <button type="button" class="btn-confirm-delete" (click)="confirmRemove()" [disabled]="removing">
+            {{ removing ? 'Removing...' : 'Remove from Library' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
 </div>

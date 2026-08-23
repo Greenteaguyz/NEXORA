@@ -467,7 +467,6 @@
 }
 .btn-steam-buy.paid:hover {
   background: linear-gradient(135deg, var(--accent-600) 0%, var(--accent-500) 100%);
-  transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 192, 244, 0.55);
 }
 .btn-steam-buy.free {
@@ -477,10 +476,9 @@
 }
 .btn-steam-buy.free:hover {
   background: linear-gradient(135deg, #047857 0%, #059669 100%);
-  transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(16, 185, 129, 0.55);
 }
-.btn-steam-buy:active { transform: translateY(0); }
+.btn-steam-buy:active { transform: scale(0.98); }
 .btn-steam-wishlist {
   background: var(--bg-elevated);
   border: 1px solid var(--border-card);
@@ -495,9 +493,10 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   outline: none;
 }
+.btn-steam-wishlist:active { transform: scale(0.98); }
 .btn-steam-wishlist:focus-visible { outline: 2px solid var(--accent-500); outline-offset: 2px; }
 .btn-steam-wishlist:hover { border-color: var(--rose-500); color: var(--rose-500); background: rgba(244, 63, 94, 0.08); }
 .btn-steam-wishlist.active { background: rgba(244, 63, 94, 0.15); border-color: var(--rose-500); color: var(--rose-500); }
@@ -518,7 +517,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   outline: none;
 }
 
@@ -533,7 +532,10 @@
   color: #FFFFFF;
   border-color: var(--emerald-500);
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
-  transform: translateY(-1px);
+}
+
+.btn-claim-library:active {
+  transform: scale(0.98);
 }
 
 .btn-remove-library {

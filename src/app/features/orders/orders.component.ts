@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
@@ -27,7 +27,7 @@ export interface OrderDisplayItem {
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css']
 })
-export class OrdersComponent implements OnInit {
+export class OrdersComponent {
   private ordersData = inject(ORDERS_DATA);
   private gamesData = inject(GAMES_DATA);
   private auth = inject(AuthService);
@@ -36,12 +36,15 @@ export class OrdersComponent implements OnInit {
   loading = true;
   selectedReceiptOrder: OrderDisplayItem | null = null;
 
-  ngOnInit(): void {
-    this.loadOrders();
+  constructor() {
+    effect(() => {
+      const user = this.auth.currentUser();
+      this.selectedReceiptOrder = null;
+      this.loadOrders(user);
+    });
   }
 
-  loadOrders(): void {
-    const user = this.auth.currentUser();
+  loadOrders(user = this.auth.currentUser()): void {
     if (!user) {
       this.items = [];
       this.loading = false;

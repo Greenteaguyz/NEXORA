@@ -209,7 +209,11 @@
 
 .card-brand-btn:hover {
   border-color: var(--accent-400);
-  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.card-brand-btn:active {
+  transform: scale(0.98);
 }
 
 .card-brand-btn.active {
@@ -454,7 +458,10 @@
   background: var(--steam-btn-hover, linear-gradient(to right, #8ED629 5%, #6AA621 95%));
   border-color: rgba(142, 214, 41, 0.9);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-  transform: translateY(-1px);
+}
+
+.btn-confirm:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .confirm-icon {

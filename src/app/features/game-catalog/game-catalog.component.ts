@@ -8,6 +8,7 @@ import { GAMES_DATA } from '../../core/data/tokens';
 import { GameCardComponent } from '../../shared/ui/game-card/game-card.component';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+import { SpatialNavDirective } from '../../shared/directives/spatial-nav.directive';
 
 @Component({
   selector: 'app-game-catalog',
@@ -17,7 +18,8 @@ import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.com
     RouterModule,
     GameCardComponent, 
     LoadingSpinnerComponent, 
-    EmptyStateComponent
+    EmptyStateComponent,
+    SpatialNavDirective
   ],
   templateUrl: './game-catalog.component.html',
   styleUrls: ['./game-catalog.component.css']
@@ -36,7 +38,7 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
   activeHeroIndex = 0;
   hoveredScreenshotUrl: string | null = null;
   searchTerm = '';
-  selectedTag = 'All';
+  selectedTags: Set<string> = new Set();
   sortBy: 'featured' | 'newest' | 'price-asc' | 'price-desc' | 'title-asc' = 'featured';
   loading = true;
 
@@ -115,6 +117,11 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
     this.hoveredScreenshotUrl = null;
   }
 
+  getTagCount(tag: string): number {
+    if (tag === 'All' || tag === 'all') return this.allGames.length;
+    return this.allGames.filter(g => g.tags.includes(tag)).length;
+  }
+
   startAutoRotate(): void {
     this.stopAutoRotate();
     this.autoRotateInterval = setInterval(() => {
@@ -138,24 +145,35 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
       this.extractTags(games);
 
       // Initialize from current route snapshot
-      const initialTag = this.route.snapshot.queryParams['tag'] || 'All';
-      const initialSearch = this.route.snapshot.queryParams['search'] || '';
-      const initialSort = this.route.snapshot.queryParams['sort'] || 'featured';
-      this.selectedTag = initialTag;
-      this.searchTerm = initialSearch;
-      this.sortBy = initialSort;
+      const rawTags = this.route.snapshot.queryParams['tags'] || this.route.snapshot.queryParams['tag'];
+      if (rawTags && rawTags !== 'All') {
+        const tagList = rawTags.split(',').map((t: string) => t.trim()).filter(Boolean);
+        this.selectedTags = new Set(tagList);
+      } else {
+        this.selectedTags = new Set();
+      }
+
+      this.searchTerm = this.route.snapshot.queryParams['search'] || '';
+      this.sortBy = this.route.snapshot.queryParams['sort'] || 'featured';
       this.applyFilters();
       this.loading = false;
 
       // Keep in sync with any external route query param navigation
       this.subs.add(
         this.route.queryParams.subscribe(params => {
-          const newTag = params['tag'] || 'All';
+          const newRaw = params['tags'] || params['tag'];
+          const nextSet = new Set<string>();
+          if (newRaw && newRaw !== 'All') {
+            newRaw.split(',').map((t: string) => t.trim()).filter(Boolean).forEach((t: string) => nextSet.add(t));
+          }
           const newSearch = params['search'] || '';
           const newSort = params['sort'] || 'featured';
 
-          if (this.selectedTag !== newTag || this.searchTerm !== newSearch || this.sortBy !== newSort) {
-            this.selectedTag = newTag;
+          const setsEqual = this.selectedTags.size === nextSet.size && 
+            Array.from(this.selectedTags).every(t => nextSet.has(t));
+
+          if (!setsEqual || this.searchTerm !== newSearch || this.sortBy !== newSort) {
+            this.selectedTags = nextSet;
             this.searchTerm = newSearch;
             this.sortBy = newSort;
             this.applyFilters();
@@ -168,12 +186,21 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
   private extractTags(games: Game[]): void {
     const tagSet = new Set<string>();
     games.forEach(g => g.tags.forEach(t => tagSet.add(t)));
-    this.availableTags = ['All', ...Array.from(tagSet).sort()];
+    this.availableTags = Array.from(tagSet).sort();
   }
 
-  selectTag(tag: string): void {
-    if (this.selectedTag === tag) return;
-    this.selectedTag = tag;
+  toggleTag(tag: string): void {
+    if (this.selectedTags.has(tag)) {
+      this.selectedTags.delete(tag);
+    } else {
+      this.selectedTags.add(tag);
+    }
+    this.applyFilters();
+    this.updateQueryParams();
+  }
+
+  clearTags(): void {
+    this.selectedTags.clear();
     this.applyFilters();
     this.updateQueryParams();
   }
@@ -190,9 +217,9 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
   applyFilters(): void {
     let result = [...this.allGames];
 
-    // Filter by tag
-    if (this.selectedTag && this.selectedTag !== 'All') {
-      result = result.filter(g => g.tags.includes(this.selectedTag));
+    // Filter by tag multi-selection (Union / Match Any)
+    if (this.selectedTags.size > 0) {
+      result = result.filter(g => g.tags.some(t => this.selectedTags.has(t)));
     }
 
     // Filter by search keyword
@@ -221,8 +248,8 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
 
   private updateQueryParams(): void {
     const params = new URLSearchParams();
-    if (this.selectedTag && this.selectedTag !== 'All') {
-      params.set('tag', this.selectedTag);
+    if (this.selectedTags.size > 0) {
+      params.set('tags', Array.from(this.selectedTags).join(','));
     }
     if (this.searchTerm.trim()) {
       params.set('search', this.searchTerm.trim());
@@ -237,9 +264,17 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
 
   resetAllFilters(): void {
     this.searchTerm = '';
-    this.selectedTag = 'All';
+    this.selectedTags.clear();
     this.sortBy = 'featured';
     this.applyFilters();
     this.updateQueryParams();
+  }
+
+  scrollChips(direction: 'left' | 'right'): void {
+    const el = document.getElementById('catalog-chips-bar');
+    if (el) {
+      const scrollAmount = direction === 'left' ? -240 : 240;
+      el.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
   }
 }

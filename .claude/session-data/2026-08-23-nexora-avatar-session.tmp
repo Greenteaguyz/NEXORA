@@ -1,0 +1,102 @@
+# Session: 2026-08-23
+
+**Started:** ~10:50 AM  
+**Last Updated:** 11:26 AM  
+**Project:** NEXORA (c:\Users\User\Downloads\AngularProject)  
+**Topic:** Profile Avatar Upload, Hover Fix, Router Preloading, 3-Tier Test Expansion, Skill Installation & Memory Directives  
+
+---
+
+## What We Are Building
+
+NEXORA is an Angular 18 Steam-styled gaming storefront with a full-featured profile system, catalog browsing, wishlisting, ordering, creator studio, and dark/light theme system. This session focused on three pillars:
+
+1. **Profile Avatar Upload (Option B)**: A client-side image upload system allowing users to pick photos up to 5MB, which are automatically center-cropped and compressed to 512×512 WebP (~35KB) via HTML5 Canvas before being stored in `localStorage`. Includes drag-and-drop, a 6-item preset gaming avatar gallery, custom URL input, and live preview. Updates propagate instantly to the top-bar header chip via Angular Signals (`AuthService.currentUser()`).
+
+2. **UI Polish & Performance**: Fixed game card hover artifacts caused by `contain: paint` clipping compositor boundaries during `transform: translateY(-3px)` transitions. Replaced with `isolation: isolate` and `-webkit-mask-image`. Enabled `withPreloading(PreloadAllModules)` on the Angular router for instant route switching.
+
+3. **Automated Quality Lifecycle**: Established a mandatory autonomous workflow where the agent auto-updates 3-tier tests (unit logic, link crawling, navigation/redirect E2E), auto-prunes redundant files, runs design compliance and build verification, and reports test evidence — all without user permission. Installed and wired 2 additional frontend skills (`click-path-audit`, `e2e-testing`) into the auto-invocation protocol.
+
+---
+
+## What WORKED (with evidence)
+
+- **Profile Avatar Upload (5MB → 35KB Canvas WebP)** — confirmed by: File upload of 4.5MB image compressed to ~35KB, localStorage write succeeds without `QuotaExceededError`, header chip avatar updates instantly. Unit tests Section 4 (7 assertions) all pass.
+- **Hover Artifact Elimination** — confirmed by: Removed `contain: paint`, added `isolation: isolate`, verified buttery smooth `0.2s cubic-bezier` transitions with zero pixel clipping or edge halos in browser.
+- **Router Preloading** — confirmed by: `withPreloading(PreloadAllModules)` in `app.config.ts`, all lazy chunks prefetched after boot. Navigation between routes is instantaneous.
+- **3-Tier Test Expansion** — confirmed by: `npm run verify` passes **72 / 72 assertions (100% Green)**:
+  * Unit Tests: 27/27 (validations, transforms, storage, avatar MIME/size/protocol)
+  * Integration Tests: 28/28 (auth, catalog, commerce, studio, profile, route resolution, redirect guards)
+  * Master Battery: 10/10 (data invariants, filters, wishlist dedup, theme tokens, anti-slop)
+  * Impeccable Anti-Slop: 7/7 (radii, colors, timing, contrast, geometry)
+- **Redundant File Cleanup** — confirmed by: Deleted 5 duplicate test folders (`tests/functional/`, `tests/a11y/`, `tests/seo/`, `tests/performance/`, `tests/prelaunch-runner.ts`). `git status` shows clean deletions.
+- **Skill Installation (click-path-audit + e2e-testing)** — confirmed by: Both `SKILL.md` files present at `.agents/skills/click-path-audit/SKILL.md` and `.agents/skills/e2e-testing/SKILL.md`. Auto-invocation triggers wired into all 4 memory files.
+- **Memory Directives Saved** — confirmed by: `AGENTS.md`, `CLAUDE.md`, `00-delivery-quality-gate.md`, `nexora-task-workflow.md` all contain the 7-skill auto-invocation table and 3-tier test expansion + auto-prune rules.
+
+---
+
+## What Did NOT Work (and why)
+
+- **`contain: paint layout` on hoverable game cards** — failed because: CSS `contain: paint` instructs the browser compositor that no pixels will render outside the initial layout box. When `transform: translateY(-3px)` and expanded `box-shadow` were applied on `:hover`, the compositor clipped the outer edges causing visible tearing/ghosting artifacts. Resolved by replacing with `isolation: isolate` and `will-change: transform, box-shadow`.
+- **Raw uncompressed 5MB Base64 in localStorage** — failed/risky because: A 5MB binary file becomes ~6.65MB of Base64 text, immediately hitting the browser's global 5MB domain `localStorage` quota and throwing `QuotaExceededError`. Resolved via Canvas downscaling to 512×512 WebP (~35KB).
+
+---
+
+## What Has NOT Been Tried Yet
+
+- Interactive pan/zoom avatar cropping modal (allow users to adjust crop area before saving).
+- Web Worker off-thread image compression for extreme multi-megabyte photos.
+- Page Object Model refactoring of existing E2E journeys (now that `e2e-testing` skill is installed).
+- Full `click-path-audit` run across all signal store consumers (wishlist, cart, library, orders).
+
+---
+
+## Current State of Files
+
+| File | Status | Notes |
+| :--- | :--- | :--- |
+| `src/app/features/profile/profile.component.ts` | PASS: Complete | 5MB upload, Canvas 512×512 WebP crop, drag-drop, presets, signal propagation |
+| `src/app/features/profile/profile.component.html` | PASS: Complete | Hero camera badge, dropzone, browse button, preset thumbnails, live preview |
+| `src/app/features/profile/profile.component.css` | PASS: Complete | Steam-styled dropzone, active rings, camera overlay |
+| `src/app/shared/ui/game-card/game-card.component.css` | PASS: Complete | Removed `contain: paint`, added `isolation: isolate`, webkit mask |
+| `src/app/app.config.ts` | PASS: Complete | `withPreloading(PreloadAllModules)` enabled |
+| `tests/unit/unit-tests.spec.ts` | PASS: Complete | 27 assertions — Sections 1-4 (validations, transforms, storage, avatar) |
+| `tests/integration/integration-tests.spec.ts` | PASS: Complete | 28 assertions — Sections 1-6 (auth, catalog, commerce, studio, profile, routes) |
+| `tests/audit/broken-links-crawler.spec.ts` | PASS: Complete | 14 routes crawled (10 core + 4 game details) |
+| `tests/e2e/e2e-user-journeys.spec.ts` | PASS: Complete | 5 Playwright journeys (Discovery, Auth, Checkout, Studio, Profile Avatar) |
+| `AGENTS.md` | PASS: Complete | 7-skill auto-invocation protocol + 3-tier test + auto-prune directives |
+| `CLAUDE.md` | PASS: Complete | Compact directive summary with 7 skills listed |
+| `.agents/rules/00-delivery-quality-gate.md` | PASS: Complete | Quality gate rule with auto-invoke protocol |
+| `.agents/rules/nexora-task-workflow.md` | PASS: Complete | Trigger table (7 rows) + sequential after-task checklist |
+
+---
+
+## Decisions Made
+
+- **Canvas WebP Auto-Compression for Avatars** — reason: Allows 5MB uploads while storing as ~35KB, saving 97% of `localStorage` capacity.
+- **Removal of `contain: paint` on Game Cards** — reason: `contain: paint` clipped transformed cards and drop shadows, causing visual artifacts.
+- **Auto-Invocation of 3-Tier Tests after 1–2 Tasks** — reason: Ensures logic, links, and navigation are continuously tested with zero regression.
+- **Pruning 5 Redundant Test Folders** — reason: Eliminated `tests/functional/`, `tests/a11y/`, `tests/seo/`, `tests/performance/`, `tests/prelaunch-runner.ts` to prevent token and workspace bloat.
+- **Installed `click-path-audit` + `e2e-testing`** — reason: `click-path-audit` catches signal store state interaction bugs (Sequential Undo, Async Race, Dead Path) that unit tests miss. `e2e-testing` provides Page Object Model and flaky test patterns for scaling Playwright journeys.
+- **7-Skill Auto-Invocation Suite** — reason: `angular-signals-best-practices`, `a11y-standards-auditor`, `web-perf-cwv`, `spatial-navigation-ux`, `impeccable`, `click-path-audit`, `e2e-testing` cover all frontend dimensions without overlap.
+
+---
+
+## Blockers & Open Questions
+
+- No active blockers. All 72 test assertions passing 100% green. Dev server active on `http://localhost:4200/`.
+
+---
+
+## Exact Next Step
+
+When resuming, Nexora is in a clean, fully verified state with 7 auto-invoked skills. Continue implementing remaining items from `.claude/plans/steam-design-system.plan.md` (e.g. Creator Studio revenue telemetry cards, order history invoice styling, or catalog search/filter enhancements) — the automated quality lifecycle will handle testing, cleanup, and verification autonomously.
+
+---
+
+## Environment & Setup Notes
+
+- **Dev Server**: `npx ng serve --port 4200` (running as daemon task)
+- **Verify**: `npm run verify` (builds + runs unit → integration → master → impeccable battery)
+- **E2E**: `npx playwright test tests/e2e/e2e-user-journeys.spec.ts` (requires dev server on 4200)
+- **Link Crawler**: `npx tsx tests/audit/broken-links-crawler.spec.ts` (requires dev server on 4200)

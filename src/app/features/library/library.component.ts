@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -12,6 +12,7 @@ import { DownloadService } from '../../core/services/download.service';
 import { DownloadButtonComponent } from '../../shared/ui/download-button/download-button.component';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+import { SpatialNavDirective } from '../../shared/directives/spatial-nav.directive';
 
 export interface LibraryDisplayItem {
   entry: LibraryEntry;
@@ -27,12 +28,13 @@ export interface LibraryDisplayItem {
     RouterLink, 
     DownloadButtonComponent, 
     LoadingSpinnerComponent, 
-    EmptyStateComponent
+    EmptyStateComponent,
+    SpatialNavDirective
   ],
   templateUrl: './library.component.html',
   styleUrls: ['./library.component.css']
 })
-export class LibraryComponent implements OnInit {
+export class LibraryComponent {
   private libraryData = inject(LIBRARY_DATA);
   private gamesData = inject(GAMES_DATA);
   private auth = inject(AuthService);
@@ -41,14 +43,18 @@ export class LibraryComponent implements OnInit {
   items: LibraryDisplayItem[] = [];
   loading = true;
   searchQuery = '';
-  selectedTag = 'all';
+  selectedTags = new Set<string>();
 
-  ngOnInit(): void {
-    this.loadLibrary();
+  constructor() {
+    effect(() => {
+      const user = this.auth.currentUser();
+      this.searchQuery = '';
+      this.selectedTags.clear();
+      this.loadLibrary(user);
+    });
   }
 
-  loadLibrary(): void {
-    const user = this.auth.currentUser();
+  loadLibrary(user = this.auth.currentUser()): void {
     if (!user) {
       this.items = [];
       this.loading = false;
@@ -94,13 +100,32 @@ export class LibraryComponent implements OnInit {
     return Array.from(set).sort();
   }
 
+  getTagCount(tag: string): number {
+    if (tag === 'all') return this.items.length;
+    return this.items.filter(item => item.game.tags.includes(tag)).length;
+  }
+
+  toggleTag(tag: string): void {
+    if (this.selectedTags.has(tag)) {
+      this.selectedTags.delete(tag);
+    } else {
+      this.selectedTags.add(tag);
+    }
+  }
+
+  clearTags(): void {
+    this.selectedTags.clear();
+  }
+
   get filteredItems(): LibraryDisplayItem[] {
     return this.items.filter(item => {
-      const matchesSearch = !this.searchQuery.trim() ||
-        item.game.title.toLowerCase().includes(this.searchQuery.toLowerCase().trim()) ||
-        item.game.tags.some(t => t.toLowerCase().includes(this.searchQuery.toLowerCase().trim()));
+      const query = this.searchQuery.toLowerCase().trim();
+      const matchesSearch = !query ||
+        item.game.title.toLowerCase().includes(query) ||
+        item.game.tags.some(t => t.toLowerCase().includes(query));
 
-      const matchesTag = this.selectedTag === 'all' || item.game.tags.includes(this.selectedTag);
+      const matchesTag = this.selectedTags.size === 0 || 
+        item.game.tags.some(t => this.selectedTags.has(t));
 
       return matchesSearch && matchesTag;
     });
@@ -116,16 +141,51 @@ export class LibraryComponent implements OnInit {
     this.downloadService.downloadGameFile(game);
   }
 
-  removeGame(gameId: string, event?: Event): void {
+  // Soft Deletion Modal State
+  gameToRemove: Game | null = null;
+  removing = false;
+
+  openRemoveModal(game: Game, event?: Event): void {
     if (event) {
       event.stopPropagation();
       event.preventDefault();
     }
-    const user = this.auth.currentUser();
-    if (!user) return;
+    this.gameToRemove = game;
+  }
 
-    this.libraryData.removeFromLibrary(user.id, gameId).subscribe(() => {
-      this.items = this.items.filter(item => item.game.id !== gameId);
+  closeRemoveModal(): void {
+    if (this.removing) return;
+    this.gameToRemove = null;
+  }
+
+  confirmRemove(): void {
+    if (!this.gameToRemove || this.removing) return;
+    const user = this.auth.currentUser();
+    if (!user) {
+      this.closeRemoveModal();
+      return;
+    }
+
+    const gameId = this.gameToRemove.id;
+    this.removing = true;
+
+    this.libraryData.removeFromLibrary(user.id, gameId).subscribe({
+      next: () => {
+        this.items = this.items.filter(item => item.game.id !== gameId);
+        this.removing = false;
+        this.gameToRemove = null;
+      },
+      error: () => {
+        this.removing = false;
+        this.gameToRemove = null;
+      }
     });
+  }
+
+  removeGame(gameId: string, event?: Event): void {
+    const item = this.items.find(i => i.game.id === gameId);
+    if (item) {
+      this.openRemoveModal(item.game, event);
+    }
   }
 }

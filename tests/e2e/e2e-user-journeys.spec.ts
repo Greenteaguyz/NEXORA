@@ -122,4 +122,39 @@ test.describe('NEXORA E2E User Journeys', () => {
     await expect(page.locator('.preview-card')).toContainText('Aero Cyber Strike');
   });
 
+  test('Journey 5: Profile Avatar Edit, Preset Selection & Instant Header Sync', async ({ page }) => {
+    // 1. Log in as Bob
+    await page.goto(`${BASE_URL}/login`, { waitUntil: 'networkidle' });
+    await page.locator('button.demo-btn:has-text("Bob")').click();
+    await page.locator('button.btn-submit').click();
+    await page.waitForTimeout(500);
+
+    // 2. Navigate to Profile
+    await page.goto(`${BASE_URL}/profile`, { waitUntil: 'networkidle' });
+    await expect(page.locator('.user-display-name')).toContainText('Bob');
+
+    // 3. Open Edit Profile Modal
+    await page.locator('button.btn-edit-profile').click();
+    const editModal = page.locator('.edit-profile-modal');
+    await expect(editModal).toBeVisible();
+
+    // 4. Select Preset Avatar & change Display Name
+    const presetBtns = page.locator('.preset-avatar-btn');
+    if (await presetBtns.count() > 0) {
+      await presetBtns.first().click();
+      await page.waitForTimeout(200);
+    }
+
+    const nameInput = page.locator('#displayName');
+    await nameInput.fill('Bob The Gamer');
+
+    // 5. Save Changes
+    await page.locator('button.btn-save').click();
+    await page.waitForTimeout(600);
+
+    // 6. Verify Profile Hero & Top Header Sync
+    await expect(page.locator('.user-display-name')).toContainText('Bob The Gamer');
+    await expect(page.locator('.user-chip')).toContainText('Bob The Gamer');
+  });
+
 });

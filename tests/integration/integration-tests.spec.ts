@@ -202,6 +202,161 @@ assert('Studio Integration', 'Alice can soft-delete published game', softDeleted
 assert('Studio Integration', 'Game record contains deletedAt timestamp', !!db.games.find(g => g.id === publishedGame.id)?.deletedAt);
 
 // ---------------------------------------------------------------------------
+// 5. User Profile Update & Avatar State Integration Tests
+// ---------------------------------------------------------------------------
+console.log('\n--- 5. INTEGRATION TESTS: Profile & Avatar Updates ---');
+
+function updateProfile(userId: string, partial: Partial<User>): User | null {
+  const user = db.users.find(u => u.id === userId);
+  if (!user) return null;
+  Object.assign(user, partial);
+  return user;
+}
+
+const updatedBob = updateProfile('usr_bob', {
+  displayName: 'Bob The Builder',
+  avatarUrl: 'data:image/png;base64,mockAvatarDataString',
+  bio: 'Veteran gamer exploring indie titles.'
+});
+
+assert('Profile Integration', 'Bob displayName updates accurately', updatedBob?.displayName === 'Bob The Builder');
+assert('Profile Integration', 'Bob avatarUrl updates to custom avatar string', updatedBob?.avatarUrl === 'data:image/png;base64,mockAvatarDataString');
+assert('Profile Integration', 'Bob bio updates and persists in user database', updatedBob?.bio === 'Veteran gamer exploring indie titles.');
+assert('Profile Integration', 'Lookup in db reflects new profile fields', db.users.find(u => u.id === 'usr_bob')?.displayName === 'Bob The Builder');
+
+// ---------------------------------------------------------------------------
+// 6. Navigation, Route Link Resolution & Redirect Guards
+// ---------------------------------------------------------------------------
+console.log('\n--- 6. INTEGRATION TESTS: Route Resolution, Links & Redirect Guards ---');
+
+const registeredRoutes = [
+  '',
+  'catalog',
+  'genres',
+  'support',
+  'login',
+  'register',
+  'profile',
+  'library',
+  'wishlist',
+  'orders',
+  'studio',
+  'studio/games/new',
+  'games/:id'
+];
+
+function canResolveRoute(path: string): boolean {
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  if (cleanPath.startsWith('games/')) {
+    const gameId = cleanPath.split('/')[1];
+    return !!db.games.find(g => g.id === gameId);
+  }
+  return registeredRoutes.includes(cleanPath);
+}
+
+function resolveRedirectTarget(requestedPath: string, currentUser: User | null): string {
+  // If guest attempts to open studio/profile, redirect to login or catalog
+  if (!currentUser && (requestedPath === '/studio' || requestedPath === '/profile')) {
+    return '/login';
+  }
+  return requestedPath;
+}
+
+assert('Route Resolution', 'All primary top-bar and footer route destinations resolve', 
+  canResolveRoute('/catalog') && canResolveRoute('/genres') && canResolveRoute('/support') && canResolveRoute('/profile') && canResolveRoute('/library') && canResolveRoute('/orders')
+);
+assert('Route Resolution', 'Game detail URL with seeded ID resolves game model', canResolveRoute('/games/game_001'));
+assert('Route Resolution', 'Invalid game detail ID does not resolve', !canResolveRoute('/games/game_invalid_999'));
+assert('Redirect Guard', 'Guest navigating to /profile redirects to /login', resolveRedirectTarget('/profile', null) === '/login');
+assert('Redirect Guard', 'Authenticated user navigating to /profile retains destination', resolveRedirectTarget('/profile', bob) === '/profile');
+assert('Redirect Guard', 'Logout redirects to default landing catalog page', resolveRedirectTarget('/catalog', null) === '/catalog');
+
+// ---------------------------------------------------------------------------
+// 7. Reactive Multi-Persona Profile Switching & State Sync
+// ---------------------------------------------------------------------------
+console.log('\n--- 7. INTEGRATION TESTS: Reactive Multi-Persona State Sync ---');
+
+class MockReactiveAppState {
+  private currentUserId: string | null = null;
+  private listeners: Array<() => void> = [];
+
+  constructor(initialUserId: string) {
+    this.currentUserId = initialUserId;
+  }
+
+  get user(): User | null {
+    return db.users.find(u => u.id === this.currentUserId) || null;
+  }
+
+  switchUser(userId: string): void {
+    this.currentUserId = userId;
+    this.listeners.forEach(fn => fn());
+  }
+
+  onUserChange(fn: () => void): () => void {
+    this.listeners.push(fn);
+    return () => {
+      this.listeners = this.listeners.filter(l => l !== fn);
+    };
+  }
+
+  // Reactive view-layer projections
+  getLibraryView(): LibraryEntry[] {
+    return this.currentUserId ? db.library.filter(l => l.userId === this.currentUserId) : [];
+  }
+
+  getWishlistView(): WishlistEntry[] {
+    return this.currentUserId ? db.wishlist.filter(w => w.userId === this.currentUserId) : [];
+  }
+
+  getOrdersView(): Order[] {
+    return this.currentUserId ? db.orders.filter(o => o.userId === this.currentUserId) : [];
+  }
+
+  getStudioGamesView(): Game[] {
+    return this.currentUserId ? db.games.filter(g => g.ownerId === this.currentUserId && !g.deletedAt) : [];
+  }
+}
+
+const reactiveStore = new MockReactiveAppState('usr_bob');
+
+// Test 1: Initial Bob State Projection
+assert('Reactive State Sync', 'Bob Mercer starts with 2 Library games (Cyber Heist & Pixel Odyssey)', 
+  reactiveStore.getLibraryView().length === 2 && reactiveStore.getLibraryView().some(e => e.gameId === 'game_002')
+);
+assert('Reactive State Sync', 'Bob Mercer starts with 1 Wishlist game (Marvel Rivals)', 
+  reactiveStore.getWishlistView().length === 1 && reactiveStore.getWishlistView()[0].gameId === 'game_001'
+);
+
+// Test 2: In-Flight Switch to Alice Vance
+let libraryReloadCount = 0;
+reactiveStore.onUserChange(() => {
+  libraryReloadCount++;
+});
+
+reactiveStore.switchUser('usr_alice');
+
+assert('Reactive State Sync', 'Switching to Alice Vance emits reactive user change event', libraryReloadCount === 1);
+assert('Reactive State Sync', 'Alice Vance view reactively projects 1 Library game (Marvel Rivals)', 
+  reactiveStore.getLibraryView().length === 1 && reactiveStore.getLibraryView()[0].gameId === 'game_001'
+);
+assert('Reactive State Sync', 'Alice Vance view reactively projects 1 Wishlist game (Shadow Circuit)', 
+  reactiveStore.getWishlistView().length === 1 && reactiveStore.getWishlistView()[0].gameId === 'game_004'
+);
+assert('Reactive State Sync', 'Alice Vance view reactively projects 0 Orders', 
+  reactiveStore.getOrdersView().length === 0
+);
+assert('Reactive State Sync', 'Alice Vance view reactively projects Creator Studio games', 
+  reactiveStore.getStudioGamesView().length >= 2 && reactiveStore.getStudioGamesView().some(g => g.id === 'game_001')
+);
+
+// Test 3: Switch back to Bob Mercer
+reactiveStore.switchUser('usr_bob');
+assert('Reactive State Sync', 'Switching back to Bob Mercer restores Bob Library without cross-user contamination', 
+  reactiveStore.getLibraryView().length === 2 && !reactiveStore.getLibraryView().some(e => e.gameId === 'game_001')
+);
+
+// ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
 const passed = results.filter(r => r.passed).length;

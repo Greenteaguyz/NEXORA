@@ -103,8 +103,11 @@
 
 .btn-publish-new:hover {
   background: var(--steam-btn-hover, linear-gradient(to right, #8ED629 5%, #6AA621 95%));
-  transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(117, 176, 34, 0.5);
+}
+
+.btn-publish-new:active {
+  transform: scale(0.98);
 }
 
 .btn-icon {
@@ -126,7 +129,7 @@
   padding: 16px 20px;
   display: flex;
   flex-direction: column;
-  transition: all 0.2s ease;
+  transition: border-color 0.15s ease, box-shadow 0.2s ease;
 }
 
 :host-context([data-theme="light"]) .metric-card {
@@ -137,7 +140,7 @@
 
 .metric-card:hover {
   border-color: var(--border-glow);
-  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 6px 18px rgba(0, 0, 0, 0.25);
 }
 
 .metric-value {
@@ -407,17 +410,19 @@
 
 .modal-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-glow);
-  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-2xl);
   width: 100%;
   max-width: 520px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
   overflow: hidden;
-  animation: scaleUp 0.2s ease;
+  animation: scaleUp 0.15s ease;
 }
 
-.modal-card.danger {
-  border-color: var(--rose-500);
+:host-context([data-theme="light"]) .modal-card {
+  background: #FFFFFF;
+  border-color: #D5DCE6;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
 }
 
 .modal-header {
@@ -427,6 +432,11 @@
   padding: var(--space-4) var(--space-6);
   background: var(--bg-elevated);
   border-bottom: 1px solid var(--border-card);
+}
+
+:host-context([data-theme="light"]) .modal-header {
+  background: #F8FAFC;
+  border-color: #E2E8F0;
 }
 
 .danger-header-cluster {

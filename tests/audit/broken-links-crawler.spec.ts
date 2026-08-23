@@ -24,7 +24,18 @@ export async function runBrokenLinkCrawler(baseUrl: string = BASE_URL): Promise<
   const page: Page = await context.newPage();
 
   const visitedUrls = new Set<string>();
-  const linkQueue: string[] = ['/catalog', '/genres', '/support', '/login', '/register'];
+  const linkQueue: string[] = [
+    '/catalog', 
+    '/genres', 
+    '/support', 
+    '/login', 
+    '/register',
+    '/profile',
+    '/library',
+    '/wishlist',
+    '/orders',
+    '/studio'
+  ];
   const crawlResults: LinkCrawlResult[] = [];
 
   // Seed discovered game detail links

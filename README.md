@@ -81,7 +81,7 @@ Use the following preconfigured accounts to test role-based access control and u
 
 NEXORA provides a comprehensive automated testing battery covering unit logic, domain integration, master architectural invariants, and the Impeccable Anti-Slop / Steam DesignMD compliance suite.
 
-### 1. Run all regression suites (55 Tests — 100% Pass Rate)
+### 1. Run all regression suites (166 Tests — 100% Pass Rate)
 
 Execute all 4 automated test tiers in under 4 seconds:
 
@@ -92,8 +92,8 @@ npm run test:regression
 ```
 
 This command orchestrates:
-* **Unit Tests** (`npm run test:unit`): 20 tests verifying email/password validations, 90/10 creator revenue splits, data transforms, and `nexora_*` storage prefix isolation.
-* **Integration Tests** (`npm run test:integration`): 18 tests verifying Alice/Bob persona lifecycles, query engine, wishlist-to-library fulfillment, and Creator Studio publishing/soft-deletion.
+* **Unit Tests** (`npm run test:unit`): 113 assertions across 21 sections verifying email/password validations, 90/10 creator revenue splits, data transforms, `nexora_*` storage prefix isolation, fluid clamp bounds, 4-slide hero geometry parity, and 16:9 widescreen parameters.
+* **Integration Tests** (`npm run test:integration`): 36 assertions across 7 sections verifying Alice/Bob persona lifecycles, query engine, wishlist-to-library fulfillment, route guards, and multi-persona state synchronization.
 * **Master Battery** (`npm run test:master`): 10 tests verifying dataset invariants, ownership verification, and dual-theme DOM state sync.
 * **Impeccable Anti-Slop Suite** (`npm run test:impeccable`): 7 tests asserting absence of neon glow halos, strict radii hierarchy (`2px/4px/6px/8px/16px`), snappy `0.15s` transitions, and WCAG AAA contrast ratios.
 

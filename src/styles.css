@@ -246,3 +246,37 @@ button:active:not(:disabled),
   }
 }
 
+/* Search Query Substring Highlighting */
+.search-highlight {
+  background-color: rgba(102, 192, 244, 0.25);
+  color: var(--accent-400);
+  font-weight: 800;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+[data-theme="light"] .search-highlight {
+  background-color: rgba(0, 120, 212, 0.18);
+  color: var(--accent-400);
+}
+
+/* Mobile Bottom Navigation Clearance */
+@media (max-width: 768px) {
+  .main-content {
+    padding-bottom: 76px !important;
+  }
+
+  /* Universal Touch-Track Fade Masks */
+  .tag-filters-scroll,
+  .tag-filters-track {
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    scroll-padding: 0 16px;
+  }
+
+  /* Safe Area Mobile Padding */
+  body {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+}
+

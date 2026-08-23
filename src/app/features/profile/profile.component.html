@@ -2,9 +2,22 @@
   @if (auth.currentUser(); as user) {
     <!-- Profile Hero Card -->
     <header class="profile-hero-card">
-      <div class="profile-avatar-wrap">
+      <div 
+        class="profile-avatar-wrap" 
+        (click)="startEditing()" 
+        role="button" 
+        tabindex="0" 
+        (keydown.enter)="startEditing()" 
+        (keydown.space)="startEditing()" 
+        aria-label="Change Profile Avatar">
         <img [src]="user.avatarUrl || 'assets/logo-icon.svg'" [alt]="user.displayName + ' avatar'" class="profile-avatar-img">
         <div class="avatar-glow-ring"></div>
+        <div class="avatar-edit-badge" title="Change Avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="camera-icon" aria-hidden="true">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </div>
       </div>
 
       <div class="profile-hero-info">
@@ -65,9 +78,12 @@
     <section class="stats-overview-grid" aria-label="Account Overview Statistics">
       <a routerLink="/library" class="stat-card" aria-label="View your game library">
         <div class="stat-icon-wrap lime">
-          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="6" width="20" height="12" rx="6" fill="currentColor" fill-opacity="0.15"/>
+            <line x1="6" y1="12" x2="10" y2="12"/>
+            <line x1="8" y1="10" x2="8" y2="14"/>
+            <circle cx="15.5" cy="10.5" r="1" fill="currentColor"/>
+            <circle cx="17.5" cy="12.5" r="1" fill="currentColor"/>
           </svg>
         </div>
         <div class="stat-text">
@@ -81,8 +97,8 @@
 
       <a routerLink="/wishlist" class="stat-card" aria-label="View your wishlisted games">
         <div class="stat-icon-wrap rose">
-          <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
         </div>
         <div class="stat-text">
@@ -96,11 +112,11 @@
 
       <a routerLink="/orders" class="stat-card" aria-label="View your purchase history">
         <div class="stat-icon-wrap cyan">
-          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-            <line x1="16" y1="13" x2="8" y2="13"/>
-            <line x1="16" y1="17" x2="8" y2="17"/>
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 2v20l3-1.5 3 1.5 3-1.5 3 1.5 3-1.5 3 1.5V2l-3 1.5-3-1.5-3 1.5-3-1.5-3 1.5z" fill="currentColor" fill-opacity="0.15"/>
+            <line x1="8" y1="9" x2="16" y2="9"/>
+            <line x1="8" y1="13" x2="16" y2="13"/>
+            <line x1="8" y1="17" x2="13" y2="17"/>
           </svg>
         </div>
         <div class="stat-text">
@@ -114,15 +130,24 @@
     </section>
 
     <!-- Minimal Creator Studio Row -->
-    <section class="creator-studio-bar">
+    <section class="creator-studio-bar" aria-label="Creator Studio and Publishing">
       <div class="creator-bar-left">
         <div class="setting-icon-box cyan" aria-hidden="true">
-          <svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          <svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2" fill="currentColor" fill-opacity="0.2"/>
+            <polyline points="2 17 12 22 22 17"/>
+            <polyline points="2 12 12 17 22 12"/>
           </svg>
         </div>
         <div class="creator-bar-info">
-          <strong class="creator-bar-title">Creator Studio & Publishing</strong>
+          <div class="creator-title-row">
+            <strong class="creator-bar-title">Creator Studio & Publishing</strong>
+            @if (auth.isCreator()) {
+              <span class="creator-status-badge active" role="status" aria-label="Creator Mode Active">
+                <span class="status-dot" aria-hidden="true"></span>ACTIVE
+              </span>
+            }
+          </div>
           <span class="creator-bar-desc">
             {{ auth.isCreator() ? 'Creator tools are active. You can publish and edit game listings.' : 'Enable creator mode to publish your indie games to the marketplace.' }}
           </span>
@@ -131,8 +156,8 @@
 
       <div class="creator-bar-actions">
         @if (auth.isCreator()) {
-          <a routerLink="/studio" class="btn-studio-cta">
-            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <a routerLink="/studio" class="btn-studio-cta" aria-label="Open Creator Studio Dashboard">
+            <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
               <polyline points="15 3 21 3 21 9"/>
               <line x1="10" y1="14" x2="21" y2="3"/>
@@ -144,18 +169,85 @@
           type="button" 
           class="btn-toggle-creator" 
           [class.active]="auth.isCreator()"
-          (click)="toggleCreatorRole()">
+          [attr.aria-pressed]="auth.isCreator()"
+          [attr.aria-label]="auth.isCreator() ? 'Turn off creator mode' : 'Enable creator mode'"
+          (click)="initiateToggleCreatorRole()">
           <span>{{ auth.isCreator() ? 'Turn Off Creator Mode' : 'Become a Creator' }}</span>
         </button>
       </div>
     </section>
 
+    <!-- Creator Mode Deactivation Reminder Modal (10s Countdown) -->
+    @if (showDisableCreatorModal) {
+      <div 
+        class="modal-backdrop" 
+        role="dialog" 
+        aria-modal="true" 
+        aria-labelledby="disable-creator-title" 
+        aria-describedby="disable-creator-desc"
+        (click)="cancelDisableCreator()"
+        (keydown.escape)="cancelDisableCreator()">
+        <div class="modal-card deactivation-card" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <div class="modal-header-badge">
+              <div class="warning-icon-box" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              </div>
+              <h3 id="disable-creator-title" class="modal-title">Deactivate Creator Mode?</h3>
+            </div>
+            <button type="button" class="btn-modal-close" (click)="cancelDisableCreator()" aria-label="Close dialog">✕</button>
+          </div>
+
+          <div class="modal-body-reset">
+            <div class="countdown-pill" [class.unlocked]="countdownSeconds === 0" aria-live="polite">
+              <span class="countdown-pulse-dot" [class.unlocked]="countdownSeconds === 0" aria-hidden="true"></span>
+              @if (countdownSeconds > 0) {
+                <span>Safety lock: Unlocking in <strong>{{ countdownSeconds }}s</strong></span>
+              } @else {
+                <span>Confirmation Unlocked</span>
+              }
+            </div>
+
+            <p id="disable-creator-desc" class="reset-warning-text">
+              Disabling creator mode will hide the <strong>Creator Studio</strong> dashboard and pause live catalog publishing tools.
+            </p>
+
+            <div class="safe-data-callout">
+              <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span>Your published games, store listings, and sales telemetry remain safely preserved in the database. You can re-enable Creator Mode anytime.</span>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel btn-keep-creator" (click)="cancelDisableCreator()" autofocus>
+              Keep Creator Active
+            </button>
+            <button 
+              type="button" 
+              class="btn-confirm-deactivate" 
+              [disabled]="countdownSeconds > 0"
+              (click)="confirmDisableCreator()">
+              {{ countdownSeconds > 0 ? 'Turn Off Creator Mode (' + countdownSeconds + 's)' : 'Yes, Turn Off Creator Mode' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
     <!-- System & Database Management Bar -->
     <section class="system-reset-bar">
       <div class="system-bar-left">
         <div class="setting-icon-box amber" aria-hidden="true">
-          <svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          <svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <ellipse cx="12" cy="5" rx="9" ry="3" fill="currentColor" fill-opacity="0.2"/>
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
           </svg>
         </div>
         <div class="system-bar-info">
@@ -210,13 +302,106 @@
     <!-- Edit Profile Modal -->
     @if (isEditing) {
       <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Edit Profile" (click)="cancelEditing()">
-        <div class="modal-card" (click)="$event.stopPropagation()">
+        <div class="modal-card edit-profile-modal" (click)="$event.stopPropagation()">
           <div class="modal-header">
             <h3 class="modal-title">Edit Profile Information</h3>
             <button type="button" class="btn-modal-close" (click)="cancelEditing()" aria-label="Close">✕</button>
           </div>
 
           <form (ngSubmit)="saveProfile()" class="modal-form">
+            <!-- Avatar Upload & Preset Section -->
+            <div class="avatar-edit-section">
+              <label class="form-label">Profile Avatar</label>
+              
+              <div class="avatar-edit-layout">
+                <!-- Circular Preview -->
+                <div class="avatar-preview-box">
+                  <img [src]="editAvatarUrl || 'assets/logo-icon.svg'" alt="Avatar preview" class="avatar-preview-img">
+                  @if (editAvatarUrl) {
+                    <button 
+                      type="button" 
+                      class="btn-remove-avatar" 
+                      (click)="removeAvatar()" 
+                      title="Reset avatar to default"
+                      aria-label="Remove custom avatar">
+                      ✕
+                    </button>
+                  }
+                </div>
+
+                <!-- Upload & Drag/Drop Area -->
+                <div 
+                  class="avatar-dropzone" 
+                  [class.dragging]="isDragging"
+                  (dragover)="onDragOver($event)"
+                  (dragleave)="onDragLeave($event)"
+                  (drop)="onDrop($event)">
+                  <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  <p class="dropzone-text">Drag & drop an image here, or</p>
+                  
+                  <input 
+                    #fileInput 
+                    type="file" 
+                    class="sr-only" 
+                    id="avatarFile"
+                    accept="image/png, image/jpeg, image/webp, image/gif, image/svg+xml" 
+                    (change)="onFileSelected($event)">
+                  <button 
+                    type="button" 
+                    class="btn-browse-file" 
+                    (click)="fileInput.click()">
+                    Browse Image
+                  </button>
+                  <span class="dropzone-hint">PNG, JPG, WebP, GIF (Max 5MB)</span>
+                </div>
+              </div>
+
+              <!-- Error Alert -->
+              @if (avatarUploadError) {
+                <div class="avatar-error-msg" role="alert">
+                  <svg class="error-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <span>{{ avatarUploadError }}</span>
+                </div>
+              }
+
+              <!-- Preset Steam Avatars -->
+              <div class="preset-avatars-container">
+                <span class="preset-label">Or choose a preset avatar:</span>
+                <div class="preset-avatars-grid">
+                  @for (preset of presetAvatars; track preset) {
+                    <button 
+                      type="button" 
+                      class="preset-avatar-btn" 
+                      [class.active]="editAvatarUrl === preset"
+                      (click)="selectPresetAvatar(preset)"
+                      aria-label="Select preset avatar">
+                      <img [src]="preset" alt="Preset avatar" class="preset-thumb-img">
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- Custom Avatar URL Input -->
+              <div class="form-group-nested">
+                <label for="customAvatarUrl" class="form-sublabel">Image URL (Optional)</label>
+                <input 
+                  id="customAvatarUrl" 
+                  type="url" 
+                  [(ngModel)]="editAvatarUrl" 
+                  name="avatarUrl" 
+                  class="form-input" 
+                  placeholder="https://example.com/avatar.png">
+              </div>
+            </div>
+
             <div class="form-group">
               <label for="displayName" class="form-label">Display Name</label>
               <input 

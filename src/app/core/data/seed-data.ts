@@ -60,10 +60,12 @@ export const SEED_GAMES: Game[] = [
     description: 'Turn-based tactical cyber-espionage infiltration sim. Hack defense nodes, disable security drones, and exfiltrate classified megacorp data vaults.',
     tags: ['Strategy', 'Cyberpunk', 'Tactics', 'Hacking'],
     price: 0,
-    coverImageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80',
+    coverImageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1280&h=720&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/cyber-heist.zip',
     createdAt: '2024-04-10T12:00:00.000Z',
@@ -76,10 +78,12 @@ export const SEED_GAMES: Game[] = [
     description: 'A charming 16-bit retro metroidvania exploring forgotten ancient ruins buried deep underneath the digital frontier.',
     tags: ['Platformer', 'Pixel Art', 'Retro', 'Adventure'],
     price: 0,
-    coverImageUrl: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=800&auto=format&fit=crop&q=80',
+    coverImageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1280&h=720&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/pixel-odyssey.zip',
     createdAt: '2024-05-01T09:30:00.000Z',
@@ -92,10 +96,12 @@ export const SEED_GAMES: Game[] = [
     description: 'An intense rogue-like bullet-hell set inside a corrupted AI neural core. Dodge laser waves, collect memory shards, and reboot the system.',
     tags: ['Rogue-like', 'Action', 'Sci-Fi', 'Bullet Hell'],
     price: 3.49,
-    coverImageUrl: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=80',
+    coverImageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/shadow-circuit.zip',
     createdAt: '2024-05-15T15:20:00.000Z',
@@ -108,11 +114,12 @@ export const SEED_GAMES: Game[] = [
     description: 'Deep space psychological horror and puzzle exploration aboard an abandoned research satellite orbiting a dying singularity.',
     tags: ['Horror', 'Sci-Fi', 'Puzzle', 'Atmospheric'],
     price: 6.99,
-    coverImageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=800&auto=format&fit=crop&q=80',
+    coverImageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1280&h=720&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/echoes-of-the-void.zip',
     createdAt: '2024-06-01T18:00:00.000Z',
@@ -125,11 +132,12 @@ export const SEED_GAMES: Game[] = [
     description: 'Endless rhythm-based runner with pulsating synthwave tracks and dynamic speed hurdles. Test your reflexes on the global leaderboard.',
     tags: ['Arcade', 'Rhythm', 'Cyberpunk', 'Music'],
     price: 0,
-    coverImageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80',
+    coverImageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1280&h=720&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/grid-runner.zip',
     createdAt: '2024-06-12T14:40:00.000Z',
@@ -142,11 +150,12 @@ export const SEED_GAMES: Game[] = [
     description: 'Mind-bending first-person puzzle game where you manipulate quantum probability fields to traverse impossible spatial geometries.',
     tags: ['Puzzle', 'Sci-Fi', 'First-Person', 'Indie'],
     price: 0,
-    coverImageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80',
+    coverImageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1280&h=720&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1200&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/quantum-shift.zip',
     createdAt: '2024-07-01T10:15:00.000Z',
@@ -159,11 +168,12 @@ export const SEED_GAMES: Game[] = [
     description: 'Isometric hack-and-slash crawler drenched in pastel vaporwave aesthetics and lo-fi beats. Upgrade weapons and defeat surreal glitch bosses.',
     tags: ['RPG', 'Action', 'Hack and Slash', 'Retro'],
     price: 2.99,
-    coverImageUrl: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=800&auto=format&fit=crop&q=80',
+    coverImageUrl: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/vaporwave-dungeon.zip',
     createdAt: '2024-07-15T16:00:00.000Z',
@@ -176,11 +186,12 @@ export const SEED_GAMES: Game[] = [
     description: 'Manage an underground cyberpunk bar in Neo-Kyoto. Mix synthetic cocktails, listen to rogue android stories, and keep the peace.',
     tags: ['Simulation', 'Cyberpunk', 'Story Rich', 'Casual'],
     price: 0,
-    coverImageUrl: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=800&auto=format&fit=crop&q=80',
+    coverImageUrl: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1280&h=720&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/cyber-tavern.zip',
     createdAt: '2024-08-01T11:00:00.000Z',
@@ -193,11 +204,12 @@ export const SEED_GAMES: Game[] = [
     description: 'Fast-paced multiplayer arena mech brawler. Customize weapons, armor plating, and thrusters for intense competitive combat.',
     tags: ['Action', 'Sci-Fi', 'Mechs', 'Arcade'],
     price: 0,
-    coverImageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80',
+    coverImageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1200&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/byte-mech.zip',
     createdAt: '2024-08-10T13:30:00.000Z',

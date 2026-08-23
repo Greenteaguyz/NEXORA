@@ -10,7 +10,7 @@ NEXORA adheres to the **Impeccable Standard**: high-utility, media-first desktop
 * **Media-First**: Games are visual art. 16:9 gameplay footage and crisp high-resolution screenshots take precedence over decorative UI.
 * **Restrained & Solid**: Matte slate surfaces (`#0E141B`, `#1B2838`, `#2A475E`), crisp 1px borders, zero blurry neon glow halos.
 * **Deterministic Semantic Color**:
-  * **Steam Green (`#75B022` / `#588A1B`)**: Reserved strictly for Primary Action CTAs (`Buy`, `Download`, `Add to Library`).
+  * **Steam Green (`#75B022` / `#588A1B`)**: Reserved strictly for Primary Action CTAs (`Buy`, `Download`, `Add to Library`, `View Details`).
   * **Steam Cyan (`#66C0F4`)**: Reserved strictly for interactive hyperlinks, active navigation tabs, and review sentiments.
   * **Rose (`#F43F5E`)**: Reserved strictly for Wishlist actions and destructive alerts.
 * **Fast & Snappy**: Snappy `0.15s ease` transitions; zero wobbly rubber-band spring curves.
@@ -52,19 +52,20 @@ NEXORA adheres to the **Impeccable Standard**: high-utility, media-first desktop
 
 ---
 
-## 3. Typography Hierarchy
+## 3. Typography Hierarchy & Fluid CSS `clamp()` Scale
 
-* **Display Headings**: `font-family: 'Motiva Sans', 'Inter', -apple-system, sans-serif; font-weight: 800; letter-spacing: -0.02em;`
-* **Eyebrow Breadcrumbs**: `font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;`
-* **Body / Copy**: `font-family: 'Inter', -apple-system, sans-serif; font-size: 0.925rem; line-height: 1.55;`
-* **Price / Technical Specs**: `font-family: 'JetBrains Mono', monospace; font-weight: 800;`
+* **Display Headings**: `font-family: var(--font-display); font-size: clamp(1.15rem, 1.6vw, 1.45rem); font-weight: 800; letter-spacing: -0.02em;`
+* **Monospace Flagship Eyebrow**: `font-family: var(--font-mono); font-size: 0.68rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-400);`
+* **Body / Descriptions**: `font-family: var(--font-sans); font-size: 0.925rem; line-height: 1.55; color: var(--text-secondary);`
+* **Price Values (Paid)**: `font-family: var(--font-mono); font-weight: 800; font-size: 1.2rem; color: var(--text-primary);`
+* **Price Values (Free)**: `font-family: var(--font-sans); font-weight: 800; font-size: 1.15rem; color: #75B022;`
 
 ---
 
 ## 4. Geometry & Radii Scale
 
 ```css
---radius-xs:  2px;   /* Tag chips, micro status pills */
+--radius-xs:  2px;   /* Tag chips, micro status pills, review sentiment badge */
 --radius-sm:  4px;   /* Utility icon buttons, screenshot thumbs */
 --radius:     6px;   /* Main CTA buttons, search inputs */
 --radius-lg:  8px;   /* Store cards, tables, panels */
@@ -74,7 +75,64 @@ NEXORA adheres to the **Impeccable Standard**: high-utility, media-first desktop
 
 ---
 
-## 5. Anti-Slop Guardrails (50+ Strict Checks)
+## 5. Hero Carousel & Zero-Shift Media Architecture (0.00px CLS)
+
+* **Decoupled Absolute Media Fill**:
+  ```css
+  .carousel-main-media {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  .main-media-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  ```
+* **Fixed 16:9 Resolution Contract**: All online seed and upload assets enforce `w=1280&h=720&auto=format&fit=crop&q=80` (16:9 widescreen).
+* **Symmetrical 2x2 Thumbnail Tile Matrix**:
+  ```css
+  .mini-screenshots-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    width: 100%;
+  }
+  .mini-screenshot-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    box-sizing: border-box;
+  }
+  ```
+
+---
+
+## 6. Omni-Resolution Grid Progression & Mobile Optimization
+
+* **4/3/2/1 Column Progression**:
+  * $\ge 1280px$: **4 columns** (`repeat(4, 1fr)`)
+  * $960px - 1279px$: **3 columns** (`repeat(3, 1fr)`)
+  * $600px - 959px$: **2 columns** (`repeat(2, 1fr)`)
+  * $< 600px$: **1 column** (`1fr`)
+* **Tablet / Mobile Hero Preview Strip**: On $\le 860px$, the 2x2 grid collapses into a sleek horizontal 1x4 preview strip (`repeat(4, 1fr)` with `max-height: clamp(44px, 10vw, 60px)`), reclaiming 180px+ vertical viewport height.
+
+---
+
+## 7. Clean Text-Only Category Filter Rail
+
+* **Clean Category Chips**: Text-only category chips without noisy numeric badges (`[ 10 ]`).
+* **Dual-Edge Fade Masks**: `mask-image: linear-gradient(to right, transparent 0%, black 24px, black calc(100% - 24px), transparent 100%);`.
+* **Smooth Chevron Paging**: Dedicated Left `<` and Right `>` smooth scroll chevrons (`scrollChips('left' | 'right')`).
+
+---
+
+## 8. Anti-Slop Guardrails (50+ Strict Checks)
 
 1. ❌ **No Blurry Neon Glow**: Never use `box-shadow: 0 0 Xpx [color]` on cards or buttons.
 2. ❌ **No SVG Filter Glows**: Never use `filter: drop-shadow(0 0 6px ...)` on vector icons.

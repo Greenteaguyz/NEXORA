@@ -127,7 +127,10 @@
   background: var(--steam-btn-hover, linear-gradient(to right, #8ED629 5%, #6AA621 95%));
   border-color: #8ED629;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-  transform: translateY(-1px);
+}
+
+.btn-empty-action:active {
+  transform: scale(0.98);
 }
 
 .btn-arrow-svg {

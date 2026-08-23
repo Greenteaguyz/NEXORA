@@ -219,3 +219,18 @@ Standard skills applied during development:
 - [x] **14.8** Standardize geometry & typography across all 13 views (replaced residual `9999px` bubble pills with crisp 6px buttons, 4px badges/filter chips, and 2px micro-tags with JetBrains Mono tracking)
 - [x] **14.9** Implement Steam Desktop **"Sort By"** filter dropdown (`Featured`, `Newest Releases`, `Price: Low to High`, `Price: High to Low`, `Alphabetical: A to Z`) in `/catalog` with live URL query param synchronization and responsive layout balance
 
+---
+
+## Phase 10: Omni-Resolution Fluid Architecture, Fixed 16:9 Standard, Zero-Shift Media & 4-Slide Parity (Task 15)
+
+### Task 15: Storefront Fluid Resiliency & 4-Slide Hero Sizing Parity
+- [x] **15.1** Clean Text-Only Category Filter Rail: Removed noisy numeric count badges (`[ 10 ]`), added `<` / `>` smooth scrolling chevrons, and dual-edge linear gradient fade masks.
+- [x] **15.2** Decoupled Absolute Media Framing (0.00px CLS): Set `.main-media-img` to `position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;`, guaranteeing 0.00px Cumulative Layout Shift when hovering across thumbnails.
+- [x] **15.3** Universal Fixed 16:9 Standard (`1280×720`): Standardized 100% of online seed assets in `seed-data.ts` to `w=1280&h=720&auto=format&fit=crop&q=80`.
+- [x] **15.4** Symmetrical 2x2 Thumbnail Grid Geometry: Removed constricting `max-height` ceiling on `.mini-screenshot-thumb` to fill 100% cell width with uniform 6px horizontal/vertical gaps.
+- [x] **15.5** Right Capsule Flagship Presentation: Added monospace `FEATURED SPOTLIGHT` eyebrow, Steam review sentiment pill `[ ● ★ 4.9 · Very Positive ]`, and Electric Cyan active thumbnail ring.
+- [x] **15.6** Universal Seed Synchronization Engine: Fixed `MockGamesDataService.initData()` to deep-merge all 10 seed games on startup, resolving the stale `localStorage` 2-thumbnail bug.
+- [x] **15.7** Omni-Resolution 4/3/2/1 Grid Progression & Fluid `clamp()` Tokens: Replaced rigid px values with fluid typography/padding and collapsed mobile hero strip (1x4 preview).
+- [x] **15.8** Catalog Grid Card Geometry Invariance: Locked card titles (`1.4rem`), descriptions (`2.8em`), tag rows (`24px`), and footers (`42px`) for 100% uniform card heights across all rows.
+- [x] **15.9** Expanded Automated Test Battery: 166 / 166 passing assertions (100% Green) across Unit Tests (Sections 1–21), Integration Tests (Sections 1–7), Master Battery, and Impeccable Anti-Slop suite.
+

@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { ThemeService } from '../../core/theme/theme.service';
+import { WISHLIST_DATA } from '../../core/data/tokens';
 import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.component';
 
 @Component({
@@ -15,8 +16,24 @@ import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.compon
 export class HeaderComponent {
   authService = inject(AuthService);
   themeService = inject(ThemeService);
+  private wishlistData = inject(WISHLIST_DATA);
 
+  wishlistCount = signal(0);
   mobileMenuOpen = signal(false);
+
+  constructor() {
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (user) {
+        this.wishlistData.getWishlist(user.id).subscribe({
+          next: (entries) => this.wishlistCount.set(entries ? entries.length : 0),
+          error: () => this.wishlistCount.set(0)
+        });
+      } else {
+        this.wishlistCount.set(0);
+      }
+    });
+  }
 
   toggleMobileMenu(): void {
     this.mobileMenuOpen.update(v => !v);
@@ -39,5 +56,9 @@ export class HeaderComponent {
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
+  }
+
+  triggerCommandPalette(): void {
+    window.dispatchEvent(new CustomEvent('open-command-palette'));
   }
 }
