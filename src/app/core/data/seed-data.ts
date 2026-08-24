@@ -204,12 +204,12 @@ export const SEED_GAMES: Game[] = [
     description: 'Fast-paced multiplayer arena mech brawler. Customize weapons, armor plating, and thrusters for intense competitive combat.',
     tags: ['Action', 'Sci-Fi', 'Mechs', 'Arcade'],
     price: 0,
-    coverImageUrl: 'https://images.unsplash.com/photo-1614680376593-902f749f7ffc?w=1280&h=720&auto=format&fit=crop&q=80',
+    coverImageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1614680376593-902f749f7ffc?w=1280&h=720&auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1280&h=720&auto=format&fit=crop&q=80',
       'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80'
+      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/byte-mech.zip',
     createdAt: '2024-08-10T13:30:00.000Z',

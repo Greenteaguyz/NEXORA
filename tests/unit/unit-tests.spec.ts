@@ -1672,6 +1672,28 @@ assert('Drawer De-Duplication', 'Tablet (900px) preserves primary links in drawe
   resolveDrawerItems(900).showsManagementItems === true
 );
 
+// Test 6: Auth Route Bottom Bar Suppression
+function shouldShowBottomNav(url: string, viewportWidth: number): boolean {
+  if (viewportWidth > 768) return false;
+  const isAuth = url.includes('/login') || url.includes('/register') || url.includes('/forgot-password');
+  return !isAuth;
+}
+
+assert('Auth Bottom Nav Suppression', 'Storefront, Genres, and Library display mobile bottom bar',
+  shouldShowBottomNav('/catalog', 390) === true &&
+  shouldShowBottomNav('/genres', 390) === true &&
+  shouldShowBottomNav('/library', 390) === true
+);
+assert('Auth Bottom Nav Suppression', 'Login, Register, and Forgot Password suppress mobile bottom bar',
+  shouldShowBottomNav('/login', 390) === false &&
+  shouldShowBottomNav('/register', 390) === false &&
+  shouldShowBottomNav('/forgot-password', 390) === false
+);
+assert('Auth Bottom Nav Suppression', 'Desktop viewports always suppress bottom bar across all routes',
+  shouldShowBottomNav('/catalog', 1440) === false &&
+  shouldShowBottomNav('/login', 1440) === false
+);
+
 // ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------

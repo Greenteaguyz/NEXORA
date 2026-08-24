@@ -1,6 +1,8 @@
-import { Component, inject, signal, effect, HostListener, OnDestroy } from '@angular/core';
+import { Component, inject, signal, computed, effect, HostListener, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, NavigationEnd } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { ThemeService } from '../../core/theme/theme.service';
 import { WISHLIST_DATA } from '../../core/data/tokens';
@@ -16,12 +18,26 @@ import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.compon
 export class HeaderComponent implements OnDestroy {
   authService = inject(AuthService);
   themeService = inject(ThemeService);
+  private router = inject(Router);
   private wishlistData = inject(WISHLIST_DATA);
 
   wishlistCount = signal(0);
   mobileMenuOpen = signal(false);
   headerHidden = signal(false);
   private lastScrollY = 0;
+
+  readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map(e => e.urlAfterRedirects)
+    ),
+    { initialValue: this.router.url }
+  );
+
+  readonly isAuthPage = computed(() => {
+    const url = this.currentUrl() || '';
+    return url.includes('/login') || url.includes('/register') || url.includes('/forgot-password');
+  });
 
   constructor() {
     effect(() => {
