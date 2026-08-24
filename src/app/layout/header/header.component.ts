@@ -125,7 +125,7 @@ export class HeaderComponent implements OnDestroy {
     window.dispatchEvent(new CustomEvent('open-command-palette'));
   }
 
-  @HostListener('window:scroll', ['$event'])
+  @HostListener('window:scroll')
   onWindowScroll(): void {
     if (typeof window === 'undefined') return;
     const currentY = window.scrollY || document.documentElement.scrollTop;
