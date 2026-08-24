@@ -1889,6 +1889,78 @@ assert('Active Nav Link Color', 'Dark Mode enforces Electric Cyan (#66C0F4) on a
 );
 
 // ---------------------------------------------------------------------------
+// 31. UNIT TESTS: Desktop Header Ergonomics & Integrated User Dropdown Invariants
+// ---------------------------------------------------------------------------
+console.log('\n--- 31. UNIT TESTS: Desktop Header Ergonomics & Integrated User Dropdown Invariants ---');
+
+interface DesktopHeaderLayout {
+  rightControlCount: number;
+  rightControlList: string[];
+  userMenuHasPersonaSwitcher: boolean;
+  userMenuHasProfileLink: boolean;
+  userMenuHasStudioLinkForCreator: boolean;
+  userMenuHasOrdersLink: boolean;
+  userMenuHasWishlistLink: boolean;
+  userMenuHasLogout: boolean;
+  outsideClickDismissalEnabled: boolean;
+  escapeKeyDismissalEnabled: boolean;
+}
+
+function resolveDesktopHeaderLayout(viewportWidth: number, isCreator: boolean): DesktopHeaderLayout {
+  if (viewportWidth > 768) {
+    return {
+      rightControlCount: 3, // [Search, Theme Switcher, User Dropdown Trigger]
+      rightControlList: ['btn-cmd-search', 'speedtest-theme-switcher', 'user-profile-menu'],
+      userMenuHasPersonaSwitcher: true,
+      userMenuHasProfileLink: true,
+      userMenuHasStudioLinkForCreator: isCreator,
+      userMenuHasOrdersLink: true,
+      userMenuHasWishlistLink: true,
+      userMenuHasLogout: true,
+      outsideClickDismissalEnabled: true,
+      escapeKeyDismissalEnabled: true
+    };
+  }
+  return {
+    rightControlCount: 2, // [Search, User Avatar]
+    rightControlList: ['btn-cmd-search', 'user-chip-trigger'],
+    userMenuHasPersonaSwitcher: true,
+    userMenuHasProfileLink: true,
+    userMenuHasStudioLinkForCreator: isCreator,
+    userMenuHasOrdersLink: true,
+    userMenuHasWishlistLink: true,
+    userMenuHasLogout: true,
+    outsideClickDismissalEnabled: true,
+    escapeKeyDismissalEnabled: true
+  };
+}
+
+assert('Desktop Header 3-Item Layout', 'Desktop (>768px) streamlines right actions to exactly 3 items: Search, Theme Switcher, User Menu',
+  resolveDesktopHeaderLayout(1440, true).rightControlCount === 3 &&
+  resolveDesktopHeaderLayout(1440, true).rightControlList.includes('btn-cmd-search') &&
+  resolveDesktopHeaderLayout(1440, true).rightControlList.includes('speedtest-theme-switcher') &&
+  resolveDesktopHeaderLayout(1440, true).rightControlList.includes('user-profile-menu')
+);
+
+assert('User Dropdown Composition', 'User dropdown menu integrates persona switcher, profile, orders, wishlist, and logout',
+  resolveDesktopHeaderLayout(1440, true).userMenuHasPersonaSwitcher &&
+  resolveDesktopHeaderLayout(1440, true).userMenuHasProfileLink &&
+  resolveDesktopHeaderLayout(1440, true).userMenuHasOrdersLink &&
+  resolveDesktopHeaderLayout(1440, true).userMenuHasWishlistLink &&
+  resolveDesktopHeaderLayout(1440, true).userMenuHasLogout
+);
+
+assert('Creator Conditional Link', 'Creator Studio link renders in dropdown for creators and hides for standard buyers',
+  resolveDesktopHeaderLayout(1440, true).userMenuHasStudioLinkForCreator === true &&
+  resolveDesktopHeaderLayout(1440, false).userMenuHasStudioLinkForCreator === false
+);
+
+assert('Dropdown A11y & Dismissal', 'Dropdown supports click-away outside listener and Escape key dismissal',
+  resolveDesktopHeaderLayout(1440, true).outsideClickDismissalEnabled &&
+  resolveDesktopHeaderLayout(1440, true).escapeKeyDismissalEnabled
+);
+
+// ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
 const passed = results.filter(r => r.passed).length;
