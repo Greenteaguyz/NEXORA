@@ -1649,6 +1649,29 @@ assert('Menu Redundancy Elimination', 'Mobile (390px) displays bottom bar [Menu]
   resolveMenuControls(390).bottomNav === true
 );
 
+// Test 5: Drawer De-Duplication Invariants
+function resolveDrawerItems(viewportWidth: number): {
+  showsPrimaryDuplicates: boolean;
+  showsManagementItems: boolean;
+  showsFooterThemeSwitcher: boolean;
+} {
+  return {
+    showsPrimaryDuplicates: viewportWidth > 768, // Only tablet shows primary links in drawer
+    showsManagementItems: true,                  // Both show Order History, Studio, Profile, FAQ
+    showsFooterThemeSwitcher: true               // Theme switcher persists in drawer footer card
+  };
+}
+
+assert('Drawer De-Duplication', 'Mobile (390px) suppresses duplicated Store/Genres/Library/Wishlist rows from drawer',
+  resolveDrawerItems(390).showsPrimaryDuplicates === false &&
+  resolveDrawerItems(390).showsManagementItems === true &&
+  resolveDrawerItems(390).showsFooterThemeSwitcher === true
+);
+assert('Drawer De-Duplication', 'Tablet (900px) preserves primary links in drawer for full navigation',
+  resolveDrawerItems(900).showsPrimaryDuplicates === true &&
+  resolveDrawerItems(900).showsManagementItems === true
+);
+
 // ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------

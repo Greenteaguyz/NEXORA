@@ -1050,7 +1050,7 @@
     display: none !important;
   }
 
-  .speedtest-theme-switcher {
+  .header-bar .speedtest-theme-switcher {
     display: none !important;
   }
 
@@ -1076,6 +1076,16 @@
 
   .header-right {
     gap: var(--space-2) !important;
+  }
+
+  /* De-duplicate mobile drawer: hide primary 4 links on mobile */
+  .mobile-primary-group,
+  .mobile-primary-nav-item {
+    display: none !important;
+  }
+
+  .drawer-footer-card .speedtest-theme-switcher {
+    display: flex !important;
   }
 
   .mobile-bottom-bar {

@@ -184,8 +184,8 @@
 
     <!-- Categorized Navigation -->
     <nav class="mobile-nav">
-      <!-- Section: Discovery -->
-      <div class="nav-group-section">
+      <!-- Section: Discovery (Tablet only - hidden on mobile <=768px) -->
+      <div class="nav-group-section mobile-primary-group">
         <span class="nav-group-title">Discovery</span>
         <ul class="mobile-nav-list">
           <li>
@@ -209,12 +209,12 @@
         </ul>
       </div>
 
-      <!-- Section: Collection (Authenticated) -->
+      <!-- Section: Collection / Management -->
       @if (authService.isAuthenticated()) {
         <div class="nav-group-section">
-          <span class="nav-group-title">My Collection</span>
+          <span class="nav-group-title">Management & Activity</span>
           <ul class="mobile-nav-list">
-            <li>
+            <li class="mobile-primary-nav-item">
               <a routerLink="/library" routerLinkActive="active" (click)="closeMobileMenu()">
                 <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
@@ -223,7 +223,7 @@
                 <span>My Library</span>
               </a>
             </li>
-            <li>
+            <li class="mobile-primary-nav-item">
               <a routerLink="/wishlist" routerLinkActive="active" (click)="closeMobileMenu()" class="mobile-nav-with-badge">
                 <div class="mobile-nav-label-group">
                   <svg class="nav-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -245,7 +245,7 @@
                   <line x1="16" y1="17" x2="8" y2="17"/>
                   <polyline points="10 9 9 9 8 9"/>
                 </svg>
-                <span>Order History</span>
+                <span>Order History & Invoices</span>
               </a>
             </li>
           </ul>
