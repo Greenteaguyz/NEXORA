@@ -96,19 +96,15 @@
           </span>
         </button>
 
-        <!-- Dynamic User Status Block with Integrated Dropdown Menu -->
+        <!-- Dynamic User Status Block (Ultra-Lean Direct Navigation) -->
         <div class="auth-status">
           @if (authService.isAuthenticated()) {
             <div class="user-profile-menu">
-              <!-- Clickable User Chip Trigger -->
-              <button 
-                type="button" 
-                class="user-chip-trigger" 
-                [class.active]="userDropdownOpen()"
-                (click)="toggleUserDropdown()"
-                [attr.aria-expanded]="userDropdownOpen()"
-                aria-haspopup="menu"
-                title="Account Menu & Quick Switcher">
+              <!-- Direct 1-Click User Chip to /profile -->
+              <a 
+                routerLink="/profile" 
+                class="user-chip" 
+                [title]="'Manage Account Profile: ' + (authService.currentUser()?.displayName || 'User')">
                 <img 
                   [src]="authService.currentUser()?.avatarUrl || 'assets/logo-icon.svg'" 
                   [alt]="(authService.currentUser()?.displayName || 'User') + ' Profile Avatar'" 
@@ -119,116 +115,16 @@
                 } @else {
                   <span class="role-tag buyer">Buyer</span>
                 }
-                <svg class="chevron-svg" [class.rotated]="userDropdownOpen()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
+              </a>
+
+              <!-- Subtle Dedicated Logout Button -->
+              <button 
+                type="button" 
+                class="btn-logout" 
+                (click)="logout()" 
+                title="Log out of account">
+                Log Out
               </button>
-
-              <!-- Integrated User Profile Dropdown Popover -->
-              @if (userDropdownOpen()) {
-                <div class="user-dropdown-popover" role="menu" aria-label="User Account Menu">
-                  <!-- Header Card: Identity & Email -->
-                  <div class="dropdown-header">
-                    <img 
-                      [src]="authService.currentUser()?.avatarUrl || 'assets/logo-icon.svg'" 
-                      [alt]="authService.currentUser()?.displayName || 'User'" 
-                      class="dropdown-avatar">
-                    <div class="dropdown-user-info">
-                      <div class="dropdown-name-row">
-                        <span class="dropdown-display-name">{{ authService.currentUser()?.displayName }}</span>
-                        @if (authService.isCreator()) {
-                          <span class="role-tag creator">Creator</span>
-                        } @else {
-                          <span class="role-tag buyer">Buyer</span>
-                        }
-                      </div>
-                      <span class="dropdown-email">{{ authService.currentUser()?.email }}</span>
-                    </div>
-                  </div>
-
-                  <!-- Demo Persona Switcher Section -->
-                  <div class="dropdown-persona-section">
-                    <span class="dropdown-section-label">Demo Persona Switcher</span>
-                    <div class="dropdown-persona-pills">
-                      <button 
-                        type="button" 
-                        class="dropdown-persona-btn" 
-                        [class.active]="authService.currentUser()?.email === 'alice@nexora.io'"
-                        (click)="switchAccount('alice@nexora.io')">
-                        <span class="persona-indicator" [class.active]="authService.currentUser()?.email === 'alice@nexora.io'"></span>
-                        Alice (Creator)
-                      </button>
-                      <button 
-                        type="button" 
-                        class="dropdown-persona-btn" 
-                        [class.active]="authService.currentUser()?.email === 'bob@nexora.io'"
-                        (click)="switchAccount('bob@nexora.io')">
-                        <span class="persona-indicator" [class.active]="authService.currentUser()?.email === 'bob@nexora.io'"></span>
-                        Bob (Buyer)
-                      </button>
-                    </div>
-                  </div>
-
-                  <div class="dropdown-divider"></div>
-
-                  <!-- Quick Navigation Links -->
-                  <ul class="dropdown-nav-links" role="none">
-                    <li role="none">
-                      <a routerLink="/profile" (click)="closeUserDropdown()" class="dropdown-link-item" role="menuitem">
-                        <svg class="dropdown-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                          <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                        <span>Account Profile & Settings</span>
-                      </a>
-                    </li>
-                    @if (authService.isCreator()) {
-                      <li role="none">
-                        <a routerLink="/studio" (click)="closeUserDropdown()" class="dropdown-link-item" role="menuitem">
-                          <svg class="dropdown-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                          </svg>
-                          <span>Creator Studio Dashboard</span>
-                        </a>
-                      </li>
-                    }
-                    <li role="none">
-                      <a routerLink="/orders" (click)="closeUserDropdown()" class="dropdown-link-item" role="menuitem">
-                        <svg class="dropdown-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                          <polyline points="14 2 14 8 20 8"></polyline>
-                          <line x1="16" y1="13" x2="8" y2="13"></line>
-                          <line x1="16" y1="17" x2="8" y2="17"></line>
-                        </svg>
-                        <span>Order History & Invoices</span>
-                      </a>
-                    </li>
-                    <li role="none">
-                      <a routerLink="/wishlist" (click)="closeUserDropdown()" class="dropdown-link-item" role="menuitem">
-                        <svg class="dropdown-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
-                        <span>My Wishlist</span>
-                        @if (wishlistCount() > 0) {
-                          <span class="dropdown-badge">{{ wishlistCount() }}</span>
-                        }
-                      </a>
-                    </li>
-                  </ul>
-
-                  <div class="dropdown-divider"></div>
-
-                  <!-- Log Out Action Button -->
-                  <button type="button" class="dropdown-btn-logout" (click)="logout()" role="menuitem">
-                    <svg class="dropdown-icon-svg logout-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                      <polyline points="16 17 21 12 16 7"></polyline>
-                      <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                    <span>Log Out</span>
-                  </button>
-                </div>
-              }
             </div>
           } @else {
             <div class="auth-buttons">

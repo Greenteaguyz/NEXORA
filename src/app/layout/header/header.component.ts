@@ -23,7 +23,6 @@ export class HeaderComponent implements OnDestroy {
 
   wishlistCount = signal(0);
   mobileMenuOpen = signal(false);
-  userDropdownOpen = signal(false);
   headerHidden = signal(false);
   private lastScrollY = 0;
 
@@ -66,14 +65,6 @@ export class HeaderComponent implements OnDestroy {
     }
   }
 
-  toggleUserDropdown(): void {
-    this.userDropdownOpen.update(v => !v);
-  }
-
-  closeUserDropdown(): void {
-    this.userDropdownOpen.set(false);
-  }
-
   toggleMobileMenu(): void {
     this.mobileMenuOpen.update(v => {
       const next = !v;
@@ -92,20 +83,9 @@ export class HeaderComponent implements OnDestroy {
     this.updateBodyScrollLock(false);
   }
 
-  @HostListener('document:click', ['$event'])
-  onDocumentClick(event: MouseEvent): void {
-    const target = event.target as HTMLElement;
-    if (this.userDropdownOpen() && !target.closest('.user-profile-menu')) {
-      this.closeUserDropdown();
-    }
-  }
-
   @HostListener('window:keydown', ['$event'])
   handleKeydown(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
-      if (this.userDropdownOpen()) {
-        this.closeUserDropdown();
-      }
       if (this.mobileMenuOpen()) {
         this.closeMobileMenu();
       }
@@ -145,14 +125,12 @@ export class HeaderComponent implements OnDestroy {
   switchAccount(email: string): void {
     this.authService.switchDemoUser(email).subscribe(() => {
       this.closeMobileMenu();
-      this.closeUserDropdown();
     });
   }
 
   logout(): void {
     this.authService.logout();
     this.closeMobileMenu();
-    this.closeUserDropdown();
   }
 
   toggleTheme(): void {

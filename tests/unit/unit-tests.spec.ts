@@ -1889,75 +1889,50 @@ assert('Active Nav Link Color', 'Dark Mode enforces Electric Cyan (#66C0F4) on a
 );
 
 // ---------------------------------------------------------------------------
-// 31. UNIT TESTS: Desktop Header Ergonomics & Integrated User Dropdown Invariants
+// 31. UNIT TESTS: Ultra-Lean Minimalist Header Invariants (Option A)
 // ---------------------------------------------------------------------------
-console.log('\n--- 31. UNIT TESTS: Desktop Header Ergonomics & Integrated User Dropdown Invariants ---');
+console.log('\n--- 31. UNIT TESTS: Ultra-Lean Minimalist Header Invariants (Option A) ---');
 
-interface DesktopHeaderLayout {
-  rightControlCount: number;
-  rightControlList: string[];
-  userMenuHasPersonaSwitcher: boolean;
-  userMenuHasProfileLink: boolean;
-  userMenuHasStudioLinkForCreator: boolean;
-  userMenuHasOrdersLink: boolean;
-  userMenuHasWishlistLink: boolean;
-  userMenuHasLogout: boolean;
-  outsideClickDismissalEnabled: boolean;
-  escapeKeyDismissalEnabled: boolean;
+interface UltraLeanHeaderLayout {
+  isDirectProfileNavigation: boolean;
+  hasRedundantDropdownMenu: boolean;
+  rightActionList: string[];
+  dedicatedLogoutPresent: boolean;
 }
 
-function resolveDesktopHeaderLayout(viewportWidth: number, isCreator: boolean): DesktopHeaderLayout {
+function resolveUltraLeanHeader(viewportWidth: number): UltraLeanHeaderLayout {
   if (viewportWidth > 768) {
     return {
-      rightControlCount: 3, // [Search, Theme Switcher, User Dropdown Trigger]
-      rightControlList: ['btn-cmd-search', 'speedtest-theme-switcher', 'user-profile-menu'],
-      userMenuHasPersonaSwitcher: true,
-      userMenuHasProfileLink: true,
-      userMenuHasStudioLinkForCreator: isCreator,
-      userMenuHasOrdersLink: true,
-      userMenuHasWishlistLink: true,
-      userMenuHasLogout: true,
-      outsideClickDismissalEnabled: true,
-      escapeKeyDismissalEnabled: true
+      isDirectProfileNavigation: true,
+      hasRedundantDropdownMenu: false,
+      rightActionList: ['btn-cmd-search', 'speedtest-theme-switcher', 'user-chip', 'btn-logout'],
+      dedicatedLogoutPresent: true
     };
   }
   return {
-    rightControlCount: 2, // [Search, User Avatar]
-    rightControlList: ['btn-cmd-search', 'user-chip-trigger'],
-    userMenuHasPersonaSwitcher: true,
-    userMenuHasProfileLink: true,
-    userMenuHasStudioLinkForCreator: isCreator,
-    userMenuHasOrdersLink: true,
-    userMenuHasWishlistLink: true,
-    userMenuHasLogout: true,
-    outsideClickDismissalEnabled: true,
-    escapeKeyDismissalEnabled: true
+    isDirectProfileNavigation: true,
+    hasRedundantDropdownMenu: false,
+    rightActionList: ['btn-cmd-search', 'user-chip'],
+    dedicatedLogoutPresent: false // Logout is inside the mobile drawer
   };
 }
 
-assert('Desktop Header 3-Item Layout', 'Desktop (>768px) streamlines right actions to exactly 3 items: Search, Theme Switcher, User Menu',
-  resolveDesktopHeaderLayout(1440, true).rightControlCount === 3 &&
-  resolveDesktopHeaderLayout(1440, true).rightControlList.includes('btn-cmd-search') &&
-  resolveDesktopHeaderLayout(1440, true).rightControlList.includes('speedtest-theme-switcher') &&
-  resolveDesktopHeaderLayout(1440, true).rightControlList.includes('user-profile-menu')
+assert('Ultra-Lean Direct Navigation', 'Desktop user chip links directly to /profile with 0 redundant dropdown menus',
+  resolveUltraLeanHeader(1440).isDirectProfileNavigation === true &&
+  resolveUltraLeanHeader(1440).hasRedundantDropdownMenu === false
 );
 
-assert('User Dropdown Composition', 'User dropdown menu integrates persona switcher, profile, orders, wishlist, and logout',
-  resolveDesktopHeaderLayout(1440, true).userMenuHasPersonaSwitcher &&
-  resolveDesktopHeaderLayout(1440, true).userMenuHasProfileLink &&
-  resolveDesktopHeaderLayout(1440, true).userMenuHasOrdersLink &&
-  resolveDesktopHeaderLayout(1440, true).userMenuHasWishlistLink &&
-  resolveDesktopHeaderLayout(1440, true).userMenuHasLogout
+assert('Ultra-Lean Action Cluster', 'Desktop header right actions contain Search, Theme Switcher, User Chip, and dedicated Logout button',
+  resolveUltraLeanHeader(1440).rightActionList.includes('btn-cmd-search') &&
+  resolveUltraLeanHeader(1440).rightActionList.includes('speedtest-theme-switcher') &&
+  resolveUltraLeanHeader(1440).rightActionList.includes('user-chip') &&
+  resolveUltraLeanHeader(1440).rightActionList.includes('btn-logout') &&
+  resolveUltraLeanHeader(1440).dedicatedLogoutPresent === true
 );
 
-assert('Creator Conditional Link', 'Creator Studio link renders in dropdown for creators and hides for standard buyers',
-  resolveDesktopHeaderLayout(1440, true).userMenuHasStudioLinkForCreator === true &&
-  resolveDesktopHeaderLayout(1440, false).userMenuHasStudioLinkForCreator === false
-);
-
-assert('Dropdown A11y & Dismissal', 'Dropdown supports click-away outside listener and Escape key dismissal',
-  resolveDesktopHeaderLayout(1440, true).outsideClickDismissalEnabled &&
-  resolveDesktopHeaderLayout(1440, true).escapeKeyDismissalEnabled
+assert('Zero Nav Duplication', 'Mobile and Desktop layouts eliminate redundant duplicate navigation popovers',
+  resolveUltraLeanHeader(390).hasRedundantDropdownMenu === false &&
+  resolveUltraLeanHeader(1440).hasRedundantDropdownMenu === false
 );
 
 // ---------------------------------------------------------------------------
