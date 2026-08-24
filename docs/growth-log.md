@@ -290,6 +290,29 @@
   3. Pre-cache adjacent slide media in memory (`new Image().src = ...`) for 0ms decoding lag.
   4. Pair with keyboard arrow keys (`ArrowLeft`/`ArrowRight`) and WCAG `prefers-reduced-motion` fallbacks.
 
+---
+
+## [Pattern] Smart Scroll-Aware Header & Safe-Area Mobile Bottom Clearance
+
+### Context
+- Dual-bar mobile layouts (top header + fixed bottom bar) severely constrain vertical reading area.
+- Fixed bottom bars commonly obscure bottom-of-page legal text and collide with modern OS gesture indicators.
+
+### Root Cause / Core Insight
+- **Smart Scroll Header**:
+  - Hiding on downward scroll (`scrollY > 60px` with `delta > 8px`) reclaims ~15–20% of vertical screen real estate for artwork and descriptions.
+  - Revealing on upward scroll (`delta < -8px`) or top-of-page (`scrollY <= 10px`) keeps navigation and search accessible without scrolling back to the top.
+  - Suppressing auto-hide during drawer or modal open states prevents unexpected viewport jumping.
+- **Mobile Clearance & Insets**:
+  - Adding `padding-bottom: calc(var(--space-8) + 64px + env(safe-area-inset-bottom, 0px))` on `.footer-shell` ensures full legal copy visibility with positive clearance above the floating bar.
+  - Using dynamic `padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px))` on `.mobile-bottom-bar` avoids icon compression over iOS/Android gesture lines.
+
+### The Pattern (Transferable)
+- For responsive web apps with fixed bottom bars:
+  1. Use GPU-composited `transform: translateY(-100%)` with passive scroll delta math for the top header.
+  2. Always add explicit `calc(...)` bottom clearance on footer containers in mobile media queries.
+  3. Support `touch-action: manipulation;` and luminous active tab states for native tactile responsiveness.
+
 
 
 

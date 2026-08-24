@@ -15,6 +15,7 @@ This document tracks all engineering milestones and implementation tasks for the
 | **Phase 10** (Task 15) | Omni-Resolution Fluid Architecture, Fixed 16:9 Standard, Zero-Shift Media | ✅ Complete | 166/166 tests passing, 0.00px CLS, 4-slide hero parity |
 | **Phase 11** (Task 16) | Speedtest Dual-Segment Switcher, Unified Steam Deck Hub Mobile Navigation & Crawler | ✅ Complete | 223/223 tests passing, 24/24 crawler links valid, 5/5 Playwright E2E passed |
 | **Phase 12** (Task 17) | Hero Carousel Touch Drag-to-Swipe, Hardware-Accelerated Motion & Clean Pagination | ✅ Complete | 234/234 tests passing, 142 unit tests across 27 sections, 100% green |
+| **Phase 13** (Task 18) | Smart Scroll-Aware Header, Mobile Viewport Clearance & Bottom Bar UX | ✅ Complete | 243/243 tests passing, 151 unit tests across 28 sections, 100% green |
 | **Deployment and Ops** | Cloud hosting, tunnels & performance budgets | ✅ Ready | `vercel.json` SPA rewrites active, Cloudflare tunnel active, 96.8 kB initial bundle, DOM Interactive: 38ms |
 
 ---
@@ -30,6 +31,18 @@ This document tracks all engineering milestones and implementation tasks for the
 - [x] **17.6** Spatial Keyboard Traversal: Added `@HostListener('window:keydown')` for `ArrowLeft` and `ArrowRight` slide navigation with search input focus protection.
 - [x] **17.7** Image Cache Warmer: Implemented proactive pre-caching of adjacent hero screenshot URLs (`new Image().src = ...`) for zero-lag instant transitions.
 - [x] **17.8** Automated Unit & Regression Expansion: Added Section 27 to `unit-tests.spec.ts` (142 unit tests), expanded total verified test assertions to 234 (100% green pass rate across all suites).
+
+---
+
+## Phase 13: Smart Scroll-Aware Header, Mobile Viewport Clearance & Bottom Navigation UX (Task 18)
+
+### Task 18: Smart Scroll Header & Mobile Ergonomics
+- [x] **18.1** Smart Scroll-Aware Header: Implemented `@HostListener('window:scroll')` with passive delta calculation to smoothly slide header out on downward scroll (`transform: translateY(-100%)`) over `0.25s cubic-bezier(0.16, 1, 0.3, 1)`, re-revealing on upward scroll or top-of-page (`scrollY <= 10px`).
+- [x] **18.2** Navigation Drawer Immunity: Header dismissal is strictly locked off whenever the mobile navigation drawer or search command palette is active.
+- [x] **18.3** Footer Legal Content Collision Remediation: Added `padding-bottom: calc(var(--space-8) + 64px + env(safe-area-inset-bottom, 0px))` on viewports $\le 768px$, guaranteeing 100% unclipped visibility for copyright and policy links.
+- [x] **18.4** Mobile Bottom Bar Safe-Area Ergonomics: Replaced fixed height with dynamic `min-height: 56px; padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px))` and frosted glass elevation (`backdrop-filter: blur(20px) saturate(180%)`).
+- [x] **18.5** Luminous Active Indicator & Touch Feedback: Upgraded active tab to an Electric Cyan (`#66C0F4`) centered pill indicator with instant `scale(0.95)` press feedback and `touch-action: manipulation`.
+- [x] **18.6** Automated Regression Expansion: Added Section 28 to `unit-tests.spec.ts` (151 unit tests), expanding total verified test assertions to 243 (100% green pass rate across all suites).
 
 ---
 

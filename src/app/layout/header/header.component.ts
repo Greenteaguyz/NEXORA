@@ -20,6 +20,8 @@ export class HeaderComponent implements OnDestroy {
 
   wishlistCount = signal(0);
   mobileMenuOpen = signal(false);
+  headerHidden = signal(false);
+  private lastScrollY = 0;
 
   constructor() {
     effect(() => {
@@ -121,5 +123,28 @@ export class HeaderComponent implements OnDestroy {
 
   triggerCommandPalette(): void {
     window.dispatchEvent(new CustomEvent('open-command-palette'));
+  }
+
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll(): void {
+    if (typeof window === 'undefined') return;
+    const currentY = window.scrollY || document.documentElement.scrollTop;
+
+    // Always keep header visible near the top or when mobile drawer is open
+    if (this.mobileMenuOpen() || currentY <= 10) {
+      this.headerHidden.set(false);
+      this.lastScrollY = Math.max(0, currentY);
+      return;
+    }
+
+    const delta = currentY - this.lastScrollY;
+    if (Math.abs(delta) > 8) {
+      if (delta > 0 && currentY > 60) {
+        this.headerHidden.set(true);  // Scrolling down -> hide header
+      } else if (delta < 0) {
+        this.headerHidden.set(false); // Scrolling up -> reveal header
+      }
+      this.lastScrollY = currentY;
+    }
   }
 }

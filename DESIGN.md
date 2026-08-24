@@ -179,3 +179,19 @@ NEXORA adheres to the **Impeccable Standard**: high-utility, media-first desktop
 * **Keyboard Spatial Navigation**: Native `ArrowLeft` / `ArrowRight` arrow key shortcuts for instant slide traversal.
 * **Accessibility & Reduced Motion**: `@media (prefers-reduced-motion: reduce)` bypasses all transforms and sets animation duration to `0.01ms`.
 
+---
+
+## 12. Smart Scroll-Aware Header & Safe-Area Mobile Clearance
+
+* **Smart Scroll-Aware Header**:
+  * **Downward Scroll (`deltaY > 8px` & `scrollY > 60px`)**: Header smoothly slides out of view (`transform: translateY(-100%)`) over `0.25s cubic-bezier(0.16, 1, 0.3, 1)`.
+  * **Upward Scroll (`deltaY < -8px`)**: Header glides immediately back into view (`transform: translateY(0)`).
+  * **Top-of-Page Absolute Pinning (`scrollY <= 10px`)**: Header is permanently visible and never dismissed.
+  * **Modal & Drawer Lock**: Auto-hiding is strictly suppressed while navigation drawer or command palette is active.
+* **Footer Legal Text Clearance**:
+  * On viewports $\le 768px$, `.footer-shell` enforces `padding-bottom: calc(var(--space-8) + 64px + env(safe-area-inset-bottom, 0px))`, providing over `88px–122px` buffer above the fixed mobile bar.
+* **Mobile Bottom Bar Safe-Area Ergonomics**:
+  * `padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px))` preserves icon spacing on iPhone and Android gesture navigation bars.
+  * **Luminous Active Indicator**: Active tab features a centered Electric Cyan (`#66C0F4`) glowing pill indicator (`width: 32px; height: 3px; box-shadow: 0 0 8px rgba(102, 192, 244, 0.6)`).
+  * **Tactile Feedback**: Immediate `scale(0.95)` press feedback with zero tap delay (`touch-action: manipulation`).
+

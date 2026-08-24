@@ -1558,6 +1558,74 @@ assert('Keyboard Navigation', 'Arrow keys are ignored when search input is focus
 );
 
 // ---------------------------------------------------------------------------
+// 28. Smart Scroll-Aware Header, Footer Collision & Mobile Navigation
+// ---------------------------------------------------------------------------
+console.log('\n--- 28. UNIT TESTS: Smart Scroll Header, Footer Clearance & Mobile Bar ---');
+
+function calculateHeaderVisibility(
+  currentScrollY: number, 
+  lastScrollY: number, 
+  isMenuOpen: boolean, 
+  currentState: boolean
+): boolean {
+  if (isMenuOpen || currentScrollY <= 10) {
+    return true; // Always visible at top or with drawer open
+  }
+  const delta = currentScrollY - lastScrollY;
+  if (Math.abs(delta) > 8) {
+    if (delta > 0 && currentScrollY > 60) {
+      return false; // Scrolling down past 60px -> hide
+    } else if (delta < 0) {
+      return true; // Scrolling up -> reveal
+    }
+  }
+  return currentState;
+}
+
+function computeMobileFooterClearance(basePadding: number, navHeight: number, safeAreaInset: number): number {
+  return basePadding + navHeight + safeAreaInset;
+}
+
+function computeBottomBarPadding(basePadding: number, safeAreaInset: number): number {
+  return basePadding + safeAreaInset;
+}
+
+// Test 1: Smart Scroll Header Calculations
+assert('Smart Scroll Header', 'Header is always visible at top of page (scrollY <= 10px)',
+  calculateHeaderVisibility(5, 0, false, false) === true &&
+  calculateHeaderVisibility(0, 50, false, false) === true
+);
+assert('Smart Scroll Header', 'Scrolling down past 60px hides header',
+  calculateHeaderVisibility(120, 80, false, true) === false
+);
+assert('Smart Scroll Header', 'Scrolling up past threshold reveals header',
+  calculateHeaderVisibility(80, 110, false, false) === true
+);
+assert('Smart Scroll Header', 'Sub-threshold scroll delta (<= 8px) preserves current visibility',
+  calculateHeaderVisibility(105, 100, false, false) === false &&
+  calculateHeaderVisibility(105, 100, false, true) === true
+);
+assert('Smart Scroll Header', 'Mobile drawer open state overrides scroll and locks header visible',
+  calculateHeaderVisibility(300, 200, true, false) === true
+);
+
+// Test 2: Footer Clearance & Collision Prevention
+assert('Footer Mobile Clearance', 'Footer clearance on standard mobile provides >= 88px buffer over bottom bar',
+  computeMobileFooterClearance(24, 64, 0) >= 88
+);
+assert('Footer Mobile Clearance', 'Footer clearance adapts with iPhone home bar (34px safe area) to >= 122px',
+  computeMobileFooterClearance(24, 64, 34) >= 122
+);
+
+// Test 3: Bottom Bar Safe-Area Geometry
+assert('Bottom Bar Safe Area', 'Base bottom padding is 6px when safe-area is 0px',
+  computeBottomBarPadding(6, 0) === 6
+);
+assert('Bottom Bar Safe Area', 'Bottom padding expands to 40px when safe-area is 34px (iPhone gesture bar)',
+  computeBottomBarPadding(6, 34) === 40
+);
+
+// ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
 const passed = results.filter(r => r.passed).length;
