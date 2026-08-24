@@ -20,7 +20,15 @@ export class MockWishlistDataService implements WishlistDataService {
   private initData(): void {
     const saved = this.localStore.getItem<WishlistEntry[]>(this.STORAGE_KEY);
     if (saved && saved.length > 0) {
-      this.entries = saved;
+      const seedMap = new Map(SEED_WISHLIST_ENTRIES.map(s => [s.id, s]));
+      this.entries = saved.map(e => {
+        if (e.addedAt && e.addedAt.startsWith('2024')) {
+          const seed = seedMap.get(e.id);
+          return seed ? { ...e, addedAt: seed.addedAt } : { ...e, addedAt: new Date().toISOString() };
+        }
+        return e;
+      });
+      this.localStore.setItem(this.STORAGE_KEY, this.entries);
     } else {
       this.entries = [...SEED_WISHLIST_ENTRIES];
       this.localStore.setItem(this.STORAGE_KEY, this.entries);

@@ -20,7 +20,15 @@ export class MockLibraryDataService implements LibraryDataService {
   private initData(): void {
     const saved = this.localStore.getItem<LibraryEntry[]>(this.STORAGE_KEY);
     if (saved && saved.length > 0) {
-      this.entries = saved;
+      const seedMap = new Map(SEED_LIBRARY_ENTRIES.map(s => [s.id, s]));
+      this.entries = saved.map(e => {
+        if (e.acquiredAt && e.acquiredAt.startsWith('2024')) {
+          const seed = seedMap.get(e.id);
+          return seed ? { ...e, acquiredAt: seed.acquiredAt } : { ...e, acquiredAt: new Date().toISOString() };
+        }
+        return e;
+      });
+      this.localStore.setItem(this.STORAGE_KEY, this.entries);
     } else {
       this.entries = [...SEED_LIBRARY_ENTRIES];
       this.localStore.setItem(this.STORAGE_KEY, this.entries);

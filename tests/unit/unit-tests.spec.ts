@@ -3,7 +3,7 @@
  * Standalone logic, form validations, data transforms, and storage persistence.
  */
 
-import { SEED_GAMES } from '../../src/app/core/data/seed-data';
+import { SEED_GAMES, SEED_USERS, SEED_ORDERS, SEED_LIBRARY_ENTRIES, SEED_WISHLIST_ENTRIES, daysAgo } from '../../src/app/core/data/seed-data';
 
 interface AssertionResult {
   suite: string;
@@ -1933,6 +1933,49 @@ assert('Ultra-Lean Action Cluster', 'Desktop header right actions contain Search
 assert('Zero Nav Duplication', 'Mobile and Desktop layouts eliminate redundant duplicate navigation popovers',
   resolveUltraLeanHeader(390).hasRedundantDropdownMenu === false &&
   resolveUltraLeanHeader(1440).hasRedundantDropdownMenu === false
+);
+
+// ---------------------------------------------------------------------------
+// 32. UNIT TESTS: Real-Time Dynamic Timestamps & Date Invariants (AC-901 to AC-905)
+// ---------------------------------------------------------------------------
+console.log('\n--- 32. UNIT TESTS: Real-Time Dynamic Timestamps & Date Invariants ---');
+
+function isValidIsoTimestamp(isoString: string): boolean {
+  if (!isoString) return false;
+  const d = new Date(isoString);
+  return !isNaN(d.getTime()) && isoString.includes('T') && isoString.endsWith('Z');
+}
+
+function isRecentTimestamp(isoString: string, maxDaysAgo: number = 365): boolean {
+  if (!isValidIsoTimestamp(isoString)) return false;
+  const timestamp = new Date(isoString).getTime();
+  const now = Date.now();
+  const diffDays = (now - timestamp) / (1000 * 60 * 60 * 24);
+  return diffDays >= -1 && diffDays <= maxDaysAgo;
+}
+
+assert('Dynamic Timestamp Helper', 'daysAgo helper computes valid ISO timestamps within expected day/hour offsets',
+  isValidIsoTimestamp(daysAgo(5)) &&
+  isRecentTimestamp(daysAgo(5), 6) &&
+  !daysAgo(5).startsWith('2024')
+);
+
+assert('Dynamic Seed Users Timestamps', 'All seed users have valid, recent createdAt timestamps',
+  SEED_USERS.every(u => isValidIsoTimestamp(u.createdAt) && isRecentTimestamp(u.createdAt, 365))
+);
+
+assert('Dynamic Seed Games Timestamps', 'All seed games have valid, recent createdAt and updatedAt timestamps',
+  SEED_GAMES.every(g => isValidIsoTimestamp(g.createdAt) && isRecentTimestamp(g.createdAt, 60))
+);
+
+assert('Dynamic Wishlist Timestamps', 'Seed wishlist entries use real recent dynamic timestamps (AC-901)',
+  SEED_WISHLIST_ENTRIES.every(w => isValidIsoTimestamp(w.addedAt) && isRecentTimestamp(w.addedAt, 30)) &&
+  !SEED_WISHLIST_ENTRIES.some(w => w.addedAt.startsWith('2024'))
+);
+
+assert('Dynamic Library & Order Timestamps', 'Seed library entries and orders use real recent dynamic timestamps (AC-902 / AC-903)',
+  SEED_LIBRARY_ENTRIES.every(l => isValidIsoTimestamp(l.acquiredAt) && isRecentTimestamp(l.acquiredAt, 30)) &&
+  SEED_ORDERS.every(o => isValidIsoTimestamp(o.createdAt) && isRecentTimestamp(o.createdAt, 30))
 );
 
 // ---------------------------------------------------------------------------

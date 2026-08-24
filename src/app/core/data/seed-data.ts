@@ -4,6 +4,12 @@ import { LibraryEntry } from '../models/library-entry.model';
 import { WishlistEntry } from '../models/wishlist-entry.model';
 import { Order } from '../models/order.model';
 
+// Real-Time Dynamic Timestamp Generator: generates timestamps relative to the current live date
+const now = Date.now();
+export const daysAgo = (days: number, hours = 0, minutes = 0): string => {
+  return new Date(now - (days * 86400000) - (hours * 3600000) - (minutes * 60000)).toISOString();
+};
+
 export const SEED_USERS: User[] = [
   {
     id: 'usr_alice',
@@ -12,7 +18,7 @@ export const SEED_USERS: User[] = [
     roles: ['buyer', 'creator'],
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
     bio: 'Cyberpunk indie developer & synthwave enthusiast. Creating fast-paced retro action games.',
-    createdAt: '2024-01-15T08:00:00.000Z'
+    createdAt: daysAgo(180, 4)
   },
   {
     id: 'usr_bob',
@@ -21,7 +27,7 @@ export const SEED_USERS: User[] = [
     roles: ['buyer'],
     avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
     bio: 'Avid collector of standalone indie RPGs and rogue-lites.',
-    createdAt: '2024-03-20T11:30:00.000Z'
+    createdAt: daysAgo(90, 8)
   },
   {
     id: 'usr_carol',
@@ -30,7 +36,7 @@ export const SEED_USERS: User[] = [
     roles: ['creator'],
     avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
     bio: 'Pixel artist and mechanics designer. 8-bit aesthetic meets modern neon gameplay.',
-    createdAt: '2024-02-10T14:15:00.000Z'
+    createdAt: daysAgo(120, 2)
   }
 ];
 
@@ -50,8 +56,8 @@ export const SEED_GAMES: Game[] = [
       'assets/images/marvel-rivals-poster.jpg'
     ],
     samplePackageUrl: 'assets/sample-packages/marvel-rivals.zip',
-    createdAt: '2024-04-01T10:00:00.000Z',
-    updatedAt: '2024-04-01T10:00:00.000Z'
+    createdAt: daysAgo(14, 2),
+    updatedAt: daysAgo(14, 2)
   },
   {
     id: 'game_002',
@@ -68,8 +74,8 @@ export const SEED_GAMES: Game[] = [
       'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/cyber-heist.zip',
-    createdAt: '2024-04-10T12:00:00.000Z',
-    updatedAt: '2024-04-10T12:00:00.000Z'
+    createdAt: daysAgo(28, 4),
+    updatedAt: daysAgo(28, 4)
   },
   {
     id: 'game_003',
@@ -86,8 +92,8 @@ export const SEED_GAMES: Game[] = [
       'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/pixel-odyssey.zip',
-    createdAt: '2024-05-01T09:30:00.000Z',
-    updatedAt: '2024-05-01T09:30:00.000Z'
+    createdAt: daysAgo(42, 6),
+    updatedAt: daysAgo(42, 6)
   },
   {
     id: 'game_004',
@@ -104,8 +110,8 @@ export const SEED_GAMES: Game[] = [
       'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/shadow-circuit.zip',
-    createdAt: '2024-05-15T15:20:00.000Z',
-    updatedAt: '2024-05-15T15:20:00.000Z'
+    createdAt: daysAgo(21, 1),
+    updatedAt: daysAgo(21, 1)
   },
   {
     id: 'game_005',
@@ -122,8 +128,8 @@ export const SEED_GAMES: Game[] = [
       'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/echoes-of-the-void.zip',
-    createdAt: '2024-06-01T18:00:00.000Z',
-    updatedAt: '2024-06-01T18:00:00.000Z'
+    createdAt: daysAgo(35, 3),
+    updatedAt: daysAgo(35, 3)
   },
   {
     id: 'game_006',
@@ -140,8 +146,8 @@ export const SEED_GAMES: Game[] = [
       'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/grid-runner.zip',
-    createdAt: '2024-06-12T14:40:00.000Z',
-    updatedAt: '2024-06-12T14:40:00.000Z'
+    createdAt: daysAgo(18, 5),
+    updatedAt: daysAgo(18, 5)
   },
   {
     id: 'game_007',
@@ -158,8 +164,8 @@ export const SEED_GAMES: Game[] = [
       'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/quantum-shift.zip',
-    createdAt: '2024-07-01T10:15:00.000Z',
-    updatedAt: '2024-07-01T10:15:00.000Z'
+    createdAt: daysAgo(10, 8),
+    updatedAt: daysAgo(10, 8)
   },
   {
     id: 'game_008',
@@ -176,8 +182,8 @@ export const SEED_GAMES: Game[] = [
       'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/vaporwave-dungeon.zip',
-    createdAt: '2024-07-15T16:00:00.000Z',
-    updatedAt: '2024-07-15T16:00:00.000Z'
+    createdAt: daysAgo(7, 4),
+    updatedAt: daysAgo(7, 4)
   },
   {
     id: 'game_009',
@@ -194,8 +200,8 @@ export const SEED_GAMES: Game[] = [
       'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/cyber-tavern.zip',
-    createdAt: '2024-08-01T11:00:00.000Z',
-    updatedAt: '2024-08-01T11:00:00.000Z'
+    createdAt: daysAgo(4, 2),
+    updatedAt: daysAgo(4, 2)
   },
   {
     id: 'game_010',
@@ -212,8 +218,8 @@ export const SEED_GAMES: Game[] = [
       'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80'
     ],
     samplePackageUrl: 'assets/sample-packages/byte-mech.zip',
-    createdAt: '2024-08-10T13:30:00.000Z',
-    updatedAt: '2024-08-10T13:30:00.000Z'
+    createdAt: daysAgo(2, 6),
+    updatedAt: daysAgo(2, 6)
   }
 ];
 
@@ -222,19 +228,19 @@ export const SEED_LIBRARY_ENTRIES: LibraryEntry[] = [
     id: 'lib_001',
     userId: 'usr_bob',
     gameId: 'game_002',
-    acquiredAt: '2024-05-01T10:00:00.000Z'
+    acquiredAt: daysAgo(15, 3)
   },
   {
     id: 'lib_002',
     userId: 'usr_bob',
     gameId: 'game_003',
-    acquiredAt: '2024-05-05T14:30:00.000Z'
+    acquiredAt: daysAgo(8, 5)
   },
   {
     id: 'lib_003',
     userId: 'usr_alice',
     gameId: 'game_001',
-    acquiredAt: '2024-04-02T09:00:00.000Z'
+    acquiredAt: daysAgo(12, 1)
   }
 ];
 
@@ -243,13 +249,13 @@ export const SEED_WISHLIST_ENTRIES: WishlistEntry[] = [
     id: 'wsh_001',
     userId: 'usr_alice',
     gameId: 'game_004',
-    addedAt: '2024-06-01T12:00:00.000Z'
+    addedAt: daysAgo(5, 4)
   },
   {
     id: 'wsh_002',
     userId: 'usr_bob',
     gameId: 'game_001',
-    addedAt: '2024-06-10T15:00:00.000Z'
+    addedAt: daysAgo(2, 2)
   }
 ];
 
@@ -260,6 +266,6 @@ export const SEED_ORDERS: Order[] = [
     gameId: 'game_001',
     price: 4.99,
     status: 'confirmed',
-    createdAt: '2024-05-10T16:20:00.000Z'
+    createdAt: daysAgo(14, 1)
   }
 ];

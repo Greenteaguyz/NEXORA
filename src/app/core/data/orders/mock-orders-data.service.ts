@@ -20,7 +20,15 @@ export class MockOrdersDataService implements OrdersDataService {
   private initData(): void {
     const saved = this.localStore.getItem<Order[]>(this.STORAGE_KEY);
     if (saved && saved.length > 0) {
-      this.orders = saved;
+      const seedMap = new Map(SEED_ORDERS.map(s => [s.id, s]));
+      this.orders = saved.map(o => {
+        if (o.createdAt && o.createdAt.startsWith('2024')) {
+          const seed = seedMap.get(o.id);
+          return seed ? { ...o, createdAt: seed.createdAt } : { ...o, createdAt: new Date().toISOString() };
+        }
+        return o;
+      });
+      this.localStore.setItem(this.STORAGE_KEY, this.orders);
     } else {
       this.orders = [...SEED_ORDERS];
       this.localStore.setItem(this.STORAGE_KEY, this.orders);

@@ -27,6 +27,8 @@ export class MockGamesDataService implements GamesDataService {
           return {
             ...seed,
             ...g,
+            createdAt: g.createdAt && g.createdAt.startsWith('2024') ? seed.createdAt : g.createdAt,
+            updatedAt: g.updatedAt && g.updatedAt.startsWith('2024') ? seed.updatedAt : g.updatedAt,
             coverImageUrl: seed.coverImageUrl,
             screenshotUrls: seed.screenshotUrls
           };

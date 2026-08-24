@@ -20,7 +20,15 @@ export class MockUsersDataService implements UsersDataService {
   private initData(): void {
     const saved = this.localStore.getItem<User[]>(this.STORAGE_KEY);
     if (saved && saved.length > 0) {
-      this.users = saved;
+      const seedMap = new Map(SEED_USERS.map(s => [s.id, s]));
+      this.users = saved.map(u => {
+        if (u.createdAt && u.createdAt.startsWith('2024')) {
+          const seed = seedMap.get(u.id);
+          return seed ? { ...u, createdAt: seed.createdAt } : { ...u, createdAt: new Date().toISOString() };
+        }
+        return u;
+      });
+      this.localStore.setItem(this.STORAGE_KEY, this.users);
     } else {
       this.users = [...SEED_USERS];
       this.localStore.setItem(this.STORAGE_KEY, this.users);
