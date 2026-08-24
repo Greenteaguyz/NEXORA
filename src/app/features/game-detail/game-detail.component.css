@@ -1017,8 +1017,53 @@
   }
 
   .highlights-grid { grid-template-columns: 1fr; }
-  .purchase-banner-content { flex-direction: column; align-items: stretch; }
-  .purchase-action-group { justify-content: space-between; }
+  
+  /* Purchase & Download Banner Mobile Flow */
+  .purchase-banner-main {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .purchase-banner-info {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .platform-selector-pill-group {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .purchase-action-group {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .purchase-price-tag {
+    text-align: center;
+    width: 100%;
+    font-size: 1.35rem;
+    padding: 8px;
+  }
+
+  app-download-button,
+  .btn-claim-library,
+  .btn-remove-library,
+  .btn-steam-wishlist {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    min-height: 48px;
+  }
+
+  .package-meta-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
   
   /* Show Mobile Tier Switcher & Collapse to Single Column on Small Screens */
   .specs-mobile-tier-toggle { display: flex; }

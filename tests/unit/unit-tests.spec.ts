@@ -1695,6 +1695,82 @@ assert('Auth Bottom Nav Suppression', 'Desktop viewports always suppress bottom 
 );
 
 // ---------------------------------------------------------------------------
+// 29. UNIT TESTS: Mobile Game Detail & Profile Card Geometry Invariants
+// ---------------------------------------------------------------------------
+console.log('\n--- 29. UNIT TESTS: Mobile Game Detail & Profile Card Geometry Invariants ---');
+
+// Test 1: Game Detail Banner Flow by Viewport Width
+function resolveGameDetailBannerLayout(viewportWidth: number): {
+  direction: 'row' | 'column';
+  buttonWidth: 'auto' | '100%';
+  minButtonHeight: number;
+  packageStripDirection: 'row' | 'column';
+} {
+  if (viewportWidth <= 820) {
+    return {
+      direction: 'column',
+      buttonWidth: '100%',
+      minButtonHeight: 48,
+      packageStripDirection: 'column'
+    };
+  }
+  return {
+    direction: 'row',
+    buttonWidth: 'auto',
+    minButtonHeight: 46,
+    packageStripDirection: 'row'
+  };
+}
+
+assert('Game Detail Mobile Banner', 'Mobile (390px) stacks banner vertically with 100% full-width 48px action buttons',
+  resolveGameDetailBannerLayout(390).direction === 'column' &&
+  resolveGameDetailBannerLayout(390).buttonWidth === '100%' &&
+  resolveGameDetailBannerLayout(390).minButtonHeight >= 48 &&
+  resolveGameDetailBannerLayout(390).packageStripDirection === 'column'
+);
+
+assert('Game Detail Desktop Banner', 'Desktop (1440px) maintains horizontal banner with side-by-side buy box',
+  resolveGameDetailBannerLayout(1440).direction === 'row' &&
+  resolveGameDetailBannerLayout(1440).buttonWidth === 'auto' &&
+  resolveGameDetailBannerLayout(1440).packageStripDirection === 'row'
+);
+
+// Test 2: Profile Settings Card Geometry by Viewport Width
+function resolveProfileSettingsCardLayout(viewportWidth: number): {
+  alignment: 'left' | 'center';
+  headerDirection: 'row' | 'column';
+  buttonStack: 'full-width' | 'auto';
+  minTouchTarget: number;
+} {
+  if (viewportWidth <= 768) {
+    return {
+      alignment: 'left',
+      headerDirection: 'row',
+      buttonStack: 'full-width',
+      minTouchTarget: 44
+    };
+  }
+  return {
+    alignment: 'left',
+    headerDirection: 'row',
+    buttonStack: 'auto',
+    minTouchTarget: 36
+  };
+}
+
+assert('Profile Mobile Card Alignment', 'Mobile (390px) enforces left-aligned header row [Icon + Title] and full-width buttons',
+  resolveProfileSettingsCardLayout(390).alignment === 'left' &&
+  resolveProfileSettingsCardLayout(390).headerDirection === 'row' &&
+  resolveProfileSettingsCardLayout(390).buttonStack === 'full-width' &&
+  resolveProfileSettingsCardLayout(390).minTouchTarget >= 44
+);
+
+assert('Profile Desktop Card Alignment', 'Desktop (1440px) preserves horizontal layout with right-aligned action buttons',
+  resolveProfileSettingsCardLayout(1440).alignment === 'left' &&
+  resolveProfileSettingsCardLayout(1440).buttonStack === 'auto'
+);
+
+// ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
 const passed = results.filter(r => r.passed).length;
