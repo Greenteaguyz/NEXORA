@@ -593,8 +593,8 @@
 :host-context([data-theme="light"]) .hamburger-btn:hover,
 :host-context([data-theme="light"]) .mobile-menu-toggle:hover {
   background-color: #F8FAFC;
-  border-color: var(--accent-500);
-  color: var(--accent-600);
+  border-color: #0078D4;
+  color: #0078D4;
 }
 
 :host-context([data-theme="light"]) .hamburger-btn.open,

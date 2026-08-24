@@ -251,11 +251,12 @@
   transition: all 0.15s ease;
 }
 :host-context([data-theme="light"]) .steam-tag-pill {
-  color: var(--accent-600);
+  color: #0078D4;
   background: rgba(0, 120, 212, 0.08);
   border-color: rgba(0, 120, 212, 0.25);
 }
-.steam-tag-pill:hover { background: var(--accent-600); color: #FFFFFF; border-color: var(--accent-400); }
+.steam-tag-pill:hover { background: rgba(102, 192, 244, 0.25); color: #FFFFFF; border-color: var(--accent-400); }
+:host-context([data-theme="light"]) .steam-tag-pill:hover { background: #0078D4; color: #FFFFFF; border-color: #0078D4; }
 .steam-tag-pill:focus-visible { outline: 2px solid var(--accent-500); outline-offset: 1px; }
 
 /* ==========================================================================
