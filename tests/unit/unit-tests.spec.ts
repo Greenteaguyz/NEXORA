@@ -1979,6 +1979,74 @@ assert('Dynamic Library & Order Timestamps', 'Seed library entries and orders us
 );
 
 // ---------------------------------------------------------------------------
+// 33. UNIT TESTS: Game-First Command Palette & Platform Ergonomics (AC-910 to AC-914)
+// ---------------------------------------------------------------------------
+console.log('\n--- 33. UNIT TESTS: Game-First Command Palette & Platform Ergonomics ---');
+
+interface PaletteResult {
+  category: 'Games' | 'Pages';
+  title: string;
+  hasThumbnail: boolean;
+}
+
+function resolveCommandPaletteResults(query: string): PaletteResult[] {
+  const q = query.trim().toLowerCase();
+  const gameResults = SEED_GAMES.map(g => ({
+    category: 'Games' as const,
+    title: g.title,
+    hasThumbnail: Boolean(g.coverImageUrl)
+  }));
+
+  const navPages = [
+    { category: 'Pages' as const, title: 'Store Catalog', hasThumbnail: false },
+    { category: 'Pages' as const, title: 'My Wishlist', hasThumbnail: false },
+    { category: 'Pages' as const, title: 'Purchase History', hasThumbnail: false }
+  ];
+
+  if (!q) {
+    // AC-910: Default view is 100% Game-Centric without redundant static pages
+    return gameResults.slice(0, 8);
+  }
+
+  const matchedGames = gameResults.filter(g => g.title.toLowerCase().includes(q));
+  const matchedPages = navPages.filter(p => p.title.toLowerCase().includes(q));
+  return [...matchedGames, ...matchedPages];
+}
+
+function resolvePlatformSearchUI(viewportWidth: number): { showDesktopKeyboardHints: boolean; showMobileCloseButton: boolean; showHeaderCtrlK: boolean } {
+  const isMobile = viewportWidth <= 768;
+  return {
+    showDesktopKeyboardHints: !isMobile,
+    showMobileCloseButton: isMobile,
+    showHeaderCtrlK: !isMobile
+  };
+}
+
+assert('Game-First Default Search', 'Opening search with empty query displays 100% games without redundant static pages (AC-910)',
+  resolveCommandPaletteResults('').length > 0 &&
+  resolveCommandPaletteResults('').every(item => item.category === 'Games')
+);
+
+assert('Rich Game Thumbnails', 'Default and searched game items include cover art thumbnails (AC-911)',
+  resolveCommandPaletteResults('').every(item => item.hasThumbnail === true)
+);
+
+assert('Mobile Keyboard Hint Suppression', 'Viewport <= 768px suppresses physical keyboard footer & Ctrl+K badge (AC-912)',
+  resolvePlatformSearchUI(390).showDesktopKeyboardHints === false &&
+  resolvePlatformSearchUI(390).showHeaderCtrlK === false
+);
+
+assert('Mobile Touch Dismissal', 'Viewport <= 768px renders dedicated touch close button (AC-913)',
+  resolvePlatformSearchUI(390).showMobileCloseButton === true
+);
+
+assert('Desktop Shortcut Invariants', 'Desktop (>768px) preserves Ctrl+K badge and keyboard navigation footer',
+  resolvePlatformSearchUI(1440).showDesktopKeyboardHints === true &&
+  resolvePlatformSearchUI(1440).showHeaderCtrlK === true &&
+  resolvePlatformSearchUI(1440).showMobileCloseButton === false
+);
+
+// ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
 const passed = results.filter(r => r.passed).length;

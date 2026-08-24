@@ -1218,6 +1218,15 @@
     line-height: 1;
     border: 1px solid var(--bg-surface);
   }
+
+  .btn-cmd-search {
+    padding: 0 10px;
+    height: 34px;
+  }
+
+  .btn-cmd-search .search-btn-kbd {
+    display: none !important;
+  }
 }
 
 @media (max-width: 640px) {
@@ -1235,7 +1244,7 @@
 
   .btn-cmd-search .search-btn-label,
   .btn-cmd-search .search-btn-kbd {
-    display: none;
+    display: none !important;
   }
 
   .btn-cmd-search .search-btn-svg {

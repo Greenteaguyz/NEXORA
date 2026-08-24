@@ -8,13 +8,14 @@ import { Game } from '../../../core/models/game.model';
 export interface CommandItem {
   id: string;
   title: string;
-  category: 'Pages' | 'Games' | 'Actions';
+  category: 'Games' | 'Pages';
   subtitle?: string;
   icon?: string;
   route?: string;
   action?: () => void;
   price?: number;
   tags?: string[];
+  coverImageUrl?: string;
 }
 
 @Component({
@@ -56,19 +57,17 @@ export class CommandPaletteComponent {
       id: `game-${g.id}`,
       title: g.title,
       category: 'Games',
-      subtitle: `${(g.tags && g.tags[0]) || 'Game'} • ${g.price === 0 ? 'FREE' : '$' + g.price.toFixed(2)}`,
+      subtitle: `${(g.tags && g.tags.slice(0, 2).join(', ')) || 'Game'} • ${g.price === 0 ? 'FREE' : '$' + g.price.toFixed(2)}`,
       route: `/games/${g.id}`,
       price: g.price,
-      tags: g.tags
+      tags: g.tags,
+      coverImageUrl: g.coverImageUrl
     }));
 
     if (!q) {
-      return [...this.navCommands.slice(0, 5), ...gameItems.slice(0, 4)];
+      // Game-First Store Discovery: Display top catalog games without page redundancy
+      return gameItems.slice(0, 8);
     }
-
-    const matchedNav = this.navCommands.filter(
-      item => item.title.toLowerCase().includes(q) || (item.subtitle && item.subtitle.toLowerCase().includes(q))
-    );
 
     const matchedGames = gameItems.filter(
       item =>
@@ -77,7 +76,12 @@ export class CommandPaletteComponent {
         (item.tags && item.tags.some(t => t.toLowerCase().includes(q)))
     );
 
-    return [...matchedNav, ...matchedGames];
+    // Only surface pages if the query matches page titles or subtitles
+    const matchedNav = this.navCommands.filter(
+      item => item.title.toLowerCase().includes(q) || (item.subtitle && item.subtitle.toLowerCase().includes(q))
+    );
+
+    return [...matchedGames, ...matchedNav];
   });
 
   constructor() {

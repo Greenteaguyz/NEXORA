@@ -158,6 +158,82 @@
   color: var(--accent-400);
 }
 
+.cmd-item-thumb {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 1px solid var(--border-card);
+  background: var(--bg-void);
+}
+
+.cmd-price-pill {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(102, 192, 244, 0.14);
+  color: var(--accent-400);
+  border: 1px solid rgba(102, 192, 244, 0.3);
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.cmd-price-pill.free {
+  background: rgba(117, 176, 34, 0.18);
+  color: var(--emerald-400);
+  border-color: rgba(117, 176, 34, 0.4);
+}
+
+:host-context([data-theme="light"]) .cmd-price-pill {
+  background: #EBF3FA;
+  color: #0078D4;
+  border-color: #CBD5E1;
+}
+
+:host-context([data-theme="light"]) .cmd-price-pill.free {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border-color: #C8E6C9;
+}
+
+/* Mobile Close Button & Desktop/Mobile Toggles */
+.cmd-btn-close {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.cmd-btn-close svg {
+  width: 16px;
+  height: 16px;
+}
+
+.cmd-btn-close:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-400);
+}
+
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: flex;
+}
+
 .cmd-item-text {
   display: flex;
   flex-direction: column;
@@ -182,6 +258,13 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.cmd-item-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .cmd-arrow-icon {
@@ -271,5 +354,64 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/* ==========================================================================
+   Mobile Responsive Optimizations (<= 768px)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+
+  .cmd-backdrop {
+    padding: 12px 12px 90px;
+    align-items: flex-start;
+  }
+
+  .cmd-dialog {
+    max-height: calc(100dvh - 110px);
+    border-radius: var(--radius-lg);
+  }
+
+  .cmd-header {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .cmd-search-input {
+    font-size: 0.95rem;
+  }
+
+  .cmd-results {
+    max-height: calc(100dvh - 180px);
+    padding: 6px;
+  }
+
+  .cmd-item {
+    padding: 8px 10px;
+  }
+
+  .cmd-item-thumb {
+    width: 34px;
+    height: 34px;
+  }
+
+  .cmd-item-title {
+    font-size: 0.88rem;
+  }
+
+  .cmd-item-subtitle {
+    font-size: 0.74rem;
+  }
+
+  .cmd-price-pill {
+    font-size: 0.68rem;
+    padding: 2px 6px;
   }
 }

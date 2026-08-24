@@ -1,5 +1,5 @@
 @if (isOpen()) {
-  <div class="cmd-backdrop" (click)="close()" role="dialog" aria-modal="true" aria-label="Command Palette">
+  <div class="cmd-backdrop" (click)="close()" role="dialog" aria-modal="true" aria-label="Game & Store Search Palette">
     <div class="cmd-dialog" (click)="$event.stopPropagation()">
       <!-- Search Header -->
       <div class="cmd-header">
@@ -12,21 +12,34 @@
           #searchInput
           type="text"
           class="cmd-search-input"
-          placeholder="Search games, pages, and actions..."
+          placeholder="Search games, genres, creators..."
           [value]="searchQuery()"
           (input)="onSearchInput($event)"
           aria-label="Command search query"
         />
 
-        <kbd class="cmd-badge-hint">ESC</kbd>
+        <!-- Desktop Escape Hint -->
+        <kbd class="cmd-badge-hint desktop-only">ESC</kbd>
+
+        <!-- Mobile Touch Close Button -->
+        <button 
+          type="button" 
+          class="cmd-btn-close mobile-only" 
+          (click)="close()" 
+          aria-label="Close search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
       </div>
 
       <!-- Results List -->
       <div class="cmd-results" role="listbox">
         @if (filteredItems().length === 0) {
           <div class="cmd-empty">
-            <span class="cmd-empty-title">No matching results</span>
-            <span class="cmd-empty-subtitle">Try searching for "RPG", "Cyberpunk", or a page name.</span>
+            <span class="cmd-empty-title">No games or results found</span>
+            <span class="cmd-empty-subtitle">Try searching for "Action", "Cyberpunk", or a game title.</span>
           </div>
         } @else {
           @for (item of filteredItems(); track item.id; let idx = $index) {
@@ -40,9 +53,18 @@
               [attr.aria-selected]="idx === selectedIndex()">
               
               <div class="cmd-item-left">
-                <div class="cmd-item-category-pill" [class.games]="item.category === 'Games'">
-                  {{ item.category }}
-                </div>
+                @if (item.coverImageUrl) {
+                  <img 
+                    [src]="item.coverImageUrl" 
+                    [alt]="item.title + ' cover'" 
+                    class="cmd-item-thumb" 
+                    loading="lazy" />
+                } @else {
+                  <div class="cmd-item-category-pill" [class.games]="item.category === 'Games'">
+                    {{ item.category }}
+                  </div>
+                }
+
                 <div class="cmd-item-text">
                   <span class="cmd-item-title">{{ item.title }}</span>
                   @if (item.subtitle) {
@@ -52,6 +74,11 @@
               </div>
 
               <div class="cmd-item-right">
+                @if (item.price !== undefined) {
+                  <span class="cmd-price-pill" [class.free]="item.price === 0">
+                    {{ item.price === 0 ? 'FREE' : '$' + item.price.toFixed(2) }}
+                  </span>
+                }
                 <svg class="cmd-arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <line x1="5" y1="12" x2="19" y2="12"/>
                   <polyline points="12 5 19 12 12 19"/>
@@ -62,8 +89,8 @@
         }
       </div>
 
-      <!-- Footer Quick Tips -->
-      <div class="cmd-footer">
+      <!-- Footer Quick Tips (Desktop Only) -->
+      <div class="cmd-footer desktop-only">
         <div class="cmd-footer-tip">
           <kbd class="tip-kbd">↑</kbd>
           <kbd class="tip-kbd">↓</kbd>
