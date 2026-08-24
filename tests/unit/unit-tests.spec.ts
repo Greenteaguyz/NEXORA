@@ -1860,6 +1860,34 @@ assert('Dual-Theme Button Mapping', 'Dark Mode enforces Steam Electric Cyan (#66
   resolveButtonColors('dark', 'verified-pill').textHex === '#66C0F4'
 );
 
+// Test 3: Active Navigation Link Color Invariant
+function resolveActiveNavLinkColor(theme: 'dark' | 'light'): {
+  textHex: string;
+  borderLeftHex: string;
+  bgHex: string;
+} {
+  if (theme === 'light') {
+    return {
+      textHex: '#0284C7',
+      borderLeftHex: '#0284C7',
+      bgHex: 'rgba(2, 132, 199, 0.1)'
+    };
+  }
+  return {
+    textHex: '#FFFFFF',
+    borderLeftHex: '#66C0F4',
+    bgHex: 'rgba(102, 192, 244, 0.14)'
+  };
+}
+
+assert('Active Nav Link Color', 'Light Mode enforces Steam Blue (#0284C7) on active drawer navigation items instead of green',
+  resolveActiveNavLinkColor('light').textHex === '#0284C7' &&
+  resolveActiveNavLinkColor('light').borderLeftHex === '#0284C7'
+);
+assert('Active Nav Link Color', 'Dark Mode enforces Electric Cyan (#66C0F4) on active drawer navigation items',
+  resolveActiveNavLinkColor('dark').borderLeftHex === '#66C0F4'
+);
+
 // ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------

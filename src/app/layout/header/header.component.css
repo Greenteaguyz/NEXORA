@@ -780,9 +780,9 @@
 }
 
 :host-context([data-theme="light"]) .mobile-nav-list a.active {
-  color: var(--accent-700);
+  color: #0284C7;
   background-color: rgba(2, 132, 199, 0.1);
-  border-left-color: var(--accent-600);
+  border-left-color: #0284C7;
 }
 
 .mobile-nav-with-badge {
