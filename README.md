@@ -60,9 +60,10 @@ Navigate to [`http://localhost:4200`](http://localhost:4200) in your web browser
 * **Game Acquisition & Download Experience**: Streamlined 2-tier acquisition banner, dual-platform options (**Windows 32/64-bit** and **Linux x86_64**), 1-click **Add to Library / Claim** for free games, SHA-256 integrity checksum verification, and animated download progress overlays.
 * **Library Management**: 1-click **Remove from Library** with live state synchronization and persistent storage.
 * **Executive Invoicing & Receipts**: High-resolution 1-page A4 printable invoice with zero browser URL stamps (`@page { margin: 0; }`), automatic PDF naming (`NEXORA-Receipt-ord_XXX.pdf`), customer metadata (`Billed To`), and itemized accounting breakdowns.
+* **Speedtest.net Dual-Segment Theme Switcher**: Authentic sliding capsule switcher with Warm Amber (`#F59E0B`) Sun illumination and Electric Cyan (`#66C0F4`) Moon illumination.
+* **Unified Steam Deck Hub Mobile Navigation**: Zero-scroll compact layout with integrated 2-row footer control card, pixel-aligned icon/label grid, keyboard focus trapping, and WCAG AAA contrast ratios.
 * **Rich Media & Visual Polish**: Official high-res game assets (featuring *Marvel Rivals*), dual-theme system (Dark & Light modes), Light Mode soft slate frosted backdrop blur for full-screen screenshot lightbox viewing, and 100% fluid edge-to-edge layout scaling.
-* **Mobile-First UX**: Pixel-perfect vector SVG animated hamburger menu, horizontal touch swipe gallery gestures (`1 / 4` counter pill), and slide-out navigation drawer with role-aware account actions.
-* **Role-Based Access Control**: Instant demo persona switching (Alice - Creator/Buyer, Bob - Buyer), creator upload studio, library management, and purchase fulfillment.
+* **Role-Based Access Control & Multi-Persona**: Instant demo persona switching (Alice - Creator/Buyer, Bob - Buyer), creator upload studio, library management, and purchase fulfillment.
 
 ---
 
@@ -79,11 +80,11 @@ Use the following preconfigured accounts to test role-based access control and u
 
 ## Run automated test suites
 
-NEXORA provides a comprehensive automated testing battery covering unit logic, domain integration, master architectural invariants, and the Impeccable Anti-Slop / Steam DesignMD compliance suite.
+NEXORA provides a comprehensive automated testing battery covering unit logic, domain integration, master architectural invariants, broken-link crawling, Playwright E2E journeys, and the Impeccable Anti-Slop / Steam DesignMD compliance suite.
 
-### 1. Run all regression suites (166 Tests — 100% Pass Rate)
+### 1. Run all regression suites (223 Tests — 100% Pass Rate)
 
-Execute all 4 automated test tiers in under 4 seconds:
+Execute all automated test tiers:
 
 ```bash
 npm test
@@ -92,10 +93,12 @@ npm run test:regression
 ```
 
 This command orchestrates:
-* **Unit Tests** (`npm run test:unit`): 113 assertions across 21 sections verifying email/password validations, 90/10 creator revenue splits, data transforms, `nexora_*` storage prefix isolation, fluid clamp bounds, 4-slide hero geometry parity, and 16:9 widescreen parameters.
-* **Integration Tests** (`npm run test:integration`): 36 assertions across 7 sections verifying Alice/Bob persona lifecycles, query engine, wishlist-to-library fulfillment, route guards, and multi-persona state synchronization.
+* **Unit Tests** (`npm run test:unit`): 131 assertions across 26 sections verifying email/password validations, 90/10 creator revenue splits, data transforms, `nexora_*` storage prefix isolation, fluid clamp bounds, 4-slide hero geometry parity, Speedtest theme switcher geometry, and Unified Steam Deck Hub mobile drawer dimensions.
+* **Integration Tests** (`npm run test:integration`): 46 assertions across 7 sections verifying Alice/Bob persona lifecycles, query engine, wishlist-to-library fulfillment, route guards, `/studio/games/new` permissions, and multi-persona state synchronization.
 * **Master Battery** (`npm run test:master`): 10 tests verifying dataset invariants, ownership verification, and dual-theme DOM state sync.
 * **Impeccable Anti-Slop Suite** (`npm run test:impeccable`): 7 tests asserting absence of neon glow halos, strict radii hierarchy (`2px/4px/6px/8px/16px`), snappy `0.15s` transitions, and WCAG AAA contrast ratios.
+* **Broken-Link Crawler** (`npm run test:crawler`): 24 crawled URLs verifying zero 404 dead links across catalog, games, genres, creators, and studio forms.
+* **Playwright E2E Journeys** (`npm run test:e2e`): 5 automated multi-step browser user journeys with 100% pass rate.
 
 ### 2. Run full build & regression verification gate
 

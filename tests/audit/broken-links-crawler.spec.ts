@@ -3,7 +3,7 @@
  * Crawling 100% of internal links, routerLink destinations, and header/footer navigation to ensure zero dead links.
  */
 
-import { chromium, Browser, Page } from 'playwright';
+import { chromium, type Browser, type Page } from '@playwright/test';
 
 const BASE_URL = process.env['BASE_URL'] || 'http://localhost:4200';
 
@@ -30,16 +30,20 @@ export async function runBrokenLinkCrawler(baseUrl: string = BASE_URL): Promise<
     '/support', 
     '/login', 
     '/register',
+    '/forgot-password',
     '/profile',
     '/library',
     '/wishlist',
     '/orders',
-    '/studio'
+    '/studio',
+    '/studio/games/new',
+    '/creators/user_001',
+    '/creators/user_002'
   ];
   const crawlResults: LinkCrawlResult[] = [];
 
   // Seed discovered game detail links
-  const seedGameIds = ['game_001', 'game_002', 'game_003', 'game_004', 'game_005', 'game_006', 'game_007', 'game_008'];
+  const seedGameIds = ['game_001', 'game_002', 'game_003', 'game_004', 'game_005', 'game_006', 'game_007', 'game_008', 'game_009', 'game_010'];
   seedGameIds.forEach(id => linkQueue.push(`/games/${id}`));
 
   while (linkQueue.length > 0) {
@@ -78,8 +82,9 @@ export async function runBrokenLinkCrawler(baseUrl: string = BASE_URL): Promise<
   return passed;
 }
 
-if (require.main === module) {
-  runBrokenLinkCrawler().then(passed => {
-    if (!passed) process.exit(1);
-  });
-}
+runBrokenLinkCrawler().then(passed => {
+  if (!passed) process.exit(1);
+}).catch(err => {
+  console.error('Crawler failed:', err);
+  process.exit(1);
+});

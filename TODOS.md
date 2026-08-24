@@ -12,6 +12,8 @@ This document tracks all engineering milestones and implementation tasks for the
 | **Phase 4** (Tasks 8–10) | Error handling, Creator Studio, polish & tests | ✅ Complete | Full CRUD listings table, TagChipInput, `ownershipGuard` & `roleGuard` routing, soft-delete lifecycle verified |
 | **Phase 5** (Quality & Audits) | Mobile deep audit, WCAG accessibility, XSS fuzzing, redirects | ✅ Complete | 253 automated checks passing (100% pass rate), 0 layout overflows, Cloudflare tunnel live |
 | **Phase 9** (Task 14) | Impeccable Anti-Slop Elimination, Steam DesignMD Tokens & Unified CI Gate | ✅ Complete | 54/54 tests passing across 4 suites, 0 neon glows, 2.32s production build |
+| **Phase 10** (Task 15) | Omni-Resolution Fluid Architecture, Fixed 16:9 Standard, Zero-Shift Media | ✅ Complete | 166/166 tests passing, 0.00px CLS, 4-slide hero parity |
+| **Phase 11** (Task 16) | Speedtest Dual-Segment Switcher, Unified Steam Deck Hub Mobile Navigation & Crawler | ✅ Complete | 223/223 tests passing, 24/24 crawler links valid, 5/5 Playwright E2E passed |
 | **Deployment and Ops** | Cloud hosting, tunnels & performance budgets | ✅ Ready | `vercel.json` SPA rewrites active, Cloudflare tunnel active, 96.8 kB initial bundle, DOM Interactive: 38ms |
 
 ---
@@ -233,4 +235,17 @@ Standard skills applied during development:
 - [x] **15.7** Omni-Resolution 4/3/2/1 Grid Progression & Fluid `clamp()` Tokens: Replaced rigid px values with fluid typography/padding and collapsed mobile hero strip (1x4 preview).
 - [x] **15.8** Catalog Grid Card Geometry Invariance: Locked card titles (`1.4rem`), descriptions (`2.8em`), tag rows (`24px`), and footers (`42px`) for 100% uniform card heights across all rows.
 - [x] **15.9** Expanded Automated Test Battery: 166 / 166 passing assertions (100% Green) across Unit Tests (Sections 1–21), Integration Tests (Sections 1–7), Master Battery, and Impeccable Anti-Slop suite.
+
+---
+
+## Phase 11: Speedtest Dual-Segment Switcher, Unified Steam Deck Hub Mobile Navigation & End-to-End Hardening (Task 16)
+
+### Task 16: Speedtest Switcher, Unified Steam Deck Hub Drawer & Production Verification
+- [x] **16.1** Speedtest.net Dual-Segment Theme Switcher: Built authentic 58x30px dual-segment pill switcher with 24px sliding indicator, Warm Amber (`#F59E0B`) Sun illumination, Electric Cyan (`#66C0F4`) Moon illumination, and fluid cubic-bezier motion.
+- [x] **16.2** Unified Steam Deck Hub Mobile Drawer: Engineered zero-scroll compact layout with 36px navigation rows, 2px gaps, and hidden scrollbars, eliminating vertical scrollbars on 600px–844px mobile viewports.
+- [x] **16.3** Consolidated 2-Row Footer Control Card: Combined user avatar, name, role badge, and squircle logout button in Row 1, and Speedtest Theme Switcher + Segmented Persona Switcher `[ Alice | Bob ]` in Row 2.
+- [x] **16.4** Mobile Drawer Accessibility & Safe-Area Insets: Added keyboard focus trapping (`Tab`/`Shift+Tab`), auto-focus on close button, `Escape` key dismissal, and `env(safe-area-inset-bottom)` padding.
+- [x] **16.5** Broken-Link Crawler Suite (`test:crawler`): Crawled 24/24 internal routes, game pages, creator profiles, and forms with 0 broken links.
+- [x] **16.6** Expanded Automated Test Battery: 223 / 223 passing assertions (100% Green) across Unit Tests (Sections 1–26), Integration Tests (Sections 1–7), Master Battery, Impeccable Anti-Slop suite, Broken-Link Crawler, and Playwright E2E journeys.
+
 

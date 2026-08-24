@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, ActivatedRouteSnapshot } from '@angular/router';
-import { map, of } from 'rxjs';
+import { map } from 'rxjs';
 import { AuthService } from './auth.service';
 import { GAMES_DATA } from '../data/tokens';
 

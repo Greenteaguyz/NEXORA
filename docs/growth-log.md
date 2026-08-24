@@ -233,6 +233,44 @@
   2. For owned products, display a clear ownership status pill (`✓ In Your Library`) with optional removal controls.
   3. Ensure library state changes synchronize reactively across all open views without requiring page reloads.
 
+---
+
+## [Pattern] Speedtest.net Dual-Segment Sliding Capsule Theme Switcher
+
+### Context
+- Standard theme toggles (single checkbox or simple sun/moon icon) often lack tangible tactile feedback and state clarity.
+- Users requested a premium dual-segment switcher modeled after Speedtest.net's iconic light/dark toggle.
+
+### Root Cause / Core Insight
+- A `58px × 30px` pill container housing two circular segment zones (`[ ☼ | ☽ ]`) with an underlying `24px × 24px` sliding indicator thumb (`transform: translateX(...)`) provides clear visual affordance for both active and inactive states.
+- Active states illuminate with thematic specular colors: Warm Amber (`#F59E0B`) for the Sun, and Electric Cyan (`#66C0F4`) for the Moon.
+- Snappy easing (`0.2s cubic-bezier(0.16, 1, 0.3, 1)`) prevents sluggish feel while delivering smooth physical slide mechanics.
+
+### The Pattern (Transferable)
+- In high-craft web apps:
+  1. Use a 2-segment pill with absolute sliding thumb.
+  2. Set distinct active colorations per segment (e.g. Amber vs Electric Cyan).
+  3. Support full keyboard accessibility (`role="switch"`, `aria-checked`, `Space`/`Enter` triggers).
+
+---
+
+## [Pattern] Unified Steam Deck Hub Mobile Drawer Architecture
+
+### Context
+- Mobile navigation drawers frequently suffer from layout inconsistency, jagged gaps, floating orphan badges, and unnecessary vertical scrollbars that hide critical controls on shorter screens (e.g. 600px–750px).
+
+### Root Cause / Core Insight
+- Consolidating scattered footer rows (user profile, role badge, logout, theme switcher, persona switcher) into a single, compact **2-row footer control card** (`.drawer-footer-card`) reclaims over 140px of vertical space.
+- Setting navigation row heights to `36px` with `2px` vertical gaps allows all 8 primary routes plus category headers to fit within 400px of vertical height.
+- Trapping keyboard focus with `HostListener('keydown')` looping and auto-focusing the close button delivers full WCAG AAA compliant accessibility.
+
+### The Pattern (Transferable)
+- For responsive mobile drawers:
+  1. Eliminate floating labels; encapsulate secondary controls into a unified multi-row card.
+  2. Use compact 36px item heights with 2px vertical rhythm to guarantee zero-scroll fit.
+  3. Implement body scroll locking (`document.body.style.overflow = 'hidden'`) and keyboard focus trapping.
+
+
 
 
 

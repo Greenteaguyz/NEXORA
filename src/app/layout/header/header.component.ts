@@ -1,4 +1,4 @@
-import { Component, inject, signal, effect } from '@angular/core';
+import { Component, inject, signal, effect, HostListener, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
@@ -13,7 +13,7 @@ import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.compon
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnDestroy {
   authService = inject(AuthService);
   themeService = inject(ThemeService);
   private wishlistData = inject(WISHLIST_DATA);
@@ -35,12 +35,73 @@ export class HeaderComponent {
     });
   }
 
+  ngOnDestroy(): void {
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = '';
+    }
+  }
+
+  private updateBodyScrollLock(locked: boolean): void {
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = locked ? 'hidden' : '';
+    }
+  }
+
   toggleMobileMenu(): void {
-    this.mobileMenuOpen.update(v => !v);
+    this.mobileMenuOpen.update(v => {
+      const next = !v;
+      this.updateBodyScrollLock(next);
+      if (next) {
+        setTimeout(() => {
+          (document.querySelector('.btn-close-drawer') as HTMLElement)?.focus();
+        }, 50);
+      }
+      return next;
+    });
   }
 
   closeMobileMenu(): void {
     this.mobileMenuOpen.set(false);
+    this.updateBodyScrollLock(false);
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeydown(event: KeyboardEvent): void {
+    if (!this.mobileMenuOpen()) return;
+
+    if (event.key === 'Escape') {
+      this.closeMobileMenu();
+      return;
+    }
+
+    if (event.key === 'Tab') {
+      this.trapDrawerFocus(event);
+    }
+  }
+
+  private trapDrawerFocus(event: KeyboardEvent): void {
+    const drawer = document.querySelector('.mobile-drawer');
+    if (!drawer) return;
+
+    const focusable = drawer.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (event.shiftKey) {
+      if (document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
   }
 
   switchAccount(email: string): void {

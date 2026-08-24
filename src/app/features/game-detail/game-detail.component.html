@@ -386,15 +386,5 @@
         </div>
       </div>
     }
-
-    <!-- Purchase Confirmation Modal -->
-    @if (showPurchaseModal && game) {
-      <app-purchase-confirm-modal
-        [game]="game"
-        [loading]="purchaseProcessing"
-        (confirm)="onModalConfirm($event)"
-        (cancel)="onModalCancel()">
-      </app-purchase-confirm-modal>
-    }
   }
 </div>

@@ -8,15 +8,12 @@
         <p class="orders-subtitle">Review your past orders, invoices, and view official digital receipts.</p>
       </div>
 
-      <div class="orders-stats-cluster">
-        <div class="orders-stats-pill" aria-label="Total orders">
-          <span class="stats-count">{{ items.length }}</span>
-          <span class="stats-label">{{ items.length === 1 ? 'Purchase' : 'Purchases' }}</span>
-        </div>
-        <div class="orders-stats-pill total" aria-label="Total spent">
-          <span class="stats-count highlight">${{ totalSpent.toFixed(2) }}</span>
-          <span class="stats-label">Total Spent</span>
-        </div>
+      <div class="orders-stats-pill" aria-label="Order summary statistics">
+        <span class="stats-count">{{ items.length }}</span>
+        <span class="stats-label">{{ items.length === 1 ? 'Purchase' : 'Purchases' }}</span>
+        <span class="stats-divider" aria-hidden="true">·</span>
+        <span class="stats-count highlight">${{ totalSpent.toFixed(2) }}</span>
+        <span class="stats-label">Spent</span>
       </div>
     </div>
   </header>

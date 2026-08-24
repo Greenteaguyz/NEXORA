@@ -53,6 +53,10 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
     return this.allGames[0] || null;
   }
 
+  get selectedTagsSummary(): string {
+    return Array.from(this.selectedTags).join(', ');
+  }
+
   get currentHeroImage(): string {
     if (this.hoveredScreenshotUrl) {
       return this.hoveredScreenshotUrl;

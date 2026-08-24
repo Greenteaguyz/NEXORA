@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, HostListener, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, OnInit, ElementRef, ViewChild, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Game } from '../../../core/models/game.model';
 
@@ -11,7 +11,8 @@ export interface PurchaseConfirmationEvent {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './purchase-confirm-modal.component.html',
-  styleUrls: ['./purchase-confirm-modal.component.css']
+  styleUrls: ['./purchase-confirm-modal.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PurchaseConfirmModalComponent implements OnInit {
   @Input({ required: true }) game!: Game;
@@ -27,11 +28,11 @@ export class PurchaseConfirmModalComponent implements OnInit {
 
   @ViewChild('confirmBtn') confirmBtn?: ElementRef<HTMLButtonElement>;
 
-  selectedCardBrand: 'visa' | 'mastercard' = 'visa';
-  cardNumber = '•••• •••• •••• 4242';
-  cardHolder = 'Bob (Verified)';
-  cardExpiry = '08/29';
-  cardCvc = '•••';
+  readonly selectedCardBrand = signal<'visa' | 'mastercard'>('visa');
+  readonly cardNumber = computed(() => this.selectedCardBrand() === 'visa' ? '•••• •••• •••• 4242' : '•••• •••• •••• 5555');
+  readonly cardHolder = signal('Bob (Verified)');
+  readonly cardExpiry = signal('08/29');
+  readonly cardCvc = signal('•••');
 
   ngOnInit(): void {
     // Prevent background scrolling while modal is open
@@ -46,16 +47,11 @@ export class PurchaseConfirmModalComponent implements OnInit {
   }
 
   setCardBrand(brand: 'visa' | 'mastercard'): void {
-    this.selectedCardBrand = brand;
-    if (brand === 'visa') {
-      this.cardNumber = '•••• •••• •••• 4242';
-    } else {
-      this.cardNumber = '•••• •••• •••• 5555';
-    }
+    this.selectedCardBrand.set(brand);
   }
 
   get formattedPaymentMethod(): string {
-    return this.selectedCardBrand === 'visa' 
+    return this.selectedCardBrand() === 'visa' 
       ? 'Credit Card (Visa •••• 4242)' 
       : 'Credit Card (Mastercard •••• 5555)';
   }

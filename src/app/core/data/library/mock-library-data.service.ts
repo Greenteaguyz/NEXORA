@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of, delay } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { LibraryEntry } from '../../models/library-entry.model';
 import { LibraryDataService } from '../tokens';
 import { LocalStoreService } from '../../persistence/local-store.service';

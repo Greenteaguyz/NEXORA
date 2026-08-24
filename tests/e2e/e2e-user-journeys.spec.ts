@@ -18,11 +18,10 @@ test.describe('NEXORA E2E User Journeys', () => {
     await expect(page).toHaveTitle(/NEXORA/);
 
     // 2. Search & Tag Filtering
-    const searchInput = page.locator('input[placeholder*="Search"]').first();
+    const searchInput = page.locator('#catalog-search, input.search-input').first();
     await searchInput.fill('Marvel');
-    await page.waitForTimeout(300);
-    const marvelCard = page.locator('app-game-card:has-text("Marvel Rivals")');
-    await expect(marvelCard).toBeVisible();
+    const marvelCard = page.locator('app-game-card:has-text("Marvel Rivals")').first();
+    await expect(marvelCard).toBeVisible({ timeout: 5000 });
 
     // 3. Open Game Detail
     await page.goto(`${BASE_URL}/games/game_001`, { waitUntil: 'networkidle' });
@@ -32,8 +31,7 @@ test.describe('NEXORA E2E User Journeys', () => {
     const linuxTab = page.locator('button:has-text("Linux"), .os-tab:has-text("Linux")').first();
     if (await linuxTab.isVisible()) {
       await linuxTab.click();
-      await page.waitForTimeout(200);
-      await expect(page.locator('.spec-card').first()).toBeVisible();
+      await expect(page.locator('.specs-block, .specs-steam-grid').first()).toBeVisible({ timeout: 5000 });
     }
   });
 
@@ -78,15 +76,15 @@ test.describe('NEXORA E2E User Journeys', () => {
       await page.waitForTimeout(400);
 
       // Verify modal and switch to Mastercard
-      const modal = page.locator('app-purchase-confirm-modal .modal-card');
+      const modal = page.locator('app-purchase-confirm-modal .modal-card').first();
       await expect(modal).toBeVisible();
 
-      const mastercardBtn = page.locator('button.card-brand-btn:has-text("Mastercard")');
-      await mastercardBtn.click();
-      await expect(page.locator('.chip-card-digits')).toContainText('5555');
+      const mastercardBtn = page.locator('button.card-brand-btn:has-text("Mastercard")').first();
+      await mastercardBtn.click({ force: true });
+      await expect(page.locator('.card-strip-number').first()).toContainText('5555');
 
       // Authorize & Buy
-      const confirmBtn = page.locator('button.btn-confirm');
+      const confirmBtn = page.locator('button.btn-confirm').first();
       await confirmBtn.click({ force: true });
       await page.waitForTimeout(800);
     }
@@ -96,7 +94,7 @@ test.describe('NEXORA E2E User Journeys', () => {
     const viewReceiptBtn = page.locator('button:has-text("View Receipt"), button:has-text("Receipt")').first();
     if (await viewReceiptBtn.isVisible()) {
       await viewReceiptBtn.click();
-      await expect(page.locator('.receipt-modal-card')).toBeVisible();
+      await expect(page.locator('.receipt-modal-card').first()).toBeVisible();
     }
   });
 
@@ -113,13 +111,14 @@ test.describe('NEXORA E2E User Journeys', () => {
 
     // Open Publish New Game form
     await page.goto(`${BASE_URL}/studio/games/new`, { waitUntil: 'networkidle' });
-    await expect(page.locator('.form-shell')).toBeVisible();
+    await expect(page.locator('.game-editor-form, .game-form-page-container').first()).toBeVisible();
 
     // Verify Live Storefront Card Preview
     const titleInput = page.locator('#title');
     await titleInput.fill('Aero Cyber Strike');
     await page.waitForTimeout(200);
-    await expect(page.locator('.preview-card')).toContainText('Aero Cyber Strike');
+    await expect(page.locator('.preview-game-card, .preview-card-title').first()).toBeVisible();
+    await expect(page.locator('.preview-card-title').first()).toContainText('Aero Cyber Strike');
   });
 
   test('Journey 5: Profile Avatar Edit, Preset Selection & Instant Header Sync', async ({ page }) => {

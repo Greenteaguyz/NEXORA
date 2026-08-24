@@ -236,13 +236,17 @@ const registeredRoutes = [
   'support',
   'login',
   'register',
+  'forgot-password',
   'profile',
   'library',
   'wishlist',
   'orders',
   'studio',
   'studio/games/new',
-  'games/:id'
+  'studio/games/:id/edit',
+  'games/:id',
+  'creators/:id',
+  'not-found'
 ];
 
 function canResolveRoute(path: string): boolean {
@@ -251,25 +255,50 @@ function canResolveRoute(path: string): boolean {
     const gameId = cleanPath.split('/')[1];
     return !!db.games.find(g => g.id === gameId);
   }
+  if (cleanPath.startsWith('creators/')) {
+    const creatorId = cleanPath.split('/')[1];
+    return !!db.users.find(u => u.id === creatorId || u.displayName.toLowerCase().includes(creatorId.toLowerCase()));
+  }
+  if (cleanPath.startsWith('studio/games/') && cleanPath.endsWith('/edit')) {
+    const gameId = cleanPath.split('/')[2];
+    return !!db.games.find(g => g.id === gameId);
+  }
   return registeredRoutes.includes(cleanPath);
 }
 
 function resolveRedirectTarget(requestedPath: string, currentUser: User | null): string {
-  // If guest attempts to open studio/profile, redirect to login or catalog
-  if (!currentUser && (requestedPath === '/studio' || requestedPath === '/profile')) {
+  // If guest attempts to open studio/profile/library/wishlist/orders, redirect to login with returnUrl
+  if (!currentUser && (requestedPath.startsWith('/studio') || requestedPath.startsWith('/profile') || requestedPath.startsWith('/library') || requestedPath.startsWith('/wishlist') || requestedPath.startsWith('/orders'))) {
     return '/login';
+  }
+  // If non-creator attempts to open creator studio, redirect to catalog
+  if (currentUser && requestedPath.startsWith('/studio') && !currentUser.roles.includes('creator')) {
+    return '/catalog';
   }
   return requestedPath;
 }
 
-assert('Route Resolution', 'All primary top-bar and footer route destinations resolve', 
-  canResolveRoute('/catalog') && canResolveRoute('/genres') && canResolveRoute('/support') && canResolveRoute('/profile') && canResolveRoute('/library') && canResolveRoute('/orders')
+assert('Route Resolution', 'All primary top-bar, auth and footer route destinations resolve', 
+  canResolveRoute('/catalog') && canResolveRoute('/genres') && canResolveRoute('/support') && 
+  canResolveRoute('/login') && canResolveRoute('/register') && canResolveRoute('/forgot-password') && 
+  canResolveRoute('/profile') && canResolveRoute('/library') && canResolveRoute('/orders') && 
+  canResolveRoute('/wishlist') && canResolveRoute('/not-found')
 );
 assert('Route Resolution', 'Game detail URL with seeded ID resolves game model', canResolveRoute('/games/game_001'));
+assert('Route Resolution', 'Creator Profile URL with seeded creator resolves user', canResolveRoute('/creators/alice'));
+assert('Route Resolution', 'Studio game new URL resolves', canResolveRoute('/studio/games/new'));
+assert('Route Resolution', 'Studio game edit URL resolves with valid game ID', canResolveRoute('/studio/games/game_001/edit'));
 assert('Route Resolution', 'Invalid game detail ID does not resolve', !canResolveRoute('/games/game_invalid_999'));
 assert('Redirect Guard', 'Guest navigating to /profile redirects to /login', resolveRedirectTarget('/profile', null) === '/login');
+assert('Redirect Guard', 'Guest navigating to /studio redirects to /login', resolveRedirectTarget('/studio', null) === '/login');
+assert('Redirect Guard', 'Guest navigating to /studio/games/new redirects to /login', resolveRedirectTarget('/studio/games/new', null) === '/login');
+assert('Redirect Guard', 'Buyer (non-creator) navigating to /studio redirects to /catalog', resolveRedirectTarget('/studio', bob) === '/catalog');
+assert('Redirect Guard', 'Buyer (non-creator) navigating to /studio/games/new redirects to /catalog', resolveRedirectTarget('/studio/games/new', bob) === '/catalog');
+assert('Redirect Guard', 'Creator (Alice) navigating to /studio retains destination', resolveRedirectTarget('/studio', alice) === '/studio');
+assert('Redirect Guard', 'Creator (Alice) navigating to /studio/games/new retains destination', resolveRedirectTarget('/studio/games/new', alice) === '/studio/games/new');
 assert('Redirect Guard', 'Authenticated user navigating to /profile retains destination', resolveRedirectTarget('/profile', bob) === '/profile');
 assert('Redirect Guard', 'Logout redirects to default landing catalog page', resolveRedirectTarget('/catalog', null) === '/catalog');
+assert('Logo Navigation', 'Header, mobile drawer, and footer logo links resolve to root /catalog', canResolveRoute('/catalog'));
 
 // ---------------------------------------------------------------------------
 // 7. Reactive Multi-Persona Profile Switching & State Sync

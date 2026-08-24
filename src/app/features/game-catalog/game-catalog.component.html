@@ -1,8 +1,10 @@
 <div class="catalog-page">
+  <h1 class="sr-only">NEXORA — Discover Cyberpunk &amp; Indie Games</h1>
+
   <!-- =========================================================================
        STEAM FEATURED & RECOMMENDED CAROUSEL (Authentic Steam Architecture)
        ========================================================================= -->
-  @if (!searchTerm && selectedTags.size === 0 && currentHeroGame) {
+  @if (currentHeroGame) {
     <section class="steam-featured-section" aria-label="Featured and Recommended">
       <h2 class="featured-section-title">FEATURED & RECOMMENDED</h2>
 
@@ -44,10 +46,11 @@
             <div class="info-mid-section">
               <div class="info-status-row">
                 <span class="status-badge">Now Available</span>
-                <span class="review-sentiment-pill">
-                  <span class="sentiment-dot">●</span>
-                  ★ 4.9 · Very Positive
-                </span>
+                <div class="review-sentiment-pill" title="Overall User Reviews: Very Positive (4.9 / 5.0)" aria-label="Overall User Reviews: Very Positive, 4.9 rating">
+                  <span class="rating-star-score">★ 4.9</span>
+                  <span class="rating-divider" aria-hidden="true">·</span>
+                  <span class="rating-sentiment">Very Positive</span>
+                </div>
               </div>
 
               <div class="info-tags-list">
@@ -111,24 +114,6 @@
         </button>
       </div>
     </section>
-  } @else {
-    <!-- Compact Storefront Header for Filter/Search Active Views -->
-    <header class="catalog-hero-compact">
-      <div class="compact-header-content">
-        <h1 class="hero-title">
-          @if (searchTerm) {
-            Search: <span class="highlight-term">"{{ searchTerm }}"</span>
-          } @else if (selectedTags.size > 0) {
-            Filtered Catalog
-          } @else {
-            Game Library & Discover
-          }
-        </h1>
-        <p class="hero-subtitle">
-          Direct standalone downloads with authentic creator ownership.
-        </p>
-      </div>
-    </header>
   }
 
   <!-- =========================================================================
@@ -225,12 +210,16 @@
       <span class="results-count" aria-live="polite" aria-atomic="true">
         Showing <strong>{{ filteredGames.length }}</strong> {{ filteredGames.length === 1 ? 'title' : 'titles' }}
         @if (selectedTags.size > 0) {
-          in selected tags
+          in <span class="active-tag-summary">{{ selectedTagsSummary }}</span>
+        }
+        @if (searchTerm) {
+          matching <span class="active-tag-summary">"{{ searchTerm }}"</span>
         }
       </span>
       @if (selectedTags.size > 0 || searchTerm || sortBy !== 'featured') {
-        <button type="button" class="btn-reset-filters" (click)="resetAllFilters()">
-          Reset View
+        <button type="button" class="btn-reset-filters" (click)="resetAllFilters()" aria-label="Reset all active filters" title="Reset to default view">
+          <span>Reset View</span>
+          <span class="reset-cross" aria-hidden="true">✕</span>
         </button>
       }
     </div>

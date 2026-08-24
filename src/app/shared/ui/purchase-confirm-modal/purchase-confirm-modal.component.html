@@ -65,10 +65,10 @@
           <button 
             type="button" 
             class="card-brand-btn" 
-            [class.active]="selectedCardBrand === 'visa'"
+            [class.active]="selectedCardBrand() === 'visa'"
             (click)="setCardBrand('visa')"
             role="radio"
-            [attr.aria-checked]="selectedCardBrand === 'visa'">
+            [attr.aria-checked]="selectedCardBrand() === 'visa'">
             <div class="brand-logo-wrap visa">
               <span class="visa-logo-text">VISA</span>
             </div>
@@ -83,10 +83,10 @@
           <button 
             type="button" 
             class="card-brand-btn" 
-            [class.active]="selectedCardBrand === 'mastercard'"
+            [class.active]="selectedCardBrand() === 'mastercard'"
             (click)="setCardBrand('mastercard')"
             role="radio"
-            [attr.aria-checked]="selectedCardBrand === 'mastercard'">
+            [attr.aria-checked]="selectedCardBrand() === 'mastercard'">
             <div class="brand-logo-wrap mastercard">
               <span class="mastercard-circles">
                 <span class="circle red"></span>
@@ -102,20 +102,20 @@
         </div>
 
         <!-- Interactive Virtual Card Chip Strip -->
-        <div class="virtual-card-strip" [class.visa-mode]="selectedCardBrand === 'visa'" [class.mc-mode]="selectedCardBrand === 'mastercard'">
+        <div class="virtual-card-strip" [class.visa-mode]="selectedCardBrand() === 'visa'" [class.mc-mode]="selectedCardBrand() === 'mastercard'">
           <div class="card-strip-top">
             <span class="card-chip-icon"></span>
-            <span class="card-brand-badge">{{ selectedCardBrand === 'visa' ? 'VISA CREDIT / DEBIT' : 'MASTERCARD WORLD' }}</span>
+            <span class="card-brand-badge">{{ selectedCardBrand() === 'visa' ? 'VISA CREDIT / DEBIT' : 'MASTERCARD WORLD' }}</span>
           </div>
-          <div class="card-strip-number">{{ cardNumber }}</div>
+          <div class="card-strip-number">{{ cardNumber() }}</div>
           <div class="card-strip-bottom">
             <div>
               <span class="strip-label">Card Holder</span>
-              <span class="strip-val">{{ cardHolder }}</span>
+              <span class="strip-val">{{ cardHolder() }}</span>
             </div>
             <div>
               <span class="strip-label">Expires</span>
-              <span class="strip-val">{{ cardExpiry }}</span>
+              <span class="strip-val">{{ cardExpiry() }}</span>
             </div>
           </div>
         </div>

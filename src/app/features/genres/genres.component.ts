@@ -236,6 +236,9 @@ export class GenresComponent implements OnInit {
 
       const sorted = Object.keys(counts).map(tag => {
         const meta = this.genreMeta[tag] || this.defaultMeta;
+        // SECURITY AUDIT NOTE: `meta.svg` is sourced strictly from the static, compile-time
+        // `genreMeta` record declared internally in this file (zero user-supplied inputs).
+        // `bypassSecurityTrustHtml` is safe here because all SVG paths are compile-time constants.
         return {
           name: tag,
           count: counts[tag],

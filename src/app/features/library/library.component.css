@@ -55,27 +55,35 @@
 }
 
 .library-stats-pill {
-  display: flex;
-  flex-direction: column;
+  display: inline-flex;
   align-items: center;
-  padding: 8px 18px;
-  background: var(--bg-elevated);
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--bg-surface);
   border: 1px solid var(--border-card);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.15s ease;
+}
+
+.library-stats-pill:hover {
+  border-color: var(--emerald-400);
+  background: var(--bg-elevated);
 }
 
 .stats-count {
-  font-size: 1.5rem;
-  font-weight: 900;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 800;
   color: var(--emerald-400);
   line-height: 1;
 }
 
 .stats-label {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  font-weight: 600;
-  margin-top: 2px;
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }

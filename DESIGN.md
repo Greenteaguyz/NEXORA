@@ -140,3 +140,25 @@ NEXORA adheres to the **Impeccable Standard**: high-utility, media-first desktop
 4. ❌ **No Rubber-Band Easing**: Never use `cubic-bezier(0.34, 1.56, 0.64, 1)`. Use `0.15s ease`.
 5. ❌ **No Pseudo-Sci-Fi Copy**: Never use `DIRECT ACQUISITION`, `PREMIERE SHOWCASE`, or bracketed tags `[DRM-FREE]`.
 6. ❌ **No Random Pill Buttons**: Never use `border-radius: 9999px` on administrative/utility buttons.
+
+---
+
+## 9. Speedtest Dual-Segment Theme Switcher Specification
+
+* **Geometry**: `58px × 30px` pill container with `24px × 24px` sliding indicator thumb (`transform: translateX(28px)` in Dark mode; `translateX(0px)` in Light mode).
+* **Coloration**:
+  * **Sun Segment (Light Mode)**: Warm Amber (`#F59E0B`) with subtle golden specular glow.
+  * **Moon Segment (Dark Mode)**: Electric Cyan (`#66C0F4`) with Steam Cyan specular glow.
+* **Transition Motion**: Snappy `0.2s cubic-bezier(0.16, 1, 0.3, 1)` sliding thumb.
+
+---
+
+## 10. Unified Steam Deck Hub Mobile Navigation Architecture
+
+* **Zero-Scroll Fit**: `36px` compact row height with `2px` vertical gaps; eliminates all vertical scrollbars on standard mobile viewports (`600px - 844px`).
+* **Integrated 2-Row Footer Control Card**:
+  * **Row 1**: User avatar (`30px`), display name, role badge (`CREATOR`/`BUYER`), and squircle logout button.
+  * **Row 2**: Speedtest Theme Switcher on the left, Persona segmented capsule `[ Alice | Bob ]` on the right.
+* **Pixel-Aligned Grid**: Icons centered in `17px × 17px` bounding boxes, labels aligned on uniform `10px` left margin, and category headers sharing identical baseline alignment.
+* **Accessibility**: Keyboard focus trapping (`Tab`/`Shift+Tab`), auto-focus on close button on open, `Escape` key dismissal, and `env(safe-area-inset-bottom)` device padding.
+

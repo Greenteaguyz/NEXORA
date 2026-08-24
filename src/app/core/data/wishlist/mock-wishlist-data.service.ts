@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of, delay } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { WishlistEntry } from '../../models/wishlist-entry.model';
 import { WishlistDataService } from '../tokens';
 import { LocalStoreService } from '../../persistence/local-store.service';
