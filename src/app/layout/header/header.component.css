@@ -1035,10 +1035,6 @@
   .header-container {
     padding: 0 var(--space-4);
   }
-
-  .auth-status {
-    display: none;
-  }
 }
 
 /* ==========================================================================
@@ -1049,6 +1045,39 @@
 }
 
 @media (max-width: 768px) {
+  .hamburger-btn,
+  .mobile-menu-toggle {
+    display: none !important;
+  }
+
+  .speedtest-theme-switcher {
+    display: none !important;
+  }
+
+  .btn-logout {
+    display: none !important;
+  }
+
+  .user-chip {
+    padding: 2px !important;
+    border-radius: var(--radius-full) !important;
+    gap: 0 !important;
+  }
+
+  .user-chip .user-name,
+  .user-chip .role-tag {
+    display: none !important;
+  }
+
+  .user-avatar {
+    width: 32px !important;
+    height: 32px !important;
+  }
+
+  .header-right {
+    gap: var(--space-2) !important;
+  }
+
   .mobile-bottom-bar {
     display: flex;
     position: fixed;

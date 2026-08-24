@@ -1625,6 +1625,30 @@ assert('Bottom Bar Safe Area', 'Bottom padding expands to 40px when safe-area is
   computeBottomBarPadding(6, 34) === 40
 );
 
+// Test 4: Viewport-Driven Menu Toggle Redundancy Elimination
+function resolveMenuControls(viewportWidth: number): { topHamburger: boolean; bottomNav: boolean } {
+  if (viewportWidth > 1024) {
+    return { topHamburger: false, bottomNav: false }; // Desktop full nav
+  }
+  if (viewportWidth > 768) {
+    return { topHamburger: true, bottomNav: false }; // Tablet uses top hamburger
+  }
+  return { topHamburger: false, bottomNav: true }; // Mobile uses bottom nav [Menu], eliminating redundant top hamburger
+}
+
+assert('Menu Redundancy Elimination', 'Desktop (1440px) hides both top hamburger and mobile bottom bar',
+  resolveMenuControls(1440).topHamburger === false &&
+  resolveMenuControls(1440).bottomNav === false
+);
+assert('Menu Redundancy Elimination', 'Tablet (900px) displays top hamburger and hides bottom bar',
+  resolveMenuControls(900).topHamburger === true &&
+  resolveMenuControls(900).bottomNav === false
+);
+assert('Menu Redundancy Elimination', 'Mobile (390px) displays bottom bar [Menu] and hides redundant top hamburger',
+  resolveMenuControls(390).topHamburger === false &&
+  resolveMenuControls(390).bottomNav === true
+);
+
 // ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
