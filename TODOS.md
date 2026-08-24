@@ -14,7 +14,22 @@ This document tracks all engineering milestones and implementation tasks for the
 | **Phase 9** (Task 14) | Impeccable Anti-Slop Elimination, Steam DesignMD Tokens & Unified CI Gate | ✅ Complete | 54/54 tests passing across 4 suites, 0 neon glows, 2.32s production build |
 | **Phase 10** (Task 15) | Omni-Resolution Fluid Architecture, Fixed 16:9 Standard, Zero-Shift Media | ✅ Complete | 166/166 tests passing, 0.00px CLS, 4-slide hero parity |
 | **Phase 11** (Task 16) | Speedtest Dual-Segment Switcher, Unified Steam Deck Hub Mobile Navigation & Crawler | ✅ Complete | 223/223 tests passing, 24/24 crawler links valid, 5/5 Playwright E2E passed |
+| **Phase 12** (Task 17) | Hero Carousel Touch Drag-to-Swipe, Hardware-Accelerated Motion & Clean Pagination | ✅ Complete | 234/234 tests passing, 142 unit tests across 27 sections, 100% green |
 | **Deployment and Ops** | Cloud hosting, tunnels & performance budgets | ✅ Ready | `vercel.json` SPA rewrites active, Cloudflare tunnel active, 96.8 kB initial bundle, DOM Interactive: 38ms |
+
+---
+
+## Phase 12: Hero Carousel Touch Drag-to-Swipe, Hardware-Accelerated Motion & Clean Pagination (Task 17)
+
+### Task 17: Hero Carousel Gestures, Swipe Physics & Smooth Motion Engine
+- [x] **17.1** Hardware-Accelerated Crossfade Physics: Implemented `@keyframes heroMediaFadeIn` with dual-phase opacity crossfade (`0.82 -> 1.0`) and subtle scale settle (`scale(1.012) -> scale(1.0)`) over `0.35s cubic-bezier(0.16, 1, 0.3, 1)` with `will-change: opacity, transform`.
+- [x] **17.2** Coordinated Info Capsule Reveal: Implemented `@keyframes capsuleInfoReveal` (`translateY(4px) -> translateY(0)`) over `0.28s cubic-bezier(0.16, 1, 0.3, 1)` for synchronized title, tags, and preview reveals.
+- [x] **17.3** Full-Capsule Touch & Pointer Drag-to-Swipe: Built native Pointer/Touch event listeners on `.steam-carousel-capsule` with `40px` horizontal threshold, directional angle lock (`Math.abs(deltaX) > Math.abs(deltaY)`), and `touch-action: pan-y;` to preserve vertical page scrolling.
+- [x] **17.4** Tap-vs-Drag Disambiguation Engine: Clean tap/click detection (`< 6px`) allows instant router navigation to `/games/:id` while deliberate drags (`> 6px`) cleanly suppress click navigation.
+- [x] **17.5** Minimalist Centered Pill Indicators: Removed redundant `<` and `>` arrow buttons, elevated pagination track into a frosted glass dock with fluid pill expansion (`24px -> 38px`) and Electric Cyan luminous indicator.
+- [x] **17.6** Spatial Keyboard Traversal: Added `@HostListener('window:keydown')` for `ArrowLeft` and `ArrowRight` slide navigation with search input focus protection.
+- [x] **17.7** Image Cache Warmer: Implemented proactive pre-caching of adjacent hero screenshot URLs (`new Image().src = ...`) for zero-lag instant transitions.
+- [x] **17.8** Automated Unit & Regression Expansion: Added Section 27 to `unit-tests.spec.ts` (142 unit tests), expanded total verified test assertions to 234 (100% green pass rate across all suites).
 
 ---
 

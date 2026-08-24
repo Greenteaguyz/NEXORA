@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
@@ -42,6 +42,19 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
   sortBy: 'featured' | 'newest' | 'price-asc' | 'price-desc' | 'title-asc' = 'featured';
   loading = true;
 
+  isTransitioning = false;
+  private transitionTimer: any = null;
+
+  // Touch & Pointer Drag Tracking
+  isDragging = false;
+  hasSwiped = false;
+  private startX = 0;
+  private startY = 0;
+  private currentX = 0;
+  private currentY = 0;
+  readonly SWIPE_THRESHOLD = 40;
+  readonly TAP_THRESHOLD = 6;
+
   private searchSubject = new Subject<string>();
   private subs = new Subscription();
   private autoRotateInterval: any = null;
@@ -75,6 +88,10 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subs.unsubscribe();
     this.stopAutoRotate();
+    if (this.transitionTimer) {
+      clearTimeout(this.transitionTimer);
+      this.transitionTimer = null;
+    }
   }
 
   private setupSearchDebounce(): void {
@@ -101,8 +118,14 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
   }
 
   setHeroIndex(index: number): void {
-    this.activeHeroIndex = (index + this.featuredGames.length) % this.featuredGames.length;
+    if (this.featuredGames.length === 0) return;
+    const nextIndex = (index + this.featuredGames.length) % this.featuredGames.length;
+    if (nextIndex === this.activeHeroIndex && !this.hoveredScreenshotUrl) return;
+
+    this.activeHeroIndex = nextIndex;
     this.hoveredScreenshotUrl = null;
+    this.triggerSlideTransition();
+    this.preloadAdjacentImages();
   }
 
   nextHero(): void {
@@ -111,6 +134,95 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
 
   prevHero(): void {
     this.setHeroIndex(this.activeHeroIndex - 1);
+  }
+
+  private triggerSlideTransition(): void {
+    this.isTransitioning = true;
+    if (this.transitionTimer) {
+      clearTimeout(this.transitionTimer);
+    }
+    this.transitionTimer = setTimeout(() => {
+      this.isTransitioning = false;
+      this.transitionTimer = null;
+    }, 350);
+  }
+
+  private preloadAdjacentImages(): void {
+    if (typeof window === 'undefined' || !this.featuredGames.length) return;
+    const nextIdx = (this.activeHeroIndex + 1) % this.featuredGames.length;
+    const prevIdx = (this.activeHeroIndex - 1 + this.featuredGames.length) % this.featuredGames.length;
+    [this.featuredGames[nextIdx], this.featuredGames[prevIdx]].forEach(g => {
+      if (g?.screenshotUrls?.[0]) {
+        const img = new Image();
+        img.src = g.screenshotUrls[0];
+      }
+    });
+  }
+
+  // Pointer & Touch Handlers for Drag-to-Swipe
+  onPointerDown(event: PointerEvent): void {
+    if (event.button !== 0) return;
+    this.startX = event.clientX;
+    this.startY = event.clientY;
+    this.currentX = event.clientX;
+    this.currentY = event.clientY;
+    this.isDragging = true;
+    this.hasSwiped = false;
+    this.stopAutoRotate();
+  }
+
+  onPointerMove(event: PointerEvent): void {
+    if (!this.isDragging) return;
+    this.currentX = event.clientX;
+    this.currentY = event.clientY;
+    const deltaX = this.currentX - this.startX;
+    if (Math.abs(deltaX) > this.TAP_THRESHOLD) {
+      this.hasSwiped = true;
+    }
+  }
+
+  onPointerUp(event: PointerEvent): void {
+    if (!this.isDragging) return;
+    const deltaX = this.currentX - this.startX;
+    const deltaY = this.currentY - this.startY;
+    this.isDragging = false;
+
+    if (Math.abs(deltaX) >= this.SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX < 0) {
+        this.nextHero();
+      } else {
+        this.prevHero();
+      }
+    }
+    this.startAutoRotate();
+  }
+
+  onPointerCancel(): void {
+    this.isDragging = false;
+    this.hasSwiped = false;
+    this.startAutoRotate();
+  }
+
+  onMediaClick(event: MouseEvent): void {
+    if (this.hasSwiped) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.hasSwiped = false;
+    }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    const target = event.target as HTMLElement;
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+      return;
+    }
+
+    if (event.key === 'ArrowLeft') {
+      this.prevHero();
+    } else if (event.key === 'ArrowRight') {
+      this.nextHero();
+    }
   }
 
   onScreenshotHover(url: string): void {
@@ -129,7 +241,7 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
   startAutoRotate(): void {
     this.stopAutoRotate();
     this.autoRotateInterval = setInterval(() => {
-      if (!this.hoveredScreenshotUrl && this.featuredGames.length > 1) {
+      if (!this.hoveredScreenshotUrl && !this.isDragging && this.featuredGames.length > 1) {
         this.nextHero();
       }
     }, 7000);

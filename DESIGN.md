@@ -162,3 +162,20 @@ NEXORA adheres to the **Impeccable Standard**: high-utility, media-first desktop
 * **Pixel-Aligned Grid**: Icons centered in `17px × 17px` bounding boxes, labels aligned on uniform `10px` left margin, and category headers sharing identical baseline alignment.
 * **Accessibility**: Keyboard focus trapping (`Tab`/`Shift+Tab`), auto-focus on close button on open, `Escape` key dismissal, and `env(safe-area-inset-bottom)` device padding.
 
+---
+
+## 11. Hero Carousel Motion, Gesture & Pagination Architecture
+
+* **Hardware-Accelerated Crossfade**: Main media screenshot executes dual-phase opacity crossfade (`0.82 -> 1.0`) with subtle scale settle (`scale(1.012) -> scale(1.0)`) over `0.35s cubic-bezier(0.16, 1, 0.3, 1)`.
+* **Coordinated Info Reveal**: Game title, tags, status badge, and preview thumbnails micro-rise `4px` with synchronized opacity fade over `0.28s cubic-bezier(0.16, 1, 0.3, 1)`.
+* **Touch & Pointer Drag-to-Swipe**:
+  * `40px` minimum horizontal threshold with angle lock (`Math.abs(deltaX) > Math.abs(deltaY)`).
+  * `< 6px` movement recognized as clean tap/click for instant router navigation.
+  * `touch-action: pan-y;` guarantees 0 interference with vertical page scrolling.
+  * Tactile `cursor: grab` and `cursor: grabbing` desktop mouse cues.
+* **Minimalist Electric Cyan Pagination Bar**:
+  * Centered pill indicators inside frosted glass dock (`padding: 4px 10px; backdrop-filter: blur(8px)`).
+  * Fluid pill expansion (`24px -> 38px`) over `0.32s cubic-bezier(0.16, 1, 0.3, 1)` with Electric Cyan luminous indicator.
+* **Keyboard Spatial Navigation**: Native `ArrowLeft` / `ArrowRight` arrow key shortcuts for instant slide traversal.
+* **Accessibility & Reduced Motion**: `@media (prefers-reduced-motion: reduce)` bypasses all transforms and sets animation duration to `0.01ms`.
+

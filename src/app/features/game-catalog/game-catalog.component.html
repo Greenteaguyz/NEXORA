@@ -8,9 +8,22 @@
     <section class="steam-featured-section" aria-label="Featured and Recommended">
       <h2 class="featured-section-title">FEATURED & RECOMMENDED</h2>
 
-      <div class="steam-carousel-capsule" (mouseenter)="stopAutoRotate()" (mouseleave)="startAutoRotate()">
+      <div 
+        class="steam-carousel-capsule" 
+        [class.animating-slide]="isTransitioning"
+        [class.is-dragging]="isDragging"
+        (mouseenter)="stopAutoRotate()" 
+        (mouseleave)="startAutoRotate()"
+        (pointerdown)="onPointerDown($event)"
+        (pointermove)="onPointerMove($event)"
+        (pointerup)="onPointerUp($event)"
+        (pointercancel)="onPointerCancel()">
         <!-- Left: Large Gameplay Media / Screenshot Viewport -->
-        <a [routerLink]="['/games', currentHeroGame.id]" class="carousel-main-media" [attr.aria-label]="'View details for ' + currentHeroGame.title">
+        <a 
+          [routerLink]="['/games', currentHeroGame.id]" 
+          class="carousel-main-media" 
+          [attr.aria-label]="'View details for ' + currentHeroGame.title"
+          (click)="onMediaClick($event)">
           <img 
             [src]="currentHeroImage" 
             [alt]="currentHeroGame.title + ' Screenshot'" 
@@ -26,7 +39,7 @@
             </div>
 
             <h3 class="info-game-title">
-              <a [routerLink]="['/games', currentHeroGame.id]">{{ currentHeroGame.title }}</a>
+              <a [routerLink]="['/games', currentHeroGame.id]" (click)="onMediaClick($event)">{{ currentHeroGame.title }}</a>
             </h3>
 
             <!-- 4 Interactive Mini Screenshots (2x2 Grid) -->
@@ -84,14 +97,8 @@
         </div>
       </div>
 
-      <!-- Pagination Track with Arrows & Indicators -->
-      <div class="carousel-nav-track" role="tablist" aria-label="Carousel navigation">
-        <button type="button" class="btn-nav-arrow" (click)="prevHero()" aria-label="Previous featured game">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 18 9 12 15 6"/>
-          </svg>
-        </button>
-
+      <!-- Clean Minimalist Pagination Track (Interactive Pill Indicators) -->
+      <div class="carousel-nav-track" role="tablist" aria-label="Featured games carousel navigation">
         <div class="nav-pills-group">
           @for (fGame of featuredGames; track fGame.id; let idx = $index) {
             <button 
@@ -106,12 +113,6 @@
             </button>
           }
         </div>
-
-        <button type="button" class="btn-nav-arrow" (click)="nextHero()" aria-label="Next featured game">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
-        </button>
       </div>
     </section>
   }

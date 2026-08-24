@@ -270,6 +270,26 @@
   2. Use compact 36px item heights with 2px vertical rhythm to guarantee zero-scroll fit.
   3. Implement body scroll locking (`document.body.style.overflow = 'hidden'`) and keyboard focus trapping.
 
+---
+
+## [Pattern] Hardware-Accelerated Hero Carousel Touch Swipe, Drag Physics & Clean Pill Navigation
+
+### Context
+- Hero banner carousels often suffer from abrupt image snaps when replacing `[src]`, visual clutter from stacked navigation buttons, and lack of touch swipe support on handhelds/mobile devices.
+
+### Root Cause / Core Insight
+- **Dual-Phase GPU Crossfade**: Applying CSS keyframes (`opacity: 0.82 -> 1.0` and `transform: scale(1.012) -> scale(1.0)` over `0.35s cubic-bezier(0.16, 1, 0.3, 1)`) with `will-change: opacity, transform` creates an ultra-smooth cinematic transition without layout shifts (CLS = 0).
+- **Pointer/Touch Drag Physics**: Bounding gestures with a `40px` horizontal threshold and angle lock (`Math.abs(deltaX) > Math.abs(deltaY)`) ensures vertical scrolling is preserved (`touch-action: pan-y;`).
+- **Tap vs Drag Disambiguation**: Checking `Math.abs(deltaX) < 6px` distinguishes intentional taps (navigating to `/games/:id`) from deliberate slide dragging.
+- **Button Elimination & Clean Pill Dock**: Removing redundant `<` and `>` arrow buttons declutters the interface; fluid pill expansion (`24px -> 38px`) provides high-tactile jump targets with Electric Cyan progress illumination.
+
+### The Pattern (Transferable)
+- In high-craft web carousels:
+  1. Use native Pointer/Touch event listeners on the container with `touch-action: pan-y;` and `user-select: none;`.
+  2. Implement tap vs drag distance thresholds (`< 6px` = click, `> 40px` = swipe).
+  3. Pre-cache adjacent slide media in memory (`new Image().src = ...`) for 0ms decoding lag.
+  4. Pair with keyboard arrow keys (`ArrowLeft`/`ArrowRight`) and WCAG `prefers-reduced-motion` fallbacks.
+
 
 
 

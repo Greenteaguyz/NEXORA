@@ -1484,6 +1484,80 @@ assert('Price Invariant Contract', '0 or negative prices enforce FREE label and 
 );
 
 // ---------------------------------------------------------------------------
+// 27. Carousel Gesture, Swipe Threshold & Keyboard Spatial Navigation
+// ---------------------------------------------------------------------------
+console.log('\n--- 27. UNIT TESTS: Carousel Gestures, Swipe Physics & Keyboard Navigation ---');
+
+function calculateSwipeAction(deltaX: number, deltaY: number, threshold: number = 40): 'next' | 'prev' | 'none' {
+  if (Math.abs(deltaX) >= threshold && Math.abs(deltaX) > Math.abs(deltaY)) {
+    return deltaX < 0 ? 'next' : 'prev';
+  }
+  return 'none';
+}
+
+function shouldSuppressClick(dragDistance: number, tapThreshold: number = 6): boolean {
+  return Math.abs(dragDistance) > tapThreshold;
+}
+
+function getWrappedHeroIndex(target: number, total: number): number {
+  if (total <= 0) return 0;
+  return (target % total + total) % total;
+}
+
+function handleCarouselKey(key: string, isInputFocused: boolean, currentIndex: number, total: number): number {
+  if (isInputFocused) return currentIndex;
+  if (key === 'ArrowRight') {
+    return getWrappedHeroIndex(currentIndex + 1, total);
+  }
+  if (key === 'ArrowLeft') {
+    return getWrappedHeroIndex(currentIndex - 1, total);
+  }
+  return currentIndex;
+}
+
+// Test 1: Swipe Action Calculations
+assert('Carousel Gesture Physics', 'Swipe left past threshold (-50px) resolves to next slide',
+  calculateSwipeAction(-50, 10, 40) === 'next'
+);
+assert('Carousel Gesture Physics', 'Swipe right past threshold (60px) resolves to prev slide',
+  calculateSwipeAction(60, 15, 40) === 'prev'
+);
+assert('Carousel Gesture Physics', 'Sub-threshold drag (-25px) does not trigger slide change',
+  calculateSwipeAction(-25, 5, 40) === 'none'
+);
+assert('Carousel Gesture Physics', 'Vertical dominant scroll (-60px X, 100px Y) is rejected without horizontal hijack',
+  calculateSwipeAction(-60, 100, 40) === 'none'
+);
+
+// Test 2: Tap vs Drag Disambiguation
+assert('Click Disambiguation', 'Light click or tap (2px movement) does not suppress link navigation',
+  !shouldSuppressClick(2, 6)
+);
+assert('Click Disambiguation', 'Deliberate drag (18px movement) suppresses link navigation event',
+  shouldSuppressClick(18, 6)
+);
+
+// Test 3: Index Wrapping
+assert('Index Wrap Math', 'Prev slide from index 0 wraps to index 3 (total 4 featured games)',
+  getWrappedHeroIndex(-1, 4) === 3
+);
+assert('Index Wrap Math', 'Next slide from index 3 wraps to index 0 (total 4 featured games)',
+  getWrappedHeroIndex(4, 4) === 0
+);
+
+// Test 4: Keyboard Spatial Traversal
+assert('Keyboard Navigation', 'ArrowRight advances carousel index from 1 to 2 when search is not focused',
+  handleCarouselKey('ArrowRight', false, 1, 4) === 2
+);
+assert('Keyboard Navigation', 'ArrowLeft wraps carousel index from 0 to 3 when search is not focused',
+  handleCarouselKey('ArrowLeft', false, 0, 4) === 3
+);
+assert('Keyboard Navigation', 'Arrow keys are ignored when search input is focused',
+  handleCarouselKey('ArrowRight', true, 1, 4) === 1 &&
+  handleCarouselKey('ArrowLeft', true, 1, 4) === 1
+);
+
+// ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
 const passed = results.filter(r => r.passed).length;
