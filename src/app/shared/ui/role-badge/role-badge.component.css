@@ -22,18 +22,30 @@
 }
 
 .role-creator {
+  background: rgba(117, 176, 34, 0.12);
+  color: var(--emerald-400, #8ED629);
+  border: 1px solid rgba(117, 176, 34, 0.35);
+}
+
+.role-buyer {
   background: rgba(102, 192, 244, 0.12);
   color: var(--accent-400, #66C0F4);
   border: 1px solid rgba(102, 192, 244, 0.35);
 }
 
-.role-buyer {
-  background: rgba(6, 182, 212, 0.12);
-  color: var(--cyan-400, #22D3EE);
-  border: 1px solid rgba(6, 182, 212, 0.35);
-}
-
 .role-icon {
   font-size: 0.85em;
   line-height: 1;
+}
+
+:host-context([data-theme="light"]) .role-creator {
+  background: rgba(85, 139, 47, 0.1);
+  color: #2E7D32;
+  border-color: rgba(85, 139, 47, 0.3);
+}
+
+:host-context([data-theme="light"]) .role-buyer {
+  background: rgba(0, 120, 212, 0.08);
+  color: #0078D4;
+  border-color: rgba(0, 120, 212, 0.25);
 }

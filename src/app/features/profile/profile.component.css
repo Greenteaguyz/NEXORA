@@ -1122,3 +1122,49 @@
     border-color: var(--border-card);
   }
 }
+
+/* Light Mode Overrides for High Contrast */
+:host-context([data-theme="light"]) .btn-reset-db {
+  background: rgba(217, 119, 6, 0.08);
+  border-color: rgba(217, 119, 6, 0.4);
+  color: #B45309;
+}
+
+:host-context([data-theme="light"]) .btn-reset-db:hover {
+  background: rgba(217, 119, 6, 0.16);
+  border-color: #B45309;
+}
+
+:host-context([data-theme="light"]) .btn-toggle-creator {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  color: #334155;
+}
+
+:host-context([data-theme="light"]) .btn-toggle-creator:hover {
+  border-color: var(--accent-500);
+  background: #F1F5F9;
+  color: #0F172A;
+}
+
+:host-context([data-theme="light"]) .btn-toggle-creator.active {
+  background: #F8FAFC;
+  border-color: #CBD5E1;
+  color: #475569;
+}
+
+:host-context([data-theme="light"]) .btn-toggle-creator.active:hover {
+  border-color: #E11D48;
+  background: #FFF1F2;
+  color: #BE123C;
+}
+
+:host-context([data-theme="light"]) .btn-keep-creator {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+  color: #0F172A;
+}
+
+:host-context([data-theme="light"]) .btn-keep-creator:hover {
+  background: #E2E8F0;
+}

@@ -1156,6 +1156,11 @@
     border-radius: 2px;
   }
 
+  :host-context([data-theme="light"]) .mobile-tab.active::before {
+    background-color: var(--accent-400);
+    box-shadow: 0 0 6px rgba(0, 120, 212, 0.4);
+  }
+
   .mobile-tab-svg {
     width: 20px;
     height: 20px;
