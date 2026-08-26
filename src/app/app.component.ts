@@ -20,9 +20,7 @@ import { DownloadTrayComponent } from './shared/ui/download-tray/download-tray.c
     <app-footer></app-footer>
     <app-toast></app-toast>
     <app-download-tray></app-download-tray>
-    @defer (on idle) {
-      <app-command-palette></app-command-palette>
-    }
+    <app-command-palette></app-command-palette>
 
     <!-- Pure Virtual Floating Overlay Scroll Indicator (0px Layout Displacement & 2s Auto-Hide) -->
     <div 

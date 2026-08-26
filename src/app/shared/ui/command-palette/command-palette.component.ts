@@ -1,8 +1,10 @@
-import { Component, ElementRef, HostListener, ViewChild, inject, signal, computed, effect } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild, inject, signal, computed, OnInit, DestroyRef, effect } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { GAMES_DATA } from '../../../core/data/tokens';
 import { AuthService } from '../../../core/auth/auth.service';
+import { CommandPaletteService } from '../../../core/services/command-palette.service';
 import { Game } from '../../../core/models/game.model';
 
 export interface CommandItem {
@@ -25,18 +27,30 @@ export interface CommandItem {
   templateUrl: './command-palette.component.html',
   styleUrls: ['./command-palette.component.css']
 })
-export class CommandPaletteComponent {
+export class CommandPaletteComponent implements OnInit {
   private gamesData = inject(GAMES_DATA);
   private router = inject(Router);
   private auth = inject(AuthService);
+  private destroyRef = inject(DestroyRef);
+  private paletteService = inject(CommandPaletteService);
 
   @ViewChild('searchInput') searchInputRef!: ElementRef<HTMLInputElement>;
 
-  isOpen = signal(false);
+  isOpen = this.paletteService.isOpen;
   searchQuery = signal('');
   selectedIndex = signal(0);
 
   games = signal<Game[]>([]);
+
+  ngOnInit(): void {
+    this.loadGames();
+  }
+
+  private loadGames(): void {
+    this.gamesData.getGames().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(games => {
+      this.games.set(games);
+    });
+  }
 
   readonly navCommands: CommandItem[] = [
     { id: 'nav-store', title: 'Store Catalog', category: 'Pages', subtitle: 'Browse all games & new releases', icon: 'store', route: '/catalog' },
@@ -102,43 +116,28 @@ export class CommandPaletteComponent {
     return [...matchedGames, ...matchedNav];
   });
 
-  constructor() {
-    this.gamesData.getGames().subscribe(gamesList => {
-      this.games.set(gamesList || []);
-    });
-
-    effect(() => {
-      if (this.isOpen()) {
-        this.searchQuery.set('');
-        this.selectedIndex.set(0);
-        setTimeout(() => {
-          if (this.searchInputRef) {
-            this.searchInputRef.nativeElement.value = '';
-            this.searchInputRef.nativeElement.focus();
-          }
-        }, 50);
-      } else {
-        this.searchQuery.set('');
-        this.selectedIndex.set(0);
-      }
-    });
-  }
-
   open(): void {
-    this.searchQuery.set('');
-    this.selectedIndex.set(0);
-    this.isOpen.set(true);
+    this.paletteService.open();
   }
 
   close(): void {
-    this.searchQuery.set('');
-    this.selectedIndex.set(0);
-    this.isOpen.set(false);
+    this.paletteService.close();
   }
 
-  @HostListener('window:open-command-palette')
-  onOpenCommandPaletteEvent(): void {
-    this.open();
+  private resetQuery(): void {
+    this.searchQuery.set('');
+    this.selectedIndex.set(0);
+    if (this.searchInputRef) {
+      this.searchInputRef.nativeElement.value = '';
+    }
+  }
+
+  private focusInput(): void {
+    setTimeout(() => {
+      if (this.searchInputRef) {
+        this.searchInputRef.nativeElement.focus();
+      }
+    }, 50);
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -147,7 +146,7 @@ export class CommandPaletteComponent {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
       event.preventDefault();
       event.stopPropagation();
-      this.isOpen.update(v => !v);
+      this.paletteService.toggle();
       return;
     }
 

@@ -32,11 +32,12 @@
           class="carousel-main-media" 
           [attr.aria-label]="'View details for ' + currentHeroGame.title"
           (click)="onMediaClick($event)">
-          <img 
-            [src]="currentHeroImage" 
-            [alt]="currentHeroGame.title + ' Screenshot'" 
+          <img
+            [src]="currentHeroImage"
+            [alt]="currentHeroGame.title + ' Screenshot'"
             class="main-media-img"
-            decoding="sync">
+            decoding="async"
+            fetchpriority="high">
         </a>
 
         <!-- Right: Steam Info Capsule -->

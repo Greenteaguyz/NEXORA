@@ -5,6 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { ThemeService } from '../../core/theme/theme.service';
+import { CommandPaletteService } from '../../core/services/command-palette.service';
 import { WISHLIST_DATA } from '../../core/data/tokens';
 import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.component';
 
@@ -18,6 +19,7 @@ import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.compon
 export class HeaderComponent implements OnDestroy {
   authService = inject(AuthService);
   themeService = inject(ThemeService);
+  commandPaletteService = inject(CommandPaletteService);
   private router = inject(Router);
   private wishlistData = inject(WISHLIST_DATA);
 
@@ -50,7 +52,7 @@ export class HeaderComponent implements OnDestroy {
       } else {
         this.wishlistCount.set(0);
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   ngOnDestroy(): void {
@@ -138,7 +140,7 @@ export class HeaderComponent implements OnDestroy {
   }
 
   triggerCommandPalette(): void {
-    window.dispatchEvent(new CustomEvent('open-command-palette'));
+    this.commandPaletteService.open();
   }
 
   @HostListener('window:scroll')

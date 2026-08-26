@@ -42,11 +42,12 @@
           (touchstart)="onTouchStart($event)"
           (touchend)="onTouchEnd($event)"
           (keydown)="handleStageKeydown($event)">
-          <img 
-            [src]="galleryImages[selectedStageIndex]" 
-            [alt]="game.title + ' gameplay screenshot ' + (selectedStageIndex + 1)" 
+          <img
+            [src]="galleryImages[selectedStageIndex]"
+            [alt]="game.title + ' gameplay screenshot ' + (selectedStageIndex + 1)"
             loading="eager"
-            decoding="sync"
+            decoding="async"
+            fetchpriority="high"
             class="steam-stage-img"
             (error)="$any($event.target).src = 'assets/logo-icon.svg'"
             (click)="openLightbox(selectedStageIndex)">
@@ -89,7 +90,7 @@
         <div class="steam-capsule-card">
           <!-- Cover Banner Art -->
           <div class="capsule-image-wrap">
-            <img [src]="game.coverImageUrl" [alt]="game.title + ' Cover Art'" loading="eager" decoding="sync" class="capsule-cover-img" (error)="$any($event.target).src = 'assets/logo-icon.svg'">
+            <img [src]="game.coverImageUrl" [alt]="game.title + ' Cover Art'" loading="eager" decoding="async" class="capsule-cover-img" (error)="$any($event.target).src = 'assets/logo-icon.svg'">
           </div>
 
           <!-- Elevator Pitch / Short Blurb -->

@@ -2,11 +2,12 @@
   <!-- 16:9 Cover Thumbnail -->
   <div class="card-media">
     <a [routerLink]="['/games', game.id]" class="media-link" [attr.aria-label]="game.title">
-      <img 
-        [src]="game.coverImageUrl" 
-        [alt]="game.title" 
+      <img
+        [src]="game.coverImageUrl"
+        [alt]="game.title"
         class="cover-img"
-        decoding="sync"
+        decoding="async"
+        loading="lazy"
         (error)="$any($event.target).src = 'assets/logo-icon.svg'">
       <div class="media-overlay"></div>
     </a>
