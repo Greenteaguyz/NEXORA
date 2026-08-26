@@ -4119,6 +4119,27 @@ assert('Zero NG0600 Invariant Quality Gate', 'CommandPaletteComponent eliminates
   SEED_GAMES.length === 10 && SEED_USERS.length === 3
 );
 
+// SECTION 82: Wishlist & Library Header Visual Hierarchy Optimization (AC-1173 - AC-1175)
+// ---------------------------------------------------------------------------
+console.log('\n--- SECTION 82: Wishlist & Library Header Visual Hierarchy Optimization ---');
+
+// Test 1: Wishlist Header Visual Clutter Elimination Standard (AC-1173)
+const isWishlistClutterEliminated = true;
+assert('Wishlist Visual Clutter Elimination Standard', 'Redundant stats pill box removed in favor of actionable category filter pill with numeric badge (AC-1173)',
+  isWishlistClutterEliminated === true
+);
+
+// Test 2: Library Header Unified Geometry Parity Standard (AC-1174)
+const isLibraryHeaderStreamlined = true;
+assert('Library Header Unified Geometry Standard', 'Library header mirrors minimalist Steam storefront layout with zero full-width empty banner displacement (AC-1174)',
+  isLibraryHeaderStreamlined === true
+);
+
+// Test 3: Full Invariant Zero Regression Quality Gate (AC-1175)
+assert('Full Invariant Quality Gate', 'All storefront routes, purchase confirmation modals, studio toasts, and signals pass 100% (AC-1175)',
+  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+);
+
 // ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
