@@ -1088,26 +1088,48 @@
     display: none !important;
   }
 
-  .user-chip-trigger {
-    padding: 2px !important;
+  .btn-cmd-search .search-btn-label,
+  .btn-cmd-search .search-btn-kbd {
+    display: none !important;
+  }
+
+  .btn-cmd-search {
+    padding: 0 !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    justify-content: center !important;
+  }
+
+  .user-profile-menu {
+    gap: var(--space-1) !important;
+  }
+
+  .user-chip {
+    padding: 1px !important;
     border-radius: var(--radius-full) !important;
     gap: 0 !important;
     background: transparent !important;
     border-color: transparent !important;
   }
 
-  .user-chip-trigger .user-name,
-  .user-chip-trigger .role-tag,
-  .user-chip-trigger .chevron-svg {
+  .user-chip .user-name,
+  .user-chip .role-tag {
+    display: none !important;
+  }
+
+  .btn-logout {
     display: none !important;
   }
 
   .user-avatar {
     width: 32px !important;
     height: 32px !important;
+    border-radius: var(--radius-full) !important;
+    border: 1.5px solid var(--accent-400) !important;
   }
 
-  .header-right {
+  .header-actions {
     gap: var(--space-2) !important;
   }
 
