@@ -112,8 +112,6 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
   padding: 2px 0;
-  mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
-  -webkit-mask-image: linear-gradient(to right, transparent, black 16px, black calc(100% - 16px), transparent);
 }
 
 .tag-filters-track::-webkit-scrollbar {
