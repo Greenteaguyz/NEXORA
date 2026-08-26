@@ -94,10 +94,20 @@
 .cmd-results {
   max-height: 380px;
   overflow-y: auto;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
   padding: var(--space-2);
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+.cmd-results::-webkit-scrollbar,
+.cmd-results::-webkit-scrollbar-button,
+.cmd-results::-webkit-scrollbar-corner {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
 /* Option Row */
@@ -174,9 +184,9 @@
   font-weight: 800;
   padding: 3px 8px;
   border-radius: var(--radius-sm);
-  background: rgba(102, 192, 244, 0.14);
-  color: var(--accent-400);
-  border: 1px solid rgba(102, 192, 244, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.18);
   letter-spacing: 0.02em;
   flex-shrink: 0;
 }
@@ -188,8 +198,8 @@
 }
 
 :host-context([data-theme="light"]) .cmd-price-pill {
-  background: #EBF3FA;
-  color: #0078D4;
+  background: #F1F5F9;
+  color: #0F172A;
   border-color: #CBD5E1;
 }
 

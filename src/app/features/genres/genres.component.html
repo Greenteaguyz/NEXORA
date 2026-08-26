@@ -6,11 +6,6 @@
         <h1 class="genres-title">Browse Games by Genre</h1>
         <p class="genres-subtitle">Explore indie titles across specialized subgenres, themes, and gameplay styles.</p>
       </div>
-
-      <div class="genres-stats-pill" aria-label="Total categories count">
-        <span class="stats-count">{{ filteredAllGenres.length }}</span>
-        <span class="stats-label">{{ filteredAllGenres.length === 1 ? 'Category' : 'Categories' }}</span>
-      </div>
     </div>
 
     <!-- Search Toolbar -->
@@ -24,18 +19,19 @@
           type="text"
           class="genre-search-input"
           placeholder="Search categories (e.g. RPG, Horror, Retro, Strategy)..."
-          [value]="searchQuery"
+          [value]="searchQuery()"
           (input)="onSearch($event)"
+          (keydown.escape)="clearSearch()"
           aria-label="Search game categories"
         />
-        @if (searchQuery) {
+        @if (searchQuery()) {
           <button type="button" class="clear-search-btn" (click)="clearSearch()" aria-label="Clear search">✕</button>
         }
       </div>
     </div>
   </header>
 
-  @if (loading) {
+  @if (loading()) {
     <app-loading-spinner size="lg" label="Loading genres..."></app-loading-spinner>
   } @else {
     <!-- Unified Categories Directory -->
@@ -51,24 +47,24 @@
               <circle cx="17.5" cy="12.5" r="1" fill="currentColor"/>
             </svg>
           </div>
-          <h2 class="section-title">{{ searchQuery.trim() ? 'Search Results' : 'Explore All Categories' }}</h2>
-          <span class="all-count-badge">{{ filteredAllGenres.length }} {{ filteredAllGenres.length === 1 ? 'category' : 'categories' }}</span>
+          <h2 class="section-title">{{ searchQuery().trim() ? 'Search Results' : 'Explore All Categories' }}</h2>
+          <span class="all-count-badge">{{ filteredGenres().length }} {{ filteredGenres().length === 1 ? 'category' : 'categories' }}</span>
         </div>
         <p class="section-desc">
-          {{ searchQuery.trim() ? 'Matching categories for "' + searchQuery + '"' : 'Complete directory of game themes, styles, and tags.' }}
+          {{ searchQuery().trim() ? 'Matching categories for "' + searchQuery() + '"' : 'Complete directory of game themes, styles, and tags.' }}
         </p>
       </div>
 
-      @if (filteredAllGenres.length > 0) {
+      @if (filteredGenres().length > 0) {
         <div class="all-genres-grid">
-          @for (genre of filteredAllGenres; track genre.name) {
+          @for (genre of filteredGenres(); track genre.name) {
             <a [routerLink]="['/catalog']" [queryParams]="{ tag: genre.name }" class="genre-card" [style.--genre-accent]="genre.accentColor">
               <div class="genre-icon-box" [style.background-color]="genre.accentColor + '18'" [style.border-color]="genre.accentColor + '50'" [style.color]="genre.accentColor">
-                <span class="genre-icon" [innerHTML]="genre.iconSvg"></span>
+                <app-genre-icon [tag]="genre.name" [size]="22" class="genre-icon" />
               </div>
 
               <div class="genre-info">
-                <h3 class="genre-name">{{ genre.name }}</h3>
+                <h3 class="genre-name">#{{ genre.name }}</h3>
                 <span class="genre-count">{{ genre.count }} {{ genre.count === 1 ? 'game' : 'games' }}</span>
               </div>
 
@@ -78,7 +74,7 @@
         </div>
       } @else {
         <div class="empty-search-state">
-          <p class="empty-text">No genres found matching "<strong>{{ searchQuery }}</strong>"</p>
+          <p class="empty-text">No genres found matching "<strong>{{ searchQuery() }}</strong>"</p>
           <button class="btn-clear-filter" (click)="clearSearch()">Show All Categories</button>
         </div>
       }
@@ -86,7 +82,6 @@
 
     <!-- 3. Bottom Store Discovery Action Banner -->
     <section class="genres-cta-banner">
-      <div class="cta-glow-backdrop"></div>
       <div class="cta-content">
         <div class="cta-icon-box">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

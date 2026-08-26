@@ -1,8 +1,8 @@
 .creator-page {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: var(--space-8) clamp(16px, 3.5vw, 56px) var(--space-12);
+  padding: clamp(16px, 2.5vw, 36px) clamp(14px, 2vw, 28px) calc(76px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 
@@ -155,7 +155,7 @@
   background: var(--accent-600);
   border-color: var(--accent-400);
   color: #FFFFFF;
-  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .btn-share-profile:focus-visible {
@@ -259,11 +259,11 @@
   border-color: rgba(0, 120, 212, 0.25);
 }
 
-/* Balanced 3-column / 2-column Grid */
+/* Balanced Fluid Grid (AC-1056) */
 .games-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fill, minmax(clamp(280px, 22vw, 360px), 1fr));
+  gap: clamp(16px, 2vw, 28px);
 }
 
 /* Mobile Responsiveness */

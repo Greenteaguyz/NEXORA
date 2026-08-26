@@ -313,6 +313,42 @@
   2. Always add explicit `calc(...)` bottom clearance on footer containers in mobile media queries.
   3. Support `touch-action: manipulation;` and luminous active tab states for native tactile responsiveness.
 
+---
+
+## [Pattern] Steam Global Download Tray & Background Queue State Machine
+
+### Context
+- File downloads in SPAs often happen in isolation without global visibility across route transitions.
+- Users navigating between store catalog, creator studio, and library lose track of active package installation.
+
+### Root Cause / Core Insight
+- **Global Signal Store**: Decoupling download state into an injectable root service (`DownloadService`) enables persistent background transfer emulation (`activeDownloads`, `isTrayOpen`, `isTrayExpanded`).
+- **Docked Steam Deck Tray Component**: Mounting `<app-download-tray>` at the root `AppComponent` shell ensures downloads remain visible and controllable regardless of active Angular router outlets.
+- **Realistic Transfer Emulation**: Emulating chunk transfers with realistic speed telemetry (`52.1 MB/s`) and dynamic completion CTAs (`[ Play ]` linking directly to `/games/:id`) gives users immediate feedback and a native desktop client feel.
+
+### The Pattern (Transferable)
+1. Store background task queues in dedicated Angular Signal services (`computed()` total progress, active count).
+2. Project global tray components outside `<router-outlet>` in `app.component.ts`.
+3. Provide one-click launch / dismiss controls with automatic 100% completion status flips.
+
+---
+
+## [Pattern] iOS WebKit 120Hz ProMotion Kinetic Scrolling & GPU Isolation
+
+### Context
+- Desktop web applications with `html { scroll-behavior: smooth; }` often exhibit rubbery lag, micro-stutters, and scroll traps on iOS Safari.
+- Nested `overflow-y: auto` containers fight for touch momentum on mobile viewports.
+
+### Root Cause / Core Insight
+- **ProMotion Collision**: iOS Safari's native 120Hz kinetic scroll engine conflicts with CSS `scroll-behavior: smooth` interpolation. Overriding with `@supports (-webkit-touch-callout: none) { html, body { scroll-behavior: auto !important; } }` restores native ProMotion momentum.
+- **Single Scroll Layer**: Setting the parent drawer to `overflow: hidden` and the inner list to `overflow-y: scroll; -webkit-overflow-scrolling: touch; touch-action: pan-y;` eliminates double-scroll fighting.
+- **RAF Batching**: Throttling `window:scroll` calculations with `requestAnimationFrame` prevents main-thread signal thrashing during rapid mouse wheel and touch panning.
+
+### The Pattern (Transferable)
+1. Disable CSS smooth scroll on iOS touch devices to unleash native WebKit hardware kinetic deceleration.
+2. Isolate modal and drawer scroll physics to a single inner container with `touch-action: pan-y;`.
+3. Always batch DOM measurements inside `requestAnimationFrame` before mutating Angular Signals on scroll.
+
 
 
 

@@ -1,0 +1,96 @@
+:host {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  max-width: 100vw;
+  height: var(--spotlight-height, 820px);
+  pointer-events: none !important;
+  user-select: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.ambient-spotlight-backdrop {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none !important;
+  -webkit-mask-image: radial-gradient(ellipse 85% 65% at 50% 25%, #000000 20%, transparent 100%);
+  mask-image: radial-gradient(ellipse 85% 65% at 50% 25%, #000000 20%, transparent 100%);
+}
+
+.spotlight-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none !important;
+  transition: background 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+  filter: blur(100px);
+  opacity: 0.55;
+  will-change: background;
+}
+
+.layer-primary {
+  background: radial-gradient(
+    ellipse 75% 60% at 50% 35%,
+    var(--spotlight-primary, rgba(102, 192, 244, 0.22)) 0%,
+    rgba(14, 20, 27, 0) 75%
+  );
+}
+
+.layer-secondary {
+  background: radial-gradient(
+    ellipse 55% 50% at 65% 40%,
+    var(--spotlight-secondary, rgba(99, 102, 241, 0.14)) 0%,
+    rgba(14, 20, 27, 0) 70%
+  );
+  mix-blend-mode: screen;
+}
+
+.spotlight-vignette {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(14, 20, 27, 0.80) 0%,
+    rgba(14, 20, 27, 0.20) 25%,
+    rgba(14, 20, 27, 0.50) 65%,
+    var(--bg-base, #0E141B) 100%
+  );
+  pointer-events: none !important;
+}
+
+/* Light Theme Styling */
+:host-context([data-theme="light"]) .spotlight-layer {
+  opacity: 0.18;
+  filter: blur(80px);
+}
+
+:host-context([data-theme="light"]) .layer-primary {
+  background: radial-gradient(
+    ellipse 70% 55% at 50% 36%,
+    var(--spotlight-primary, rgba(0, 120, 212, 0.16)) 0%,
+    rgba(248, 250, 252, 0) 75%
+  );
+}
+
+:host-context([data-theme="light"]) .layer-secondary {
+  background: radial-gradient(
+    ellipse 50% 45% at 68% 42%,
+    var(--spotlight-secondary, rgba(79, 70, 229, 0.10)) 0%,
+    rgba(248, 250, 252, 0) 70%
+  );
+  mix-blend-mode: multiply;
+}
+
+:host-context([data-theme="light"]) .spotlight-vignette {
+  background: linear-gradient(
+    to bottom,
+    rgba(248, 250, 252, 0.90) 0%,
+    rgba(248, 250, 252, 0.25) 20%,
+    rgba(248, 250, 252, 0.60) 55%,
+    var(--bg-base, #F1F5F9) 100%
+  );
+}

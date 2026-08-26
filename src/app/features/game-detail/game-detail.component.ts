@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Game } from '../../core/models/game.model';
 import { User } from '../../core/models/user.model';
+import { Order } from '../../core/models/order.model';
 import { GAMES_DATA, USERS_DATA, WISHLIST_DATA, LIBRARY_DATA, ORDERS_DATA } from '../../core/data/tokens';
 import { AuthService } from '../../core/auth/auth.service';
 import { DownloadService } from '../../core/services/download.service';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
-import { DownloadButtonComponent } from '../../shared/ui/download-button/download-button.component';
 import { PurchaseConfirmModalComponent, PurchaseConfirmationEvent } from '../../shared/ui/purchase-confirm-modal/purchase-confirm-modal.component';
 
 export interface SpecItem {
@@ -33,7 +33,6 @@ export interface SpecTier {
     RouterLink, 
     LoadingSpinnerComponent, 
     EmptyStateComponent,
-    DownloadButtonComponent,
     PurchaseConfirmModalComponent
   ],
   templateUrl: './game-detail.component.html',
@@ -56,9 +55,32 @@ export class GameDetailComponent implements OnInit {
   isWishlisted = false;
   isOwned = false;
 
-  // Purchase Modal State
+  // Purchase & Creator Modal State
   showPurchaseModal = false;
   purchaseProcessing = false;
+  showCreatorNoticeModal = false;
+  showOrderConfirmedModal = false;
+  confirmedOrder: Order | null = null;
+  showFreeClaimToast = false;
+  showWishlistRemoveModal = false;
+  showLibraryRemoveModal = false;
+
+  get isCreatorOwner(): boolean {
+    const user = this.authService.currentUser();
+    return !!this.game && !!user && this.game.ownerId === user.id;
+  }
+
+  openCreatorNoticeModal(): void {
+    this.showCreatorNoticeModal = true;
+  }
+
+  closeCreatorNoticeModal(): void {
+    this.showCreatorNoticeModal = false;
+  }
+
+  closeFreeClaimToast(): void {
+    this.showFreeClaimToast = false;
+  }
 
   constructor() {
     effect(() => {
@@ -86,12 +108,34 @@ export class GameDetailComponent implements OnInit {
   selectedDownloadPlatform: 'windows' | 'linux' = 'windows';
   copiedChecksum = false;
 
+  get currentPlatformInstallerInfo(): { osName: string; ext: string; size: string; api: string; hash: string } {
+    if (this.selectedDownloadPlatform === 'linux') {
+      return {
+        osName: 'Linux & SteamOS',
+        ext: 'Native AppImage (.tar.gz)',
+        size: this.isRetro2D ? '310 MB' : '1.78 GB',
+        api: 'Vulkan 1.2+ / Mesa 22.0+',
+        hash: 'b9e5d38198f834201c3958e0d1f6b0f3541209753cc4f832b058e21f94572a01'
+      };
+    }
+    return {
+      osName: 'Windows 10/11 (64-bit)',
+      ext: 'Standalone Setup (.exe)',
+      size: this.packageSize,
+      api: 'DirectX 11 / Vulkan 1.2',
+      hash: 'a8f4c29188e734190b2847d9c0e5a9f2430198642bb3e721a947d10e83461f90'
+    };
+  }
+
   setDownloadPlatform(platform: 'windows' | 'linux'): void {
     this.selectedDownloadPlatform = platform;
   }
 
   copyChecksum(): void {
-    navigator.clipboard.writeText('a8f4c29188e734190b2847d9c0e5a9f2430198642bb3e721a947d10e83461f90');
+    const hash = this.currentPlatformInstallerInfo.hash;
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(hash).catch(() => {});
+    }
     this.copiedChecksum = true;
     setTimeout(() => {
       this.copiedChecksum = false;
@@ -161,44 +205,6 @@ export class GameDetailComponent implements OnInit {
   get isRetro2D(): boolean {
     if (!this.game) return false;
     return this.game.tags.includes('Pixel Art') && !this.game.tags.includes('Racing') && !this.game.tags.includes('Strategy');
-  }
-
-  get keyFeatures(): { icon: string; title: string; desc: string }[] {
-    if (!this.game) return [];
-    const tags = this.game.tags.map(t => t.toLowerCase());
-
-    if (tags.includes('racing') || tags.includes('arcade')) {
-      return [
-        { icon: 'speed', title: 'Precision Drift & Physics', desc: 'Anti-gravity vehicle handling, supersonic nitro boosts, and high-G banked turns.' },
-        { icon: 'circuits', title: 'Dynamic Megacity Circuits', desc: '12 neon-drenched tracks with dynamic hazards, shortcut routes, and weather.' },
-        { icon: 'tuning', title: 'Modular Rig Customization', desc: 'Fine-tune thruster aerodynamics, cooling manifolds, and chassis underglow.' },
-        { icon: 'controller', title: 'Full Controller & Deck Support', desc: 'Flawless 60+ FPS performance out of the box with zero launcher bloat.' }
-      ];
-    }
-
-    if (tags.includes('strategy') || tags.includes('hacking') || tags.includes('tactics')) {
-      return [
-        { icon: 'strategy', title: 'Turn-Based Infiltration', desc: 'Deploy cyber-agents, hijack automated turrets, and execute silent data exfiltration.' },
-        { icon: 'override', title: 'Tactical Neural Overrides', desc: 'Manipulate grid topology, overload biometric sensors, and bypass ICE.' },
-        { icon: 'gear', title: 'Synergistic Squad Builds', desc: 'Equip black-market cyberware, custom exploit scripts, and EMP weapons.' },
-        { icon: 'offline', title: '100% Offline Single-Player', desc: 'Complete standalone campaign playable anywhere with unencrypted open saves.' }
-      ];
-    }
-
-    if (tags.includes('rpg') || tags.includes('roguelike') || tags.includes('action')) {
-      return [
-        { icon: 'combat', title: 'Kinetic Real-Time Combat', desc: 'Fluid melee combos, precision gunplay, and kinetic dash abilities.' },
-        { icon: 'world', title: 'Procedural Districts', desc: 'Branching encounters and hidden black markets across dense neon alleyways.' },
-        { icon: 'craft', title: '50+ Weapon & Mod Synergies', desc: 'Experiment with unique cybernetic implants and tactical gear sets.' },
-        { icon: 'controller', title: 'Seamless Gamepad Controls', desc: 'Responsive controls with full controller vibration and remap support.' }
-      ];
-    }
-
-    return [
-      { icon: 'world', title: 'Handcrafted Indie Experience', desc: 'Atmospheric synthwave art, intricate levels, and rich environmental storytelling.' },
-      { icon: 'speed', title: 'Skill-Driven Gameplay', desc: 'Tight, responsive controls designed for both gamepad and keyboard/mouse.' },
-      { icon: 'offline', title: 'DRM-Free Standalone Package', desc: 'Download once, keep forever on any drive with zero online check-ins.' }
-    ];
   }
 
   get packageSize(): string {
@@ -364,6 +370,10 @@ export class GameDetailComponent implements OnInit {
       this.isOwned = false;
       return;
     }
+    if (this.isCreatorOwner) {
+      this.isOwned = true;
+      return;
+    }
     this.libraryData.isOwned(user.id, gameId).subscribe(owned => {
       this.isOwned = owned;
     });
@@ -378,14 +388,27 @@ export class GameDetailComponent implements OnInit {
     }
 
     if (this.isWishlisted) {
-      this.wishlistData.removeFromWishlist(user.id, this.game.id).subscribe(() => {
-        this.isWishlisted = false;
-      });
+      this.showWishlistRemoveModal = true;
     } else {
       this.wishlistData.addToWishlist(user.id, this.game.id).subscribe(() => {
         this.isWishlisted = true;
       });
     }
+  }
+
+  confirmRemoveFromWishlist(): void {
+    if (!this.game) return;
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    this.wishlistData.removeFromWishlist(user.id, this.game.id).subscribe(() => {
+      this.isWishlisted = false;
+      this.showWishlistRemoveModal = false;
+    });
+  }
+
+  cancelRemoveFromWishlist(): void {
+    this.showWishlistRemoveModal = false;
   }
 
   onLoginRequired(): void {
@@ -425,25 +448,46 @@ export class GameDetailComponent implements OnInit {
 
     this.libraryData.addToLibrary(user.id, this.game.id).subscribe(() => {
       this.isOwned = true;
+      this.showFreeClaimToast = true;
       if (this.isWishlisted) {
         this.wishlistData.removeFromWishlist(user.id, this.game!.id).subscribe(() => {
           this.isWishlisted = false;
         });
       }
+      setTimeout(() => {
+        this.showFreeClaimToast = false;
+      }, 4500);
     });
   }
 
-  removeFromLibrary(): void {
+  promptRemoveFromLibrary(): void {
+    this.showLibraryRemoveModal = true;
+  }
+
+  confirmRemoveFromLibrary(): void {
     if (!this.game) return;
     const user = this.authService.currentUser();
     if (!user) return;
 
     this.libraryData.removeFromLibrary(user.id, this.game.id).subscribe(() => {
       this.isOwned = false;
+      this.showLibraryRemoveModal = false;
     });
   }
 
+  cancelRemoveFromLibrary(): void {
+    this.showLibraryRemoveModal = false;
+  }
+
+  removeFromLibrary(): void {
+    this.promptRemoveFromLibrary();
+  }
+
   onPurchaseConfirmed(): void {
+    if (this.isCreatorOwner) {
+      this.openCreatorNoticeModal();
+      return;
+    }
     this.showPurchaseModal = true;
   }
 
@@ -465,6 +509,13 @@ export class GameDetailComponent implements OnInit {
             this.isOwned = true;
             this.purchaseProcessing = false;
             this.showPurchaseModal = false;
+            this.confirmedOrder = order;
+            this.showOrderConfirmedModal = true;
+            if (this.isWishlisted) {
+              this.wishlistData.removeFromWishlist(user.id, this.game!.id).subscribe(() => {
+                this.isWishlisted = false;
+              });
+            }
             this.downloadService.downloadGameFile(this.game!, this.selectedDownloadPlatform);
           },
           error: () => {
@@ -476,6 +527,20 @@ export class GameDetailComponent implements OnInit {
         this.purchaseProcessing = false;
       }
     });
+  }
+
+  closeOrderConfirmedModal(): void {
+    this.showOrderConfirmedModal = false;
+  }
+
+  goToLibrary(): void {
+    this.showOrderConfirmedModal = false;
+    this.router.navigate(['/library']);
+  }
+
+  goToOrders(): void {
+    this.showOrderConfirmedModal = false;
+    this.router.navigate(['/orders']);
   }
 
   onModalCancel(): void {

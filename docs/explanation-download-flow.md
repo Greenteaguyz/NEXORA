@@ -80,6 +80,22 @@ flowchart TD
 
 ---
 
+## Global Steam Download Tray Architecture
+
+Whenever a download begins, the [`DownloadService`](file:///c:/Users/User/Downloads/AngularProject/src/app/core/services/download.service.ts) registers an active download package into its reactive signals store:
+
+1. **Signals State**:
+   * `activeDownloads`: Signal list containing active items, progress percentages (`0% -> 100%`), transfer speeds (`52.1 MB/s`), file size counters, and completion statuses.
+   * `isTrayOpen`: Signal controlling the visibility of the docked bottom tray.
+   * `isTrayExpanded`: Signal controlling the expansion of the itemized downloads panel.
+2. **Realistic Progress Emulation**:
+   * Simulates realistic network transfer with incremental chunk increments (`0% -> 38% -> 76% -> 100%`) over ~2.4 seconds.
+   * Updates state to `completed` upon reaching 100% and displays a direct `[ Play ]` launch action.
+3. **Global Docked Shell Component**:
+   * `<app-download-tray></app-download-tray>` lives in `app.component.ts` at the root application shell, allowing background downloads to persist uninterrupted as users browse catalog, studio, or profile views.
+
+---
+
 ## Architectural trade-offs
 
 Requiring user registration prior to downloading free titles introduces minor friction for first-time visitors. However, this design ensures that all library acquisitions, download telemetry, and user ownership records flow through a single verified pipeline.

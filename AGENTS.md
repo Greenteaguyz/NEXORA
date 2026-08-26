@@ -1,47 +1,82 @@
 # NEXORA — Project Memory & Agent Directives
 
-## Architecture & Tech Stack
-- **Framework**: Angular 18 (Standalone Components, Signals, `OnPush` Change Detection, `@if` / `@for` control flow)
-- **Styling**: Vanilla CSS with custom properties (`src/styles.css`), following Steam DesignMD specification in `DESIGN.md`
-- **Testing**: Playwright (`@playwright/test`, `@axe-core/playwright`), TypeScript standalone runners
-- **Build & Verification Command**: `npm run verify`
+Single source of truth for all coding agents. `CLAUDE.md` mirrors this file — edit here, not there.
 
----
+## Stack & Commands
 
-## ⚡ MANDATORY AUTO-INVOCATION PROTOCOL (NO USER PERMISSION REQUIRED)
+- **Framework**: Angular 18 — Standalone Components, Signals, `OnPush` change detection, `@if` / `@for` control flow
+- **Styling**: Vanilla CSS with custom properties (`src/styles.css`), following the Steam DesignMD specification in `DESIGN.md`
+- **Testing**: TypeScript standalone runners under `tests/` plus Playwright (`@playwright/test`, `@axe-core/playwright`)
 
-The agent MUST automatically execute this full quality and maintenance lifecycle on every turn without waiting for user permission:
+| Command | Purpose |
+| --- | --- |
+| `npm run verify` | **Full quality gate** — build + unit + integration + master battery + impeccable |
+| `npm run test:unit` / `test:integration` | Individual tiers (`tests/unit/`, `tests/integration/`) |
+| `npm run test:impeccable` | Design-token & anti-slop compliance audit |
+| `npm run test:e2e` | Playwright browser journeys (`tests/e2e/`) |
+| `npm start` | Dev server |
 
-### 1. Before Execution & While Inquiring (Planning, SWOT, IDD, Wayfinder & Risk Protocol)
-- **Mandatory SWOT Analysis**: Before touching production code, when formulating implementation plans, OR whenever asking questions / soliciting user design feedback, ALWAYS conduct and present a structured **SWOT Analysis** (Strengths, Weaknesses, Opportunities, Threats) embedded directly in the message and `implementation_plan.md`.
-- **Mandatory IDD & Wayfinder Protocol**: During any planning or roadmap discussion, ALWAYS auto-invoke `/intent-driven-development` (defining observable Acceptance Criteria `AC-NNN` with clear start/action/outcome/forbidden conditions) and `/wayfinder` (4-step discovery: goal deconstruction, spike isolation, risk synthesis, and implementation handoff).
-- **Mandatory Pre-Flight Risk Elimination**: Formulate and embed concrete engineering solutions that eliminate identified risks down to 0.0% residual risk prior to execution.
-- **Grounded Hover & Category Pill Standards**: Enforce 0px container `translateY` on interactive cards/buttons, Plus Jakarta Sans typography on category filter pills, Electric Cyan (`#66C0F4`) luminous active states, and inline numeric count badges.
+Additional tiers: `tests/audit/` (link crawler), `tests/security/`, `tests/visual-regression/`, `tests/responsive-and-cross-browser/`.
 
-### 2. During Tasks (In-Flight Guardrails)
-- **Component / Service / Store**: Auto-invoke `angular-signals-best-practices` (`signal()`, `computed()`, `input()`, `output()`, `OnPush`, `takeUntilDestroyed()`).
-- **UI / Modals / Forms / Navigation**: Auto-invoke `a11y-standards-auditor` (WCAG AAA 7:1 contrast, ARIA states, keyboard traps, roving tabindex).
-- **Images / Media / Routes**: Auto-invoke `web-perf-cwv` (`ngSrc` + `priority`, `aspect-ratio: 16/9`, `loading="lazy"`, chunk budgets < 250KB).
-- **Game Grids / Catalog Traversal**: Auto-invoke `spatial-navigation-ux` (2D arrow-key traversal, Steam focus indicators with `--accent-400`).
-- **CSS / Styling**: Auto-run `/impeccable audit` (strict `DESIGN.md` tokens, zero neon blur, zero spring curves, zero pill buttons on utility actions).
-- **Shared State / Signal Stores / Buttons with multi-step handlers**: Auto-invoke `click-path-audit` (trace every touchpoint through its full state change sequence; detect Sequential Undo, Async Race, Stale Closure, Missing State Transition, and Conditional Dead Path patterns).
-- **Playwright E2E Tests / New User Journeys**: Auto-invoke `e2e-testing` (Page Object Model structure, `data-testid` locators, `waitForResponse` over `waitForTimeout`, retry/quarantine patterns for flaky tests, CI artifact management).
+## Project Map
 
-### 3. After Every 1–2 Tasks (Automated Test Expansion, Cleanup & Quality Gate)
-Immediately upon finishing 1–2 tasks or feature additions and BEFORE concluding the turn:
-1. **Auto-Update & Expand Tests (`tdd-workflow` / `ai-regression-testing`)**:
-   - **Logic & Validations**: Automatically add unit tests to `tests/unit/unit-tests.spec.ts` for all new methods, computations, input limits, and edge cases.
-   - **Links & User Paths**: Update `tests/audit/broken-links-crawler.spec.ts` to crawl all new routes, buttons, and click destinations.
-   - **Navigation & Redirects**: Add integration tests to `tests/integration/integration-tests.spec.ts` and E2E journeys to `tests/e2e/e2e-user-journeys.spec.ts` for route guards, redirects, and state sync.
-   - **Click-Path State Audits**: After any feature touching shared signal stores (wishlist, cart, library, orders, auth), auto-run `click-path-audit` to map state store side-effects and trace every handler for Sequential Undo / Async Race / Dead Path bugs.
-   - **E2E Best Practices**: When authoring or updating Playwright journeys, auto-apply `e2e-testing` patterns (Page Object Model, `data-testid` locators, `waitForResponse` instead of `waitForTimeout`, flaky test quarantine).
-2. **Auto-Prune & Clean Unnecessary Files**:
-   - Automatically identify and delete obsolete, duplicate, or temporary test scripts, outdated specs, and unused files to prevent workspace and context bloat.
-3. **Design Compliance**: Auto-run `/impeccable audit`
-4. **Build & Regression Verification**: Auto-run `npm run verify` (all assertions must pass 100% green)
-5. **Auto-Remediation**: If anything fails, fix it immediately and re-run until 100% green
-6. **Self-Assessment**: Run `agent-self-evaluation` (5-axis scorecard)
-7. **Report Proof**: Always include test pass/fail results and updated test counts in the final response
+- `src/app/core/` — services, persistence (`local-store.service.ts`), seed data (`core/data/`), constants
+- `src/app/features/` — route-level pages (catalog, game-detail, library, wishlist, orders, genres, creator-studio, profile, support)
+- `src/app/layout/` — header, footer, drawer
+- `src/app/shared/ui/` — reusable components (game-card, command-palette, download-button, download-tray, ambient-spotlight, genre-icon, modals, toast)
+- `DESIGN.md` — design system spec; `src/styles.css` — token definitions
 
-### 4. End of Session
-- Run `/save-session` to save state for `/resume-session`
+## Working Agreement
+
+### Scope
+Keep changes minimal and strictly focused on the requested task. Never modify unrelated components, and never delete files you did not create in the current session — surface cleanup candidates to the user instead.
+
+### Skill Invocation (tiered, not blanket)
+Invoke only the 1–3 skills matching the task at hand, then follow their rubrics:
+
+| Task type | Invoke |
+| --- | --- |
+| Components, services, signal stores | `angular-signals-best-practices`, `performance-audit` |
+| UI, modals, forms, navigation | `a11y-standards-auditor`, `ui-audit` |
+| Images, media, routes, bundles | `web-perf-cwv` |
+| Auth, forms, persistence | `security-audit` |
+| Game grids / catalog traversal | `spatial-navigation-ux` |
+| CSS / styling changes | `impeccable` (then `npm run test:impeccable`) |
+| Shared-state features (wishlist, cart, library, orders, auth) | `click-path-audit` |
+| Playwright journeys | `e2e-testing` |
+| Large or ambiguous features (planning phase) | `intent-driven-development` for AC-NNN acceptance criteria; `wayfinder` for multi-step discovery |
+
+### Planning Discipline
+For non-trivial features, state the plan, key risks, and how each risk is mitigated before touching production code. Risks should be concretely addressed in the implementation — do not claim a risk is "eliminated" without the engineering that eliminates it. For small fixes, a one-line rationale is enough.
+
+### Quality Gate (before concluding work on a feature)
+1. **Tests**: add unit tests to `tests/unit/unit-tests.spec.ts` for new logic, computations, and edge cases; update `tests/audit/broken-links-crawler.spec.ts` for new routes/click destinations; add integration/E2E coverage for new redirects or state sync.
+2. **Prune**: remove unused imports, dead variables, and redundant functions introduced by your own change.
+3. **Design compliance**: `npm run test:impeccable` whenever UI/CSS changed.
+4. **Verify**: `npm run verify` — fix failures and re-run until fully green.
+5. **Report**: include pass/fail results and updated test counts in the final response.
+
+### Communication
+Concise, objective technical facts only — no flattery, no boilerplate hype.
+
+## Design Rules (Hard Standards)
+
+- **Strict vector SVG icons (zero raw emojis)**: all UI badges, status indicators, and buttons use crisp inline `<svg>` with explicit `viewBox`, `stroke`/`fill`, and semantic aria attributes. Never render raw OS emoji characters (👑, ✔, 🎮, 🗑) in production components.
+- **Grounded hover**: 0px container `translateY` on interactive cards/buttons — no floating lift effects.
+- **Category filter pills**: Plus Jakarta Sans typography, Electric Cyan (`#66C0F4`) luminous active states, inline numeric count badges.
+- **Action-first titles**: use `Play [Title]`, `Buy [Title]`, `Download [Title]` with clean inline status badges (`IN LIBRARY`, `DEVELOPER COPY`) — not long clunky sentence headers.
+- **Minimal warning modals**: confirmation popups are single-sentence with clean `Cancel` / `Remove` (or `Unpublish`) actions. No legalistic bullet lists or fake checkmark lists inside modals.
+- **Hardware specs grid**: balanced 3x2 (`repeat(3, 1fr)`) with parent flex gap on `.steam-main-details` (`gap: clamp(20px, 3vw, 28px)`).
+- **Wishlist CTA**: text is `Add to your Wishlist` / `On your Wishlist` — no artificial `+` signs.
+- **Design tokens**: strict `DESIGN.md` tokens — zero neon blur, zero spring curves, zero pill buttons on utility actions.
+
+## Angular Conventions
+
+- Prefer `signal()` / `computed()` / `input()` / `output()`; derive state rather than duplicating it.
+- Use `takeUntilDestroyed()` for observable subscriptions in components.
+- Guard browser-only APIs (`window`, `localStorage`, `requestAnimationFrame`) with `isPlatformBrowser(platformId)` — the app must stay SSR-safe.
+- Index token lookups at O(1) (e.g., `Map` keyed by id, not `Array.find` in hot paths).
+
+## End of Session
+
+Persist session state for later resumption with `gstack-context-save` (restore via `gstack-context-restore`) or record durable lessons in `growth-log`.

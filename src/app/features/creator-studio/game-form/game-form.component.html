@@ -42,13 +42,17 @@
           <h2 class="section-title">1. General Information</h2>
           
           <div class="form-field">
-            <label for="title" class="field-label">Game Title <span class="req">*</span></label>
+            <div class="field-label-row">
+              <label for="title" class="field-label">Game Title <span class="req">*</span></label>
+              <span class="char-counter" [class.warn]="titleCharCount() > 80">{{ titleCharCount() }}/100</span>
+            </div>
             <input 
               id="title" 
               type="text" 
               formControlName="title" 
               placeholder="e.g. Cyberpunk: Neon Shadow" 
               class="form-input"
+              maxlength="100"
               [class.field-error]="gameForm.get('title')?.invalid && gameForm.get('title')?.touched">
             @if (gameForm.get('title')?.invalid && gameForm.get('title')?.touched) {
               <span class="field-error-msg">Title is required (2–100 characters).</span>
@@ -56,11 +60,15 @@
           </div>
 
           <div class="form-field">
-            <label for="description" class="field-label">Game Description / Story <span class="req">*</span></label>
+            <div class="field-label-row">
+              <label for="description" class="field-label">Game Description / Story <span class="req">*</span></label>
+              <span class="char-counter" [class.warn]="descCharCount() > 1800">{{ descCharCount() }}/2000</span>
+            </div>
             <textarea 
               id="description" 
               formControlName="description" 
               rows="4" 
+              maxlength="2000"
               placeholder="Describe gameplay mechanics, world story, and standalone features..."
               class="form-textarea"
               [class.field-error]="gameForm.get('description')?.invalid && gameForm.get('description')?.touched"></textarea>
@@ -86,7 +94,27 @@
                 class="form-input price-input"
                 [class.field-error]="gameForm.get('price')?.invalid && gameForm.get('price')?.touched">
             </div>
-            <span class="field-help-text">Set to 0.00 for free distribution. You retain 90%+ of all paid sales.</span>
+            
+            <!-- Dynamic Revenue Share Calculator (AC-1023) -->
+            <div class="revenue-split-card">
+              @if (previewPrice() > 0) {
+                <div class="split-item creator-split">
+                  <span class="split-label">Your Net Earnings (90%):</span>
+                  <span class="split-val">${{ creatorEarnings().toFixed(2) }} / unit</span>
+                </div>
+                <div class="split-divider"></div>
+                <div class="split-item platform-split">
+                  <span class="split-label">Platform Maintenance (10%):</span>
+                  <span class="split-val">${{ platformFee().toFixed(2) }}</span>
+                </div>
+              } @else {
+                <div class="split-item free-split">
+                  <span class="split-label">Free-to-Play Distribution:</span>
+                  <span class="split-val free-highlight">100% Free Community Download</span>
+                </div>
+              }
+            </div>
+
             @if (gameForm.get('price')?.invalid && gameForm.get('price')?.touched) {
               <span class="field-error-msg">Price must be 0 or greater.</span>
             }
@@ -116,7 +144,7 @@
                   class="preset-card-btn" 
                   [class.selected]="gameForm.get('coverImageUrl')?.value === preset.coverUrl"
                   (click)="applyPreset(preset)">
-                  <img [src]="preset.coverUrl" [alt]="preset.name" class="preset-thumb">
+                  <img [src]="preset.coverUrl" [alt]="preset.name" class="preset-thumb" (error)="onImageError($event)">
                   <span class="preset-name">{{ preset.name }}</span>
                 </button>
               }
@@ -139,8 +167,9 @@
                   <img 
                     [src]="gameForm.get('coverImageUrl')?.value" 
                     alt="Cover artwork preview" 
-                    class="live-cover-img">
-                  <span class="preview-tag">Preview</span>
+                    class="live-cover-img"
+                    (error)="onImageError($event)">
+                  <span class="cover-badge-pill">Preview</span>
                 </div>
               }
             </div>
@@ -178,20 +207,24 @@
             <span>Live Catalog Preview</span>
           </div>
 
-          <!-- Card Mockup -->
+          <!-- Card Mockup (AC-1021 / AC-1038) -->
           <div class="preview-game-card">
             <div class="preview-cover-wrap">
-              <img [src]="previewCover" [alt]="previewTitle + ' Preview'" class="preview-cover-img">
-              <span class="preview-price-badge" [class.free]="previewPrice === 0">
-                {{ previewPrice === 0 ? 'FREE' : '$' + previewPrice.toFixed(2) }}
+              <img 
+                [src]="previewCover()" 
+                [alt]="previewTitle() + ' Preview'" 
+                class="preview-cover-img"
+                (error)="onImageError($event)">
+              <span class="preview-price-badge" [class.free]="previewPrice() === 0">
+                {{ previewPrice() === 0 ? 'FREE' : '$' + previewPrice().toFixed(2) }}
               </span>
             </div>
 
             <div class="preview-card-body">
-              <h3 class="preview-card-title">{{ previewTitle }}</h3>
+              <h3 class="preview-card-title">{{ previewTitle() }}</h3>
               <div class="preview-tags-row">
-                @for (t of previewTags.slice(0, 3); track t) {
-                  <span class="preview-tag">#{{ t }}</span>
+                @for (t of previewTags().slice(0, 3); track t) {
+                  <span class="preview-card-tag">#{{ t }}</span>
                 }
               </div>
               <div class="preview-footer">

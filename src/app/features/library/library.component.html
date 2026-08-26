@@ -27,6 +27,7 @@
             [(ngModel)]="searchQuery" 
             placeholder="Search your games..." 
             class="library-search-input"
+            (keydown.escape)="searchQuery = ''"
             aria-label="Filter games by title or tag">
           @if (searchQuery) {
             <button type="button" class="btn-clear-search" (click)="searchQuery = ''" aria-label="Clear search">✕</button>
@@ -42,7 +43,7 @@
                 [class.active]="selectedTags.size === 0" 
                 (click)="clearTags()">
                 <span>All Games</span>
-                <span class="filter-count-badge">{{ getTagCount('all') }}</span>
+                <span class="filter-count-badge">{{ items.length }}</span>
               </button>
               @for (tag of availableTags; track tag) {
                 <button 
@@ -50,8 +51,7 @@
                   class="filter-tag-chip" 
                   [class.active]="selectedTags.has(tag)" 
                   (click)="toggleTag(tag)">
-                  <span>{{ tag }}</span>
-                  <span class="filter-count-badge">{{ getTagCount(tag) }}</span>
+                  <span>#{{ tag }}</span>
                 </button>
               }
               @if (selectedTags.size > 1) {
@@ -97,7 +97,7 @@
           <div class="library-card" role="listitem">
             <!-- Cover Art with Link -->
             <a [routerLink]="['/games', item.game.id]" class="card-cover-wrap" [attr.aria-label]="'View details for ' + item.game.title">
-              <img [src]="item.game.coverImageUrl" [alt]="item.game.title + ' Cover'" class="card-cover-img" loading="lazy">
+              <img [src]="item.game.coverImageUrl" [alt]="item.game.title + ' Cover'" class="card-cover-img" loading="lazy" (error)="$any($event.target).src = 'assets/logo-icon.svg'">
               <div class="card-overlay" aria-hidden="true">
                 <span class="overlay-badge">View Game</span>
               </div>
@@ -161,39 +161,22 @@
   <!-- Soft Deletion Confirmation Reminder Modal -->
   @if (gameToRemove) {
     <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="removeModalTitle" (click)="closeRemoveModal()" (keydown.escape)="closeRemoveModal()">
-      <div class="modal-card danger" (click)="$event.stopPropagation()">
+      <div class="modal-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <div class="danger-header-cluster">
-            <svg class="danger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" fill="currentColor" fill-opacity="0.15"/>
-              <line x1="12" y1="9" x2="12" y2="13"/>
-              <line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-            <h3 id="removeModalTitle" class="modal-title">Remove from Library</h3>
-          </div>
+          <h3 id="removeModalTitle" class="modal-title">Remove from Library?</h3>
           <button type="button" class="btn-close-modal" (click)="closeRemoveModal()" aria-label="Close modal">✕</button>
         </div>
 
         <div class="modal-body">
           <p class="modal-lead-text">
-            Are you sure you want to remove <strong>"{{ gameToRemove.title }}"</strong> from your game library?
+            Are you sure you want to remove <strong>"{{ gameToRemove.title }}"</strong> from your library?
           </p>
-          <div class="unpublish-info-box">
-            <div class="info-point">
-              <span class="info-bullet">✓</span>
-              <span>Your local game files and downloads on your device remain safe.</span>
-            </div>
-            <div class="info-point">
-              <span class="info-bullet">✓</span>
-              <span>You can re-acquire or re-download this title from the store anytime.</span>
-            </div>
-          </div>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn-cancel" (click)="closeRemoveModal()" [disabled]="removing">Keep in Library</button>
+          <button type="button" class="btn-cancel" (click)="closeRemoveModal()" [disabled]="removing">Cancel</button>
           <button type="button" class="btn-confirm-delete" (click)="confirmRemove()" [disabled]="removing">
-            {{ removing ? 'Removing...' : 'Remove from Library' }}
+            {{ removing ? 'Removing...' : 'Remove' }}
           </button>
         </div>
       </div>

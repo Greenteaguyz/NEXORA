@@ -45,6 +45,7 @@
             [(ngModel)]="searchQuery" 
             class="faq-search-input" 
             placeholder="Search questions or topics..." 
+            (keydown.escape)="clearSearch()"
             aria-label="Search FAQs">
           @if (searchQuery) {
             <button type="button" class="faq-clear-btn" (click)="clearSearch()" aria-label="Clear search input">✕</button>

@@ -6,7 +6,8 @@
         [src]="game.coverImageUrl" 
         [alt]="game.title" 
         class="cover-img"
-        decoding="sync">
+        decoding="sync"
+        (error)="$any($event.target).src = 'assets/logo-icon.svg'">
       <div class="media-overlay"></div>
     </a>
 
@@ -47,7 +48,7 @@
       <div class="tags-row">
         @for (tag of game.tags.slice(0, 2); track tag) {
           <a [routerLink]="['/catalog']" [queryParams]="{ tag: tag }" class="tag-chip">
-            {{ tag }}
+            #{{ tag }}
           </a>
         }
       </div>

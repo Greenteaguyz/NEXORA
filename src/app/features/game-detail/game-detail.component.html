@@ -48,6 +48,7 @@
             loading="eager"
             decoding="sync"
             class="steam-stage-img"
+            (error)="$any($event.target).src = 'assets/logo-icon.svg'"
             (click)="openLightbox(selectedStageIndex)">
           
           <!-- Corner Lightbox Expand Button -->
@@ -77,7 +78,7 @@
               [class.active]="selectedStageIndex === idx"
               (click)="selectStageImage(idx)"
               [attr.aria-label]="'Select screenshot ' + (idx + 1) + (selectedStageIndex === idx ? ' (Selected)' : '')">
-              <img [src]="shot" [alt]="'Thumbnail preview ' + (idx + 1)" loading="lazy" class="steam-thumb-img">
+              <img [src]="shot" [alt]="'Thumbnail preview ' + (idx + 1)" loading="lazy" class="steam-thumb-img" (error)="$any($event.target).src = 'assets/logo-icon.svg'">
             </button>
           }
         </div>
@@ -88,7 +89,7 @@
         <div class="steam-capsule-card">
           <!-- Cover Banner Art -->
           <div class="capsule-image-wrap">
-            <img [src]="game.coverImageUrl" [alt]="game.title + ' Cover Art'" loading="eager" decoding="sync" class="capsule-cover-img">
+            <img [src]="game.coverImageUrl" [alt]="game.title + ' Cover Art'" loading="eager" decoding="sync" class="capsule-cover-img" (error)="$any($event.target).src = 'assets/logo-icon.svg'">
           </div>
 
           <!-- Elevator Pitch / Short Blurb -->
@@ -114,7 +115,7 @@
             <div class="capsule-meta-row">
               <span class="meta-label">Developer:</span>
               @if (creator) {
-                <a [routerLink]="['/creators', creator.id]" class="meta-link-creator" [attr.aria-label]="'View developer profile: ' + creator.displayName">
+                <a [routerLink]="['/creators', creator.id]" class="meta-val meta-link-creator" [attr.aria-label]="'View developer profile: ' + creator.displayName">
                   {{ creator.displayName }}
                 </a>
               } @else {
@@ -139,138 +140,181 @@
               }
             </div>
           </div>
+
+          <!-- Sidebar Wishlist Action Button (Authentic Steam Placement) -->
+          <div class="capsule-wishlist-wrap">
+            <button 
+              type="button" 
+              class="btn-steam-sidebar-wishlist"
+              [class.active]="isWishlisted"
+              (click)="toggleWishlist()"
+              [attr.aria-label]="(isWishlisted ? 'Remove ' : 'Add ') + game.title + (isWishlisted ? ' from wishlist' : ' to wishlist')">
+              <svg class="wishlist-btn-svg" viewBox="0 0 24 24" [attr.fill]="isWishlisted ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              <span>{{ isWishlisted ? 'On your Wishlist' : 'Add to your Wishlist' }}</span>
+            </button>
+          </div>
         </div>
       </aside>
     </section>
 
-    <!-- STREAMLINED PURCHASE / DOWNLOAD BANNER -->
+    <!-- STEAM PURCHASE & DOWNLOAD LAUNCHPAD BANNER -->
     <section class="steam-purchase-banner" [class.free-banner]="game.price === 0" aria-label="Purchase and Download Options">
-      <div class="purchase-banner-main">
-        <div class="purchase-banner-info">
-          <h2 class="purchase-game-title">
-            {{ game.price === 0 ? 'Download ' + game.title : 'Buy ' + game.title }}
-          </h2>
+      <!-- Free Claim Success Toast (AC-1124) -->
+      @if (showFreeClaimToast) {
+        <div class="free-claim-toast" role="status">
+          <div class="claim-toast-left">
+            <svg class="claim-check-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span><strong>"{{ game.title }}"</strong> added to your Library! You now own the permanent offline license.</span>
+          </div>
+          <button type="button" class="btn-dismiss-claim-toast" (click)="closeFreeClaimToast()" aria-label="Dismiss notification">✕</button>
+        </div>
+      }
 
-          <!-- Multi-Platform Build Selector with Vector SVG Icons -->
-          <div class="platform-selector-pill-group" role="group" aria-label="Target Build Platform">
-            <button 
-              type="button" 
-              class="platform-pill" 
-              [class.active]="selectedDownloadPlatform === 'windows'" 
-              (click)="setDownloadPlatform('windows')"
-              aria-label="Windows Build">
-              <svg class="pill-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.901-1.801"/>
+      @if (isCreatorOwner) {
+        <!-- CREATOR MASTER ACCESS BOX -->
+        <div class="steam-purchase-box creator-box">
+          <div class="purchase-box-left">
+            <div class="purchase-title-row">
+              <h2 class="purchase-game-title">Play {{ game.title }}</h2>
+              <span class="steam-status-badge dev-badge">
+                <svg class="badge-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/>
+                </svg>
+                DEVELOPER COPY
+              </span>
+            </div>
+          </div>
+
+          <div class="purchase-box-right">
+            <a [routerLink]="['/studio/games', game.id, 'edit']" class="btn-steam-studio-link">
+              <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
               </svg>
-              <span>Windows 32/64-bit</span>
-            </button>
-            <button 
-              type="button" 
-              class="platform-pill" 
-              [class.active]="selectedDownloadPlatform === 'linux'" 
-              (click)="setDownloadPlatform('linux')"
-              aria-label="Linux Build">
-              <svg class="pill-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12.003 2c-2.76 0-4.996 2.235-4.996 4.994 0 .97.28 1.874.764 2.639C6.44 10.375 5.5 12.07 5.5 14c0 1.258.397 2.423 1.074 3.383-.357.734-.574 1.558-.574 2.43 0 .42.052.827.148 1.217.155.629.742 1.05 1.385.97 1.077-.133 1.98-.679 2.583-1.468.604.301 1.28.468 1.884.468s1.28-.167 1.884-.468c.603.789 1.506 1.335 2.583 1.468.643.08 1.23-.341 1.385-.97.096-.39.148-.797.148-1.217 0-.872-.217-1.696-.574-2.43.677-.96 1.074-2.125 1.074-3.383 0-1.93-.94-3.625-2.271-4.367.484-.765.764-1.669.764-2.639 0-2.759-2.236-4.994-4.996-4.994z"/>
+              <span>Edit in Studio</span>
+            </a>
+            <button type="button" class="btn-steam-primary-cta" (click)="onDownload()">
+              <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
-              <span>Linux x86_64</span>
+              <span>Download Master Build</span>
             </button>
           </div>
         </div>
-
-        <div class="purchase-action-group">
-          @if (game.price > 0 && !isOwned) {
-            <div class="purchase-price-tag" [attr.aria-label]="'Price: $' + game.price.toFixed(2)">
-              ${{ game.price.toFixed(2) }}
+      } @else if (isOwned) {
+        <!-- ALREADY IN LIBRARY BOX -->
+        <div class="steam-purchase-box owned-box">
+          <div class="purchase-box-left">
+            <div class="purchase-title-row">
+              <h2 class="purchase-game-title">Play {{ game.title }}</h2>
+              <span class="steam-status-badge library-badge">
+                <svg class="badge-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                IN LIBRARY
+              </span>
             </div>
-          }
+          </div>
 
-          <app-download-button
-            [game]="game"
-            [isOwned]="isOwned"
-            [platform]="selectedDownloadPlatform"
-            size="md"
-            (loginRequired)="onLoginRequired()"
-            (download)="onDownload()"
-            (purchaseConfirmed)="onPurchaseConfirmed()">
-          </app-download-button>
-
-          @if (game.price === 0 && !isOwned) {
-            <button 
-              type="button" 
-              class="btn-claim-library" 
-              (click)="claimFreeToLibrary()"
-              title="Add to your permanent library without downloading immediately">
-              <svg class="action-btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-                <line x1="12" y1="7" x2="12" y2="13"/>
-                <line x1="9" y1="10" x2="15" y2="10"/>
+          <div class="purchase-box-right">
+            <button type="button" class="btn-subtle-remove-text" (click)="promptRemoveFromLibrary()" title="Remove from your library">Remove</button>
+            <button type="button" class="btn-steam-primary-cta" (click)="onDownload()">
+              <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
-              <span>+ Add to Library</span>
+              <span>Download Game</span>
             </button>
-          }
+          </div>
+        </div>
+      } @else {
+        <!-- UNOWNED PURCHASE BOX (CLEAN STEAM COMPOUND WIDGET) -->
+        <div class="steam-purchase-box">
+          <div class="purchase-box-left">
+            <div class="purchase-title-row">
+              <h2 class="purchase-game-title">{{ game.price === 0 ? 'Play ' + game.title : 'Buy ' + game.title }}</h2>
+              <div class="platform-glyphs" aria-label="Supported platforms">
+                <svg class="platform-glyph-svg" viewBox="0 0 24 24" fill="currentColor" title="Windows Standalone (.exe)" aria-hidden="true">
+                  <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.901-1.801"/>
+                </svg>
+                <svg class="platform-glyph-svg" viewBox="0 0 24 24" fill="currentColor" title="Linux & SteamOS Native (.AppImage)" aria-hidden="true">
+                  <path d="M12.003 2c-2.76 0-4.996 2.235-4.996 4.994 0 .97.28 1.874.764 2.639C6.44 10.375 5.5 12.07 5.5 14c0 1.258.397 2.423 1.074 3.383-.357.734-.574 1.558-.574 2.43 0 .42.052.827.148 1.217.155.629.742 1.05 1.385.97 1.077-.133 1.98-.679 2.583-1.468.604.301 1.28.468 1.884.468s1.28-.167 1.884-.468c.603.789 1.506 1.335 2.583 1.468.643.08 1.23-.341 1.385-.97.096-.39.148-.797.148-1.217 0-.872-.217-1.696-.574-2.43.677-.96 1.074-2.125 1.074-3.383 0-1.93-.94-3.625-2.271-4.367.484-.765.764-1.669.764-2.639 0-2.759-2.236-4.994-4.996-4.994z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
 
-          @if (isOwned) {
-            <button 
-              type="button" 
-              class="btn-remove-library" 
-              (click)="removeFromLibrary()"
-              title="Remove this game from your library">
-              <svg class="action-btn-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <polyline points="3 6 5 6 21 6"/>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-              </svg>
-              <span>Remove</span>
-            </button>
-          }
-
-          @if (!isOwned) {
-            <button 
-              type="button" 
-              class="btn-steam-wishlist"
-              [class.active]="isWishlisted"
-              (click)="toggleWishlist()"
-              [attr.aria-label]="(isWishlisted ? 'Remove ' : 'Add ') + game.title + (isWishlisted ? ' from wishlist' : ' to wishlist')">
-              <svg class="btn-wishlist-svg" viewBox="0 0 24 24" [attr.fill]="isWishlisted ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
-              <span>{{ isWishlisted ? 'Saved' : 'Wishlist' }}</span>
-            </button>
-          }
+          <div class="purchase-box-right">
+            @if (game.price === 0) {
+              <button type="button" class="btn-claim-pill" (click)="claimFreeToLibrary()">+ Add to Library</button>
+              <button type="button" class="btn-steam-primary-cta" (click)="onDownload()">
+                <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span>Play Free</span>
+              </button>
+            } @else {
+              <!-- Fused Steam Compound Price-Button Widget -->
+              <div class="steam-compound-widget">
+                <span class="compound-price">${{ game.price.toFixed(2) }}</span>
+                <button type="button" class="compound-action-btn" (click)="onPurchaseConfirmed()">
+                  <span>Buy Now</span>
+                </button>
+              </div>
+            }
+          </div>
         </div>
-      </div>
-
-      <!-- Package Metadata & Checksum Trust Strip with Vector SVG Icons -->
-      <div class="package-meta-strip">
-        <div class="meta-item">
-          <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-            <line x1="12" y1="22.08" x2="12" y2="12"/>
-          </svg>
-          <span class="meta-label">Download Size:</span>
-          <strong class="meta-val">1.85 GB (Offline)</strong>
-        </div>
-        <div class="meta-item">
-          <svg class="meta-svg highlight-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-            <polyline points="9 12 11 14 15 10"/>
-          </svg>
-          <strong class="meta-val highlight-green">100% DRM-Free</strong>
-        </div>
-        <div class="meta-item checksum-item" (click)="copyChecksum()" title="Click to copy file checksum" role="button" tabindex="0">
-          <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="7.5" cy="15.5" r="4.5"/>
-            <path d="m21 3-9.5 9.5"/>
-            <path d="m15.5 7.5 3 3"/>
-          </svg>
-          <span class="meta-label">Checksum:</span>
-          <code class="meta-code">a8f4c2...1f90</code>
-          <span class="copy-badge">{{ copiedChecksum ? '✓ Copied!' : 'Copy' }}</span>
-        </div>
-      </div>
+      }
     </section>
+
+    <!-- Creator Notice Modal (When creator interacts with own game) -->
+    @if (showCreatorNoticeModal) {
+      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Creator Master Access" (click)="closeCreatorNoticeModal()">
+        <div class="modal-card developer-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <div class="developer-header-cluster">
+              <span class="developer-badge">👑 DEVELOPER PRIVILEGES</span>
+              <h3 class="modal-title">You Created This Game</h3>
+            </div>
+            <button type="button" class="btn-close-modal" (click)="closeCreatorNoticeModal()" aria-label="Close modal">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-lead-text">
+              You are the verified creator of <strong>"{{ game.title }}"</strong>.
+            </p>
+            <div class="developer-info-box">
+              <div class="info-point">
+                <span class="info-bullet">✓</span>
+                <span>You have permanent master developer access and can download the package build anytime for local testing.</span>
+              </div>
+              <div class="info-point">
+                <span class="info-bullet">✓</span>
+                <span>You can edit game details, pricing, screenshot galleries, and system requirements anytime in Creator Studio.</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" (click)="closeCreatorNoticeModal()">Close</button>
+            <a [routerLink]="['/studio/games', game.id, 'edit']" class="btn-primary" (click)="closeCreatorNoticeModal()">
+              <svg class="btn-edit-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              <span>Edit in Studio</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    }
 
     <!-- Purchase Confirmation Modal -->
     @if (showPurchaseModal) {
@@ -280,6 +324,117 @@
         (confirm)="onModalConfirm($event)"
         (cancel)="onModalCancel()">
       </app-purchase-confirm-modal>
+    }
+
+    <!-- Order Confirmed & Added to Library Modal (AC-1117) -->
+    @if (showOrderConfirmedModal && confirmedOrder && game) {
+      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="orderConfirmModalTitle" (click)="closeOrderConfirmedModal()" (keydown.escape)="closeOrderConfirmedModal()">
+        <div class="modal-card order-confirmed-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <div class="confirm-header-cluster">
+              <span class="confirm-badge">TRANSACTION SUCCESSFUL</span>
+              <h3 id="orderConfirmModalTitle" class="modal-title">Order Confirmed</h3>
+            </div>
+            <button type="button" class="btn-close-modal" (click)="closeOrderConfirmedModal()" aria-label="Close modal">✕</button>
+          </div>
+
+          <div class="modal-body">
+            <div class="order-receipt-summary">
+              <div class="receipt-game-info">
+                <img [src]="game.coverImageUrl" [alt]="game.title + ' Cover'" class="receipt-cover-thumb" (error)="$any($event.target).src = 'assets/logo-icon.svg'">
+                <div class="receipt-game-meta">
+                  <h4 class="receipt-game-title">{{ game.title }}</h4>
+                  <span class="receipt-drm-badge">100% DRM-Free License</span>
+                </div>
+                <div class="receipt-price-box">
+                  <span class="receipt-amount">${{ confirmedOrder.price.toFixed(2) }}</span>
+                </div>
+              </div>
+
+              <div class="receipt-details-list">
+                <div class="receipt-detail-item">
+                  <span class="detail-label">Order Number</span>
+                  <span class="detail-val mono">{{ confirmedOrder.id.toUpperCase() }}</span>
+                </div>
+                <div class="receipt-detail-item">
+                  <span class="detail-label">Payment Method</span>
+                  <span class="detail-val">{{ confirmedOrder.paymentMethod }}</span>
+                </div>
+                <div class="receipt-detail-item">
+                  <span class="detail-label">Platform Build</span>
+                  <span class="detail-val">{{ selectedOs === 'windows' ? 'Windows 10/11 (.exe)' : 'Linux / SteamOS (.AppImage)' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="order-download-notice">
+              <svg class="notice-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Your download has begun. You can re-download anytime from your Library.</span>
+            </div>
+          </div>
+
+          <div class="modal-footer order-modal-footer">
+            <button type="button" class="btn-subtle-link" (click)="goToOrders()">View Order Receipt</button>
+            <div class="order-footer-cta-group">
+              <button type="button" class="btn-secondary-cta" (click)="goToLibrary()">Go to Library</button>
+              <button type="button" class="btn-steam-download-again" (click)="onDownload()">
+                <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Download</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Soft Warning Confirmation Modal: Remove from Wishlist -->
+    @if (showWishlistRemoveModal && game) {
+      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="removeWishlistTitle" (click)="cancelRemoveFromWishlist()" (keydown.escape)="cancelRemoveFromWishlist()">
+        <div class="modal-card warning-modal-card" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3 id="removeWishlistTitle" class="modal-title">Remove from Wishlist?</h3>
+            <button type="button" class="btn-close-modal" (click)="cancelRemoveFromWishlist()" aria-label="Close modal">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-lead-text">
+              Are you sure you want to remove <strong>"{{ game.title }}"</strong> from your wishlist?
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" (click)="cancelRemoveFromWishlist()">Keep in Wishlist</button>
+            <button type="button" class="btn-danger-confirm" (click)="confirmRemoveFromWishlist()">Remove</button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Soft Warning Confirmation Modal: Remove from Library -->
+    @if (showLibraryRemoveModal && game) {
+      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="removeLibraryTitle" (click)="cancelRemoveFromLibrary()" (keydown.escape)="cancelRemoveFromLibrary()">
+        <div class="modal-card warning-modal-card" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3 id="removeLibraryTitle" class="modal-title">Remove from Library?</h3>
+            <button type="button" class="btn-close-modal" (click)="cancelRemoveFromLibrary()" aria-label="Close modal">✕</button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-lead-text">
+              Are you sure you want to remove <strong>"{{ game.title }}"</strong> from your library? You will lose direct download access until you re-acquire the title.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-cancel" (click)="cancelRemoveFromLibrary()">Keep in Library</button>
+            <button type="button" class="btn-danger-confirm" (click)="confirmRemoveFromLibrary()">Remove from Library</button>
+          </div>
+        </div>
+      </div>
     }
 
     <!-- STEAM LOWER GRID: About This Game & Specs -->
@@ -297,7 +452,7 @@
           </div>
         </section>
 
-        <!-- SYSTEM REQUIREMENTS SECTION -->
+        <!-- SYSTEM REQUIREMENTS SECTION (3x2 Balanced Grid AC-1058) -->
         <section class="steam-detail-block specs-block" aria-labelledby="heading-system-specs">
           <div class="block-header">
             <h2 id="heading-system-specs" class="block-title">System Requirements</h2>
@@ -326,7 +481,24 @@
           <div class="specs-steam-grid specs-simple-grid">
             @for (item of minimumSpecs.items; track item.label) {
               <div class="spec-simple-item">
-                <span class="spec-key">{{ item.label }}</span>
+                <div class="spec-item-header">
+                  <span class="spec-icon-box" aria-hidden="true">
+                    @if (item.icon === 'os') {
+                      <svg class="spec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    } @else if (item.icon === 'cpu') {
+                      <svg class="spec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>
+                    } @else if (item.icon === 'ram') {
+                      <svg class="spec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 19v-3"/><path d="M10 19v-3"/><path d="M14 19v-3"/><path d="M18 19v-3"/><rect x="2" y="5" width="20" height="11" rx="2"/></svg>
+                    } @else if (item.icon === 'gpu') {
+                      <svg class="spec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="8" cy="12" r="2.5"/><circle cx="16" cy="12" r="2.5"/></svg>
+                    } @else if (item.icon === 'directx') {
+                      <svg class="spec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    } @else {
+                      <svg class="spec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                    }
+                  </span>
+                  <span class="spec-key">{{ item.label }}</span>
+                </div>
                 <span class="spec-val">{{ item.value }}</span>
               </div>
             }

@@ -49,6 +49,15 @@ export class CommandPaletteComponent {
     { id: 'nav-profile', title: 'Account Settings', category: 'Pages', subtitle: 'Edit profile & preferences', icon: 'user', route: '/profile' }
   ];
 
+  private tokenize(text: string): string[] {
+    if (!text) return [];
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, ' ')
+      .split(/[\s-]+/)
+      .filter(t => t.length > 0);
+  }
+
   filteredItems = computed(() => {
     const q = this.searchQuery().trim().toLowerCase();
     const allGames = this.games();
@@ -69,17 +78,26 @@ export class CommandPaletteComponent {
       return gameItems.slice(0, 8);
     }
 
-    const matchedGames = gameItems.filter(
-      item =>
-        item.title.toLowerCase().includes(q) ||
-        (item.subtitle && item.subtitle.toLowerCase().includes(q)) ||
-        (item.tags && item.tags.some(t => t.toLowerCase().includes(q)))
-    );
+    const queryTokens = this.tokenize(q);
 
-    // Only surface pages if the query matches page titles or subtitles
-    const matchedNav = this.navCommands.filter(
-      item => item.title.toLowerCase().includes(q) || (item.subtitle && item.subtitle.toLowerCase().includes(q))
-    );
+    const matchedGames = gameItems.filter(item => {
+      const itemTitle = item.title.toLowerCase();
+      const itemSub = (item.subtitle || '').toLowerCase();
+      const itemTags = (item.tags || []).map(t => t.toLowerCase());
+
+      return queryTokens.every(token =>
+        itemTitle.includes(token) ||
+        itemSub.includes(token) ||
+        itemTags.some(t => t.includes(token))
+      );
+    });
+
+    // Only surface pages if the query tokens match page titles or subtitles
+    const matchedNav = this.navCommands.filter(item => {
+      const navTitle = item.title.toLowerCase();
+      const navSub = (item.subtitle || '').toLowerCase();
+      return queryTokens.every(token => navTitle.includes(token) || navSub.includes(token));
+    });
 
     return [...matchedGames, ...matchedNav];
   });
@@ -91,23 +109,30 @@ export class CommandPaletteComponent {
 
     effect(() => {
       if (this.isOpen()) {
+        this.searchQuery.set('');
         this.selectedIndex.set(0);
         setTimeout(() => {
           if (this.searchInputRef) {
+            this.searchInputRef.nativeElement.value = '';
             this.searchInputRef.nativeElement.focus();
           }
         }, 50);
       } else {
         this.searchQuery.set('');
+        this.selectedIndex.set(0);
       }
     });
   }
 
   open(): void {
+    this.searchQuery.set('');
+    this.selectedIndex.set(0);
     this.isOpen.set(true);
   }
 
   close(): void {
+    this.searchQuery.set('');
+    this.selectedIndex.set(0);
     this.isOpen.set(false);
   }
 

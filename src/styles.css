@@ -11,12 +11,12 @@
   /* Steam Brand Accents (Dark Mode) */
   --accent-400:    #66C0F4;  /* Steam Electric Cyan — highlights & links */
   --accent-500:    #4B96C2;  /* Steam Cyan hover */
-  --accent-600:    #75B022;  /* Steam Action Lime Green — Primary Buy / Play CTA */
-  --accent-700:    #5C7E10;  /* Steam Action Green hover */
+  --accent-600:    #0078D4;  /* Steam Blue Primary Action */
+  --accent-700:    #005A9E;  /* Deep Steam Blue hover */
 
   /* Steam Gradients */
-  --steam-btn-gradient: linear-gradient(to right, #75B022 5%, #588A1B 95%);
-  --steam-btn-hover:    linear-gradient(to right, #8ED629 5%, #6AA621 95%);
+  --steam-btn-gradient: linear-gradient(90deg, #0078D4 0%, #0284C7 100%);
+  --steam-btn-hover:    linear-gradient(90deg, #0284C7 0%, #0078D4 100%);
 
   /* Cyber & Utility Accents */
   --cyan-400:      #66C0F4;  /* Steam Electric Cyan — tags, badges, chips */
@@ -96,8 +96,8 @@
   --amber-400:     #D97706;  /* Deep amber gold (5.2:1 ratio) */
   --accent-400:    #0078D4;  /* Deep Steam Blue links */
   --accent-500:    #005A9E;
-  --accent-600:    #558B2F;  /* High-contrast Steam Action Green CTA (6.2:1 ratio) */
-  --accent-700:    #33691E;
+  --accent-600:    #0078D4;  /* High-contrast Steam Blue CTA */
+  --accent-700:    #005A9E;
 }
 
 /* Base Resets */
@@ -107,8 +107,19 @@
   padding: 0;
 }
 
+html {
+  overflow-y: overlay;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(102, 192, 244, 0.3) transparent;
+}
+
+[data-theme="light"] html {
+  scrollbar-color: rgba(0, 120, 212, 0.3) transparent;
+}
+
 html, body {
   min-height: 100vh;
+  overflow-x: hidden;
   background-color: var(--bg-void);
   color: var(--text-primary);
   font-family: var(--font-sans);
@@ -134,10 +145,28 @@ app-root {
 /* Root Layout Main Flex Container (Ensures footer stays pinned to bottom across all routes) */
 .main-content {
   flex: 1 0 auto;
+  min-height: calc(100vh - 68px - 340px);
   display: flex;
   flex-direction: column;
   width: 100%;
   outline: none;
+  position: relative;
+}
+
+/* Universal Full-Screen Modal Backdrop (AC-1041 / AC-1042) */
+.modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  background: rgba(11, 13, 19, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 /* Accessible Skip to Content Link (Hidden off-screen until Tab-focused) */
@@ -185,10 +214,17 @@ app-root {
   outline-offset: 2px;
 }
 
-/* Base Form Reset */
+/* Base Form Reset & Textarea Resizing Bounds (AC-1039) */
 button, input, select, textarea {
   font-family: inherit;
   font-size: inherit;
+}
+
+textarea {
+  resize: vertical !important;
+  min-height: 96px;
+  max-height: 480px;
+  box-sizing: border-box;
 }
 
 /* Interactive Clickable Base */
@@ -204,23 +240,77 @@ a {
   text-decoration: none;
 }
 
-/* Custom Scrollbar (Steam Style) */
+/* Smooth Hardware-Accelerated Scrolling Standards */
+html {
+  scroll-behavior: smooth;
+}
+
+/* iOS WebKit Native 120Hz ProMotion Optimization (Disable CSS interpolation on touch devices) */
+@supports (-webkit-touch-callout: none) {
+  html, body {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Universal Native Scrollbar Suppression (Applies to Window, Modals, Drawers, Dropdowns & Lists) */
+*, *::before, *::after, html, body {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+*::-webkit-scrollbar,
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
 
-::-webkit-scrollbar-track {
-  background: var(--bg-void);
+*::-webkit-scrollbar-button,
+::-webkit-scrollbar-button,
+*::-webkit-scrollbar-corner,
+::-webkit-scrollbar-corner,
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-thumb {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--border-card);
-  border-radius: var(--radius-sm);
+/* Pure Virtual Floating Overlay Scroll Indicator (Clamped cleanly within Content Runway) */
+.virtual-scroll-track {
+  position: fixed;
+  top: 74px;
+  right: 4px;
+  bottom: 12px;
+  width: 6px;
+  pointer-events: none;
+  z-index: 998;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-500);
+.virtual-scroll-track.active {
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+.virtual-scroll-thumb {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 48px;
+  border-radius: var(--radius-full, 9999px);
+  background-color: rgba(102, 192, 244, 0.6);
+  box-shadow: 0 0 10px rgba(102, 192, 244, 0.35);
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+[data-theme="light"] .virtual-scroll-thumb {
+  background-color: rgba(0, 120, 212, 0.6);
+  box-shadow: 0 0 8px rgba(0, 120, 212, 0.25);
 }
 
 /* Tactile Active Micro-Interactions (Snappy Steam Desktop Press Feel) */
@@ -260,8 +350,13 @@ button:active:not(:disabled),
   color: var(--accent-400);
 }
 
-/* Mobile Bottom Navigation Clearance */
+/* Mobile Bottom Navigation Clearance & Content Runway Bounds */
 @media (max-width: 768px) {
+  .virtual-scroll-track {
+    top: 62px;
+    bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  }
+
   .main-content {
     padding-bottom: 76px !important;
   }

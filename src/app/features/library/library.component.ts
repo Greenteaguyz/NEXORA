@@ -1,4 +1,4 @@
-import { Component, inject, effect } from '@angular/core';
+import { Component, inject, effect, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -156,6 +156,13 @@ export class LibraryComponent {
   closeRemoveModal(): void {
     if (this.removing) return;
     this.gameToRemove = null;
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && this.gameToRemove) {
+      this.closeRemoveModal();
+    }
   }
 
   confirmRemove(): void {

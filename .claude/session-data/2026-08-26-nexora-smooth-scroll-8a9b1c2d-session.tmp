@@ -1,0 +1,85 @@
+# Session: 2026-08-26
+
+**Started:** ~08:00 AM
+**Last Updated:** 05:55 PM
+**Project:** Greenteaguyz/NEXORA (c:\Users\User\Downloads\AngularProject)
+**Topic:** Mobile Hero Optimization, Steam Download Tray, iOS 120Hz ProMotion Scrolling, and Cloudflare Tunnel Public Testing
+
+---
+
+## What We Are Building
+
+NEXORA is a high-craft cyberpunk & indie game distribution marketplace built with Angular 18+ (standalone components, reactive Signals, OnPush change detection, interface-driven DI, and strict Steam DesignMD styling).
+
+In this session, we perfected the responsive mobile layout (single-hero display without duplicate cover artwork stacking), engineered a persistent Steam-style bottom Download Tray (`DownloadService`), implemented universal accessible `<kbd>Escape</kbd>` modal dismissal, and eliminated all touch scrolling friction on iOS Safari via WebKit kinetic momentum isolation (`touch-action: pan-y`, dedicated GPU compositing layer, and RAF scroll scheduling). We also configured and guided Cloudflare Tunnel (`cloudflared`) live proxy testing for real-time mobile dogfooding.
+
+---
+
+## What WORKED (with evidence)
+
+- **Mobile Single-Hero Layout**: Removed duplicate cover image on mobile viewports (`display: none` at `< 900px`) in [`game-detail.component.css`](file:///c:/Users/User/Downloads/AngularProject/src/app/features/game-detail/game-detail.component.css) while enabling touch-friendly screenshot carousel scrolling (`-webkit-overflow-scrolling: touch`).
+- **Steam Global Bottom Download Tray**: Created [`DownloadService`](file:///c:/Users/User/Downloads/AngularProject/src/app/core/services/download.service.ts), [`download-tray.component.ts`](file:///c:/Users/User/Downloads/AngularProject/src/app/shared/ui/download-tray/download-tray.component.ts), and integrated into [`app.component.ts`](file:///c:/Users/User/Downloads/AngularProject/src/app/app.component.ts). Verified with active download progress simulation (`0% -> 38% -> 76% -> 100%`) and `[ Play ]` direct launch actions.
+- **Universal Category Rail Edge Fade Masks**: Standardized `mask-image: linear-gradient(...)` across Library, Wishlist, and Catalog filter tracks.
+- **Universal Accessible Escape Dismissal**: Added HostListener Escape key dismissal across all modal dialogs ([`orders.component.ts`](file:///c:/Users/User/Downloads/AngularProject/src/app/features/orders/orders.component.ts), [`library.component.ts`](file:///c:/Users/User/Downloads/AngularProject/src/app/features/library/library.component.ts), [`wishlist.component.ts`](file:///c:/Users/User/Downloads/AngularProject/src/app/features/wishlist/wishlist.component.ts), [`creator-studio.component.ts`](file:///c:/Users/User/Downloads/AngularProject/src/app/features/creator-studio/creator-studio.component.ts)).
+- **Hardware-Accelerated & iOS 120Hz ProMotion Scrolling**: Wrapped `window:scroll` calculations with `requestAnimationFrame` in [`app.component.ts`](file:///c:/Users/User/Downloads/AngularProject/src/app/app.component.ts), isolated mobile drawer to a single scroll layer (`overflow: hidden` on drawer, `overflow-y: scroll; -webkit-overflow-scrolling: touch !important; touch-action: pan-y !important` on nav list), and bypassed synthetic CSS smooth scrolling on iOS WebKit devices via `@supports (-webkit-touch-callout: none)`.
+- **Automated Verification Gate**: Confirmed 100% pass rate across all test suites via `npm run verify` (401 unit tests, 51 integration tests, 10 master battery tests, 7 impeccable anti-slop rules).
+
+---
+
+## What Did NOT Work (and why)
+
+- **Global `html { scroll-behavior: smooth; }` on iOS Safari**: Caused rubbery friction and micro-stutters because WebKit's native 120Hz ProMotion touch deceleration engine was fighting synthetic CSS scroll interpolation. Resolved by scoping smooth scrolling off on WebKit touch devices (`scroll-behavior: auto !important`).
+- **Nested `overflow-y: auto` in Mobile Drawer**: Caused double-scroll momentum contention on touch screens. Resolved by setting `.mobile-drawer { overflow: hidden; }` and keeping `.mobile-nav` as the single dedicated scroll container.
+
+---
+
+## What Has NOT Been Tried Yet
+
+- Interactive Community Review System on Game Detail: Allow owned players to submit a positive/negative recommendation and comment directly on the game page.
+- Game Audio / Video Trailer autoplay preview toggle on Hero hover.
+- Steam Deck controller spatial navigation mapping for the new Download Tray.
+
+---
+
+## Current State of Files
+
+| File | Status | Notes |
+| :--- | :--- | :--- |
+| `src/app/features/game-detail/game-detail.component.css` | PASS: Complete | Single-hero layout and touch horizontal screenshot strip. |
+| `src/app/core/services/download.service.ts` | PASS: Complete | Reactive signal download state (`activeDownloads`, `isTrayOpen`). |
+| `src/app/shared/ui/download-tray/download-tray.component.ts` | PASS: Complete | Steam docked bottom download tray component. |
+| `src/app/app.component.ts` | PASS: Complete | Download tray host, RAF-batched scroll scheduling. |
+| `src/app/layout/header/header.component.css` | PASS: Complete | iOS GPU layer, touch-action pan-y, and single scroll layer. |
+| `src/styles.css` | PASS: Complete | iOS ProMotion touch overrides, hardware GPU scroll thumb. |
+| `README.md` | PASS: Complete | Updated with 469 test suite counts and latest features. |
+| `docs/explanation-download-flow.md` | PASS: Complete | Added download tray state machine and signal docs. |
+| `docs/growth-log.md` | PASS: Complete | Added transferable patterns for download tray and iOS scrolling. |
+| `tests/unit/unit-tests.spec.ts` | PASS: Complete | 401 unit tests passing across 80 sections. |
+
+---
+
+## Decisions Made
+
+- **Single Scroll Layer on Drawers**: Prevents nested touch gesture fighting on mobile WebKit and Android Chrome.
+- **RAF Scroll Listener Batching**: Prevents main thread lag and Change Detection thrashing during rapid mouse wheel and touch panning.
+- **Dedicated Root Download Tray**: Allows downloads to persist across SPA route changes without blocking the user.
+
+---
+
+## Blockers & Open Questions
+
+- No active blockers.
+
+---
+
+## Exact Next Step
+
+Run `npm run verify` or start exploring the Interactive Community Review System on the Game Detail view if desired.
+
+---
+
+## Environment & Setup Notes
+
+- **Dev Server**: `npm start` (listening on `http://localhost:4200`)
+- **Cloudflare Tunnel**: `.\cloudflared.exe tunnel --url http://localhost:4200`
+- **Verification Gate**: `npm run verify`

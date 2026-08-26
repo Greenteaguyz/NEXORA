@@ -1,8 +1,9 @@
 .profile-page-container {
+  position: relative;
   width: 100%;
-  max-width: 1400px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: var(--space-8) clamp(16px, 3.5vw, 56px) var(--space-12);
+  padding: clamp(16px, 2.5vw, 36px) clamp(14px, 2vw, 28px) calc(76px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -210,11 +211,11 @@
   flex-shrink: 0;
 }
 
-/* Quick Stats Triad Grid */
+/* Quick Stats Triad Grid (Fluid Clamp AC-1056) */
 .stats-overview-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(clamp(200px, 20vw, 280px), 1fr));
+  gap: clamp(14px, 1.8vw, 24px);
 }
 
 .stat-card {
@@ -401,20 +402,22 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--steam-btn-gradient, linear-gradient(to right, #75B022 5%, #588A1B 95%));
-  color: #0E141B; /* High-contrast WCAG AAA 8.5:1 */
+  background: var(--steam-btn-gradient, linear-gradient(90deg, #0078D4 0%, #0284C7 100%));
+  color: #FFFFFF;
   font-size: 0.82rem;
   font-weight: 800;
   padding: 8px 16px;
   border-radius: var(--radius);
+  border: 1px solid rgba(102, 192, 244, 0.45);
   text-decoration: none;
   transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 12px rgba(0, 120, 212, 0.25);
 }
 
 .btn-studio-cta:hover {
-  background: var(--steam-btn-hover, linear-gradient(to right, #8ED629 5%, #6AA621 95%));
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  background: linear-gradient(90deg, #0284C7 0%, #0078D4 100%);
+  border-color: #66C0F4;
+  box-shadow: 0 6px 20px rgba(102, 192, 244, 0.4);
 }
 
 .btn-studio-cta:active {
@@ -722,7 +725,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 99999;
   padding: 16px;
 }
 
@@ -1016,19 +1019,22 @@
 }
 
 .btn-save {
-  background: var(--steam-btn-gradient, linear-gradient(to right, #75B022 5%, #588A1B 95%));
-  border: none;
+  background: var(--steam-btn-gradient, linear-gradient(90deg, #0078D4 0%, #0284C7 100%));
+  border: 1px solid rgba(102, 192, 244, 0.45);
   color: #FFFFFF;
   padding: 8px 18px;
   border-radius: var(--radius-md);
   font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(117, 176, 34, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 120, 212, 0.25);
+  transition: all 0.15s ease;
 }
 
 .btn-save:hover:not(:disabled) {
-  background: var(--steam-btn-hover, linear-gradient(to right, #8ED629 5%, #6AA621 95%));
+  background: linear-gradient(90deg, #0284C7 0%, #0078D4 100%);
+  border-color: #66C0F4;
+  box-shadow: 0 6px 20px rgba(102, 192, 244, 0.4);
 }
 
 .btn-save:disabled {

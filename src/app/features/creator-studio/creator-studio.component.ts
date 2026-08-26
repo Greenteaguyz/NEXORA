@@ -1,6 +1,6 @@
-import { Component, inject, effect } from '@angular/core';
+import { Component, inject, effect, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Game } from '../../core/models/game.model';
 import { GAMES_DATA } from '../../core/data/tokens';
 import { AuthService } from '../../core/auth/auth.service';
@@ -19,10 +19,10 @@ import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.com
   templateUrl: './creator-studio.component.html',
   styleUrls: ['./creator-studio.component.css']
 })
-export class CreatorStudioComponent {
+export class CreatorStudioComponent implements OnInit {
   private gamesData = inject(GAMES_DATA);
+  private route = inject(ActivatedRoute);
   auth = inject(AuthService);
-  private router = inject(Router);
 
   games: Game[] = [];
   loading = true;
@@ -32,12 +32,38 @@ export class CreatorStudioComponent {
   deleting = false;
   deleteSuccess = false;
 
+  // Publish / Update Celebratory Toast State (AC-1118)
+  showPublishToast = false;
+  publishToastTitle = '';
+  publishToastMode: 'published' | 'updated' = 'published';
+  publishedGameId: string | null = null;
+
   constructor() {
     effect(() => {
       const user = this.auth.currentUser();
       this.gameToDelete = null;
       this.loadStudioGames(user);
     });
+  }
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if (params['published'] === 'true' && params['title']) {
+        this.publishToastTitle = params['title'];
+        this.publishToastMode = 'published';
+        this.publishedGameId = params['gameId'] || null;
+        this.showPublishToast = true;
+      } else if (params['updated'] === 'true' && params['title']) {
+        this.publishToastTitle = params['title'];
+        this.publishToastMode = 'updated';
+        this.publishedGameId = params['gameId'] || null;
+        this.showPublishToast = true;
+      }
+    });
+  }
+
+  closePublishToast(): void {
+    this.showPublishToast = false;
   }
 
   loadStudioGames(user = this.auth.currentUser()): void {
@@ -86,6 +112,13 @@ export class CreatorStudioComponent {
   closeDeleteModal(): void {
     if (this.deleting) return;
     this.gameToDelete = null;
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && this.gameToDelete) {
+      this.closeDeleteModal();
+    }
   }
 
   confirmSoftDelete(): void {

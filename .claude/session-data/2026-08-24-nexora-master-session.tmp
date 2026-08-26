@@ -1,0 +1,90 @@
+# Session: 2026-08-24
+
+**Started:** ~2:00 PM UTC+7
+**Last Updated:** 10:45 PM UTC+7 (2026-08-24)
+**Project:** NEXORA — Steam-Grade Angular 18 Gaming Storefront (`c:\Users\User\Downloads\AngularProject`)
+**Topic:** Dual-Theme Color Invariance, Dynamic Real-Time Timestamps, Minimalist Desktop Header, Game-Centric Command Palette, and Global Steam Blue Tag Polish
+
+---
+
+## What We Are Building
+
+NEXORA is a high-craft, production-grade Steam Deck & Desktop gaming storefront built with Angular 18 Standalone Components, fine-grained Signals reactivity, OnPush change detection, and strict Steam DesignMD compliance. 
+
+During this session, we resolved critical visual and architectural issues across mobile and desktop:
+1. **Dual-Theme WCAG AAA Contrast & Steam Blue Invariance**: Eliminated green tint discrepancies in light mode, ensuring active drawer links, capsule eyebrows, and game tag chips render in crisp Steam Blue (`#0078D4` / `#0284C7`) in light mode and Electric Cyan (`#66C0F4`) in dark mode.
+2. **Dynamic Real-Time Timestamps System (`daysAgo(n)`)**: Replaced all static `2024` seed dates with dynamic date offsets computed relative to `Date.now()` and added automatic localStorage migrations across all data stores.
+3. **Ultra-Lean Minimalist Desktop Header**: Removed 463 lines of redundant dropdown popovers, linking the user chip directly to `/profile` with a dedicated logout button.
+4. **Game-Centric Command Palette & Platform Ergonomics (Option A)**: Transformed the search modal into a game discovery finder with cover thumbnails and price pills, suppressing redundant static pages from default results and disabling desktop physical keyboard hints on touch mobile devices ($\le 768px$).
+
+---
+
+## What WORKED (with evidence)
+
+- **Game-First Search Palette (`AC-910` to `AC-914`)** — confirmed by: Unit tests in Section 33; opening search with empty query displays 100% catalog games with thumbnails; on mobile ($\le 768px$), `Ctrl K` badge and keyboard hints are suppressed while rendering a dedicated `✕` touch button.
+- **Steam Blue Tag Chips & Eyebrows** — confirmed by: `FEATURED SPOTLIGHT` (`capsule-eyebrow`), hero tag chips (`info-tag-chip`), game detail pills (`steam-tag-pill`), creator profile badges (`badge-count`), and support tags (`faq-cat-tag`) all render in `#0078D4` in light mode and `#66C0F4` in dark mode with 0 green leakage.
+- **Real-Time Dynamic Timestamps System** — confirmed by: Unit tests in Section 32; seed data and localStorage migrations convert all dates to recent ISO strings relative to `Date.now()`.
+- **Ultra-Lean Desktop Header Navigation** — confirmed by: Unit tests in Section 31; direct 1-click navigation to `/profile`, 0 duplicate popover menus, dedicated logout action.
+- **Full Verification Suite (274 / 274 Tests Passing)** — confirmed by: `npm run verify` running 182 unit tests, 46 integration tests, 10 master battery tests, 7 impeccable design tests, 24 link crawler checks, and 5 Playwright E2E journeys with 100% green exit code 0.
+
+---
+
+## What Did NOT Work (and why)
+
+- **Over-engineered Dropdown Popover on Desktop User Chip** — failed because: It duplicated links already available on the primary header bar, causing visual clutter and dead interaction paths. Resolved by replacing with a direct profile link and standalone logout button.
+- **Showing Static Navigation Pages in Default Search Palette** — failed because: Users open search to find games, genres, or creators; cluttering 60% of search space with basic static pages already on the navbar was redundant. Resolved by making default search 100% game-centric and only fuzzy-matching pages if explicitly typed.
+- **Desktop Keyboard Navigation Footer on Mobile** — failed because: Showing `[↑][↓] to navigate`, `[↵] to select`, `[esc]` on touchscreens takes up vertical space for keys that do not exist. Resolved by hiding the footer on viewports $\le 768px$ and adding a touch `✕` close button.
+- **Using `var(--accent-600)` on Eyebrows & Tags in Light Mode** — failed because: `--accent-600` is the Steam Action Lime Green token (`#558B2F` in Light Mode) reserved for purchase CTAs. Using it on eyebrows made text green. Resolved by mapping all tags and eyebrows to `#0078D4` (Steam Blue) in light mode.
+
+---
+
+## What Has NOT Been Tried Yet
+
+- Adding keyboard search filter tabs (`[All Games]` `[RPG]` `[Action]`) directly inside the search dialog header.
+- Persistent recent search history chips in `CommandPaletteComponent` saved in localStorage.
+- Offline IndexedDB caching for large game catalog expansion.
+
+---
+
+## Current State of Files
+
+| File | Status | Notes |
+| :--- | :--- | :--- |
+| `src/app/shared/ui/command-palette/command-palette.component.ts` | PASS: Complete | Game-first computed filtering, cover art thumbnails, explicit page search matching |
+| `src/app/shared/ui/command-palette/command-palette.component.html` | PASS: Complete | Rich game cards, mobile `✕` close button, desktop-only keyboard footer |
+| `src/app/shared/ui/command-palette/command-palette.component.css` | PASS: Complete | Thumbnail styles, price pills, mobile viewport docking & responsiveness |
+| `src/app/features/game-catalog/game-catalog.component.css` | PASS: Complete | Capsule eyebrow, info tag chips, stage cards styled in Steam Blue (`#0078D4`) |
+| `src/app/features/game-detail/game-detail.component.css` | PASS: Complete | Steam tag pills styled in Steam Blue in light mode |
+| `src/app/features/support/support.component.css` | PASS: Complete | FAQ category tags aligned to Steam Blue |
+| `src/app/features/creator-profile/creator-profile.component.css` | PASS: Complete | Badge count aligned to Steam Blue |
+| `src/app/layout/header/header.component.html` & `.css` | PASS: Complete | Ultra-lean desktop header, mobile search button without Ctrl K badge |
+| `src/app/core/data/seed-data.ts` | PASS: Complete | `daysAgo()` dynamic timestamp generator for real current dates |
+| `tests/unit/unit-tests.spec.ts` | PASS: Complete | Sections 1–33 (182 assertions) covering all system invariants |
+
+---
+
+## Decisions Made
+
+- **Steam Blue (`#0078D4`) Standard for Light Mode Navigation & Tags** — reason: Steam design standard uses Action Green strictly for Buy / Free CTA buttons, while all navigation, tags, chips, and eyebrows use Steam Blue (`#0078D4` in Light Mode / `#66C0F4` Electric Cyan in Dark Mode).
+- **Game-Centric Command Palette** — reason: Search should prioritize product discovery (titles, covers, prices, tags) over redundant static navigation links.
+- **Real-Time Dynamic Timestamps** — reason: Ensures demo and production data reflect current live dates (relative to `Date.now()`) rather than stale 2024 mock dates.
+
+---
+
+## Blockers & Open Questions
+
+- No active blockers. All 274 tests are passing, git working tree is clean, and the dev server is live.
+
+---
+
+## Exact Next Step
+
+Ready for the next user request or feature initiative (e.g. Catalog filter expansion, checkout optimizations, or new game detail features). All state is saved, verified, and committed.
+
+---
+
+## Environment & Setup Notes
+
+- **Node/Angular**: Angular 18 Standalone, Node.js, TypeScript 5.4
+- **Verification Command**: `npm run verify`
+- **Dev Server**: Running in background on `http://localhost:4200/`

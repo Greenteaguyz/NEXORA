@@ -9,6 +9,8 @@ import { GameCardComponent } from '../../shared/ui/game-card/game-card.component
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { SpatialNavDirective } from '../../shared/directives/spatial-nav.directive';
+import { AmbientSpotlightComponent } from '../../shared/ui/ambient-spotlight/ambient-spotlight.component';
+import { AmbientColorExtractorService } from '../../core/services/ambient-color-extractor.service';
 
 @Component({
   selector: 'app-game-catalog',
@@ -19,7 +21,8 @@ import { SpatialNavDirective } from '../../shared/directives/spatial-nav.directi
     GameCardComponent, 
     LoadingSpinnerComponent, 
     EmptyStateComponent,
-    SpatialNavDirective
+    SpatialNavDirective,
+    AmbientSpotlightComponent
   ],
   templateUrl: './game-catalog.component.html',
   styleUrls: ['./game-catalog.component.css']
@@ -29,6 +32,7 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private location = inject(Location);
+  private ambientExtractor = inject(AmbientColorExtractorService);
 
   allGames: Game[] = [];
   filteredGames: Game[] = [];
@@ -64,6 +68,10 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
       return this.featuredGames[this.activeHeroIndex] || this.featuredGames[0];
     }
     return this.allGames[0] || null;
+  }
+
+  get currentHeroPalette() {
+    return this.ambientExtractor.getPaletteForGame(this.currentHeroGame);
   }
 
   get selectedTagsSummary(): string {
@@ -211,17 +219,42 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
     }
   }
 
-  @HostListener('window:keydown', ['$event'])
-  onKeydown(event: KeyboardEvent): void {
-    const target = event.target as HTMLElement;
-    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
-      return;
-    }
-
+  onHeroKeydown(event: KeyboardEvent): void {
     if (event.key === 'ArrowLeft') {
       this.prevHero();
+      event.preventDefault();
     } else if (event.key === 'ArrowRight') {
       this.nextHero();
+      event.preventDefault();
+    }
+  }
+
+  onChipsKeydown(event: KeyboardEvent): void {
+    const target = event.target as HTMLElement;
+    if (!target || !target.classList.contains('tag-filter-chip')) return;
+
+    const chips = Array.from(document.querySelectorAll('#catalog-chips-bar .tag-filter-chip')) as HTMLElement[];
+    const idx = chips.indexOf(target);
+    if (idx === -1) return;
+
+    if (event.key === 'ArrowRight') {
+      const nextIdx = Math.min(idx + 1, chips.length - 1);
+      chips[nextIdx]?.focus();
+      chips[nextIdx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+      event.preventDefault();
+    } else if (event.key === 'ArrowLeft') {
+      const prevIdx = Math.max(idx - 1, 0);
+      chips[prevIdx]?.focus();
+      chips[prevIdx]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+      event.preventDefault();
+    } else if (event.key === 'Home') {
+      chips[0]?.focus();
+      chips[0]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+      event.preventDefault();
+    } else if (event.key === 'End') {
+      chips[chips.length - 1]?.focus();
+      chips[chips.length - 1]?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+      event.preventDefault();
     }
   }
 

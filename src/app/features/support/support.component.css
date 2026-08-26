@@ -1,8 +1,8 @@
 .support-page {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1320px;
   margin: 0 auto;
-  padding: var(--space-8) clamp(16px, 3.5vw, 56px) var(--space-12);
+  padding: clamp(16px, 2.5vw, 36px) clamp(14px, 2vw, 28px) calc(76px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 

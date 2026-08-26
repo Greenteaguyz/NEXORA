@@ -250,9 +250,9 @@
 }
 
 .price-badge.paid {
-  background-color: rgba(102, 192, 244, 0.15);
-  color: var(--accent-400);
-  border: 1px solid rgba(102, 192, 244, 0.35);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 /* Light Mode Overrides for High Visibility */
@@ -292,7 +292,7 @@
 }
 
 :host-context([data-theme="light"]) .price-badge.paid {
-  background-color: rgba(0, 120, 212, 0.1);
-  color: #005A9E;
-  border-color: rgba(0, 120, 212, 0.25);
+  background-color: #F1F5F9;
+  color: #0F172A;
+  border-color: #CBD5E1;
 }

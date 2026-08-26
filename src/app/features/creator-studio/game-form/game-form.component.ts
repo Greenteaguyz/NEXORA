@@ -1,4 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -35,6 +36,7 @@ export class GameFormComponent implements OnInit {
   private auth = inject(AuthService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private destroyRef = inject(DestroyRef);
 
   gameForm!: FormGroup;
   isEditMode = false;
@@ -42,6 +44,39 @@ export class GameFormComponent implements OnInit {
   loading = true;
   submitting = false;
   errorMessage = '';
+
+  readonly defaultCoverFallback = 'assets/games/game-1-cover.svg';
+
+  // Fine-Grained Reactive Form State Signal
+  formValues = signal({
+    title: '',
+    description: '',
+    price: 9.99,
+    coverImageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80',
+    samplePackageUrl: 'assets/sample-packages/game-package.zip',
+    tags: ['Cyberpunk', 'Indie']
+  });
+
+  // Computed Live Derivations (AC-1021 - AC-1025)
+  previewTitle = computed(() => this.formValues().title?.trim() || 'Your Game Title');
+  previewPrice = computed(() => Number(this.formValues().price) || 0);
+  previewCover = computed(() => this.formValues().coverImageUrl?.trim() || this.defaultCoverFallback);
+  previewTags = computed(() => this.formValues().tags || []);
+
+  titleCharCount = computed(() => (this.formValues().title || '').length);
+  descCharCount = computed(() => (this.formValues().description || '').length);
+
+  creatorEarnings = computed(() => {
+    const p = Number(this.formValues().price);
+    if (isNaN(p) || p <= 0) return 0;
+    return Math.round(p * 0.90 * 100) / 100;
+  });
+
+  platformFee = computed(() => {
+    const p = Number(this.formValues().price);
+    if (isNaN(p) || p <= 0) return 0;
+    return Math.round(p * 0.10 * 100) / 100;
+  });
 
   readonly artworkPresets: ArtworkPreset[] = [
     {
@@ -106,6 +141,16 @@ export class GameFormComponent implements OnInit {
       samplePackageUrl: ['assets/sample-packages/game-package.zip'],
       tags: [['Cyberpunk', 'Indie'], [Validators.required]]
     });
+
+    // Seed initial signal state
+    this.formValues.set({ ...this.gameForm.getRawValue() });
+
+    // Sync form mutations reactively to signal store
+    this.gameForm.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.formValues.set({ ...this.gameForm.getRawValue() });
+      });
   }
 
   private loadExistingGame(id: string): void {
@@ -126,6 +171,7 @@ export class GameFormComponent implements OnInit {
           samplePackageUrl: game.samplePackageUrl || 'assets/sample-packages/game-package.zip',
           tags: game.tags
         });
+        this.formValues.set({ ...this.gameForm.getRawValue() });
         this.loading = false;
       },
       error: () => {
@@ -140,22 +186,14 @@ export class GameFormComponent implements OnInit {
       coverImageUrl: preset.coverUrl,
       tags: [...preset.suggestedTags]
     });
+    this.formValues.set({ ...this.gameForm.getRawValue() });
   }
 
-  get previewTitle(): string {
-    return this.gameForm.get('title')?.value || 'Your Game Title';
-  }
-
-  get previewPrice(): number {
-    return this.gameForm.get('price')?.value ?? 0;
-  }
-
-  get previewCover(): string {
-    return this.gameForm.get('coverImageUrl')?.value || 'assets/games/game-1-cover.svg';
-  }
-
-  get previewTags(): string[] {
-    return this.gameForm.get('tags')?.value || [];
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (img && img.src !== this.defaultCoverFallback) {
+      img.src = this.defaultCoverFallback;
+    }
   }
 
   onSubmit(): void {
@@ -192,7 +230,9 @@ export class GameFormComponent implements OnInit {
       this.gamesData.updateGame(this.gameId, dto).subscribe({
         next: () => {
           this.submitting = false;
-          this.router.navigate(['/studio']);
+          this.router.navigate(['/studio'], {
+            queryParams: { updated: 'true', title: dto.title, gameId: this.gameId }
+          });
         },
         error: (err) => {
           this.errorMessage = err?.message || 'Failed to update game listing.';
@@ -201,9 +241,11 @@ export class GameFormComponent implements OnInit {
       });
     } else {
       this.gamesData.createGame(dto, user.id).subscribe({
-        next: () => {
+        next: (createdGame) => {
           this.submitting = false;
-          this.router.navigate(['/studio']);
+          this.router.navigate(['/studio'], {
+            queryParams: { published: 'true', title: createdGame.title, gameId: createdGame.id }
+          });
         },
         error: (err) => {
           this.errorMessage = err?.message || 'Failed to publish game.';

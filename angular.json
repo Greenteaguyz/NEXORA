@@ -70,7 +70,7 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "allowedHosts": ["all", "localhost", "127.0.0.1", ".trycloudflare.com"]
+            "allowedHosts": ["all", "localhost", "127.0.0.1", ".trycloudflare.com", ".loca.lt"]
           },
           "configurations": {
             "production": {
@@ -84,5 +84,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, computed, inject, signal } from '@angular/core';
+import { Component, Output, EventEmitter, computed, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Game } from '../../../core/models/game.model';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -13,11 +13,11 @@ export type DownloadButtonPhase = 'idle' | 'downloading' | 'verifying' | 'comple
   styleUrls: ['./download-button.component.css']
 })
 export class DownloadButtonComponent {
-  @Input({ required: true }) game!: Game;
-  @Input({ required: true }) isOwned!: boolean;
-  @Input() size: 'sm' | 'md' | 'lg' = 'md';
-  @Input() fullWidth = false;
-  @Input() platform: 'windows' | 'linux' = 'windows';
+  game = input.required<Game>();
+  isOwned = input.required<boolean>();
+  size = input<'sm' | 'md' | 'lg'>('md');
+  fullWidth = input<boolean>(false);
+  platform = input<'windows' | 'linux'>('windows');
 
   @Output() download = new EventEmitter<void>();
   @Output() loginRequired = new EventEmitter<void>();
@@ -30,13 +30,13 @@ export class DownloadButtonComponent {
   progressPercent = signal<number>(0);
   downloadSpeed = signal<string>('68 MB/s');
 
-  isDeleted = computed(() => !!this.game?.deletedAt);
+  isDeleted = computed(() => !!this.game()?.deletedAt);
   isLoggedIn = computed(() => this.auth.currentUser() !== null);
-  isFree = computed(() => (this.game?.price ?? 0) === 0);
+  isFree = computed(() => (this.game()?.price ?? 0) === 0);
 
   buttonState = computed<'anonymous' | 'free_unowned' | 'paid_unowned' | 'owned' | 'unavailable'>(() => {
     if (this.isDeleted()) return 'unavailable';
-    if (this.isOwned) return 'owned';
+    if (this.isOwned()) return 'owned';
     if (!this.isLoggedIn()) return 'anonymous';
     if (this.isFree()) return 'free_unowned';
     return 'paid_unowned';
@@ -58,21 +58,21 @@ export class DownloadButtonComponent {
       case 'unavailable':
         return 'Unavailable';
       case 'owned':
-        return 'Download';
+        return this.platform() === 'linux' ? 'Download for Linux' : 'Download for Windows';
       case 'anonymous':
         return 'Download';
       case 'free_unowned':
-        return 'Download Free';
+        return this.platform() === 'linux' ? 'Download Free (Linux)' : 'Download Free';
       case 'paid_unowned':
-        return `Buy $${(this.game?.price ?? 0).toFixed(2)}`;
+        return 'Buy Now';
     }
   });
 
   buttonClass = computed(() => {
     const state = this.buttonState();
     const phase = this.downloadPhase();
-    const sizeClass = `btn-${this.size}`;
-    const widthClass = this.fullWidth ? 'btn-full' : '';
+    const sizeClass = `btn-${this.size()}`;
+    const widthClass = this.fullWidth() ? 'btn-full' : '';
     const phaseClass = phase !== 'idle' ? `phase-${phase}` : '';
 
     let themeClass = 'btn-primary';
@@ -97,7 +97,7 @@ export class DownloadButtonComponent {
       return;
     }
 
-    if (this.isOwned || this.isFree()) {
+    if (this.isOwned() || this.isFree()) {
       this.startInteractiveDownload();
       return;
     }

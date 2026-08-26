@@ -12,9 +12,40 @@ export class MockGamesDataService implements GamesDataService {
   private readonly STORAGE_KEY = 'games_list';
   private localStore = inject(LocalStoreService);
   private games: Game[] = [];
+  private searchIndex = new Map<string, Set<string>>();
 
   constructor() {
     this.initData();
+  }
+
+  private tokenize(text: string): string[] {
+    if (!text) return [];
+    return text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, ' ')
+      .split(/[\s-]+/)
+      .filter(t => t.length > 0);
+  }
+
+  private rebuildSearchIndex(): void {
+    this.searchIndex.clear();
+    for (const game of this.games) {
+      if (game.deletedAt) continue;
+      const tokens = new Set<string>();
+      for (const t of this.tokenize(game.title)) tokens.add(t);
+      for (const tag of game.tags || []) {
+        for (const t of this.tokenize(tag)) tokens.add(t);
+      }
+      for (const t of this.tokenize(game.description || '')) {
+        tokens.add(t);
+      }
+      for (const token of tokens) {
+        if (!this.searchIndex.has(token)) {
+          this.searchIndex.set(token, new Set());
+        }
+        this.searchIndex.get(token)!.add(game.id);
+      }
+    }
   }
 
   private initData(): void {
@@ -27,8 +58,8 @@ export class MockGamesDataService implements GamesDataService {
           return {
             ...seed,
             ...g,
-            createdAt: g.createdAt && g.createdAt.startsWith('2024') ? seed.createdAt : g.createdAt,
-            updatedAt: g.updatedAt && g.updatedAt.startsWith('2024') ? seed.updatedAt : g.updatedAt,
+            createdAt: g.createdAt && g.createdAt.startsWith('2026') ? seed.createdAt : g.createdAt,
+            updatedAt: g.updatedAt && g.updatedAt.startsWith('2026') ? seed.updatedAt : g.updatedAt,
             coverImageUrl: seed.coverImageUrl,
             screenshotUrls: seed.screenshotUrls
           };
@@ -47,10 +78,24 @@ export class MockGamesDataService implements GamesDataService {
       this.games = [...SEED_GAMES];
       this.localStore.setItem(this.STORAGE_KEY, this.games);
     }
+    this.rebuildSearchIndex();
+  }
+
+  private queryCache = new Map<string, Game[]>();
+
+  private getQueryCacheKey(filters?: GameFilters): string {
+    if (!filters) return '__all__';
+    return `${filters.tag || ''}::${filters.search || ''}`;
+  }
+
+  private invalidateQueryCache(): void {
+    this.queryCache.clear();
   }
 
   private persist(): void {
     this.localStore.setItem(this.STORAGE_KEY, this.games);
+    this.rebuildSearchIndex();
+    this.invalidateQueryCache();
   }
 
   private shouldSimulateError(): boolean {
@@ -65,6 +110,11 @@ export class MockGamesDataService implements GamesDataService {
       return throwError(() => new Error('Simulated API network failure (?simulateErrors=true)')).pipe(delay(100));
     }
 
+    const cacheKey = this.getQueryCacheKey(filters);
+    if (this.queryCache.has(cacheKey)) {
+      return of(this.queryCache.get(cacheKey)!);
+    }
+
     let result = this.games.filter(g => !g.deletedAt);
 
     if (filters?.tag) {
@@ -77,6 +127,7 @@ export class MockGamesDataService implements GamesDataService {
       result = result.filter(g => g.title.toLowerCase().includes(searchLower));
     }
 
+    this.queryCache.set(cacheKey, result);
     return of(result);
   }
 

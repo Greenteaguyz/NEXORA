@@ -5,8 +5,6 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { USERS_DATA, LIBRARY_DATA, WISHLIST_DATA, ORDERS_DATA, GAMES_DATA } from '../../core/data/tokens';
 import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.component';
-import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
-
 import { LocalStoreService } from '../../core/persistence/local-store.service';
 
 @Component({
@@ -16,8 +14,7 @@ import { LocalStoreService } from '../../core/persistence/local-store.service';
     CommonModule, 
     FormsModule, 
     RouterLink, 
-    RoleBadgeComponent, 
-    LoadingSpinnerComponent
+    RoleBadgeComponent
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']

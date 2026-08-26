@@ -3,7 +3,7 @@
   [class]="buttonClass()" 
   (click)="handleClick($event)" 
   [disabled]="isDeleted() || downloadPhase() !== 'idle'"
-  [attr.aria-label]="displayLabel() + ' for ' + (game ? game.title : 'game')">
+  [attr.aria-label]="displayLabel() + ' for ' + (game() ? game().title : 'game')">
 
   <!-- Animated Progress Fill Overlay -->
   @if (downloadPhase() !== 'idle') {

@@ -1,4 +1,4 @@
-import { Component, inject, effect } from '@angular/core';
+import { Component, inject, effect, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
@@ -104,6 +104,13 @@ export class OrdersComponent {
 
   closeReceipt(): void {
     this.selectedReceiptOrder = null;
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape' && this.selectedReceiptOrder) {
+      this.closeReceipt();
+    }
   }
 
   printReceipt(): void {

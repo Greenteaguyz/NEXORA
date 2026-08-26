@@ -3,6 +3,8 @@
   border-top: 1px solid var(--border-card);
   padding: var(--space-8) 0 var(--space-6);
   margin-top: auto;
+  position: relative;
+  z-index: 10;
 }
 
 .footer-container {

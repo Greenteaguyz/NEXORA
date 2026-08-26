@@ -1,30 +1,55 @@
 .catalog-page {
+  position: relative;
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: var(--space-8) clamp(16px, 3.5vw, 56px) var(--space-12);
+  padding: clamp(16px, 2.5vw, 36px) clamp(14px, 2vw, 28px) calc(76px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
+}
+
+.storefront-ambient-backdrop {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  max-width: 100vw;
+  height: 820px;
+  z-index: 0;
+  pointer-events: none !important;
 }
 
 /* ==========================================================================
    1. AUTHENTIC STEAM FEATURED & RECOMMENDED CAROUSEL
    ========================================================================== */
 .steam-featured-section {
+  position: relative;
+  z-index: 1;
   margin-bottom: var(--space-8);
   transition: opacity 0.15s ease;
 }
 
 .featured-section-title {
+  position: relative;
+  z-index: 2;
   font-family: var(--font-display);
   font-size: 0.85rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-weight: 800;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-primary);
-  margin-bottom: 8px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 2px rgba(14, 20, 27, 0.8);
+  margin-bottom: 12px;
+}
+
+:host-context([data-theme="light"]) .featured-section-title {
+  color: var(--text-primary);
+  text-shadow: 0 1px 4px rgba(255, 255, 255, 0.8);
 }
 
 .steam-carousel-capsule {
+  position: relative;
+  z-index: 2;
   display: grid;
   grid-template-columns: minmax(0, 1.75fr) minmax(0, 1.05fr);
   background-color: #0E141B;
@@ -359,14 +384,15 @@
 }
 
 .price-pill-wrap .price-val.free {
-  color: #75B022;
+  color: var(--emerald-400, #A4D007);
   font-family: var(--font-sans);
   font-size: 1.15rem;
+  font-weight: 800;
   letter-spacing: normal;
 }
 
 :host-context([data-theme="light"]) .price-pill-wrap .price-val.free {
-  color: #588A1B;
+  color: #2E7D32;
 }
 
 .price-pill-wrap .price-val.paid {
@@ -380,21 +406,23 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--steam-btn-gradient, linear-gradient(to right, #75B022 5%, #588A1B 95%));
+  background: var(--steam-btn-gradient, linear-gradient(90deg, #0078D4 0%, #0284C7 100%));
   color: #FFFFFF;
   font-family: var(--font-sans);
   font-size: 0.88rem;
   font-weight: 700;
   padding: 8px 18px;
   border-radius: var(--radius-sm);
+  border: 1px solid rgba(102, 192, 244, 0.45);
   text-decoration: none;
-  box-shadow: 0 2px 8px rgba(117, 176, 34, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 120, 212, 0.25);
   transition: all 0.15s ease;
 }
 
 .btn-steam-action:hover {
-  background: var(--steam-btn-hover, linear-gradient(to right, #8ED629 5%, #6AA621 95%));
-  box-shadow: 0 3px 12px rgba(117, 176, 34, 0.55);
+  background: linear-gradient(90deg, #0284C7 0%, #0078D4 100%);
+  border-color: #66C0F4;
+  box-shadow: 0 6px 20px rgba(102, 192, 244, 0.4);
 }
 
 .arrow-svg {
@@ -404,6 +432,8 @@
 
 /* Carousel Navigation Track: Minimalist Centered Pill Indicators */
 .carousel-nav-track {
+  position: relative;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -497,35 +527,69 @@
 }
 
 /* ==========================================================================
-   2. DISCOVERY COMMAND BAR
+   2. DISCOVERY COMMAND DECK (Unified Search, Sort & Tag Rail)
    ========================================================================== */
-.discovery-command-bar {
+.catalog-command-deck {
+  position: relative;
+  z-index: 2;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 12px;
-  margin-bottom: var(--space-4);
-  flex-wrap: nowrap;
+  margin-bottom: var(--space-6);
+  padding: 14px 18px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
 }
 
-@media (max-width: 1024px) {
-  .discovery-command-bar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 10px;
-  }
+:host-context([data-theme="light"]) .catalog-command-deck {
+  background: #FFFFFF;
+  border-color: var(--border-card);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.deck-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .search-bar-container {
-  flex: 0 0 300px;
+  flex: 1 1 300px;
+  max-width: 440px;
   min-width: 240px;
-  max-width: 360px;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .search-bar-container {
-    flex: 1 1 auto;
     max-width: 100%;
+    flex: 1 1 100%;
   }
+  .deck-meta-controls {
+    width: 100%;
+    justify-content: space-between !important;
+  }
+}
+
+.deck-meta-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.deck-bottom-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-card);
 }
 
 .search-input-wrapper {
@@ -691,6 +755,37 @@
   transform: scale(0.96);
 }
 
+.filter-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-xs);
+  padding: 1px 6px;
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  margin-left: 6px;
+  color: var(--text-muted);
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+
+.tag-filter-chip.active .filter-count-badge {
+  background: rgba(102, 192, 244, 0.25);
+  color: var(--cyan-400);
+}
+
+:host-context([data-theme="light"]) .filter-count-badge {
+  background: rgba(0, 0, 0, 0.06);
+  color: #64748B;
+}
+
+:host-context([data-theme="light"]) .tag-filter-chip.active .filter-count-badge {
+  background: rgba(0, 120, 212, 0.15);
+  color: #0078D4;
+}
+
 .btn-clear-multi {
   border-style: dashed;
   border-color: var(--accent-400);
@@ -709,18 +804,7 @@
   opacity: 0.8;
 }
 
-/* Meta Bar */
-.catalog-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin-bottom: var(--space-6);
-  padding-bottom: var(--space-2);
-  border-bottom: 1px solid var(--border-card);
-}
-
+/* Meta Controls within Command Deck */
 .meta-left-group {
   display: flex;
   align-items: center;
@@ -729,13 +813,15 @@
 }
 
 .results-count {
-  font-size: 0.82rem;
-  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--text-secondary);
   font-family: var(--font-mono);
 }
 
 .results-count strong {
   color: var(--text-primary);
+  font-weight: 800;
 }
 
 .active-tag-summary {
@@ -744,7 +830,7 @@
 }
 
 :host-context([data-theme="light"]) .active-tag-summary {
-  color: #0284C7;
+  color: #0078D4;
 }
 
 .btn-reset-filters {
@@ -778,30 +864,42 @@
 .sort-selector-cluster {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .sort-label {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
   text-transform: uppercase;
 }
 
+:host-context([data-theme="light"]) .sort-label {
+  color: var(--text-secondary);
+}
+
 .sort-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   background-color: var(--bg-surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2366C0F4' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
   color: var(--text-primary);
   border: 1px solid var(--border-card);
-  border-radius: var(--radius);
-  padding: 5px 12px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  font-family: inherit;
+  border-radius: var(--radius-sm);
+  padding: 6px 32px 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: var(--font-sans);
   cursor: pointer;
   outline: none;
-  transition: all 0.18s ease;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .sort-select:hover {
@@ -816,8 +914,10 @@
 
 :host-context([data-theme="light"]) .sort-select {
   background-color: #FFFFFF;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230078D4' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   border-color: #CBD5E1;
-  color: #1E293B;
+  color: #0F172A;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
 }
 
 /* Game Cards Grid */
@@ -826,6 +926,8 @@
   grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: var(--space-6);
   transition: opacity 0.15s ease;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 340px;
 }
 
 /* ==========================================================================
@@ -982,6 +1084,37 @@
 }
 
 @media (max-width: 860px) {
+  .catalog-page {
+    padding: 14px 12px calc(76px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .steam-featured-section {
+    margin-bottom: 16px;
+  }
+
+  .featured-section-title {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+  }
+
+  .carousel-nav-track {
+    margin-top: 10px;
+  }
+
+  .catalog-command-deck {
+    margin-bottom: 16px;
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .deck-top-row {
+    gap: 10px;
+  }
+
+  .deck-bottom-row {
+    padding-top: 8px;
+  }
+
   .steam-carousel-capsule {
     grid-template-columns: 1fr;
     min-height: auto;
@@ -1010,23 +1143,8 @@
 }
 
 @media (max-width: 599px) {
-  .catalog-page {
-    padding: var(--space-3) 12px var(--space-8);
-  }
-
-  .steam-featured-section {
-    margin-bottom: var(--space-5);
-  }
-
   .btn-chips-scroll {
     display: none;
-  }
-
-  .discovery-command-bar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-3);
-    margin-bottom: var(--space-4);
   }
 
   .search-bar-container {
