@@ -1,11 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1920" width="32" height="32" fill="none" aria-label="Nexora Favicon">
   <defs>
     <linearGradient id="fav-grad" x1="640" x2="3020" y1="3160" y2="820" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#A497FF" />
-      <stop offset="24%" stop-color="#9489FA" />
-      <stop offset="50%" stop-color="#7C72F1" />
-      <stop offset="76%" stop-color="#6A61E7" />
-      <stop offset="100%" stop-color="#5951DD" />
+      <stop offset="0%" stop-color="#F0F9FF" />
+      <stop offset="30%" stop-color="#66C0F4" />
+      <stop offset="70%" stop-color="#1999D6" />
+      <stop offset="100%" stop-color="#0066CC" />
     </linearGradient>
   </defs>
   <g fill="url(#fav-grad)" transform="matrix(.5 0 0 -.5 0 1920)">

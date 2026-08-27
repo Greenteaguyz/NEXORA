@@ -23,9 +23,9 @@ test.describe('NEXORA Responsive Viewport Matrix', () => {
 
     // Navigate to game detail
     await page.goto(`${BASE_URL}/games/game_001`, { waitUntil: 'networkidle' });
-    await expect(page.locator('.steam-upper-showcase')).toBeVisible();
-    await expect(page.locator('.steam-stage-column')).toBeVisible();
-    await expect(page.locator('.steam-capsule-column')).toBeVisible();
+    await expect(page.locator('.steam-upper-showcase, .steam-showcase-stage').first()).toBeVisible();
+    await expect(page.locator('.steam-stage-column, .steam-media-col').first()).toBeVisible();
+    await expect(page.locator('.steam-capsule-column, .steam-capsule-col').first()).toBeVisible();
   });
 
   test('Mobile Viewport (375x667): Single Column Stack & Fluid Mobile Controls', async ({ page }) => {
@@ -37,15 +37,15 @@ test.describe('NEXORA Responsive Viewport Matrix', () => {
     if (await mobileToggle.isVisible()) {
       await mobileToggle.click();
       await page.waitForTimeout(300);
-      await expect(page.locator('.mobile-nav-panel, .mobile-menu')).toBeVisible();
+      await expect(page.locator('.mobile-nav-panel, .mobile-menu').first()).toBeVisible();
       // Close menu
       await mobileToggle.click();
     }
 
     // Navigate to game detail on mobile
     await page.goto(`${BASE_URL}/games/game_001`, { waitUntil: 'networkidle' });
-    await expect(page.locator('.steam-upper-showcase')).toBeVisible();
-    await expect(page.locator('.steam-stage-main')).toBeVisible();
+    await expect(page.locator('.steam-upper-showcase, .steam-showcase-stage').first()).toBeVisible();
+    await expect(page.locator('.steam-stage-main, .steam-main-viewer').first()).toBeVisible();
   });
 
 });

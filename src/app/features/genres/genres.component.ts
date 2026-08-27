@@ -27,6 +27,10 @@ export class GenresComponent implements OnInit {
   searchQuery = signal<string>('');
   loading = signal<boolean>(true);
 
+  readonly CORE_GENRE_NAMES = new Set([
+    'Action', 'Sci-Fi', 'Cyberpunk', 'RPG', 'Strategy', 'Adventure', 'Platformer', 'Retro'
+  ]);
+
   filteredGenres = computed(() => {
     const list = this.genresList();
     const q = this.searchQuery().toLowerCase().trim();
@@ -37,6 +41,14 @@ export class GenresComponent implements OnInit {
       g.name.toLowerCase().includes(q) ||
       g.description.toLowerCase().includes(q)
     );
+  });
+
+  coreGenres = computed(() => {
+    return this.filteredGenres().filter(g => this.CORE_GENRE_NAMES.has(g.name));
+  });
+
+  subGenres = computed(() => {
+    return this.filteredGenres().filter(g => !this.CORE_GENRE_NAMES.has(g.name));
   });
 
   onSearch(event: Event): void {
@@ -207,7 +219,7 @@ export class GenresComponent implements OnInit {
           description: meta.description,
           accentColor: meta.color
         };
-      }).sort((a, b) => b.count - a.count);
+      }).sort((a, b) => b.count !== a.count ? b.count - a.count : a.name.localeCompare(b.name));
 
       this.genresList.set(sorted);
       this.loading.set(false);

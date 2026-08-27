@@ -12,20 +12,40 @@ export const GAME_AMBIENT_PALETTES: Record<string, AmbientPalette> = {
     primary: 'rgba(102, 192, 244, 0.30)',
     secondary: 'rgba(245, 158, 11, 0.20)'
   },
-  // Cyber Heist (Neo-Tokyo Cyberpunk: Radiant Magenta + Cyber Blue)
+  // Bloodstrike (Tactical FPS: Radiant Crimson/Pink + Cyber Blue)
   game_002: {
     primary: 'rgba(236, 72, 153, 0.28)',
     secondary: 'rgba(59, 130, 246, 0.22)'
   },
-  // Pixel Odyssey (Retro Adventure: Emerald Green + Indigo Violet)
+  // Apex Legends (High-Octane Battle Royale: Apex Emerald + Indigo Violet)
   game_003: {
     primary: 'rgba(16, 185, 129, 0.24)',
     secondary: 'rgba(99, 102, 241, 0.20)'
   },
-  // Shadow Circuit (Stealth Synthwave: Electric Violet + Deep Teal)
+  // Forza Horizon 6 (Horizon Festival: Sunset Violet + Racing Cyan)
   game_004: {
     primary: 'rgba(139, 92, 246, 0.26)',
     secondary: 'rgba(6, 182, 212, 0.20)'
+  },
+  // Assassin's Creed (Historic Shadow: Warm Amber + Templar Crimson)
+  game_005: {
+    primary: 'rgba(245, 158, 11, 0.26)',
+    secondary: 'rgba(239, 68, 68, 0.20)'
+  },
+  // God of War (Spartan Fury: Spartan Red + Nordic Frost)
+  game_006: {
+    primary: 'rgba(220, 38, 38, 0.26)',
+    secondary: 'rgba(56, 189, 248, 0.22)'
+  },
+  // Call of Duty: Warzone (Combat Arena: Tactical Purple + Electric Cyan)
+  game_007: {
+    primary: 'rgba(168, 85, 247, 0.26)',
+    secondary: 'rgba(102, 192, 244, 0.20)'
+  },
+  // Wuthering Waves (Resonator Fantasy: Resonator Sky + Astral Violet)
+  game_008: {
+    primary: 'rgba(14, 165, 233, 0.28)',
+    secondary: 'rgba(168, 85, 247, 0.22)'
   }
 };
 

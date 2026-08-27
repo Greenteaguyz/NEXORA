@@ -1052,10 +1052,10 @@ function computeGridCardEstimatedHeight(cardIndex: number): number {
   return 360; // Deterministic uniform card height
 }
 
-const cardHeights = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(computeGridCardEstimatedHeight);
+const cardHeights = [0, 1, 2, 3, 4, 5, 6, 7].map(computeGridCardEstimatedHeight);
 const areAllCardsUniform = cardHeights.every(h => h === 360);
 
-assert('Card Geometry', 'All 10 catalog cards in the grid share identical uniform height with 0px drift',
+assert('Card Geometry', 'All 8 catalog cards in the grid share identical uniform height with 0px drift',
   areAllCardsUniform === true
 );
 
@@ -1183,12 +1183,12 @@ assert('4-Slide Parity', 'All 4 featured hero games have completely unique, dist
   areAllCoversUnique === true
 );
 
-// Test 2b: All 10 catalog games have 100% unique cover artwork (AC-CAT-101)
+// Test 2b: All 8 catalog games have 100% unique cover artwork (AC-CAT-101)
 const allCatalogCovers = SEED_GAMES.map(g => g.coverImageUrl);
 const areAllCatalogCoversUnique = new Set(allCatalogCovers).size === SEED_GAMES.length;
 
-assert('Catalog Artwork Parity', 'All 10 catalog games have completely unique, distinct 16:9 cover artwork',
-  areAllCatalogCoversUnique === true && SEED_GAMES.length === 10
+assert('Catalog Artwork Parity', 'All 8 catalog games have completely unique, distinct 16:9 cover artwork',
+  areAllCatalogCoversUnique === true && SEED_GAMES.length === 8
 );
 
 // Test 3: Seed sync logic updates stale localStorage with 4 screenshots (AC-PARITY-002)
@@ -3375,7 +3375,7 @@ function getTagCountForCatalog(tag: string): number {
 const allCount = getTagCountForCatalog('all');
 const cyberpunkCount = getTagCountForCatalog('Cyberpunk');
 assert('Category Filter Hashtags & Count Badges', 'Catalog category pills display #tag and calculate accurate matching game counts (AC-1052)',
-  allCount === 10 && cyberpunkCount === 3
+  allCount === 8 && cyberpunkCount === 2
 );
 
 // Test 3: Search Input Keyboard Escape Clear Handler (AC-1053)
@@ -3404,7 +3404,7 @@ assert('Profile & Creator Showcase Fluid Clamp Grids', 'Profile stats and creato
 
 // Test 7: Full Invariant Zero Regression Quality Gate (AC-1057)
 assert('Full Invariant Quality Gate', 'All 15 routes, signals, stores, and theme tokens maintain 100% integrity (AC-1057)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 57: Multi-Platform Download Launchpad & 3x2 System Specs Invariants (AC-1058 - AC-1064)
@@ -3480,7 +3480,7 @@ assert('Cohesive Action Bar Geometry', 'Primary download CTA and secondary utili
 
 // Test 7: Full Invariant Zero Regression Quality Gate (AC-1064)
 assert('Full Invariant Quality Gate', 'All 15 storefront routes, stores, signals, and multi-platform contracts pass 100% (AC-1064)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 58: Mobile Capsule 2x2 Grid Consistency & Universal Cell Padding (AC-1065 - AC-1067)
@@ -3504,7 +3504,7 @@ assert('Universal Cell Padding & Height Standards', 'Package Size cell (:last-ch
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1067)
 assert('Full Invariant Quality Gate', 'All 15 storefront views, signals, and responsive layouts maintain 100% integrity (AC-1067)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 59: Angular 18 Signal Reactivity & Compact About Block Standards (AC-1068 - AC-1076)
@@ -3539,7 +3539,7 @@ assert('Compact About Block Low-Profile Standard', 'About This Game block uses s
 
 // Test 5: Full Invariant Zero Regression Quality Gate (AC-1076)
 assert('Full Invariant Quality Gate', 'All 15 storefront routes, signals, stores, and platform switchers maintain 100% integrity (AC-1076)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 60: Non-Redundant Ownership Heading & Title Parity (AC-1077 - AC-1079)
@@ -3565,7 +3565,7 @@ assert('Unowned Purchase Heading Parity', 'Unowned games display Buy or Download
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1079)
 assert('Full Invariant Quality Gate', 'All 15 storefront views, signals, and purchase banners maintain 100% integrity (AC-1079)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 61: Option 1 Unified 40px Steam Dock & Action Bar Standards (AC-1083 - AC-1085)
@@ -3587,7 +3587,7 @@ assert('Danger Ghost Styling for Remove Action', 'Remove action features subtle 
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1085)
 assert('Full Invariant Quality Gate', 'All 15 storefront routes, signals, stores, and action bars pass 100% (AC-1085)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 62: Remove Action Button Readability & WCAG AAA Contrast (AC-1086 - AC-1088)
@@ -3609,7 +3609,7 @@ assert('Sharp Vector Icon Geometry', 'Remove action vector icon renders at 15px 
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1088)
 assert('Full Invariant Quality Gate', 'All 15 storefront routes, signals, stores, and WCAG AAA tokens maintain 100% integrity (AC-1088)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 63: Decoupled Platform State & Mobile 100% Action Stack (AC-1089 - AC-1091)
@@ -3647,7 +3647,7 @@ assert('Mobile 100% Action Stack Standards', 'DownloadButtonComponent renders 10
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1091)
 assert('Full Invariant Quality Gate', 'All 15 storefront routes, signals, stores, and platform states pass 100% (AC-1091)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 64: Option 1 Unified Catalog Command Deck Standards (AC-1092 - AC-1095)
@@ -3674,7 +3674,7 @@ assert('Redundant Meta Box Elimination', 'The oversized secondary catalog-meta c
 
 // Test 4: Full Invariant Zero Regression Quality Gate (AC-1095)
 assert('Full Invariant Quality Gate', 'All 15 storefront routes, signals, stores, and catalog filters pass 100% (AC-1095)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 65: Clean Minimalist Tag Chips & Scoped Keyboard Navigation (AC-1100 - AC-1103)
@@ -3701,7 +3701,7 @@ assert('Scoped 3-Zone Keyboard Navigation', 'Hero carousel, genre tag rail, and 
 
 // Test 4: Full Invariant Zero Regression Quality Gate (AC-1103)
 assert('Full Invariant Quality Gate', 'All 15 storefront routes, signals, stores, tag filters, and keyboard handlers pass 100% (AC-1103)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 66: Mobile Spacing Rhythm & Gap Harmonization (AC-1104 - AC-1106)
@@ -3724,7 +3724,7 @@ assert('Command Deck Mobile Padding Compression', 'Command deck compresses paddi
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1106)
 assert('Full Invariant Quality Gate', 'All 15 storefront routes, signals, stores, and responsive spacing rules pass 100% (AC-1106)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 67: Production Readiness, Route Redirects & Deep State Invariants (AC-1107 - AC-1112)
@@ -3771,7 +3771,7 @@ assert('Profile Avatar Upload Constraints', 'Avatar upload enforces 5MB limit an
 
 // Test 6: Full Invariant Zero Regression Quality Gate (AC-1112)
 assert('Full Invariant Quality Gate', 'All 15 storefront routes, signals, stores, and responsive spacing rules pass 100% (AC-1112)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 68: Creator Owner Master Copy & Developer Privilege Suite (AC-1113 - AC-1116)
@@ -3798,7 +3798,7 @@ assert('Creator Self-Purchase Interception', 'Attempting checkout on own title t
 
 // Test 4: Full Invariant Zero Regression Quality Gate (AC-1116)
 assert('Full Invariant Quality Gate', 'All 15 storefront routes, signals, stores, and creator developer access pass 100% (AC-1116)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 69: Post-Purchase Order Confirmation & Studio Deployment Toast (AC-1117 - AC-1119)
@@ -3824,7 +3824,7 @@ assert('Studio Deployment & Update Alert Standard', 'Publishing or editing games
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1119)
 assert('Full Invariant Quality Gate', 'All storefront routes, purchase confirmation modals, studio toasts, and signals pass 100% (AC-1119)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 70: Authentic Steam Compound Widget & Clean Game Detail Standards (AC-1131 - AC-1134)
@@ -3851,7 +3851,7 @@ assert('Steam Library Ownership Standard', 'Owned games render a dedicated Steam
 
 // Test 4: Full Invariant Zero Regression Quality Gate (AC-1134)
 assert('Full Invariant Quality Gate', 'All 15 storefront routes, dual theme tokens, mobile stacking rules, and modals pass 100% (AC-1134)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 71: Action-First Title Standard & Vector Status Badges (AC-1135 - AC-1138)
@@ -3878,7 +3878,7 @@ assert('Zero Text Bloat Standard', 'Unnecessary marketing sentences and DRM boil
 
 // Test 4: Full Invariant Zero Regression Quality Gate (AC-1138)
 assert('Full Invariant Quality Gate', 'All storefront routes, purchase confirmation modals, studio toasts, and signals pass 100% (AC-1138)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 72: Lean 1-Row Purchase Banner & Metadata Pruning Standards (AC-1139 - AC-1142)
@@ -3905,7 +3905,7 @@ assert('Checksum Relocation Standard', 'SHA-256 verification hash is scoped to o
 
 // Test 4: Full Invariant Zero Regression Quality Gate (AC-1142)
 assert('Full Invariant Quality Gate', 'All storefront routes, purchase confirmation modals, studio toasts, and signals pass 100% (AC-1142)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 73: Clean Wishlist CTA Standard & Soft Warning Confirmation Modals (AC-1143 - AC-1146)
@@ -3955,7 +3955,7 @@ assert('Consistent Vertical Section Gaps Standard', 'Parent steam-main-details c
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1149)
 assert('Full Invariant Quality Gate', 'All storefront routes, purchase confirmation modals, studio toasts, and signals pass 100% (AC-1149)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 75: Universal Clean Minimal Warning Modal Standards (AC-1150 - AC-1152)
@@ -3977,7 +3977,7 @@ assert('Standardized Action Verbiage Standard', 'Modal actions standardize on co
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1152)
 assert('Full Invariant Quality Gate', 'All storefront routes, purchase confirmation modals, studio toasts, and signals pass 100% (AC-1152)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 76: Mobile Single-Hero Visual Anchor & Responsive Hierarchy (AC-1153 - AC-1155)
@@ -3998,7 +3998,7 @@ assert('Mobile Thumbnail Horizontal Scroll Standard', 'Thumbnail selector strip 
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1155)
 assert('Full Invariant Quality Gate', 'All storefront routes, purchase confirmation modals, studio toasts, and signals pass 100% (AC-1155)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 77: Steam Global Download Tray & Universal Rail Edge Fade (AC-1156 - AC-1159)
@@ -4025,7 +4025,7 @@ assert('Universal Category Rail Edge Fade Standard', 'Catalog, Library, and Wish
 
 // Test 4: Full Invariant Zero Regression Quality Gate (AC-1159)
 assert('Full Invariant Quality Gate', 'All storefront routes, purchase confirmation modals, studio toasts, and signals pass 100% (AC-1159)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 78: Universal Accessible Keyboard Escape & Modal Dismissal Standards (AC-1160 - AC-1163)
@@ -4052,7 +4052,7 @@ assert('Modal Card Click Event Isolation Standard', 'All modal cards isolate int
 
 // Test 4: Full Invariant Zero Regression Quality Gate (AC-1163)
 assert('Full Invariant Quality Gate', 'All storefront routes, purchase confirmation modals, studio toasts, and signals pass 100% (AC-1163)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 79: Hardware-Accelerated Smooth Scroll & Single Scroll Layer (AC-1164 - AC-1166)
@@ -4073,7 +4073,7 @@ assert('Mobile Drawer Single Scroll Layer Standard', 'Mobile drawer isolates scr
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1166)
 assert('Full Invariant Quality Gate', 'All storefront routes, purchase confirmation modals, studio toasts, and signals pass 100% (AC-1166)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 80: iOS WebKit 120Hz ProMotion Touch Kinetic Standards (AC-1167 - AC-1169)
@@ -4094,7 +4094,7 @@ assert('Mobile Drawer GPU Layer & Touch-Action Lock Standard', 'Mobile drawer is
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1169)
 assert('Full Invariant Quality Gate', 'All storefront routes, purchase confirmation modals, studio toasts, and signals pass 100% (AC-1169)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 81: CommandPaletteService Reactive Signals & Zero NG0600 Invariants (AC-1170 - AC-1172)
@@ -4116,7 +4116,7 @@ assert('Tokenized Game Search Matching Standard', 'Search matches game titles ac
 
 // Test 3: Zero NG0600 Invariant Quality Gate (AC-1172)
 assert('Zero NG0600 Invariant Quality Gate', 'CommandPaletteComponent eliminates signal writes in effect lifecycle passing 100% (AC-1172)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 82: Wishlist & Library Header Visual Hierarchy Optimization (AC-1173 - AC-1175)
@@ -4137,7 +4137,7 @@ assert('Library Header Unified Geometry Standard', 'Library header mirrors minim
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1175)
 assert('Full Invariant Quality Gate', 'All storefront routes, purchase confirmation modals, studio toasts, and signals pass 100% (AC-1175)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 83: Mobile Header & Distraction-Free Navigation Optimization (AC-1176 - AC-1178)
@@ -4158,7 +4158,7 @@ assert('Distraction-Free Bottom Navigation Standard', 'Bottom Wishlist tab remov
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1178)
 assert('Full Invariant Quality Gate', 'Auth guards, drawer state, and reactive signals retain 100% functional parity (AC-1178)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 84: Desktop Header Navigation Minimalist Standard (AC-1179 - AC-1181)
@@ -4179,7 +4179,7 @@ assert('Cross-Device Navigation Uniformity Standard', 'Desktop header, mobile bo
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1181)
 assert('Full Invariant Quality Gate', 'All catalog, library, wishlist, and orders routes pass 100% (AC-1181)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
 
 // SECTION 85: Zero Edge-Blur Minimal Crisp Tag Traversal Standards (AC-1182 - AC-1184)
@@ -4200,8 +4200,157 @@ assert('Horizontal Filter Track Visibility Standard', 'First and last filter chi
 
 // Test 3: Full Invariant Zero Regression Quality Gate (AC-1184)
 assert('Full Invariant Quality Gate', 'All store modules, routing guards, and theme state pass 100% (AC-1184)',
-  SEED_GAMES.length === 10 && SEED_USERS.length === 3
+  SEED_GAMES.length === 8 && SEED_USERS.length === 3
 );
+
+// ---------------------------------------------------------------------------
+// SECTION 86: Header Navigation Animation Logic (AC-006 race safety, indicator geometry, stagger)
+// ---------------------------------------------------------------------------
+console.log('\n--- SECTION 86: Header Navigation Animation Logic ---');
+
+import {
+  DRAWER_ENTER_MS,
+  DRAWER_EXIT_MS,
+  UNMOUNT_FALLBACK_MS,
+  STAGGER_STEP_MS,
+  STAGGER_CAP_MS,
+  staggerDelay,
+  computeIndicatorGeometry,
+  DrawerCloseScheduler
+} from '../../src/app/layout/header/header-animations';
+
+// Deterministic fake timers so drawer race behavior is testable without a browser.
+function createFakeTimers() {
+  interface Scheduled { id: number; fn: () => void; at: number }
+  const pending: Scheduled[] = [];
+  let now = 0;
+  let seq = 0;
+  return {
+    timers: {
+      setTimeout(fn: () => void, ms: number): unknown {
+        const id = ++seq;
+        pending.push({ id, fn, at: now + ms });
+        return id;
+      },
+      clearTimeout(handle: unknown): void {
+        const idx = pending.findIndex(p => p.id === handle);
+        if (idx >= 0) pending.splice(idx, 1);
+      }
+    },
+    advance(ms: number): void {
+      now += ms;
+      for (const item of [...pending].sort((a, b) => a.at - b.at)) {
+        if (item.at <= now && pending.includes(item)) item.fn();
+      }
+    }
+  };
+}
+
+assert('Header Animations', 'Exit duration matches CSS (240ms) and enter is intentionally slower (400ms)',
+  DRAWER_EXIT_MS === 240 && DRAWER_ENTER_MS === 400
+);
+assert('Header Animations', 'Asymmetric drawer timing: enter is slower than exit',
+  DRAWER_ENTER_MS > DRAWER_EXIT_MS
+);
+assert('Header Animations', 'Stagger completes inside the enter window',
+  STAGGER_CAP_MS <= DRAWER_ENTER_MS && staggerDelay(4) <= DRAWER_ENTER_MS
+);
+assert('Header Animations', 'Fallback grace period is positive',
+  UNMOUNT_FALLBACK_MS > 0
+);
+
+// -- staggerDelay ------------------------------------------------------------
+assert('Header Animations', 'staggerDelay(0) is 0 (first section enters immediately)',
+  staggerDelay(0) === 0
+);
+assert('Header Animations', 'staggerDelay increases by the step per index',
+  staggerDelay(1) === STAGGER_STEP_MS && staggerDelay(2) === 2 * STAGGER_STEP_MS
+);
+assert('Header Animations', 'staggerDelay is capped at STAGGER_CAP_MS',
+  staggerDelay(50) === STAGGER_CAP_MS
+);
+assert('Header Animations', 'staggerDelay honors custom step and cap',
+  staggerDelay(3, 40, 100) === 100 && staggerDelay(2, 40, 100) === 80
+);
+
+// -- computeIndicatorGeometry ------------------------------------------------
+assert('Header Animations', 'Geometry resolves the active tab bounds',
+  computeIndicatorGeometry(900, [null, { left: 120, width: 64 }, null])?.x === 120 &&
+  computeIndicatorGeometry(900, [null, { left: 120, width: 64 }, null])?.width === 64
+);
+assert('Header Animations', 'Geometry returns null when the nav row is hidden (width <= 0)',
+  computeIndicatorGeometry(0, [{ left: 0, width: 60 }]) === null
+);
+assert('Header Animations', 'Geometry returns null when no tab is active',
+  computeIndicatorGeometry(900, [null, null, null]) === null
+);
+
+// -- DrawerCloseScheduler: exit lifecycle -------------------------------------
+{
+  const fake = createFakeTimers();
+  const scheduler = new DrawerCloseScheduler(fake.timers);
+  let unmounted = 0;
+  scheduler.scheduleUnmount(() => unmounted++);
+
+  fake.advance(DRAWER_EXIT_MS + UNMOUNT_FALLBACK_MS - 1);
+  assert('Header Animations', 'Fallback unmount does not fire before the exit window closes',
+    unmounted === 0
+  );
+  fake.advance(1);
+  assert('Header Animations', 'Fallback unmount fires exactly once after the exit window',
+    unmounted === 1
+  );
+}
+
+// -- DrawerCloseScheduler: rapid close → open race ----------------------------
+{
+  const fake = createFakeTimers();
+  const scheduler = new DrawerCloseScheduler(fake.timers);
+  let unmounted = 0;
+  scheduler.scheduleUnmount(() => unmounted++);
+  scheduler.cancelPendingUnmount(); // user re-opens mid-exit
+  fake.advance(DRAWER_EXIT_MS + UNMOUNT_FALLBACK_MS + 1000);
+  assert('Header Animations', 'Re-opening mid-exit cancels the pending unmount (no mid-open teardown)',
+    unmounted === 0
+  );
+}
+
+// -- DrawerCloseScheduler: transitionend fast path ----------------------------
+{
+  const fake = createFakeTimers();
+  const scheduler = new DrawerCloseScheduler(fake.timers);
+  let unmounted = 0;
+  scheduler.scheduleUnmount(() => unmounted++);
+  assert('Header Animations', 'completeIfExiting reports it finished an exit',
+    scheduler.completeIfExiting() === true && unmounted === 1
+  );
+  fake.advance(DRAWER_EXIT_MS + UNMOUNT_FALLBACK_MS + 1000);
+  assert('Header Animations', 'Fallback timer is cleared after transitionend (no double unmount)',
+    unmounted === 1
+  );
+}
+
+// -- DrawerCloseScheduler: stale / idle guards --------------------------------
+{
+  const fake = createFakeTimers();
+  const scheduler = new DrawerCloseScheduler(fake.timers);
+  let unmounted = 0;
+  assert('Header Animations', 'completeIfExiting is a safe no-op when no exit is pending',
+    scheduler.completeIfExiting() === false
+  );
+  scheduler.scheduleUnmount(() => unmounted++);
+  scheduler.destroy();
+  fake.advance(DRAWER_EXIT_MS + UNMOUNT_FALLBACK_MS + 1000);
+  assert('Header Animations', 'destroy() clears pending unmount timers',
+    unmounted === 0
+  );
+  scheduler.scheduleUnmount(() => unmounted++);
+  fake.advance(DRAWER_EXIT_MS + UNMOUNT_FALLBACK_MS);
+  assert('Header Animations', 'Scheduler stays usable after destroy (close → scheduled unmount)',
+    unmounted === 1
+  );
+}
+
 
 // ---------------------------------------------------------------------------
 // Summary

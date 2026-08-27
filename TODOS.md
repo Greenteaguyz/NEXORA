@@ -277,3 +277,15 @@ Standard skills applied during development:
 - [x] **16.6** Expanded Automated Test Battery: 223 / 223 passing assertions (100% Green) across Unit Tests (Sections 1–26), Integration Tests (Sections 1–7), Master Battery, Impeccable Anti-Slop suite, Broken-Link Crawler, and Playwright E2E journeys.
 
 
+
+---
+
+## Phase 12: Header Navigation Motion System — Sliding Active-Tab Indicator & Asymmetric Drawer Animation (Task 17)
+
+### Task 17: Header Nav Animations & Race-Safe Drawer Lifecycle
+- [x] **17.1** Sliding Active-Tab Indicator: Single `.nav-active-indicator` underline glides between desktop nav tabs (Store, Genres, Library, Wishlist, Orders, Creator Studio) via signal-driven geometry (`computeIndicatorGeometry`), re-syncs on route/auth/creator changes and window resize, hides on routes with no active tab, replaces static per-tab `border-bottom`.
+- [x] **17.2** Asymmetric Drawer Timing: Mobile drawer enters at 400ms ease-in-out S-curve (`cubic-bezier(0.55, 0.06, 0.18, 0.96)`, `DRAWER_ENTER_MS`) and exits at a crisp 240ms (`DRAWER_EXIT_MS`), with staggered section entrance (35ms steps, 260ms cap).
+- [x] **17.3** Two-Frame Mount Commit Guard: Double `requestAnimationFrame` between drawer mount and `.drawer-open` class application eliminates ragged single-frame transition starts.
+- [x] **17.4** Race-Safe Unmount Scheduling: Pure `DrawerCloseScheduler` (generation counter + `transitionend` primary trigger + timer fallback in `header-animations.ts`) guarantees rapid open/close toggling can never tear down an open drawer; focus restore to trigger element on close.
+- [x] **17.5** Reduced-Motion & SSR Guards: Component-level `prefers-reduced-motion` overrides (~0.01ms transitions, no stagger) and `isPlatformBrowser` measurement guards keep the app SSR-safe.
+- [x] **17.6** Expanded Automated Test Battery: 435 / 435 passing assertions (100% Green) across Unit Tests (Sections 1–86, incl. Section 86 header animation logic with fake-timer race tests), Integration Tests (51/51), Master Battery (10/10), and Impeccable Anti-Slop suite (7/7). Full `npm run verify` gate exit code 0.

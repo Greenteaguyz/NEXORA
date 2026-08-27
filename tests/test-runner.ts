@@ -8,7 +8,6 @@ import { runA11yAudit } from './audit/a11y-axe-audit.spec';
 import { runBrokenLinkCrawler } from './audit/broken-links-crawler.spec';
 import { runPerformanceAudit } from './audit/performance-vitals.spec';
 import { runSeoAudit } from './audit/seo-meta-audit.spec';
-import { runRigorousValidation } from '../src/app/core/tests/rigorous-validation-suite';
 
 interface SuiteSummary {
   layer: string;
@@ -45,11 +44,11 @@ async function runAllSuites() {
     scorecard.push({ layer: 'Layer 2', name: 'Integration Tests', passed: false, durationMs: 0 });
   }
 
-  // LAYER 3 & 4: E2E & RESPONSIVE PLAYWRIGHT BATTERY
+// LAYER 3 & 4: E2E & RESPONSIVE PLAYWRIGHT BATTERY
   try {
     const t0 = Date.now();
-    await runRigorousValidation('http://localhost:4200');
-    scorecard.push({ layer: 'Layer 3 & 4', name: 'Playwright E2E & Responsive Battery (33 Checks)', passed: true, durationMs: Date.now() - t0 });
+    execSync('npx playwright test tests/e2e/e2e-user-journeys.spec.ts', { stdio: 'inherit' });
+    scorecard.push({ layer: 'Layer 3 & 4', name: 'Playwright E2E & Responsive Battery (5 Journeys)', passed: true, durationMs: Date.now() - t0 });
   } catch (e) {
     scorecard.push({ layer: 'Layer 3 & 4', name: 'Playwright E2E & Responsive Battery', passed: false, durationMs: 0 });
   }

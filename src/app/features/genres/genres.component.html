@@ -34,51 +34,123 @@
   @if (loading()) {
     <app-loading-spinner size="lg" label="Loading genres..."></app-loading-spinner>
   } @else {
-    <!-- Unified Categories Directory -->
-    <section class="all-categories-section">
-      <div class="section-header">
-        <div class="section-title-wrap">
-          <div class="section-icon-box cyan" aria-hidden="true">
-            <svg class="section-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="6" width="20" height="12" rx="6" fill="currentColor" fill-opacity="0.15"/>
-              <line x1="6" y1="12" x2="10" y2="12"/>
-              <line x1="8" y1="10" x2="8" y2="14"/>
-              <circle cx="15.5" cy="10.5" r="1" fill="currentColor"/>
-              <circle cx="17.5" cy="12.5" r="1" fill="currentColor"/>
-            </svg>
+    @if (searchQuery().trim()) {
+      <!-- Search Mode View -->
+      <section class="all-categories-section">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <div class="section-icon-box cyan" aria-hidden="true">
+              <svg class="section-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </div>
+            <h2 class="section-title">Search Results</h2>
+            <span class="all-count-badge">{{ filteredGenres().length }} {{ filteredGenres().length === 1 ? 'category' : 'categories' }}</span>
           </div>
-          <h2 class="section-title">{{ searchQuery().trim() ? 'Search Results' : 'Explore All Categories' }}</h2>
-          <span class="all-count-badge">{{ filteredGenres().length }} {{ filteredGenres().length === 1 ? 'category' : 'categories' }}</span>
+          <p class="section-desc">Categories matching "{{ searchQuery() }}"</p>
         </div>
-        <p class="section-desc">
-          {{ searchQuery().trim() ? 'Matching categories for "' + searchQuery() + '"' : 'Complete directory of game themes, styles, and tags.' }}
-        </p>
-      </div>
 
-      @if (filteredGenres().length > 0) {
-        <div class="all-genres-grid">
-          @for (genre of filteredGenres(); track genre.name) {
-            <a [routerLink]="['/catalog']" [queryParams]="{ tag: genre.name }" class="genre-card" [style.--genre-accent]="genre.accentColor">
-              <div class="genre-icon-box" [style.background-color]="genre.accentColor + '18'" [style.border-color]="genre.accentColor + '50'" [style.color]="genre.accentColor">
+        @if (filteredGenres().length > 0) {
+          <div class="core-genres-grid">
+            @for (genre of filteredGenres(); track genre.name) {
+              <a [routerLink]="['/catalog']" [queryParams]="{ tag: genre.name }" class="core-genre-card" [style.--genre-accent]="genre.accentColor">
+                <div class="genre-icon-box">
+                  <app-genre-icon [tag]="genre.name" [size]="22" class="genre-icon" />
+                </div>
+                <div class="genre-info">
+                  <h3 class="genre-name">{{ genre.name }}</h3>
+                  <p class="genre-desc">{{ genre.description }}</p>
+                </div>
+                <div class="genre-arrow">
+                  <svg class="arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                  </svg>
+                </div>
+              </a>
+            }
+          </div>
+        } @else {
+          <div class="empty-search-state">
+            <p class="empty-text">No categories found matching "<strong>{{ searchQuery() }}</strong>"</p>
+            <button type="button" class="btn-clear-filter" (click)="clearSearch()">Show All Categories</button>
+          </div>
+        }
+      </section>
+    } @else {
+      <!-- 1. Core Genres Section -->
+      <section class="all-categories-section">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <div class="section-icon-box cyan" aria-hidden="true">
+              <svg class="section-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="6" width="20" height="12" rx="6" fill="currentColor" fill-opacity="0.15"/>
+                <line x1="6" y1="12" x2="10" y2="12"/>
+                <line x1="8" y1="10" x2="8" y2="14"/>
+                <circle cx="15.5" cy="10.5" r="1" fill="currentColor"/>
+                <circle cx="17.5" cy="12.5" r="1" fill="currentColor"/>
+              </svg>
+            </div>
+            <h2 class="section-title">Core Genres</h2>
+          </div>
+          <p class="section-desc">Primary gaming foundations, rich mechanics, and iconic gameplay loops.</p>
+        </div>
+
+        <div class="core-genres-grid">
+          @for (genre of coreGenres(); track genre.name) {
+            <a [routerLink]="['/catalog']" [queryParams]="{ tag: genre.name }" class="core-genre-card" [style.--genre-accent]="genre.accentColor">
+              <div class="genre-icon-box">
                 <app-genre-icon [tag]="genre.name" [size]="22" class="genre-icon" />
               </div>
 
               <div class="genre-info">
-                <h3 class="genre-name">#{{ genre.name }}</h3>
-                <span class="genre-count">{{ genre.count }} {{ genre.count === 1 ? 'game' : 'games' }}</span>
+                <h3 class="genre-name">{{ genre.name }}</h3>
+                <p class="genre-desc">{{ genre.description }}</p>
               </div>
 
-              <div class="genre-arrow">→</div>
+              <div class="genre-arrow">
+                <svg class="arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+              </div>
             </a>
           }
         </div>
-      } @else {
-        <div class="empty-search-state">
-          <p class="empty-text">No genres found matching "<strong>{{ searchQuery() }}</strong>"</p>
-          <button class="btn-clear-filter" (click)="clearSearch()">Show All Categories</button>
+      </section>
+
+      <!-- 2. Themes, Styles & Mechanics Section -->
+      <section class="all-categories-section subgenres-section">
+        <div class="section-header">
+          <div class="section-title-wrap">
+            <div class="section-icon-box blue" aria-hidden="true">
+              <svg class="section-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+                <line x1="7" y1="7" x2="7.01" y2="7"/>
+              </svg>
+            </div>
+            <h2 class="section-title">Themes & Gameplay Styles</h2>
+          </div>
+          <p class="section-desc">Aesthetic vibes, perspectives, combat mechanics, and specialized tags.</p>
         </div>
-      }
-    </section>
+
+        <div class="subgenres-pill-matrix">
+          @for (genre of subGenres(); track genre.name) {
+            <a [routerLink]="['/catalog']" [queryParams]="{ tag: genre.name }" class="subgenre-pill" [style.--genre-accent]="genre.accentColor" [title]="genre.description">
+              <span class="pill-icon-wrap">
+                <app-genre-icon [tag]="genre.name" [size]="16" class="pill-icon" />
+              </span>
+              <span class="pill-name">{{ genre.name }}</span>
+              <svg class="pill-arrow-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </a>
+          }
+        </div>
+      </section>
+    }
 
     <!-- 3. Bottom Store Discovery Action Banner -->
     <section class="genres-cta-banner">

@@ -52,16 +52,17 @@ export class MockGamesDataService implements GamesDataService {
     const saved = this.localStore.getItem<Game[]>(this.STORAGE_KEY);
     if (saved && saved.length > 0) {
       const seedMap = new Map(SEED_GAMES.map(s => [s.id, s]));
-      this.games = saved.map(g => {
+      this.games = saved
+        .filter(g => seedMap.has(g.id) || !g.id.startsWith('game_0'))
+        .map(g => {
         const seed = seedMap.get(g.id);
         if (seed) {
           return {
-            ...seed,
             ...g,
+            ...seed,
             createdAt: g.createdAt && g.createdAt.startsWith('2026') ? seed.createdAt : g.createdAt,
             updatedAt: g.updatedAt && g.updatedAt.startsWith('2026') ? seed.updatedAt : g.updatedAt,
-            coverImageUrl: seed.coverImageUrl,
-            screenshotUrls: seed.screenshotUrls
+            deletedAt: g.deletedAt
           };
         }
         return g;

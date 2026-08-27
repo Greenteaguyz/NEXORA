@@ -43,7 +43,7 @@ export async function runBrokenLinkCrawler(baseUrl: string = BASE_URL): Promise<
   const crawlResults: LinkCrawlResult[] = [];
 
   // Seed discovered game detail links
-  const seedGameIds = ['game_001', 'game_002', 'game_003', 'game_004', 'game_005', 'game_006', 'game_007', 'game_008', 'game_009', 'game_010'];
+  const seedGameIds = ['game_001', 'game_002', 'game_003', 'game_004', 'game_005', 'game_006', 'game_007', 'game_008'];
   seedGameIds.forEach(id => linkQueue.push(`/games/${id}`));
 
   while (linkQueue.length > 0) {

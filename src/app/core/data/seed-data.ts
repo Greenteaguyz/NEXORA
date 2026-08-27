@@ -62,164 +62,128 @@ export const SEED_GAMES: Game[] = [
   {
     id: 'game_002',
     ownerId: 'usr_alice',
-    title: 'Cyber Heist: Protocol Zero',
-    description: 'Turn-based tactical cyber-espionage infiltration sim. Hack defense nodes, disable security drones, and exfiltrate classified megacorp data vaults.',
-    tags: ['Strategy', 'Cyberpunk', 'Tactics', 'Hacking'],
+    title: 'Bloodstrike',
+    description: 'A fast-paced tactical FPS battle royale with ultra-responsive gunplay. Pick unique cyber-enhanced Strikers with specialized combat abilities, execute dynamic parkour maneuvers, and fight for survival in rapid-fire combat zones.',
+    tags: ['Action', 'FPS', 'Battle Royale', 'Cyberpunk', 'PvP'],
     price: 0,
-    coverImageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1280&h=720&auto=format&fit=crop&q=80',
+    coverImageUrl: 'assets/images/bloodstrike-capsule.jpg',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80'
+      'assets/images/bloodstrike-ss1.jpg',
+      'assets/images/bloodstrike-ss2.jpg',
+      'assets/images/bloodstrike-ss3.jpg',
+      'assets/images/bloodstrike-ss4.jpg'
     ],
-    samplePackageUrl: 'assets/sample-packages/cyber-heist.zip',
+    samplePackageUrl: 'assets/sample-packages/bloodstrike.zip',
     createdAt: daysAgo(28, 4),
     updatedAt: daysAgo(28, 4)
   },
   {
     id: 'game_003',
     ownerId: 'usr_carol',
-    title: 'Pixel Odyssey',
-    description: 'A charming 16-bit retro metroidvania exploring forgotten ancient ruins buried deep underneath the digital frontier.',
-    tags: ['Platformer', 'Pixel Art', 'Retro', 'Adventure'],
+    title: 'Apex Legends',
+    description: 'Master an ever-expanding roster of legendary characters with cybernetic gear and powerful tactical abilities in a strategic squad-based battle royale and hero shooter. Team up, combine your squad skills, and claim victory in the Outlands.',
+    tags: ['Action', 'Hero Shooter', 'Battle Royale', 'Sci-Fi', 'Cyberpunk'],
     price: 0,
-    coverImageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1280&h=720&auto=format&fit=crop&q=80',
+    coverImageUrl: 'assets/images/apex-legends-capsule.jpg',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1280&h=720&auto=format&fit=crop&q=80'
+      'assets/images/apex-legends-ss1.jpg',
+      'assets/images/apex-legends-ss2.jpg',
+      'assets/images/apex-legends-ss3.jpg',
+      'assets/images/apex-legends-ss4.jpg'
     ],
-    samplePackageUrl: 'assets/sample-packages/pixel-odyssey.zip',
+    samplePackageUrl: 'assets/sample-packages/apex-legends.zip',
     createdAt: daysAgo(42, 6),
     updatedAt: daysAgo(42, 6)
   },
   {
     id: 'game_004',
     ownerId: 'usr_carol',
-    title: 'Shadow Circuit',
-    description: 'An intense rogue-like bullet-hell set inside a corrupted AI neural core. Dodge laser waves, collect memory shards, and reboot the system.',
-    tags: ['Rogue-like', 'Action', 'Sci-Fi', 'Bullet Hell'],
-    price: 3.49,
-    coverImageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80',
+    title: 'Forza Horizon 6',
+    description: 'The premier open-world automotive festival. Experience exhilarating driving expeditions across breathtaking landscapes, drive hundreds of the world greatest supercars, and customize festival courses in dynamic weather.',
+    tags: ['Racing', 'Open World', 'Driving', 'Simulation', 'Multiplayer'],
+    price: 59.99,
+    coverImageUrl: 'assets/images/forza-horizon-6-capsule.jpg',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80'
+      'assets/images/forza-horizon-6-ss1.jpg',
+      'assets/images/forza-horizon-6-ss2.jpg',
+      'assets/images/forza-horizon-6-ss3.jpg',
+      'assets/images/forza-horizon-6-ss4.jpg'
     ],
-    samplePackageUrl: 'assets/sample-packages/shadow-circuit.zip',
+    samplePackageUrl: 'assets/sample-packages/forza-horizon-6.zip',
     createdAt: daysAgo(21, 1),
     updatedAt: daysAgo(21, 1)
   },
   {
     id: 'game_005',
     ownerId: 'usr_alice',
-    title: 'Echoes of the Void',
-    description: 'Deep space psychological horror and puzzle exploration aboard an abandoned research satellite orbiting a dying singularity.',
-    tags: ['Horror', 'Sci-Fi', 'Puzzle', 'Atmospheric'],
-    price: 6.99,
-    coverImageUrl: 'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1280&h=720&auto=format&fit=crop&q=80',
+    title: "Assassin's Creed",
+    description: 'Step into the animus and become a master assassin during pivotal eras in human history. Master stealth, fluid rooftop parkour, and cinematic blade combat as you expose clandestine conspiracies that shaped our world.',
+    tags: ['Action', 'Adventure', 'Stealth', 'Open World', 'Historical'],
+    price: 39.99,
+    coverImageUrl: 'assets/images/assassins-creed-capsule.jpg',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1506703719100-a0f3a48c0f86?w=1280&h=720&auto=format&fit=crop&q=80'
+      'assets/images/assassins-creed-ss1.jpg',
+      'assets/images/assassins-creed-ss2.jpg',
+      'assets/images/assassins-creed-ss3.jpg',
+      'assets/images/assassins-creed-ss4.jpg'
     ],
-    samplePackageUrl: 'assets/sample-packages/echoes-of-the-void.zip',
+    samplePackageUrl: 'assets/sample-packages/assassins-creed.zip',
     createdAt: daysAgo(35, 3),
     updatedAt: daysAgo(35, 3)
   },
   {
     id: 'game_006',
     ownerId: 'usr_carol',
-    title: 'Grid Runner: Overdrive',
-    description: 'Endless rhythm-based runner with pulsating synthwave tracks and dynamic speed hurdles. Test your reflexes on the global leaderboard.',
-    tags: ['Arcade', 'Rhythm', 'Cyberpunk', 'Music'],
-    price: 0,
-    coverImageUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1280&h=720&auto=format&fit=crop&q=80',
+    title: 'God of War',
+    description: 'His vengeance against the Gods of Olympus far behind him, Kratos now lives in the realm of Norse deities and monsters. In this harsh, unforgiving world, he must fight to survive and teach his son Atreus to do the same.',
+    tags: ['Action', 'Adventure', 'RPG', 'Singleplayer', 'Story Rich'],
+    price: 49.99,
+    coverImageUrl: 'assets/images/god-of-war-capsule.jpg',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80'
+      'assets/images/god-of-war-ss1.jpg',
+      'assets/images/god-of-war-ss2.jpg',
+      'assets/images/god-of-war-ss3.jpg',
+      'assets/images/god-of-war-ss4.jpg'
     ],
-    samplePackageUrl: 'assets/sample-packages/grid-runner.zip',
+    samplePackageUrl: 'assets/sample-packages/god-of-war.zip',
     createdAt: daysAgo(18, 5),
     updatedAt: daysAgo(18, 5)
   },
   {
     id: 'game_007',
     ownerId: 'usr_alice',
-    title: 'Quantum Shift',
-    description: 'Mind-bending first-person puzzle game where you manipulate quantum probability fields to traverse impossible spatial geometries.',
-    tags: ['Puzzle', 'Sci-Fi', 'First-Person', 'Indie'],
+    title: 'Call of Duty: Warzone',
+    description: 'Welcome to Warzone, the massive free-to-play combat arena featuring gripping battle royale gameplay and high-stakes extraction zones. Drop in, arm up, loot for killstreaks, and battle to be the last squad standing.',
+    tags: ['Action', 'Shooter', 'FPS', 'Battle Royale', 'Multiplayer'],
     price: 0,
-    coverImageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1280&h=720&auto=format&fit=crop&q=80',
+    coverImageUrl: 'assets/images/call-of-duty-warzone-capsule.jpg',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1280&h=720&auto=format&fit=crop&q=80'
+      'assets/images/call-of-duty-warzone-ss1.jpg',
+      'assets/images/call-of-duty-warzone-ss2.jpg',
+      'assets/images/call-of-duty-warzone-ss3.jpg',
+      'assets/images/call-of-duty-warzone-ss4.jpg'
     ],
-    samplePackageUrl: 'assets/sample-packages/quantum-shift.zip',
+    samplePackageUrl: 'assets/sample-packages/call-of-duty-warzone.zip',
     createdAt: daysAgo(10, 8),
     updatedAt: daysAgo(10, 8)
   },
   {
     id: 'game_008',
     ownerId: 'usr_carol',
-    title: 'Vaporwave Dungeon',
-    description: 'Isometric hack-and-slash crawler drenched in pastel vaporwave aesthetics and lo-fi beats. Upgrade weapons and defeat surreal glitch bosses.',
-    tags: ['RPG', 'Action', 'Hack and Slash', 'Retro'],
-    price: 2.99,
-    coverImageUrl: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80',
+    title: 'Wuthering Waves',
+    description: 'A story-rich open-world action RPG with a high degree of combat freedom. Awaken as Rover in a post-apocalyptic realm of Solaris-3, command Resonator abilities, parry enemy strikes, and explore forgotten civilizations.',
+    tags: ['RPG', 'Action', 'Open World', 'Anime', 'Adventure'],
+    price: 0,
+    coverImageUrl: 'assets/images/wuthering-waves-capsule.jpg',
     screenshotUrls: [
-      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80'
+      'assets/images/wuthering-waves-ss1.jpg',
+      'assets/images/wuthering-waves-ss2.jpg',
+      'assets/images/wuthering-waves-ss3.jpg',
+      'assets/images/wuthering-waves-ss4.jpg'
     ],
-    samplePackageUrl: 'assets/sample-packages/vaporwave-dungeon.zip',
+    samplePackageUrl: 'assets/sample-packages/wuthering-waves.zip',
     createdAt: daysAgo(7, 4),
     updatedAt: daysAgo(7, 4)
-  },
-  {
-    id: 'game_009',
-    ownerId: 'usr_carol',
-    title: 'Cyber Tavern Simulator',
-    description: 'Manage an underground cyberpunk bar in Neo-Kyoto. Mix synthetic cocktails, listen to rogue android stories, and keep the peace.',
-    tags: ['Simulation', 'Cyberpunk', 'Story Rich', 'Casual'],
-    price: 0,
-    coverImageUrl: 'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1280&h=720&auto=format&fit=crop&q=80',
-    screenshotUrls: [
-      'https://images.unsplash.com/photo-1514565131-fce0801e5785?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1563089145-599997674d42?w=1280&h=720&auto=format&fit=crop&q=80'
-    ],
-    samplePackageUrl: 'assets/sample-packages/cyber-tavern.zip',
-    createdAt: daysAgo(4, 2),
-    updatedAt: daysAgo(4, 2)
-  },
-  {
-    id: 'game_010',
-    ownerId: 'usr_alice',
-    title: 'Byte Mech: Arena',
-    description: 'Fast-paced multiplayer arena mech brawler. Customize weapons, armor plating, and thrusters for intense competitive combat.',
-    tags: ['Action', 'Sci-Fi', 'Mechs', 'Arcade'],
-    price: 0,
-    coverImageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80',
-    screenshotUrls: [
-      'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1280&h=720&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1280&h=720&auto=format&fit=crop&q=80'
-    ],
-    samplePackageUrl: 'assets/sample-packages/byte-mech.zip',
-    createdAt: daysAgo(2, 6),
-    updatedAt: daysAgo(2, 6)
   }
 ];
 

@@ -2,11 +2,10 @@
   <defs>
     <!-- Brand Gradient -->
     <linearGradient id="nexora-brand-gradient-lockup" x1="640" x2="3020" y1="3160" y2="820" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#A497FF" />
-      <stop offset="24%" stop-color="#9489FA" />
-      <stop offset="50%" stop-color="#7C72F1" />
-      <stop offset="76%" stop-color="#6A61E7" />
-      <stop offset="100%" stop-color="#5951DD" />
+      <stop offset="0%" stop-color="#F0F9FF" />
+      <stop offset="30%" stop-color="#66C0F4" />
+      <stop offset="70%" stop-color="#1999D6" />
+      <stop offset="100%" stop-color="#0066CC" />
     </linearGradient>
   </defs>
 
@@ -30,6 +29,6 @@
         font-weight="800" 
         letter-spacing="3" 
         fill="#1C1A17">
-    NEX<tspan fill="#6D5EF0">O</tspan>RA
+    NEX<tspan fill="#0078D4">O</tspan>RA
   </text>
 </svg>

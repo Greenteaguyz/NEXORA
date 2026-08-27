@@ -350,7 +350,7 @@ class MockReactiveAppState {
 const reactiveStore = new MockReactiveAppState('usr_bob');
 
 // Test 1: Initial Bob State Projection
-assert('Reactive State Sync', 'Bob Mercer starts with 2 Library games (Cyber Heist & Pixel Odyssey)', 
+assert('Reactive State Sync', 'Bob Mercer starts with 2 Library games (Bloodstrike & Apex Legends)', 
   reactiveStore.getLibraryView().length === 2 && reactiveStore.getLibraryView().some(e => e.gameId === 'game_002')
 );
 assert('Reactive State Sync', 'Bob Mercer starts with 1 Wishlist game (Marvel Rivals)', 
@@ -369,7 +369,7 @@ assert('Reactive State Sync', 'Switching to Alice Vance emits reactive user chan
 assert('Reactive State Sync', 'Alice Vance view reactively projects 1 Library game (Marvel Rivals)', 
   reactiveStore.getLibraryView().length === 1 && reactiveStore.getLibraryView()[0].gameId === 'game_001'
 );
-assert('Reactive State Sync', 'Alice Vance view reactively projects 1 Wishlist game (Shadow Circuit)', 
+assert('Reactive State Sync', 'Alice Vance view reactively projects 1 Wishlist game (Forza Horizon 6)', 
   reactiveStore.getWishlistView().length === 1 && reactiveStore.getWishlistView()[0].gameId === 'game_004'
 );
 assert('Reactive State Sync', 'Alice Vance view reactively projects 0 Orders', 

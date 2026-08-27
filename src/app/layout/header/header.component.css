@@ -72,6 +72,7 @@
   font-family: var(--font-display);
   font-weight: 900;
   letter-spacing: -0.01em;
+  color: var(--accent-400);
   background: linear-gradient(135deg, var(--text-primary) 0%, var(--cyan-400) 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -81,6 +82,7 @@
 .desktop-nav {
   display: flex;
   align-items: center;
+  position: relative;
 }
 
 .nav-links {
@@ -116,16 +118,50 @@
   color: #FFFFFF;
   background: rgba(102, 192, 244, 0.14);
   font-weight: 700;
-  border-bottom: 2px solid var(--accent-400);
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), inset 0 -1px 0 rgba(102, 192, 244, 0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Sliding active-tab underline (geometry driven by signals in header.component.ts).
+   Transitions are gated behind .is-visible:not(.no-anim) so the first reveal
+   lands in place instead of sliding in from x=0. */
+.nav-active-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  border-radius: 2px;
+  background: var(--accent-400);
+  box-shadow: 0 1px 6px rgba(102, 192, 244, 0.35);
+  opacity: 0;
+  transform: translateX(0);
+  pointer-events: none;
+  will-change: transform;
+  transition: opacity 0.2s ease;
+}
+
+.nav-active-indicator.is-visible {
+  opacity: 1;
+}
+
+.nav-active-indicator.is-visible:not(.no-anim) {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              width 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.2s ease;
+}
+
+.nav-active-indicator.no-anim {
+  transition: none;
+}
+
+:host-context([data-theme="light"]) .nav-active-indicator {
+  background: #0284C7;
+  box-shadow: 0 1px 4px rgba(2, 132, 199, 0.25);
 }
 
 :host-context([data-theme="light"]) .nav-item a.active {
   color: #0284C7;
   background: rgba(2, 132, 199, 0.08);
-  border-bottom: 2px solid #0284C7;
-  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
 }
 
 .header-actions {
@@ -589,7 +625,17 @@
   -webkit-backdrop-filter: blur(6px) !important;
   z-index: 9998 !important;
   touch-action: none !important;
-  animation: backdropFadeIn 0.2s ease forwards;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transition: opacity 0.2s ease, visibility 0s linear 0.2s !important;
+}
+
+.mobile-backdrop.backdrop-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transition: opacity 0.2s ease, visibility 0s linear 0s !important;
 }
 
 .mobile-drawer {
@@ -610,15 +656,28 @@
   flex-direction: column !important;
   padding: 12px 14px !important;
   padding-bottom: max(12px, env(safe-area-inset-bottom)) !important;
-  animation: drawerSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  /* Two-state slide: base = off-screen/hidden (exit), .drawer-open = visible (enter).
+     Exit duration must match DRAWER_EXIT_MS in header-animations.ts; enter is
+     intentionally slower for an asymmetric feel. */
+  transform: translateX(100%) !important;
+  visibility: hidden !important;
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0s linear 0.24s !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
   scrollbar-width: none;
   touch-action: none;
-  transform: translate3d(0, 0, 0);
-  -webkit-transform: translate3d(0, 0, 0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+}
+
+.mobile-drawer.drawer-open {
+  transform: translateX(0) !important;
+  visibility: visible !important;
+  /* Ease-in-out S-curve: ramps up smoothly out of the edge and settles,
+     instead of launching violently and crawling. */
+  transition: transform 0.4s cubic-bezier(0.55, 0.06, 0.18, 0.96),
+              visibility 0s linear 0s !important;
 }
 
 .mobile-drawer::-webkit-scrollbar {
@@ -690,6 +749,7 @@
 .mobile-nav {
   flex: 1 1 auto;
   min-height: 0;
+  overflow-x: hidden;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch !important;
   overscroll-behavior-y: contain;
@@ -965,14 +1025,31 @@
   background: var(--accent-400);
 }
 
-@keyframes backdropFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Staggered drawer entrance: applies only while .drawer-open is present, so it
+   re-runs on each open and never plays during the exit. Per-section delay comes
+   from the inline animation-delay binding in the template. */
+@keyframes drawerSectionIn {
+  from { opacity: 0; transform: translateX(16px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-@keyframes drawerSlideIn {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+.drawer-open .nav-group-section,
+.drawer-open .drawer-footer-card {
+  animation: drawerSectionIn 0.4s cubic-bezier(0.55, 0.06, 0.18, 0.96) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-active-indicator,
+  .mobile-drawer,
+  .mobile-backdrop {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+  }
+
+  .drawer-open .nav-group-section,
+  .drawer-open .drawer-footer-card {
+    animation: none;
+  }
 }
 
 /* ==========================================================================

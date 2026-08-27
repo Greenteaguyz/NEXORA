@@ -1,3 +1,5 @@
+@import "bootstrap/dist/css/bootstrap.min.css" layer(bootstrap);
+
 /* ==========================================================================
    NEXORA DESIGN SYSTEM & STEAM DESIGN SYSTEM TOKENS
    ========================================================================== */
@@ -127,6 +129,7 @@ html, body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
@@ -134,6 +137,11 @@ html, body {
 h1, h2, h3, h4, h5, h6, .hero-title, .game-title, .steam-game-title, .dialog-title {
   font-family: var(--font-display);
   letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+p, .brand-desc, .capsule-pitch {
+  text-wrap: pretty;
 }
 
 app-root {

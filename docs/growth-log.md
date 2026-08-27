@@ -349,7 +349,56 @@
 2. Isolate modal and drawer scroll physics to a single inner container with `touch-action: pan-y;`.
 3. Always batch DOM measurements inside `requestAnimationFrame` before mutating Angular Signals on scroll.
 
+---
 
+## [Pattern] CSS Cascade Layer (`@layer`) Inoculation for Third-Party CSS Frameworks (Bootstrap 5)
 
+### Context
+- Academic or enterprise project briefs frequently mandate legacy or utility frameworks (e.g. Bootstrap) alongside modern custom design systems.
+- Blindly importing `bootstrap.min.css` globally injects `reboot.css`, which mutates links (forcing blue underlines), overrides heading scales, resets button fonts, and pollutes strict design tokens.
 
+### Root Cause / Core Insight
+- According to W3C Cascade Layers specification, styles outside of any layer (unlayered styles) always override styles declared within any layer, regardless of selector specificity.
+- Declaring `@import "bootstrap/dist/css/bootstrap.min.css" layer(bootstrap);` at the top of the root stylesheet encapsulates all Bootstrap rules inside `@layer bootstrap`.
+- All custom project tokens, typography, and component classes remain unlayered and naturally win every cascade tie-break without needing `!important`.
+- Meanwhile, all Bootstrap grid (`.container`, `.row`, `.col-*`) and flex/spacing utilities (`.d-flex`, `.gap-*`, `.text-*`, `.d-none`) remain fully functional across templates.
 
+### The Pattern (Transferable)
+1. In Angular projects requiring Bootstrap, import its CSS exclusively inside a named cascade layer: `@import "bootstrap/dist/css/bootstrap.min.css" layer(bootstrap);`.
+2. Omit `bootstrap.bundle.js` completely to preserve Angular 18's zoneless Signal reactivity and prevent SSR hydration errors.
+3. Keep all custom design tokens and component CSS unlayered so custom styling takes precedence without specificity friction.
+
+---
+
+## [Pattern] Local Game Media Sourcing & Immunity to External CDN Link Rot
+
+### Context
+- Storefronts and e-commerce applications referencing external image CDNs (Unsplash, publisher asset servers, public web links) suffer from external latency, network dependency, and referer-header hotlink blocking on local development servers.
+- Offline and sandboxed environments fail to render artwork when external DNS lookups are isolated.
+
+### Root Cause / Core Insight
+- Archiving authentic 16:9 images directly in the repository under `src/assets/images/` guarantees 100% offline availability and sub-millisecond local caching.
+- Enforcing explicit CSS `aspect-ratio: 16 / 9; object-fit: cover;` on all media stage wrappers guarantees zero Cumulative Layout Shift (CLS = 0).
+- Binding `(error)="$any($event.target).src = 'assets/logo-icon.svg'"` provides instant graceful degradation in the event of missing or corrupted assets.
+
+### The Pattern (Transferable)
+1. Store production-ready game media locally under `src/assets/images/<slug>-<type>.jpg`.
+2. Map cover and screenshot URLs in seed datasets to relative local paths (`assets/images/...`).
+3. Always pair image containers with explicit aspect-ratio constraints and fallback vector error handlers.
+
+---
+
+## [Pattern] Two-Frame Mount Commit Guard for Enter Transitions on Dynamically Mounted Elements
+
+### Context
+- Mobile drawer animations require an element to mount off-screen and then slide in via a CSS transition triggered by a class added right after mounting.
+- Symptom: the entrance animation starts raggedly or skips frames even though durations and easings are correct.
+
+### Root Cause / Core Insight
+- A single `requestAnimationFrame` between `signal -> DOM mount` and adding the open class is not enough: the class can land in the same style/paint cycle as the mount, so the browser transitions from an uncommitted layout instead of the resting off-screen state.
+- Two nested rAFs guarantee one fully painted frame at the base state before the transition begins. Pairing this with asymmetric timing (slow ease-in-out S-curve enter, fast ease-out exit) fixes both smoothness and perceived snappiness independently.
+
+### The Pattern (Transferable)
+1. When transitioning a dynamically mounted element, gate all transitions behind a base state (e.g., `transform + visibility`) and only add the active class inside double-rAF.
+2. Split enter/exit timing into separate constants; derive any unmount/teardown timer from the *exit* duration only.
+3. Extract transition-completion scheduling into a pure, framework-free class with a generation counter so rapid open/close races are unit-testable with fake timers (no TestBed required).

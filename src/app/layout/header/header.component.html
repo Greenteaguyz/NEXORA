@@ -5,7 +5,7 @@
       <div class="header-left">
         <!-- Brand Logo -->
         <a routerLink="/catalog" [queryParams]="{}" class="logo-link" (click)="closeMobileMenu()" aria-label="NEXORA Storefront Home" title="NEXORA Storefront Home">
-          <img src="assets/logo-icon.svg" alt="NEXORA Icon" class="logo-icon">
+          <img src="assets/logo-icon.svg" alt="NEXORA Icon" class="logo-icon" width="32" height="32" fetchpriority="high" decoding="async">
           <span class="logo-text">NEXORA</span>
         </a>
 
@@ -49,6 +49,15 @@
               }
             }
           </ul>
+
+          <!-- Sliding active-tab indicator: positioned/animated via signals in the component -->
+          <span
+            class="nav-active-indicator"
+            aria-hidden="true"
+            [class.no-anim]="navIndicatorNoAnim()"
+            [class.is-visible]="navIndicatorVisible()"
+            [style.transform]="'translateX(' + navIndicatorX() + 'px)'"
+            [style.width.px]="navIndicatorW()"></span>
         </nav>
       </div>
 
@@ -157,13 +166,13 @@
 </header>
 
 <!-- Mobile Drawer Backdrop & Menu Overlay (Outside header-bar to avoid clipping) -->
-@if (mobileMenuOpen()) {
-  <div class="mobile-backdrop" (click)="closeMobileMenu()"></div>
-  <aside class="mobile-drawer" [class.drawer-open]="mobileMenuOpen()" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
+@if (drawerMounted()) {
+  <div class="mobile-backdrop" [class.backdrop-visible]="mobileMenuOpen()" (click)="closeMobileMenu()"></div>
+  <aside class="mobile-drawer" [class.drawer-open]="mobileMenuOpen()" (transitionend)="onDrawerTransitionEnd($event)" role="dialog" aria-modal="true" aria-label="Mobile Navigation">
     <!-- Top Header: Brand & SVG Close Button -->
     <div class="mobile-drawer-header">
       <a routerLink="/catalog" [queryParams]="{}" (click)="closeMobileMenu()" class="mobile-brand" aria-label="NEXORA Storefront Home" title="NEXORA Storefront Home">
-        <img src="assets/logo-icon.svg" alt="NEXORA" class="mobile-logo-icon">
+        <img src="assets/logo-icon.svg" alt="NEXORA" class="mobile-logo-icon" width="32" height="32" decoding="async">
         <span class="logo-text">NEXORA</span>
       </a>
       <button class="btn-close-drawer" (click)="closeMobileMenu()" aria-label="Close navigation drawer" title="Close drawer (Escape)">
@@ -177,7 +186,7 @@
     <!-- Categorized Navigation -->
     <nav class="mobile-nav">
       <!-- Section: Discovery (Tablet only - hidden on mobile <=768px) -->
-      <div class="nav-group-section mobile-primary-group">
+      <div class="nav-group-section mobile-primary-group" [style.animation-delay.ms]="staggerDelay(0)">
         <span class="nav-group-title">Discovery</span>
         <ul class="mobile-nav-list">
           <li>
@@ -203,7 +212,7 @@
 
       <!-- Section: Collection / Management -->
       @if (authService.isAuthenticated()) {
-        <div class="nav-group-section">
+        <div class="nav-group-section" [style.animation-delay.ms]="staggerDelay(1)">
           <span class="nav-group-title">Management & Activity</span>
           <ul class="mobile-nav-list">
             <li class="mobile-primary-nav-item">
@@ -241,7 +250,7 @@
 
       <!-- Section: Creator Studio (Creators Only) -->
       @if (authService.isCreator()) {
-        <div class="nav-group-section">
+        <div class="nav-group-section" [style.animation-delay.ms]="staggerDelay(2)">
           <span class="nav-group-title">Studio</span>
           <ul class="mobile-nav-list">
             <li>
@@ -257,7 +266,7 @@
       }
 
       <!-- Section: Account & Support -->
-      <div class="nav-group-section">
+      <div class="nav-group-section" [style.animation-delay.ms]="staggerDelay(3)">
         <span class="nav-group-title">Account & Help</span>
         <ul class="mobile-nav-list">
           @if (authService.isAuthenticated()) {
@@ -284,7 +293,7 @@
     </nav>
 
     <!-- Bottom Unified Footer Control Card -->
-    <div class="drawer-footer-card">
+    <div class="drawer-footer-card" [style.animation-delay.ms]="staggerDelay(4)">
       <!-- Row 1: User Identity + Quick Logout -->
       @if (authService.currentUser(); as user) {
         <div class="footer-card-user-row">
