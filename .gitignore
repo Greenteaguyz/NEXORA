@@ -1,5 +1,6 @@
 # AI Agent Environment & Local Tooling
 .agents/
+.agents-archive/
 
 # Node & Package Managers
 node_modules/
