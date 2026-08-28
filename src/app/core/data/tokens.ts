@@ -5,6 +5,7 @@ import { LibraryEntry } from '../models/library-entry.model';
 import { Order } from '../models/order.model';
 import { User } from '../models/user.model';
 import { WishlistEntry } from '../models/wishlist-entry.model';
+import { AddPaymentMethodDto, GiftCard, PaymentMethod, Wallet, WalletTransaction } from '../models/payment.model';
 
 /* ==========================================================================
    1. Games Data Service & Injection Token
@@ -70,3 +71,37 @@ export interface WishlistDataService {
 }
 
 export const WISHLIST_DATA = new InjectionToken<WishlistDataService>('WISHLIST_DATA');
+
+/* ==========================================================================
+   6. Payments Data Service & Injection Token
+   ========================================================================== */
+export type AddMethodResult =
+  | { ok: true; method: PaymentMethod }
+  | { ok: false; errors: string[] };
+
+export type RedeemCodeResult =
+  | { ok: true; amount: number; balance: number; transaction: WalletTransaction }
+  | { ok: false; reason: 'not_found' | 'already_redeemed' };
+
+export interface WalletSnapshot {
+  wallet: Wallet;
+  transactions: WalletTransaction[];
+}
+
+export interface TopUpResult {
+  wallet: Wallet;
+  transaction: WalletTransaction;
+}
+
+export interface PaymentsDataService {
+  getMethods(userId: string): Observable<PaymentMethod[]>;
+  addMethod(userId: string, dto: AddPaymentMethodDto): Observable<AddMethodResult>;
+  removeMethod(userId: string, methodId: string): Observable<PaymentMethod[]>;
+  setDefaultMethod(userId: string, methodId: string): Observable<PaymentMethod[]>;
+  getWalletSnapshot(userId: string): Observable<WalletSnapshot>;
+  topUp(userId: string, amount: number, methodId: string): Observable<TopUpResult>;
+  getGiftCards(): Observable<GiftCard[]>;
+  redeemGiftCode(userId: string, code: string): Observable<RedeemCodeResult>;
+}
+
+export const PAYMENTS_DATA = new InjectionToken<PaymentsDataService>('PAYMENTS_DATA');

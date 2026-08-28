@@ -4,6 +4,8 @@
  */
 
 import { SEED_GAMES, SEED_USERS, SEED_ORDERS, SEED_LIBRARY_ENTRIES, SEED_WISHLIST_ENTRIES, daysAgo } from '../../src/app/core/data/seed-data';
+import { luhnCheck, detectCardBrand, isCardExpired, validateCardInput, isDuplicateCard, applyRemoveAndReassignDefault, ensureSingleDefault, redeemGiftCard, makeTransaction, formatUsd, approxKhr, toCardMethod, toKhqrMethod } from '../../src/app/core/data/payments/payment-logic';
+import { SEED_GIFT_CARDS, SEED_PAYMENT_METHODS } from '../../src/app/core/data/payments/payments.seed';
 
 interface AssertionResult {
   suite: string;
@@ -4349,6 +4351,89 @@ assert('Header Animations', 'Geometry returns null when no tab is active',
   assert('Header Animations', 'Scheduler stays usable after destroy (close → scheduled unmount)',
     unmounted === 1
   );
+}
+
+
+// ---------------------------------------------------------------------------
+// N. Payment & Wallet Logic Unit Tests
+// ---------------------------------------------------------------------------
+console.log('\n--- N. UNIT TESTS: Payment & Wallet Logic ---');
+
+{
+  // Luhn
+  assert('Payments', 'Luhn accepts valid Visa test number', luhnCheck('4242 4242 4242 4242'));
+  assert('Payments', 'Luhn accepts valid Mastercard test number', luhnCheck('5555 5555 5555 4444'));
+  assert('Payments', 'Luhn rejects transposed digit', !luhnCheck('4242 4242 4242 2442'));
+  assert('Payments', 'Luhn rejects non-numeric input', !luhnCheck('4242-abcd-4242-4242'));
+  assert('Payments', 'Luhn rejects too-short input', !luhnCheck('4242'));
+
+  // Brand detection
+  assert('Payments', 'Visa BIN detected as visa', detectCardBrand('4242424242424242') === 'visa');
+  assert('Payments', 'Mastercard BIN detected as mastercard', detectCardBrand('5555555555554444') === 'mastercard');
+  assert('Payments', 'Amex BIN rejected (not supported)', detectCardBrand('378282246310005') === null);
+
+  // Expiry
+  assert('Payments', 'Future expiry passes', !isCardExpired('09/28', new Date('2026-08-28T00:00:00Z')));
+  assert('Payments', 'Past expiry rejected', isCardExpired('01/24', new Date('2026-08-28T00:00:00Z')));
+  assert('Payments', 'Expiry month is still valid through month end', !isCardExpired('08/26', new Date('2026-08-01T00:00:00Z')));
+  assert('Payments', 'Malformed expiry treated as expired', isCardExpired('13/26', new Date('2026-08-28T00:00:00Z')));
+  assert('Payments', 'Garbage expiry treated as expired', isCardExpired('abc', new Date('2026-08-28T00:00:00Z')));
+
+  // Duplicate detection
+  assert('Payments', 'Duplicate last4+brand rejected', isDuplicateCard(SEED_PAYMENT_METHODS, { type: 'card', brand: 'visa', holder: 'X', number: '4242 4242 4242 4242', expiry: '09/28' }));
+  assert('Payments', 'Different last4 not duplicate', !isDuplicateCard(SEED_PAYMENT_METHODS, { type: 'card', brand: 'visa', holder: 'X', number: '4111 1111 1111 1111', expiry: '09/28' }));
+
+  // Full card validation
+  const goodCard = validateCardInput({ type: 'card', brand: 'visa', holder: 'Alice Vance', number: '4111 1111 1111 1111', expiry: '09/28' }, SEED_PAYMENT_METHODS, new Date('2026-08-28T00:00:00Z'));
+  assert('Payments', 'Valid card input passes full validation', goodCard.valid && goodCard.errors.length === 0 && goodCard.brand === 'visa' && goodCard.last4 === '1111');
+  const badCard = validateCardInput({ type: 'card', brand: 'visa', holder: 'A', number: '4242 4242 4242 2442', expiry: '01/24' }, SEED_PAYMENT_METHODS, new Date('2026-08-28T00:00:00Z'));
+  assert('Payments', 'Invalid card accumulates multiple errors without mutating', !badCard.valid && badCard.errors.length >= 3);
+
+  // Default reassignment on remove
+  const twoCards: any[] = [
+    { type: 'card', id: 'a', userId: 'u', brand: 'visa', holder: 'A', last4: '1111', expiry: '09/28', isDefault: true, createdAt: '2026-01-01' },
+    { type: 'khqr', id: 'b', userId: 'u', bank: 'ABA', handle: 'a@aba', isDefault: false, createdAt: '2026-01-02' }
+  ];
+  const afterRemove = applyRemoveAndReassignDefault(twoCards, 'a');
+  assert('Payments', 'Removing default reassigns default to remaining method', !!afterRemove && afterRemove.length === 1 && afterRemove[0].id === 'b' && afterRemove[0].isDefault);
+  assert('Payments', 'Removing non-default keeps existing default', (() => { const r = applyRemoveAndReassignDefault(twoCards, 'b'); return !!r && r.length === 1 && r[0].id === 'a' && r[0].isDefault; })());
+  assert('Payments', 'Removing unknown id returns null (no mutation)', applyRemoveAndReassignDefault(twoCards, 'zzz') === null);
+  assert('Payments', 'Removing last method leaves empty list', (applyRemoveAndReassignDefault([twoCards[0]], 'a') as any[]).length === 0);
+
+  // Single-default invariant
+  const noDefault: any[] = [
+    { type: 'card', id: 'x', userId: 'u', brand: 'visa', holder: 'X', last4: '1111', expiry: '09/28', isDefault: false, createdAt: '2026-01-01' },
+    { type: 'card', id: 'y', userId: 'u', brand: 'visa', holder: 'Y', last4: '2222', expiry: '09/28', isDefault: false, createdAt: '2026-01-02' }
+  ];
+  const healed = ensureSingleDefault(noDefault);
+  assert('Payments', 'ensureSingleDefault heals zero-default lists', healed.filter(m => m.isDefault).length === 1);
+  const added = [...noDefault, toCardMethod({ type: 'card', brand: 'visa', holder: 'Z', number: '5555 5555 5555 4444', expiry: '09/28' }, 'u', { valid: true, errors: [], brand: 'visa', last4: '4444' })];
+  assert('Payments', 'New methods start non-default (invariant preserved)', added.filter(m => m.isDefault).length === 0);
+
+  // Gift card redemption
+  const nowRedeem = new Date('2026-08-28T00:00:00Z');
+  const cards = JSON.parse(JSON.stringify(SEED_GIFT_CARDS));
+  const redeem1 = redeemGiftCard(cards, 'nexo-welcome-2026', 'usr_bob', nowRedeem);
+  assert('Payments', 'Valid gift code redeems case-insensitively', redeem1.ok && redeem1.amount === 5 && redeem1.giftCard.redeemedBy === 'usr_bob');
+  assert('Payments', 'Redeemed card state updated in returned ledger', redeem1.ok && redeem1.updatedCards.filter(c => c.redeemedBy !== null).length === 1);
+  const redeem2 = redeemGiftCard(redeem1.ok ? redeem1.updatedCards : cards, 'NEXO-WELCOME-2026', 'usr_alice', nowRedeem);
+  assert('Payments', 'Already-redeemed code is rejected', redeem2.ok === false && redeem2.reason === 'already_redeemed');
+  const redeem3 = redeemGiftCard(cards, 'NEXO-FAKE-0000', 'usr_bob', nowRedeem);
+  assert('Payments', 'Unknown code is rejected', redeem3.ok === false && redeem3.reason === 'not_found');
+  assert('Payments', 'Redemption does not mutate the input array', cards.filter((c: any) => c.redeemedBy !== null).length === 0);
+
+  // Transactions & formatting
+  const txn = makeTransaction('usr_bob', 20, 'top_up', 'Wallet top-up', nowRedeem);
+  assert('Payments', 'Transaction created with id, source and label', txn.id.startsWith('txn_') && txn.source === 'top_up' && txn.amount === 20);
+  assert('Payments', 'USD formatting keeps 2 decimals', formatUsd(24.5) === '$24.50' && formatUsd(0) === '$0.00');
+  assert('Payments', 'KHR approximation uses 4100 rate', approxKhr(24.5) === '\u17DB100,450');
+  assert('Payments', 'Seed methods obey exactly-one-default per user', ['usr_alice', 'usr_bob'].every(uid => {
+    const mine = SEED_PAYMENT_METHODS.filter((m: any) => m.userId === uid);
+    return mine.filter((m: any) => m.isDefault).length === 1;
+  }));
+  assert('Payments', 'Seed method type union intact (card + khqr)', ['card', 'khqr'].every(t => SEED_PAYMENT_METHODS.some((m: any) => m.type === t)));
+  const khqr = toKhqrMethod({ type: 'khqr', bank: 'ABA', handle: '  test@aba  ' }, 'usr_carol', nowRedeem);
+  assert('Payments', 'KHQR method trims handle and stores bank', khqr.bank === 'ABA' && khqr.handle === 'test@aba');
 }
 
 

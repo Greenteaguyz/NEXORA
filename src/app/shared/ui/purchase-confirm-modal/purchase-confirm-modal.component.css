@@ -491,3 +491,88 @@
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
+
+.manage-methods-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-400);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.manage-methods-link:hover {
+  color: #FFFFFF;
+}
+
+.manage-methods-link svg {
+  width: 12px;
+  height: 12px;
+}
+
+.brand-title-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wallet-bal-tag {
+  font-size: 0.68rem;
+  font-weight: 800;
+  background: rgba(16, 185, 129, 0.18);
+  color: #34D399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.default-badge-pill {
+  font-size: 0.62rem;
+  font-weight: 800;
+  background: rgba(102, 192, 244, 0.18);
+  color: #66C0F4;
+  border: 1px solid rgba(102, 192, 244, 0.35);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.brand-logo-wrap.wallet {
+  background: rgba(102, 192, 244, 0.15);
+  color: #66C0F4;
+  border: 1px solid rgba(102, 192, 244, 0.3);
+}
+
+.brand-logo-wrap.wallet svg {
+  width: 16px;
+  height: 16px;
+}
+
+.card-brand-btn.insufficient {
+  opacity: 0.65;
+}
+
+.no-methods-callout {
+  grid-column: 1 / -1;
+  padding: 14px;
+  text-align: center;
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-card);
+  border-radius: var(--radius);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.btn-setup-payment {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 14px;
+  background: var(--accent-500);
+  color: #FFFFFF;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 4px;
+  text-decoration: none;
+}
+

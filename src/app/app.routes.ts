@@ -69,6 +69,12 @@ export const routes: Routes = [
     title: 'Account Settings — NEXORA'
   },
   {
+    path: 'account/payment',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/account-payment/account-payment.component').then(m => m.AccountPaymentComponent),
+    title: 'Payment & Wallet — NEXORA'
+  },
+  {
     path: 'studio',
     canActivate: [authGuard, roleGuard('creator')],
     loadComponent: () => import('./features/creator-studio/creator-studio.component').then(m => m.CreatorStudioComponent),

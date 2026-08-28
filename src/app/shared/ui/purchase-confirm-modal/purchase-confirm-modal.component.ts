@@ -1,15 +1,24 @@
-import { Component, Input, Output, EventEmitter, HostListener, OnInit, ElementRef, ViewChild, signal, computed, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, OnInit, ElementRef, ViewChild, signal, computed, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Game } from '../../../core/models/game.model';
+import { AuthService } from '../../../core/auth/auth.service';
+import { PAYMENTS_DATA } from '../../../core/data/tokens';
+import { PaymentMethod, Wallet } from '../../../core/models/payment.model';
+import { PaymentBrandMarkComponent } from '../payment-brand-mark/payment-brand-mark.component';
+import { formatUsd } from '../../../core/data/payments/payment-logic';
 
 export interface PurchaseConfirmationEvent {
   paymentMethod: string;
 }
 
+/**
+ * Modal dialog for confirming game purchases with saved payment methods and NEXORA Wallet tender.
+ */
 @Component({
   selector: 'app-purchase-confirm-modal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink, PaymentBrandMarkComponent],
   templateUrl: './purchase-confirm-modal.component.html',
   styleUrls: ['./purchase-confirm-modal.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -28,32 +37,64 @@ export class PurchaseConfirmModalComponent implements OnInit {
 
   @ViewChild('confirmBtn') confirmBtn?: ElementRef<HTMLButtonElement>;
 
-  readonly selectedCardBrand = signal<'visa' | 'mastercard'>('visa');
-  readonly cardNumber = computed(() => this.selectedCardBrand() === 'visa' ? '•••• •••• •••• 4242' : '•••• •••• •••• 5555');
-  readonly cardHolder = signal('Bob (Verified)');
-  readonly cardExpiry = signal('08/29');
-  readonly cardCvc = signal('•••');
+  private readonly auth = inject(AuthService);
+  private readonly paymentsData = inject(PAYMENTS_DATA);
+
+  // Saved Payment Methods and Wallet
+  readonly savedMethods = signal<PaymentMethod[]>([]);
+  readonly wallet = signal<Wallet | null>(null);
+  readonly selectedOptionId = signal<string>(''); // 'wallet' or method.id
+
+  readonly walletBalance = computed(() => this.wallet()?.balance ?? 0);
+  readonly hasEnoughWallet = computed(() => this.walletBalance() >= (this.game?.price ?? 0));
 
   ngOnInit(): void {
-    // Prevent background scrolling while modal is open
     document.body.style.overflow = 'hidden';
     setTimeout(() => {
       this.confirmBtn?.nativeElement.focus();
     }, 50);
+
+    const user = this.auth.currentUser();
+    if (user) {
+      this.paymentsData.getMethods(user.id).subscribe(methods => {
+        this.savedMethods.set(methods);
+        const def = methods.find(m => m.isDefault);
+        if (def && !this.selectedOptionId()) {
+          this.selectedOptionId.set(def.id);
+        } else if (methods.length > 0 && !this.selectedOptionId()) {
+          this.selectedOptionId.set(methods[0].id);
+        }
+      });
+
+      this.paymentsData.getWalletSnapshot(user.id).subscribe(snap => {
+        this.wallet.set(snap.wallet);
+      });
+    }
   }
 
   ngOnDestroy(): void {
     document.body.style.overflow = '';
   }
 
-  setCardBrand(brand: 'visa' | 'mastercard'): void {
-    this.selectedCardBrand.set(brand);
+  selectOption(id: string): void {
+    this.selectedOptionId.set(id);
   }
 
   get formattedPaymentMethod(): string {
-    return this.selectedCardBrand() === 'visa' 
-      ? 'Credit Card (Visa •••• 4242)' 
-      : 'Credit Card (Mastercard •••• 5555)';
+    const selected = this.selectedOptionId();
+    if (selected === 'wallet') {
+      return `NEXORA Store Wallet (${formatUsd(this.walletBalance())})`;
+    }
+
+    const method = this.savedMethods().find(m => m.id === selected);
+    if (method) {
+      if (method.type === 'card') {
+        return `Credit Card (${method.brand === 'visa' ? 'Visa' : 'Mastercard'} •••• ${method.last4})`;
+      }
+      return `${method.bank} KHQR (${method.handle})`;
+    }
+
+    return 'Credit Card (Visa •••• 4242)';
   }
 
   onConfirm(): void {
@@ -71,5 +112,9 @@ export class PurchaseConfirmModalComponent implements OnInit {
     if (event.key === 'Escape') {
       this.onCancel();
     }
+  }
+
+  formatUsd(amt: number): string {
+    return formatUsd(amt);
   }
 }

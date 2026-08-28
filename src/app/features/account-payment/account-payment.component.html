@@ -1,0 +1,546 @@
+<div class="payment-page-container">
+  <!-- Back Link -->
+  <nav class="back-nav" aria-label="Breadcrumb">
+    <a routerLink="/profile" class="back-link">
+      <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      <span>Back to Account Settings</span>
+    </a>
+  </nav>
+
+  <!-- Page Header -->
+  <header class="payment-header">
+    <div class="header-titles">
+      <h1 class="page-title">Payment & Wallet</h1>
+      <p class="page-subtitle">Manage your saved credit cards, Bakong KHQR accounts, store wallet balance, and promotional gift cards.</p>
+    </div>
+  </header>
+
+  <!-- Alerts -->
+  @if (alertSuccess()) {
+    <div class="alert-banner success" role="status" aria-live="polite">
+      <svg class="alert-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <span>{{ alertSuccess() }}</span>
+    </div>
+  }
+
+  @if (alertError()) {
+    <div class="alert-banner error" role="alert">
+      <svg class="alert-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span>{{ alertError() }}</span>
+    </div>
+  }
+
+  <!-- Main Grid Layout -->
+  <div class="payment-grid-layout">
+    <!-- Left Column: Wallet & Transactions -->
+    <div class="grid-col wallet-column">
+      <!-- Wallet Balance Hero Card -->
+      <section class="wallet-hero-card" aria-label="Store Wallet Balance">
+        <div class="wallet-card-bg-accent" aria-hidden="true"></div>
+        <div class="wallet-hero-top">
+          <div class="wallet-tag-row">
+            <span class="wallet-chip">NEXORA STORE WALLET</span>
+            <span class="wallet-status-live">
+              <span class="pulse-dot"></span> LIVE BALANCE
+            </span>
+          </div>
+          <div class="wallet-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="4" width="20" height="16" rx="2"/>
+              <line x1="2" y1="10" x2="22" y2="10"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="wallet-amount-row">
+          <div class="usd-display">
+            <span class="balance-number">{{ usdBalance() }}</span>
+            <span class="currency-code">USD</span>
+          </div>
+          <div class="khr-display" title="Approximate Cambodian Riel equivalent at 4,100 rate">
+            <span class="khr-approx">≈ {{ khrBalance() }} KHR</span>
+          </div>
+        </div>
+
+        <div class="wallet-actions-row">
+          <button type="button" class="btn-top-up" (click)="openTopUpModal()" aria-label="Top up wallet balance">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            <span>Top-Up Balance</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Gift Card Redeem Card -->
+      <section class="gift-card-box" aria-label="Redeem Gift Card">
+        <div class="section-title-row">
+          <div class="icon-wrap rose">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 12 20 22 4 22 4 12"/>
+              <rect x="2" y="7" width="20" height="5"/>
+              <line x1="12" y1="22" x2="12" y2="7"/>
+              <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
+              <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+            </svg>
+          </div>
+          <h2 class="section-title">Redeem Gift Card</h2>
+        </div>
+
+        <p class="section-desc">Enter your 16-character NEXORA voucher or promotional code to add store credit instantly.</p>
+
+        <form (ngSubmit)="submitRedeemGiftCode()" class="gift-form">
+          <div class="gift-input-wrap">
+            <input 
+              type="text" 
+              class="form-input gift-input" 
+              placeholder="e.g. NEXO-WELCOME-2026" 
+              [(ngModel)]="giftCode" 
+              name="giftCode"
+              maxlength="24"
+              autocomplete="off"
+              spellcheck="false"
+              required>
+            <button 
+              type="submit" 
+              class="btn-redeem" 
+              [disabled]="redeemProcessing() || !giftCode.trim()">
+              @if (redeemProcessing()) {
+                <span>Verifying...</span>
+              } @else {
+                <span>Redeem</span>
+              }
+            </button>
+          </div>
+          <div class="sample-codes-tip">
+            <span class="tip-label">Demo vouchers:</span>
+            <code>NEXO-WELCOME-2026</code> ($5) &bull; <code>NEXO-CYBER-2026</code> ($20)
+          </div>
+        </form>
+      </section>
+
+      <!-- Transaction History Section -->
+      <section class="transactions-section" aria-label="Wallet Transaction History">
+        <div class="section-title-row">
+          <div class="icon-wrap cyan">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <h2 class="section-title">Wallet Activity</h2>
+        </div>
+
+        @if (transactions().length === 0) {
+          <div class="empty-tx-box">
+            <p>No wallet activity recorded yet.</p>
+          </div>
+        } @else {
+          <div class="tx-list">
+            @for (tx of transactions(); track tx.id) {
+              <div class="tx-item">
+                <div class="tx-left">
+                  <div class="tx-badge" [class.credit]="tx.amount > 0" [class.debit]="tx.amount < 0">
+                    @if (tx.amount > 0) {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="18 15 12 9 6 15"/>
+                      </svg>
+                    } @else {
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="6 9 12 15 18 9"/>
+                      </svg>
+                    }
+                  </div>
+                  <div class="tx-info">
+                    <strong class="tx-label">{{ tx.label }}</strong>
+                    <span class="tx-date">{{ formatDate(tx.createdAt) }} &bull; {{ tx.source }}</span>
+                  </div>
+                </div>
+                <div class="tx-amount" [class.positive]="tx.amount > 0">
+                  {{ tx.amount > 0 ? '+' : '' }}{{ tx.amount | currency:'USD':'symbol':'1.2-2' }}
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </section>
+    </div>
+
+    <!-- Right Column: Payment Methods & KHQR -->
+    <div class="grid-col methods-column">
+      <section class="methods-section" aria-label="Saved Payment Methods">
+        <div class="methods-header">
+          <div class="section-title-row">
+            <div class="icon-wrap emerald">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+            </div>
+            <h2 class="section-title">Payment Methods</h2>
+          </div>
+
+          <button type="button" class="btn-add-method" (click)="openAddModal()" aria-label="Add new payment method">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            <span>Add Method</span>
+          </button>
+        </div>
+
+        <!-- Methods List -->
+        @if (methods().length === 0) {
+          <div class="empty-methods-card">
+            <div class="empty-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="5" width="20" height="14" rx="2"/>
+                <line x1="2" y1="10" x2="22" y2="10"/>
+              </svg>
+            </div>
+            <h3>No payment methods linked</h3>
+            <p>Add a credit card or link your Bakong KHQR account to easily top up your wallet and make purchases.</p>
+            <button type="button" class="btn-primary-compact" (click)="openAddModal()">Add Your First Method</button>
+          </div>
+        } @else {
+          <div class="methods-grid">
+            @for (method of methods(); track method.id) {
+              <div class="method-card" [class.is-default]="method.isDefault">
+                <div class="method-card-header">
+                  <div class="method-brand">
+                    @if (method.type === 'card') {
+                      <app-payment-brand-mark [mark]="method.brand" [height]="20"></app-payment-brand-mark>
+                    } @else {
+                      <app-payment-brand-mark [mark]="method.bank === 'ABA' ? 'aba' : 'khqr'" [height]="20"></app-payment-brand-mark>
+                    }
+                  </div>
+
+                  @if (method.isDefault) {
+                    <span class="default-badge" role="status">DEFAULT</span>
+                  }
+                </div>
+
+                <div class="method-details">
+                  @if (method.type === 'card') {
+                    <div class="method-account-number">
+                      <span class="masked-dots">&bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull;</span>
+                      <strong class="last-four">{{ method.last4 }}</strong>
+                    </div>
+                    <div class="method-meta-row">
+                      <span class="meta-holder">{{ method.holder }}</span>
+                      <span class="meta-expiry">Exp: {{ method.expiry }}</span>
+                    </div>
+                  } @else {
+                    <div class="method-account-number">
+                      <span class="bank-tag">{{ method.bank }} KHQR</span>
+                      <strong class="khqr-handle">{{ method.handle }}</strong>
+                    </div>
+                    <div class="method-meta-row">
+                      <span class="meta-holder">Bakong Interbank Link</span>
+                      <span class="meta-expiry">Active</span>
+                    </div>
+                  }
+                </div>
+
+                <div class="method-card-actions">
+                  @if (!method.isDefault) {
+                    <button type="button" class="btn-set-default" (click)="setDefault(method.id)">
+                      Set as Default
+                    </button>
+                  }
+                  <button 
+                    type="button" 
+                    class="btn-remove-method" 
+                    (click)="openRemoveModal(method)" 
+                    [attr.aria-label]="'Remove ' + (method.type === 'card' ? method.brand : method.bank) + ' payment method'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- Interactive KHQR Showcase Preview -->
+        @if (khqrMethod()) {
+          <div class="khqr-preview-container">
+            <div class="khqr-preview-header">
+              <h3 class="preview-title">Active Bakong KHQR Link</h3>
+              <span class="preview-badge">Ready for Quick Scan</span>
+            </div>
+            <div class="khqr-preview-stage">
+              <app-khqr-card 
+                [holderName]="auth.currentUser()?.displayName ?? 'NEXORA Player'"
+                [seed]="khqrMethod()?.id ?? 'nexora-demo'">
+              </app-khqr-card>
+            </div>
+          </div>
+        }
+      </section>
+    </div>
+  </div>
+
+  <!-- Add Payment Method Modal -->
+  @if (showAddModal()) {
+    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="add-modal-title" (click)="closeAddModal()">
+      <div class="modal-card add-method-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 id="add-modal-title" class="modal-title">Add Payment Method</h3>
+          <button type="button" class="btn-modal-close" (click)="closeAddModal()" aria-label="Close modal">&times;</button>
+        </div>
+
+        <!-- Method Type Tabs -->
+        <div class="method-type-tabs" role="tablist">
+          <button 
+            type="button" 
+            role="tab" 
+            [attr.aria-selected]="addMethodType() === 'card'"
+            class="type-tab" 
+            [class.active]="addMethodType() === 'card'"
+            (click)="addMethodType.set('card')">
+            <svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+              <line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+            <span>Credit / Debit Card</span>
+          </button>
+
+          <button 
+            type="button" 
+            role="tab" 
+            [attr.aria-selected]="addMethodType() === 'khqr'"
+            class="type-tab" 
+            [class.active]="addMethodType() === 'khqr'"
+            (click)="addMethodType.set('khqr')">
+            <span class="tab-khqr-pill">KHQR</span>
+            <span>Bakong Link</span>
+          </button>
+        </div>
+
+        <!-- Card Form -->
+        @if (addMethodType() === 'card') {
+          <form (ngSubmit)="submitAddCard()" class="modal-form">
+            @if (cardFormErrors().length > 0) {
+              <div class="form-error-callout" role="alert">
+                @for (err of cardFormErrors(); track err) {
+                  <div>&bull; {{ err }}</div>
+                }
+              </div>
+            }
+
+            <div class="form-group">
+              <label class="form-label" for="cardHolderInput">Cardholder Name</label>
+              <input 
+                id="cardHolderInput"
+                type="text" 
+                class="form-input" 
+                placeholder="e.g. Alice Vance" 
+                [(ngModel)]="cardHolder" 
+                name="cardHolder"
+                required>
+            </div>
+
+            <div class="form-group">
+              <div class="label-with-brand">
+                <label class="form-label" for="cardNumberInput">Card Number</label>
+                @if (detectedBrand()) {
+                  <app-payment-brand-mark [mark]="detectedBrand()!" [height]="16"></app-payment-brand-mark>
+                }
+              </div>
+              <input 
+                id="cardNumberInput"
+                type="text" 
+                class="form-input" 
+                placeholder="4242 4242 4242 4242" 
+                [(ngModel)]="cardNumber" 
+                name="cardNumber"
+                maxlength="19"
+                required>
+              <span class="input-hint">Visa and Mastercard accepted (Luhn verified).</span>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-label" for="cardExpiryInput">Expiration (MM/YY)</label>
+                <input 
+                  id="cardExpiryInput"
+                  type="text" 
+                  class="form-input" 
+                  placeholder="08/28" 
+                  [(ngModel)]="cardExpiry" 
+                  name="cardExpiry"
+                  maxlength="5"
+                  required>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="cardCvvInput">Security Code (CVV)</label>
+                <input 
+                  id="cardCvvInput"
+                  type="password" 
+                  class="form-input" 
+                  placeholder="123" 
+                  [(ngModel)]="cardCvv" 
+                  name="cardCvv"
+                  maxlength="4"
+                  required>
+              </div>
+            </div>
+
+            <div class="modal-actions">
+              <button type="button" class="btn-cancel" (click)="closeAddModal()">Cancel</button>
+              <button type="submit" class="btn-submit">Save Card</button>
+            </div>
+          </form>
+        }
+
+        <!-- KHQR Form -->
+        @if (addMethodType() === 'khqr') {
+          <form (ngSubmit)="submitAddKhqr()" class="modal-form">
+            @if (khqrFormErrors().length > 0) {
+              <div class="form-error-callout" role="alert">
+                @for (err of khqrFormErrors(); track err) {
+                  <div>&bull; {{ err }}</div>
+                }
+              </div>
+            }
+
+            <div class="form-group">
+              <label class="form-label" for="bankSelect">Select Cambodian Bank</label>
+              <select id="bankSelect" class="form-select" [(ngModel)]="khqrBank" name="khqrBank">
+                <option value="ABA">ABA Bank (National Bank of Cambodia)</option>
+                <option value="ACLEDA">ACLEDA Bank Plc</option>
+                <option value="Wing">Wing Bank (Cambodia) Plc</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="khqrHandleInput">Account ID or Phone Handle</label>
+              <input 
+                id="khqrHandleInput"
+                type="text" 
+                class="form-input" 
+                placeholder="e.g. yourname@aba or 012345678" 
+                [(ngModel)]="khqrHandle" 
+                name="khqrHandle"
+                required>
+              <span class="input-hint">Simulates official Bakong cross-banking authorization.</span>
+            </div>
+
+            <div class="modal-actions">
+              <button type="button" class="btn-cancel" (click)="closeAddModal()" [disabled]="khqrLinking()">Cancel</button>
+              <button type="submit" class="btn-submit" [disabled]="khqrLinking()">
+                @if (khqrLinking()) {
+                  <span>Connecting to {{ khqrBank }}...</span>
+                } @else {
+                  <span>Link {{ khqrBank }} Account</span>
+                }
+              </button>
+            </div>
+          </form>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Top-Up Wallet Modal -->
+  @if (showTopUpModal()) {
+    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="topup-modal-title" (click)="closeTopUpModal()">
+      <div class="modal-card top-up-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 id="topup-modal-title" class="modal-title">Top-Up Store Wallet</h3>
+          <button type="button" class="btn-modal-close" (click)="closeTopUpModal()" aria-label="Close modal">&times;</button>
+        </div>
+
+        <form (ngSubmit)="submitTopUp()" class="modal-form">
+          <div class="form-group">
+            <label class="form-label">Select Amount (USD)</label>
+            <div class="preset-amounts-grid">
+              @for (amt of presetAmounts; track amt) {
+                <button 
+                  type="button" 
+                  class="preset-pill" 
+                  [class.active]="topUpAmount === amt"
+                  (click)="selectPresetAmount(amt)">
+                  ${{ amt }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="topUpAmountInput">Custom Amount ($)</label>
+            <input 
+              id="topUpAmountInput"
+              type="number" 
+              class="form-input" 
+              [(ngModel)]="topUpAmount" 
+              name="topUpAmount" 
+              min="1" 
+              max="1000" 
+              required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="topUpMethodSelect">Pay Using</label>
+            <select id="topUpMethodSelect" class="form-select" [(ngModel)]="selectedTopUpMethodId" name="topUpMethod" required>
+              @for (m of methods(); track m.id) {
+                <option [value]="m.id">
+                  {{ m.type === 'card' ? (m.brand | uppercase) + ' •••• ' + m.last4 : m.bank + ' KHQR (' + m.handle + ')' }}
+                  {{ m.isDefault ? ' (Default)' : '' }}
+                </option>
+              }
+            </select>
+          </div>
+
+          <div class="top-up-summary">
+            <span class="summary-label">Total to Charge:</span>
+            <strong class="summary-val">${{ topUpAmount.toFixed(2) }} USD</strong>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancel" (click)="closeTopUpModal()" [disabled]="topUpProcessing()">Cancel</button>
+            <button type="submit" class="btn-submit" [disabled]="topUpProcessing() || topUpAmount <= 0">
+              {{ topUpProcessing() ? 'Charging...' : 'Confirm Deposit' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Remove Method Confirmation Modal (Minimal Warning per AGENTS.md) -->
+  @if (methodToRemove()) {
+    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="remove-modal-title" (click)="closeRemoveModal()">
+      <div class="modal-card remove-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 id="remove-modal-title" class="modal-title">Remove Payment Method?</h3>
+          <button type="button" class="btn-modal-close" (click)="closeRemoveModal()" aria-label="Close modal">&times;</button>
+        </div>
+
+        <div class="modal-body-warning">
+          <p class="warning-text">
+            Are you sure you want to remove this saved payment method?
+          </p>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="closeRemoveModal()">Cancel</button>
+          <button type="button" class="btn-confirm-remove" (click)="confirmRemove()">Remove</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

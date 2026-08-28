@@ -35,6 +35,7 @@ export async function runBrokenLinkCrawler(baseUrl: string = BASE_URL): Promise<
     '/library',
     '/wishlist',
     '/orders',
+    '/account/payment',
     '/studio',
     '/studio/games/new',
     '/creators/user_001',
