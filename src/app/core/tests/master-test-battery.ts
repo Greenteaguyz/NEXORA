@@ -11,6 +11,7 @@ import '@angular/compiler';
 import { PLATFORM_ID, NgModule, ErrorHandler, createPlatformFactory, platformCore, provideZoneChangeDetection, ɵINJECTOR_SCOPE } from '@angular/core';
 import { TestBed, TestComponentRenderer } from '@angular/core/testing';
 import { ScrollLockService } from '../services/scroll-lock.service';
+import { ToastService } from '../services/toast.service';
 
 /** Minimal NgModule root for the pure-Node TestBed environment (no DOM platform). */
 @NgModule()
@@ -223,6 +224,67 @@ export class MasterTestRunner {
       } catch (err) {
         this.assert(false, `Server platform lock/unlock threw: ${String(err)}`);
       }
+    });
+
+    // 9. Toast Service (Severity Durations + Pause/Resume)
+    await this.runTest('Toast Service', 'Severity-based default durations', () => {
+      const service = new ToastService();
+
+      this.assert(service.defaultDurations.download === 4000, 'download default must be 4000ms');
+      this.assert(service.defaultDurations.success === 3500, 'success default must be 3500ms');
+      this.assert(service.defaultDurations.info === 4000, 'info default must be 4000ms');
+      this.assert(service.defaultDurations.warning === 5000, 'warning default must be 5000ms');
+      this.assert(service.defaultDurations.error === 7000, 'error default must be 7000ms');
+
+      service.show({ type: 'success', title: 't', message: 'm' });
+      service.show({ type: 'error', title: 't2', message: 'm2' });
+
+      this.assert(service.toasts().length === 2, 'Both severity toasts must be present');
+      this.assert(service.toasts()[0].type === 'success', 'First toast must be success severity');
+      this.assert(service.toasts()[1].type === 'error', 'Second toast must be error severity');
+
+      service.dismiss(service.toasts()[0].id);
+      service.dismiss(service.toasts()[0].id);
+      this.assert(service.toasts().length === 0, 'Explicit dismiss must clear both toasts');
+    });
+
+    await this.runTest('Toast Service', 'Pause on hover defers dismissal', async () => {
+      const service = new ToastService();
+      const sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
+
+      service.show({ type: 'info', title: 'hover', message: 'pause me' }, 120);
+      const id = service.toasts()[0].id;
+      service.pause(id);
+
+      await sleep(250);
+      this.assert(service.toasts().length === 1, 'Toast must survive past its duration while paused');
+
+      service.resume(id);
+      await sleep(200);
+      this.assert(service.toasts().length === 0, 'Toast must dismiss after resume with remaining time');
+    });
+
+    await this.runTest('Toast Service', 'pause/resume on unknown ids are safe no-ops', () => {
+      const service = new ToastService();
+
+      try {
+        service.pause('nope');
+        service.resume('nope');
+        this.assert(true, 'Unknown-id pause/resume completed without throwing');
+      } catch (err) {
+        this.assert(false, `Unknown-id pause/resume threw: ${String(err)}`);
+      }
+    });
+
+    await this.runTest('Toast Service', 'Action payload is carried and cleaned up', () => {
+      const service = new ToastService();
+
+      service.show({ type: 'warning', title: 't', message: 'm', action: { label: 'Undo', run: () => {} } });
+
+      this.assert(service.toasts()[0]?.action?.label === 'Undo', 'Action payload must be carried onto the toast');
+
+      service.dismiss(service.toasts()[0].id);
+      this.assert(service.toasts().length === 0, 'Dismissed action toast must be removed from the list');
     });
 
     const endTime = performance.now();

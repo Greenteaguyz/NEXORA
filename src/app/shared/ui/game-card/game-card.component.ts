@@ -114,7 +114,7 @@ export class GameCardComponent implements OnInit, OnChanges {
     this.wishlistData.removeFromWishlist(user.id, this.game.id).subscribe({
       next: () => {
         this.isWishlisted = false;
-        this.toastService.show({ type: 'warning', title: 'Removed from Wishlist', message: `${this.game.title} was removed from your wishlist.` });
+        this.toastService.show({ type: 'warning', title: 'Removed from Wishlist', message: `${this.game.title} was removed from your wishlist.`, action: { label: 'Undo', run: () => this.undoRemove() } });
         this.showRemoveConfirm.set(false);
         this.restoreFocus();
       },
@@ -123,6 +123,23 @@ export class GameCardComponent implements OnInit, OnChanges {
         this.toastService.show({ type: 'error', title: 'Wishlist Update Failed', message: 'Could not update your wishlist. Please try again.' });
         this.showRemoveConfirm.set(false);
         this.restoreFocus();
+      }
+    });
+  }
+
+  private undoRemove(): void {
+    const user = this.authService.currentUser();
+    if (!user) {
+      this.toastService.show({ type: 'error', title: 'Sign In Required', message: 'Sign in to restore this game to your wishlist.' });
+      return;
+    }
+    this.wishlistData.addToWishlist(user.id, this.game.id).subscribe({
+      next: () => {
+        this.isWishlisted = true;
+        this.toastService.show({ type: 'success', title: 'Restored to Wishlist', message: `${this.game.title} is back in your wishlist.` });
+      },
+      error: () => {
+        this.toastService.show({ type: 'error', title: 'Wishlist Update Failed', message: 'Could not restore this game. Please try again.' });
       }
     });
   }

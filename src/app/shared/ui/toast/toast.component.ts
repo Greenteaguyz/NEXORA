@@ -9,7 +9,7 @@ import { ToastService, ToastMessage } from '../../../core/services/toast.service
   template: `
     <div class="toast-container" role="status" aria-live="polite">
       @for (toast of toastService.toasts(); track toast.id) {
-        <div class="toast-card toast-{{ toast.type }}" (click)="dismiss(toast.id)">
+        <div class="toast-card toast-{{ toast.type }}" (click)="dismiss(toast.id)" (mouseenter)="toastService.pause(toast.id)" (mouseleave)="toastService.resume(toast.id)" (focusin)="toastService.pause(toast.id)" (focusout)="toastService.resume(toast.id)">
           <div class="toast-icon-wrap">
             @if (toast.type === 'download') {
               <svg class="toast-svg download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -46,6 +46,9 @@ import { ToastService, ToastMessage } from '../../../core/services/toast.service
             <h4 class="toast-title">{{ toast.title }}</h4>
             <p class="toast-message">{{ toast.message }}</p>
           </div>
+          @if (toast.action) {
+            <button type="button" class="btn-toast-action" (click)="runAction(toast)">{{ toast.action.label }}</button>
+          }
           <button type="button" class="btn-toast-close" (click)="dismiss(toast.id)" aria-label="Close notification">✕</button>
         </div>
       }
@@ -147,6 +150,27 @@ import { ToastService, ToastMessage } from '../../../core/services/toast.service
       word-break: break-word;
     }
 
+    .btn-toast-action {
+      background: transparent;
+      border: 1px solid var(--border-card);
+      color: var(--cyan-400);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 0.15s ease, border-color 0.15s ease;
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    .btn-toast-action:hover {
+      color: var(--accent-400);
+      border-color: var(--accent-400);
+    }
+
     .btn-toast-close {
       background: none;
       border: none;
@@ -178,6 +202,15 @@ import { ToastService, ToastMessage } from '../../../core/services/toast.service
 })
 export class ToastComponent {
   toastService = inject(ToastService);
+
+  private ranActions = new Set<string>();
+
+  runAction(toast: ToastMessage): void {
+    if (!toast.action || this.ranActions.has(toast.id)) return;
+    this.ranActions.add(toast.id);
+    toast.action.run();
+    this.dismiss(toast.id);
+  }
 
   dismiss(id: string): void {
     this.toastService.dismiss(id);
