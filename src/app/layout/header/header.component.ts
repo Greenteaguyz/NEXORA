@@ -6,6 +6,7 @@ import { filter, map } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { ThemeService } from '../../core/theme/theme.service';
 import { CommandPaletteService } from '../../core/services/command-palette.service';
+import { ScrollLockService } from '../../core/services/scroll-lock.service';
 import { WISHLIST_DATA } from '../../core/data/tokens';
 import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.component';
 import {
@@ -29,6 +30,8 @@ export class HeaderComponent implements OnDestroy {
   private wishlistData = inject(WISHLIST_DATA);
   private platformId = inject(PLATFORM_ID);
   private host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private scrollLock = inject(ScrollLockService);
+  private headerScrollLockActive = false;
 
   wishlistCount = signal(0);
   mobileMenuOpen = signal(false);
@@ -85,15 +88,17 @@ export class HeaderComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.closeScheduler.destroy();
-    if (typeof document !== 'undefined') {
-      document.body.style.overflow = '';
+    // Only release if this component actually engaged the ref-counted lock.
+    if (this.headerScrollLockActive) {
+      this.scrollLock.unlock();
+      this.headerScrollLockActive = false;
     }
   }
 
   private updateBodyScrollLock(locked: boolean): void {
-    if (typeof document !== 'undefined') {
-      document.body.style.overflow = locked ? 'hidden' : '';
-    }
+    if (locked === this.headerScrollLockActive) return;
+    this.headerScrollLockActive = locked;
+    locked ? this.scrollLock.lock() : this.scrollLock.unlock();
   }
 
   toggleMobileMenu(): void {

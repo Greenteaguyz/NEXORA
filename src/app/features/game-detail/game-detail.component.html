@@ -279,7 +279,7 @@
 
     <!-- Creator Notice Modal (When creator interacts with own game) -->
     @if (showCreatorNoticeModal) {
-      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Creator Master Access" (click)="closeCreatorNoticeModal()">
+      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Creator Master Access" appScrollLock (click)="closeCreatorNoticeModal()">
         <div class="modal-card developer-modal" (click)="$event.stopPropagation()">
           <div class="modal-header">
             <div class="developer-header-cluster">
@@ -329,7 +329,7 @@
 
     <!-- Order Confirmed & Added to Library Modal (AC-1117) -->
     @if (showOrderConfirmedModal && confirmedOrder && game) {
-      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="orderConfirmModalTitle" (click)="closeOrderConfirmedModal()" (keydown.escape)="closeOrderConfirmedModal()">
+      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="orderConfirmModalTitle" appScrollLock (click)="closeOrderConfirmedModal()" (keydown.escape)="closeOrderConfirmedModal()">
         <div class="modal-card order-confirmed-modal" (click)="$event.stopPropagation()">
           <div class="modal-header">
             <div class="confirm-header-cluster">
@@ -398,7 +398,7 @@
 
     <!-- Soft Warning Confirmation Modal: Remove from Wishlist -->
     @if (showWishlistRemoveModal && game) {
-      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="removeWishlistTitle" (click)="cancelRemoveFromWishlist()" (keydown.escape)="cancelRemoveFromWishlist()">
+      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="removeWishlistTitle" appScrollLock (click)="cancelRemoveFromWishlist()" (keydown.escape)="cancelRemoveFromWishlist()">
         <div class="modal-card warning-modal-card" (click)="$event.stopPropagation()">
           <div class="modal-header">
             <h3 id="removeWishlistTitle" class="modal-title">Remove from Wishlist?</h3>
@@ -419,7 +419,7 @@
 
     <!-- Soft Warning Confirmation Modal: Remove from Library -->
     @if (showLibraryRemoveModal && game) {
-      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="removeLibraryTitle" (click)="cancelRemoveFromLibrary()" (keydown.escape)="cancelRemoveFromLibrary()">
+      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="removeLibraryTitle" appScrollLock (click)="cancelRemoveFromLibrary()" (keydown.escape)="cancelRemoveFromLibrary()">
         <div class="modal-card warning-modal-card" (click)="$event.stopPropagation()">
           <div class="modal-header">
             <h3 id="removeLibraryTitle" class="modal-title">Remove from Library?</h3>
@@ -511,10 +511,11 @@
     <!-- Screenshot Lightbox Modal Overlay with Accessible Dialog Attributes -->
     @if (lightboxActive) {
       <div 
-        class="lightbox-backdrop" 
-        role="dialog" 
-        aria-modal="true" 
-        aria-label="Screenshot lightbox preview" 
+        class="lightbox-backdrop"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Screenshot lightbox preview"
+        appScrollLock
         (click)="closeLightbox()">
         <div class="lightbox-container" (click)="$event.stopPropagation()">
           <button 

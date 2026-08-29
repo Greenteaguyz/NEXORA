@@ -10,6 +10,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { SpatialNavDirective } from '../../shared/directives/spatial-nav.directive';
+import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 
 export interface WishlistDisplayItem {
   entry: WishlistEntry;
@@ -24,7 +25,8 @@ export interface WishlistDisplayItem {
     RouterLink, 
     LoadingSpinnerComponent, 
     EmptyStateComponent,
-    SpatialNavDirective
+    SpatialNavDirective,
+    ScrollLockDirective
   ],
   templateUrl: './wishlist.component.html',
   styleUrls: ['./wishlist.component.css']

@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { GAMES_DATA } from '../../../core/data/tokens';
 import { AuthService } from '../../../core/auth/auth.service';
 import { CommandPaletteService } from '../../../core/services/command-palette.service';
+import { ScrollLockDirective } from '../../directives/scroll-lock.directive';
 import { Game } from '../../../core/models/game.model';
 
 export interface CommandItem {
@@ -23,7 +24,7 @@ export interface CommandItem {
 @Component({
   selector: 'app-command-palette',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ScrollLockDirective],
   templateUrl: './command-palette.component.html',
   styleUrls: ['./command-palette.component.css']
 })

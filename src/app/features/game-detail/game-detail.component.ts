@@ -10,6 +10,7 @@ import { DownloadService } from '../../core/services/download.service';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { PurchaseConfirmModalComponent, PurchaseConfirmationEvent } from '../../shared/ui/purchase-confirm-modal/purchase-confirm-modal.component';
+import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 
 export interface SpecItem {
   icon: 'os' | 'cpu' | 'ram' | 'gpu' | 'directx' | 'storage';
@@ -33,7 +34,8 @@ export interface SpecTier {
     RouterLink, 
     LoadingSpinnerComponent, 
     EmptyStateComponent,
-    PurchaseConfirmModalComponent
+    PurchaseConfirmModalComponent,
+    ScrollLockDirective
   ],
   templateUrl: './game-detail.component.html',
   styleUrls: ['./game-detail.component.css']

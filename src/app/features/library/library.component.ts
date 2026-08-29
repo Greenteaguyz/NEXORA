@@ -13,6 +13,7 @@ import { DownloadButtonComponent } from '../../shared/ui/download-button/downloa
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { SpatialNavDirective } from '../../shared/directives/spatial-nav.directive';
+import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 
 export interface LibraryDisplayItem {
   entry: LibraryEntry;
@@ -29,7 +30,8 @@ export interface LibraryDisplayItem {
     DownloadButtonComponent, 
     LoadingSpinnerComponent, 
     EmptyStateComponent,
-    SpatialNavDirective
+    SpatialNavDirective,
+    ScrollLockDirective
   ],
   templateUrl: './library.component.html',
   styleUrls: ['./library.component.css']

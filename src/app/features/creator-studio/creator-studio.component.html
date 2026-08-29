@@ -174,7 +174,7 @@
 
   <!-- Soft-Delete Confirmation Modal -->
   @if (gameToDelete) {
-    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Confirm Unpublish" (click)="closeDeleteModal()">
+    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Confirm Unpublish" appScrollLock (click)="closeDeleteModal()">
       <div class="modal-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3 class="modal-title">Unpublish Game Listing?</h3>

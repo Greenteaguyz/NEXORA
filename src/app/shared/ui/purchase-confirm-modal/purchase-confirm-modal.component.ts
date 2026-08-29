@@ -6,6 +6,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { PAYMENTS_DATA } from '../../../core/data/tokens';
 import { PaymentMethod, Wallet } from '../../../core/models/payment.model';
 import { PaymentBrandMarkComponent } from '../payment-brand-mark/payment-brand-mark.component';
+import { ScrollLockDirective } from '../../directives/scroll-lock.directive';
 import { formatUsd } from '../../../core/data/payments/payment-logic';
 
 export interface PurchaseConfirmationEvent {
@@ -18,7 +19,7 @@ export interface PurchaseConfirmationEvent {
 @Component({
   selector: 'app-purchase-confirm-modal',
   standalone: true,
-  imports: [CommonModule, RouterLink, PaymentBrandMarkComponent],
+  imports: [CommonModule, RouterLink, PaymentBrandMarkComponent, ScrollLockDirective],
   templateUrl: './purchase-confirm-modal.component.html',
   styleUrls: ['./purchase-confirm-modal.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -39,6 +40,7 @@ export class PurchaseConfirmModalComponent implements OnInit {
 
   private readonly auth = inject(AuthService);
   private readonly paymentsData = inject(PAYMENTS_DATA);
+  private previouslyFocused: HTMLElement | null = null;
 
   // Saved Payment Methods and Wallet
   readonly savedMethods = signal<PaymentMethod[]>([]);
@@ -49,7 +51,9 @@ export class PurchaseConfirmModalComponent implements OnInit {
   readonly hasEnoughWallet = computed(() => this.walletBalance() >= (this.game?.price ?? 0));
 
   ngOnInit(): void {
-    document.body.style.overflow = 'hidden';
+    if (typeof document !== 'undefined') {
+      this.previouslyFocused = document.activeElement as HTMLElement | null;
+    }
     setTimeout(() => {
       this.confirmBtn?.nativeElement.focus();
     }, 50);
@@ -73,7 +77,10 @@ export class PurchaseConfirmModalComponent implements OnInit {
   }
 
   ngOnDestroy(): void {
-    document.body.style.overflow = '';
+    if (this.previouslyFocused && typeof this.previouslyFocused.focus === 'function' &&
+        typeof document !== 'undefined' && document.contains(this.previouslyFocused)) {
+      this.previouslyFocused.focus();
+    }
   }
 
   selectOption(id: string): void {

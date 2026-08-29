@@ -294,7 +294,7 @@
 
   <!-- Add Payment Method Modal -->
   @if (showAddModal()) {
-    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="add-modal-title" (click)="closeAddModal()">
+    <div class="modal-backdrop" appScrollLock role="dialog" aria-modal="true" aria-labelledby="add-modal-title" (click)="closeAddModal()">
       <div class="modal-card add-method-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3 id="add-modal-title" class="modal-title">Add Payment Method</h3>

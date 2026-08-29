@@ -9,6 +9,7 @@ import { ORDERS_DATA, GAMES_DATA } from '../../core/data/tokens';
 import { AuthService } from '../../core/auth/auth.service';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 
 export interface OrderDisplayItem {
   order: Order;
@@ -22,7 +23,8 @@ export interface OrderDisplayItem {
     CommonModule, 
     RouterLink, 
     LoadingSpinnerComponent, 
-    EmptyStateComponent
+    EmptyStateComponent,
+    ScrollLockDirective
   ],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css']

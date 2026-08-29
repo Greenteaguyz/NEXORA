@@ -119,11 +119,12 @@
 
   <!-- Detailed Receipt Modal -->
   @if (selectedReceiptOrder) {
-    <div 
-      class="receipt-backdrop" 
-      role="dialog" 
-      aria-modal="true" 
+    <div
+      class="receipt-backdrop"
+      role="dialog"
+      aria-modal="true"
       aria-label="Order Receipt"
+      appScrollLock
       (click)="closeReceipt()">
       
       <div class="receipt-modal-card" (click)="$event.stopPropagation()">

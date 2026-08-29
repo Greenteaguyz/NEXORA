@@ -6,6 +6,18 @@
  */
 
 import { SEED_GAMES, SEED_USERS, SEED_ORDERS, SEED_LIBRARY_ENTRIES, SEED_WISHLIST_ENTRIES } from '../data/seed-data';
+import 'zone.js';
+import '@angular/compiler';
+import { PLATFORM_ID, NgModule, ErrorHandler, createPlatformFactory, platformCore, provideZoneChangeDetection, ɵINJECTOR_SCOPE } from '@angular/core';
+import { TestBed, TestComponentRenderer } from '@angular/core/testing';
+import { ScrollLockService } from '../services/scroll-lock.service';
+
+/** Minimal NgModule root for the pure-Node TestBed environment (no DOM platform). */
+@NgModule()
+class MasterBatteryTestModule {}
+
+/** No-op stand-in so TestBed module teardown works without a browser renderer. */
+const stubTestComponentRenderer = { destroy: () => undefined } as unknown as TestComponentRenderer;
 
 interface TestResult {
   suite: string;
@@ -17,6 +29,31 @@ interface TestResult {
 
 export class MasterTestRunner {
   private results: TestResult[] = [];
+  private static scrollLockTestEnvReady = false;
+
+  /** One-time init of a DOM-free TestBed environment for DI-only service tests. */
+  private ensureScrollLockTestEnvironment(): void {
+    if (MasterTestRunner.scrollLockTestEnvReady) return;
+    const platform = createPlatformFactory(platformCore, 'master-battery-testing')();
+    TestBed.initTestEnvironment(MasterBatteryTestModule, platform);
+    MasterTestRunner.scrollLockTestEnvReady = true;
+  }
+
+  private configureScrollLockTestBed(): ScrollLockService {
+    this.ensureScrollLockTestEnvironment();
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: ɵINJECTOR_SCOPE, useValue: 'root' },
+        provideZoneChangeDetection(),
+        ErrorHandler,
+        ScrollLockService,
+        { provide: PLATFORM_ID, useValue: 'server' },
+        { provide: TestComponentRenderer, useValue: stubTestComponentRenderer }
+      ]
+    });
+    return TestBed.inject(ScrollLockService);
+  }
 
   private assert(condition: boolean, message: string): void {
     if (!condition) {
@@ -147,6 +184,45 @@ export class MasterTestRunner {
 
       // Verify that the standard configuration actively bans all of them
       this.assert(antiPatterns.length === 7, 'All 7 anti-slop patterns must be tracked and eliminated');
+    });
+
+    // 8. Scroll Lock Service (Ref-Counted Overlay Scroll Lock)
+    await this.runTest('Scroll Lock Service', 'Ref-count keeps lock until last unlock', () => {
+      const service = this.configureScrollLockTestBed();
+
+      service.lock();
+      this.assert(service.isLocked() === true, 'Lock must be engaged after first lock()');
+      service.lock();
+      this.assert(service.isLocked() === true, 'Lock must remain engaged after overlapping second lock()');
+      service.unlock();
+      this.assert(service.isLocked() === true, 'Lock must remain engaged while one reference is still open');
+      service.unlock();
+      this.assert(service.isLocked() === false, 'Lock must release after the final unlock()');
+    });
+
+    await this.runTest('Scroll Lock Service', 'Unlock below zero is a safe no-op', () => {
+      const service = this.configureScrollLockTestBed();
+
+      service.unlock();
+      this.assert(service.isLocked() === false, 'Unlock with no active lock must not engage the lock');
+      service.lock();
+      service.unlock();
+      service.unlock();
+      this.assert(service.isLocked() === false, 'Extra unlock must stay clamped at zero references');
+    });
+
+    await this.runTest('Scroll Lock Service', 'Server platform lock/unlock never throws', () => {
+      const service = this.configureScrollLockTestBed();
+
+      try {
+        service.lock();
+        service.unlock();
+        service.lock();
+        service.unlock();
+        this.assert(true, 'Lock/unlock cycle completed on server platform');
+      } catch (err) {
+        this.assert(false, `Server platform lock/unlock threw: ${String(err)}`);
+      }
     });
 
     const endTime = performance.now();

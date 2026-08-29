@@ -6,6 +6,7 @@ import { GAMES_DATA } from '../../core/data/tokens';
 import { AuthService } from '../../core/auth/auth.service';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 
 @Component({
   selector: 'app-creator-studio',
@@ -14,7 +15,8 @@ import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.com
     CommonModule, 
     RouterLink, 
     LoadingSpinnerComponent, 
-    EmptyStateComponent
+    EmptyStateComponent,
+    ScrollLockDirective
   ],
   templateUrl: './creator-studio.component.html',
   styleUrls: ['./creator-studio.component.css']

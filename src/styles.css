@@ -280,11 +280,25 @@ html {
 *::-webkit-scrollbar-corner,
 ::-webkit-scrollbar-corner,
 *::-webkit-scrollbar-track,
-*::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
   background: transparent !important;
+}
+
+/* Fullscreen overlay scroll lock (applied by ScrollLockService) */
+html.app-scroll-locked,
+body.app-scroll-locked {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body.app-scroll-locked {
+  position: fixed;
+  inset-inline: 0;
+  width: 100%;
+  top: var(--app-scroll-lock-offset, 0px);
 }
 
 /* Pure Virtual Floating Overlay Scroll Indicator (Clamped cleanly within Content Runway) */

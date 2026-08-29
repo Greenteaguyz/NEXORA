@@ -8,6 +8,7 @@ import { AddCardMethodDto, AddKhqrMethodDto, PaymentMethod, Wallet, WalletTransa
 import { approxKhr, detectCardBrand, formatUsd, validateCardInput } from '../../core/data/payments/payment-logic';
 import { PaymentBrandMarkComponent } from '../../shared/ui/payment-brand-mark/payment-brand-mark.component';
 import { KhqrCardComponent } from '../../shared/ui/khqr-card/khqr-card.component';
+import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 
 @Component({
   selector: 'app-account-payment',
@@ -18,7 +19,8 @@ import { KhqrCardComponent } from '../../shared/ui/khqr-card/khqr-card.component
     FormsModule,
     RouterLink,
     PaymentBrandMarkComponent,
-    KhqrCardComponent
+    KhqrCardComponent,
+    ScrollLockDirective
   ],
   templateUrl: './account-payment.component.html',
   styleUrl: './account-payment.component.css'

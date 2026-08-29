@@ -199,8 +199,9 @@
         class="modal-backdrop" 
         role="dialog" 
         aria-modal="true" 
-        aria-labelledby="disable-creator-title" 
+        aria-labelledby="disable-creator-title"
         aria-describedby="disable-creator-desc"
+        appScrollLock
         (click)="cancelDisableCreator()"
         (keydown.escape)="cancelDisableCreator()">
         <div class="modal-card deactivation-card" (click)="$event.stopPropagation()">
@@ -292,7 +293,7 @@
 
     <!-- Reset Confirmation Modal -->
     @if (showResetConfirm) {
-      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Confirm Database Reset" (click)="cancelResetDatabase()">
+      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Confirm Database Reset" appScrollLock (click)="cancelResetDatabase()">
         <div class="modal-card reset-card" (click)="$event.stopPropagation()">
           <div class="modal-header">
             <h3 class="modal-title">Reset Demo Database?</h3>
@@ -317,7 +318,7 @@
 
     <!-- Edit Profile Modal -->
     @if (isEditing) {
-      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Edit Profile" (click)="cancelEditing()">
+      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Edit Profile" appScrollLock (click)="cancelEditing()">
         <div class="modal-card edit-profile-modal" (click)="$event.stopPropagation()">
           <div class="modal-header">
             <h3 class="modal-title">Edit Profile Information</h3>

@@ -155,7 +155,7 @@
 
   <!-- Soft Deletion Confirmation Reminder Modal -->
   @if (gameToRemove) {
-    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="removeModalTitle" (click)="closeRemoveModal()" (keydown.escape)="closeRemoveModal()">
+    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="removeModalTitle" appScrollLock (click)="closeRemoveModal()" (keydown.escape)="closeRemoveModal()">
       <div class="modal-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3 id="removeModalTitle" class="modal-title">Remove from Library?</h3>

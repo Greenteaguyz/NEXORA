@@ -157,7 +157,7 @@
 
   <!-- Soft Wishlist Removal Confirmation Reminder Modal -->
   @if (gameToRemove) {
-    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="wishlistModalTitle" (click)="closeRemoveModal()" (keydown.escape)="closeRemoveModal()">
+    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="wishlistModalTitle" appScrollLock (click)="closeRemoveModal()" (keydown.escape)="closeRemoveModal()">
       <div class="modal-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3 id="wishlistModalTitle" class="modal-title">Remove from Wishlist?</h3>

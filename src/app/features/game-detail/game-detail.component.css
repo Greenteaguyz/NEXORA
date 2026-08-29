@@ -798,6 +798,7 @@
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(8px);
+  padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
 }
 .lightbox-content { position: relative; max-width: 90vw; max-height: 85vh; }
 .lightbox-full-img { max-width: 90vw; max-height: 85vh; object-fit: contain; border-radius: var(--radius-sm, 4px); }
