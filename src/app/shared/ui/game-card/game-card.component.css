@@ -64,6 +64,10 @@
 /* ==========================================================================
    Wishlist Heart Button (Guaranteed Vibrant Rose on Wishlist)
    ========================================================================== */
+.btn-wishlist:active {
+  transform: scale(0.92);
+}
+
 .btn-wishlist {
   position: absolute;
   top: 8px;

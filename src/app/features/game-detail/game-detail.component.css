@@ -302,6 +302,10 @@
   margin-top: auto;
   padding-top: 8px;
 }
+.btn-steam-sidebar-wishlist:active {
+  transform: scale(0.97);
+}
+
 .btn-steam-sidebar-wishlist {
   width: 100%;
   display: inline-flex;
