@@ -3,10 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { PAYMENTS_DATA } from '../../core/data/tokens';
+import { formatUsd } from '../../core/data/payments/payment-logic';
 import { USERS_DATA, LIBRARY_DATA, WISHLIST_DATA, ORDERS_DATA, GAMES_DATA } from '../../core/data/tokens';
 import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
-import { LocalStoreService } from '../../core/persistence/local-store.service';
 
 @Component({
   selector: 'app-profile',
@@ -23,7 +24,7 @@ import { LocalStoreService } from '../../core/persistence/local-store.service';
 })
 export class ProfileComponent implements OnDestroy {
   auth = inject(AuthService);
-  private localStore = inject(LocalStoreService);
+  private paymentsData = inject(PAYMENTS_DATA);
   private usersData = inject(USERS_DATA);
   private libraryData = inject(LIBRARY_DATA);
   private wishlistData = inject(WISHLIST_DATA);
@@ -33,6 +34,7 @@ export class ProfileComponent implements OnDestroy {
   ownedCount = 0;
   wishlistCount = 0;
   ordersCount = 0;
+  walletBalance = '$0.00';
   loading = true;
 
   // Edit Profile State
@@ -61,9 +63,6 @@ export class ProfileComponent implements OnDestroy {
   private countdownTimerId: ReturnType<typeof setInterval> | null = null;
 
   // Reset DB State
-  showResetConfirm = false;
-  resetting = false;
-  resetSuccess = false;
 
   constructor() {
     effect(() => {
@@ -94,6 +93,10 @@ export class ProfileComponent implements OnDestroy {
     this.ordersData.getOrders(user.id).subscribe(ords => {
       this.ordersCount = ords ? ords.length : 0;
       this.loading = false;
+    });
+
+    this.paymentsData.getWalletSnapshot(user.id).subscribe(snap => {
+      this.walletBalance = formatUsd(snap.wallet?.balance ?? 0);
     });
   }
 
@@ -307,34 +310,6 @@ export class ProfileComponent implements OnDestroy {
     this.auth.switchDemoUser(email).subscribe(() => {
       this.loadStats();
       this.initEditForm();
-    });
-  }
-
-  confirmResetDatabase(): void {
-    this.showResetConfirm = true;
-  }
-
-  cancelResetDatabase(): void {
-    this.showResetConfirm = false;
-  }
-
-  executeResetDatabase(): void {
-    this.resetting = true;
-    this.localStore.clearAll();
-    this.gamesData.resetToDefaultSeed().subscribe({
-      next: () => {
-        this.resetting = false;
-        this.showResetConfirm = false;
-        this.resetSuccess = true;
-        this.loadStats();
-        setTimeout(() => {
-          this.resetSuccess = false;
-          window.location.reload();
-        }, 1200);
-      },
-      error: () => {
-        this.resetting = false;
-      }
     });
   }
 
