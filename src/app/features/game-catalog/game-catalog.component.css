@@ -924,8 +924,9 @@
   grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
   gap: var(--space-6);
   transition: opacity 0.15s ease;
-  content-visibility: auto;
-  contain-intrinsic-size: auto 340px;
+  /* NOTE: no content-visibility here — its paint containment would make this
+     grid the containing block for position:fixed overlays inside game cards
+     (e.g. the wishlist remove-confirm modal), trapping them off-center. */
 }
 
 /* ==========================================================================

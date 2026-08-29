@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 
 export interface ToastMessage {
   id: string;
-  type: 'download' | 'success' | 'info' | 'error';
+  type: 'download' | 'success' | 'info' | 'error' | 'warning';
   title: string;
   message: string;
   timestamp: number;
