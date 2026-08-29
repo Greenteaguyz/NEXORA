@@ -98,8 +98,8 @@ export class GenresComponent implements OnInit {
       color: '#66C0F4'
     },
     'Pixel Art': {
-      description: 'Handcrafted pixel aesthetic and nostalgic 16-bit beauty.',
-      color: '#14B8A6'
+      description: 'Pixel art, retro aesthetics, and 16-bit gameplay.',
+      color: '#A78BFA'
     },
     'Rogue-like': {
       description: 'Procedural runs, permadeath, and emergent synergies.',
@@ -154,7 +154,7 @@ export class GenresComponent implements OnInit {
       color: '#60A5FA'
     },
     'Indie': {
-      description: 'Passion-driven games from solo developers and small studios.',
+      description: 'Games from solo developers and small studios.',
       color: '#34D399'
     },
     'Hack and Slash': {
@@ -170,7 +170,7 @@ export class GenresComponent implements OnInit {
       color: '#FBBF24'
     },
     'Casual': {
-      description: 'Relaxing, low-stress experiences you can enjoy anytime.',
+      description: 'Relaxing, low-stress games you can play anytime.',
       color: '#F472B6'
     },
     'Mechs': {
@@ -192,7 +192,7 @@ export class GenresComponent implements OnInit {
   };
 
   private defaultMeta = {
-    description: 'Discover indie games in this category on NEXORA.',
+    description: 'Games tagged in this category on NEXORA.',
     color: '#66C0F4'
   };
 

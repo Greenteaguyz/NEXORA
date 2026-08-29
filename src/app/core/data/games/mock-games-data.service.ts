@@ -30,7 +30,7 @@ export class MockGamesDataService implements GamesDataService {
   private rebuildSearchIndex(): void {
     this.searchIndex.clear();
     for (const game of this.games) {
-      if (game.deletedAt) continue;
+      if (game.deletedAt || game.status === 'draft') continue;
       const tokens = new Set<string>();
       for (const t of this.tokenize(game.title)) tokens.add(t);
       for (const tag of game.tags || []) {
@@ -58,25 +58,23 @@ export class MockGamesDataService implements GamesDataService {
         const seed = seedMap.get(g.id);
         if (seed) {
           return {
-            ...g,
             ...seed,
-            createdAt: g.createdAt && g.createdAt.startsWith('2026') ? seed.createdAt : g.createdAt,
-            updatedAt: g.updatedAt && g.updatedAt.startsWith('2026') ? seed.updatedAt : g.updatedAt,
-            deletedAt: g.deletedAt
+            price: g.price !== undefined ? g.price : seed.price,
+            coverImageUrl: g.coverImageUrl || seed.coverImageUrl,
+            screenshotUrls: g.screenshotUrls || seed.screenshotUrls,
+            tags: g.tags || seed.tags,
+            description: g.description || seed.description,
+            title: g.title || seed.title,
+            status: g.status || seed.status || 'published',
+            deletedAt: g.deletedAt,
+            updatedAt: g.updatedAt || seed.updatedAt
           };
         }
         return g;
       });
-
-      // Ensure any newly added seed games are present
-      for (const seed of SEED_GAMES) {
-        if (!this.games.some(g => g.id === seed.id)) {
-          this.games.push({ ...seed });
-        }
-      }
       this.localStore.setItem(this.STORAGE_KEY, this.games);
     } else {
-      this.games = [...SEED_GAMES];
+      this.games = SEED_GAMES.map(g => ({ ...g, status: g.status || 'published' }));
       this.localStore.setItem(this.STORAGE_KEY, this.games);
     }
     this.rebuildSearchIndex();
@@ -116,7 +114,7 @@ export class MockGamesDataService implements GamesDataService {
       return of(this.queryCache.get(cacheKey)!);
     }
 
-    let result = this.games.filter(g => !g.deletedAt);
+    let result = this.games.filter(g => !g.deletedAt && g.status !== 'draft');
 
     if (filters?.tag) {
       const tagLower = filters.tag.toLowerCase();
@@ -156,6 +154,7 @@ export class MockGamesDataService implements GamesDataService {
       ...dto,
       id: 'game_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 5),
       ownerId,
+      status: dto.status || 'published',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
@@ -187,15 +186,56 @@ export class MockGamesDataService implements GamesDataService {
       return throwError(() => new Error('Simulated API delete failure (?simulateErrors=true)')).pipe(delay(100));
     }
     const index = this.games.findIndex(g => g.id === id);
-    if (index !== -1) {
-      this.games[index] = {
-        ...this.games[index],
-        deletedAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      this.persist();
+    if (index === -1) {
+      return throwError(() => new Error(`Game with id ${id} not found`)).pipe(delay(80));
     }
+    this.games[index] = {
+      ...this.games[index],
+      deletedAt: this.games[index].deletedAt ?? new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.persist();
     return of(void 0).pipe(delay(80));
+  }
+
+  permanentlyDeleteGame(id: string): Observable<void> {
+    if (this.shouldSimulateError()) {
+      return throwError(() => new Error('Simulated API delete failure (?simulateErrors=true)')).pipe(delay(100));
+    }
+    const index = this.games.findIndex(g => g.id === id);
+    if (index === -1) {
+      return throwError(() => new Error(`Game with id ${id} not found`)).pipe(delay(80));
+    }
+    this.games.splice(index, 1);
+    this.persist();
+    return of(void 0).pipe(delay(80));
+  }
+
+  emptyRecycleBin(ownerId: string): Observable<void> {
+    if (this.shouldSimulateError()) {
+      return throwError(() => new Error('Simulated API empty bin failure (?simulateErrors=true)')).pipe(delay(100));
+    }
+    this.games = this.games.filter(g => !(g.ownerId === ownerId && !!g.deletedAt));
+    this.persist();
+    return of(void 0).pipe(delay(80));
+  }
+
+  restoreGame(id: string): Observable<Game> {
+    if (this.shouldSimulateError()) {
+      return throwError(() => new Error('Simulated API restore failure (?simulateErrors=true)')).pipe(delay(100));
+    }
+    const index = this.games.findIndex(g => g.id === id);
+    if (index === -1) {
+      return throwError(() => new Error(`Game with id ${id} not found`)).pipe(delay(80));
+    }
+    const updated: Game = {
+      ...this.games[index],
+      updatedAt: new Date().toISOString()
+    };
+    delete updated.deletedAt;
+    this.games[index] = updated;
+    this.persist();
+    return of(updated).pipe(delay(80));
   }
 
   resetToDefaultSeed(): Observable<void> {

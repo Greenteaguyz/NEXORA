@@ -30,18 +30,20 @@ import { DownloadTrayComponent } from './shared/ui/download-tray/download-tray.c
       align-items: center;
       justify-content: center;
       padding: 0;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border-card);
+      background: rgba(27, 40, 56, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(102, 192, 244, 0.2);
       border-radius: var(--radius-lg);
       color: var(--text-primary);
       cursor: pointer;
-      box-shadow: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       transition: border-color 0.2s ease, background-color 0.2s ease;
     }
 
     .btn-back-to-top:hover {
       border-color: var(--accent-500);
-      background-color: rgba(102, 192, 244, 0.12);
+      background-color: rgba(102, 192, 244, 0.25);
       color: var(--accent-400);
     }
 

@@ -13,7 +13,7 @@
   <header class="payment-header">
     <div class="header-titles">
       <h1 class="page-title">Payment & Wallet</h1>
-      <p class="page-subtitle">Manage your saved credit cards, Bakong KHQR accounts, store wallet balance, and promotional gift cards.</p>
+      <p class="page-subtitle">Manage saved payment cards, Bakong KHQR accounts, wallet funds, and gift cards.</p>
     </div>
   </header>
 
@@ -76,7 +76,7 @@
               <line x1="12" y1="5" x2="12" y2="19"/>
               <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            <span>Top-Up Balance</span>
+            <span>Add Funds</span>
           </button>
         </div>
       </section>
@@ -96,7 +96,7 @@
           <h2 class="section-title">Redeem Gift Card</h2>
         </div>
 
-        <p class="section-desc">Enter your 16-character NEXORA voucher or promotional code to add store credit instantly.</p>
+        <p class="section-desc">Enter a gift code or voucher to add funds to your wallet.</p>
 
         <form (ngSubmit)="submitRedeemGiftCode()" class="gift-form">
           <div class="gift-input-wrap">
@@ -208,8 +208,8 @@
               </svg>
             </div>
             <h3>No payment methods linked</h3>
-            <p>Add a credit card or link your Bakong KHQR account to easily top up your wallet and make purchases.</p>
-            <button type="button" class="btn-primary-compact" (click)="openAddModal()">Add Your First Method</button>
+            <p>Save a credit card or link Bakong KHQR to add funds and check out.</p>
+            <button type="button" class="btn-primary-compact" (click)="openAddModal()">Add Method</button>
           </div>
         } @else {
           <div class="methods-grid">
@@ -237,7 +237,7 @@
                     </div>
                     <div class="method-meta-row">
                       <span class="meta-holder">{{ method.holder }}</span>
-                      <span class="meta-expiry">Exp: {{ method.expiry }}</span>
+                      <span class="meta-expiry">Expires {{ method.expiry }}</span>
                     </div>
                   } @else {
                     <div class="method-account-number">
@@ -245,7 +245,7 @@
                       <strong class="khqr-handle">{{ method.handle }}</strong>
                     </div>
                     <div class="method-meta-row">
-                      <span class="meta-holder">Bakong Interbank Link</span>
+                      <span class="meta-holder">Bakong account</span>
                       <span class="meta-expiry">Active</span>
                     </div>
                   }
@@ -254,7 +254,7 @@
                 <div class="method-card-actions">
                   @if (!method.isDefault) {
                     <button type="button" class="btn-set-default" (click)="setDefault(method.id)">
-                      Set as Default
+                      Make Default
                     </button>
                   }
                   <button 
@@ -445,7 +445,7 @@
                 [(ngModel)]="khqrHandle" 
                 name="khqrHandle"
                 required>
-              <span class="input-hint">Simulates official Bakong cross-banking authorization.</span>
+              <span class="input-hint">Links your Bakong KHQR handle.</span>
             </div>
 
             <div class="modal-actions">
@@ -469,7 +469,7 @@
     <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="topup-modal-title" (click)="closeTopUpModal()">
       <div class="modal-card top-up-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3 id="topup-modal-title" class="modal-title">Top-Up Store Wallet</h3>
+          <h3 id="topup-modal-title" class="modal-title">Add Wallet Funds</h3>
           <button type="button" class="btn-modal-close" (click)="closeTopUpModal()" aria-label="Close modal">&times;</button>
         </div>
 
@@ -522,7 +522,7 @@
           <div class="modal-actions">
             <button type="button" class="btn-cancel" (click)="closeTopUpModal()" [disabled]="topUpProcessing()">Cancel</button>
             <button type="submit" class="btn-submit" [disabled]="topUpProcessing() || topUpAmount <= 0">
-              {{ topUpProcessing() ? 'Charging...' : 'Confirm Deposit' }}
+              {{ topUpProcessing() ? 'Processing...' : 'Add Funds' }}
             </button>
           </div>
         </form>

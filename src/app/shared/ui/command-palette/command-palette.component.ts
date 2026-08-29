@@ -81,7 +81,7 @@ export class CommandPaletteComponent implements OnInit {
       id: `game-${g.id}`,
       title: g.title,
       category: 'Games',
-      subtitle: `${(g.tags && g.tags.slice(0, 2).join(', ')) || 'Game'} • ${g.price === 0 ? 'FREE' : '$' + g.price.toFixed(2)}`,
+      subtitle: (g.tags && g.tags.slice(0, 2).join(', ')) || 'Game',
       route: `/games/${g.id}`,
       price: g.price,
       tags: g.tags,

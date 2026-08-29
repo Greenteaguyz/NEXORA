@@ -78,3 +78,40 @@ Context for the next AI session. All work below is COMMITTED and PUSHED to `orig
 - `npm run test:e2e` — Playwright journeys (exists; not run this session)
 - Deploy note: Vercel caching headers active on next deploy; verify hashed assets return
   `cache-control: immutable`.
+
+
+## ADDENDUM — post-push batch (pending commit at handoff time; commits created after this doc was written)
+
+The following was completed AFTER the initial push and committed as a follow-up batch:
+
+1. **Card input UX**: `CardNumberDirective` (`groupCardNumber`, 4-digit grouping, caret-safe) +
+   `CvvDirective` (numeric, cap 4) wired on account-payment with inputmode/autocomplete;
+   validation wording "Enter a valid 16-digit card number". Pure helper `groupCardNumber` in
+   payment-logic (battery-tested).
+2. **Owned badge**: catalog cards show "Owned" (emerald `.price-badge.owned`) instead of price
+   via per-card `LIBRARY_DATA.isOwned`. Detail page already had "IN LIBRARY".
+3. **Toast queue + mis-click prevention**: cap 3 (oldest evicted via `leaving` state), identical-
+   toast dedupe with timer reset, 180ms exit transition (`.toast-leaving`), whole-card dismissal
+   removed (44px close button only), 250ms spawn grace on close/undo, hover-lift removed.
+4. **Profile cleanup**: demo System Reset bar + modal + TS removed (intentional; core reset
+   methods still exist in services), avatar glow-ring removed (anti-slop), wallet stat card
+   shows live `formatUsd(balance)` with "Wallet Balance" label, missing `.emerald` tile style
+   added, single-line stat labels, gap tokenized.
+5. **Drag restyle** (game-form): overlay now light accent tint `rgba(102,192,244,0.10)` (was
+   82% black + blur), hint text in a `.drop-hint-pill` dark pill, drag-active state is
+   color-only (accent border + `box-shadow: 0 0 0 3px rgba(102,192,244,0.15)` — the EXACT
+   Support focus recipe; outline approach removed; overflow:hidden does NOT clip own
+   box-shadow), overlay fade 0.2s ease.
+6. **Studio actions alignment + compaction**: ACTIONS column left-aligned (was text-right —
+   caused Edit x-position to vary per row), `.btn-action` padding 5px 12px, cluster gap 6px.
+
+### Root-cause lesson (important)
+User-reported "jank/instant transitions" traced to the environment: `prefers-reduced-motion:
+reduce` is ON in the user's browser/OS, and styles.css' global reduced-motion block forces all
+transitions to 0.01ms. The app is CORRECT to honor it. Before hunting CSS for "not smooth"
+reports, check `matchMedia('(prefers-reduced-motion: reduce)')` first. User was advised to
+enable Windows Animation effects to see shipped animations.
+
+### Battery growth
+23/23 suites: added Card Number Grouping + Toast Queue (cap/dedupe/leaving) suites; toast
+tests updated for the leaving lifecycle (await ~250ms post-dismiss).

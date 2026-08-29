@@ -11,10 +11,10 @@
 
     <div class="form-title-wrap">
       <h1 class="form-title">
-        {{ isEditMode ? 'Edit Game Listing' : 'Publish New Game' }}
+        {{ isEditMode ? 'Edit Game Listing' : 'Add New Game' }}
       </h1>
       <p class="form-subtitle">
-        {{ isEditMode ? 'Update your store showcase, adjust pricing, or refine game tags.' : 'Fill out your game metadata, configure DRM-free pricing, and publish directly to the NEXORA catalog.' }}
+        {{ isEditMode ? 'Update store details, pricing, and tags.' : 'Enter game details, set pricing, and publish to the store.' }}
       </p>
     </div>
   </header>
@@ -61,7 +61,7 @@
 
           <div class="form-field">
             <div class="field-label-row">
-              <label for="description" class="field-label">Game Description / Story <span class="req">*</span></label>
+              <label for="description" class="field-label">Game Description <span class="req">*</span></label>
               <span class="char-counter" [class.warn]="descCharCount() > 1800">{{ descCharCount() }}/2000</span>
             </div>
             <textarea 
@@ -69,7 +69,7 @@
               formControlName="description" 
               rows="4" 
               maxlength="2000"
-              placeholder="Describe gameplay mechanics, world story, and standalone features..."
+              placeholder="Describe the gameplay, features, and system requirements..."
               class="form-textarea"
               [class.field-error]="gameForm.get('description')?.invalid && gameForm.get('description')?.touched"></textarea>
             @if (gameForm.get('description')?.invalid && gameForm.get('description')?.touched) {
@@ -82,7 +82,23 @@
         <section class="form-section">
           <h2 class="section-title">2. Pricing & Distribution</h2>
           <div class="form-field">
-            <label for="price" class="field-label">Unit Price ($ USD) <span class="req">*</span></label>
+            <div class="field-label-row">
+              <label for="price" class="field-label">Price (USD) <span class="req">*</span></label>
+              <!-- 1-Click Quick Price Tiers -->
+              <div class="price-tiers-pills" role="group" aria-label="Quick price tiers">
+                <span class="tiers-prefix">Quick Tiers:</span>
+                @for (tier of pricePresets; track tier) {
+                  <button 
+                    type="button" 
+                    class="btn-price-tier" 
+                    [class.active]="previewPrice() === tier"
+                    (click)="setPriceTier(tier)">
+                    {{ tier === 0 ? 'Free' : '$' + tier.toFixed(2) }}
+                  </button>
+                }
+              </div>
+            </div>
+
             <div class="price-input-wrapper">
               <span class="currency-prefix">$</span>
               <input 
@@ -95,23 +111,24 @@
                 [class.field-error]="gameForm.get('price')?.invalid && gameForm.get('price')?.touched">
             </div>
             
-            <!-- Dynamic Revenue Share Calculator (AC-1023) -->
-            <div class="revenue-split-card">
-              @if (previewPrice() > 0) {
-                <div class="split-item creator-split">
-                  <span class="split-label">Your Net Earnings (90%):</span>
-                  <span class="split-val">${{ creatorEarnings().toFixed(2) }} / unit</span>
-                </div>
-                <div class="split-divider"></div>
-                <div class="split-item platform-split">
-                  <span class="split-label">Platform Maintenance (10%):</span>
-                  <span class="split-val">${{ platformFee().toFixed(2) }}</span>
-                </div>
+            <!-- Streamlined Payout Helper (Replaces bulky card & static progress bar) -->
+            <div class="pricing-payout-hint">
+              @if (!isFreeGame()) {
+                <span class="payout-hint-text">
+                  <svg class="svg-icon-xs payout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  <span>Est. creator payout:</span>
+                  <strong class="payout-amount">${{ creatorEarnings().toFixed(2) }}</strong>
+                  <span class="payout-split-note">(90% net)</span>
+                </span>
               } @else {
-                <div class="split-item free-split">
-                  <span class="split-label">Free-to-Play Distribution:</span>
-                  <span class="split-val free-highlight">100% Free Community Download</span>
-                </div>
+                <span class="payout-hint-text free">
+                  <svg class="svg-icon-xs payout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  <span>Free to play (0% platform fee)</span>
+                </span>
               }
             </div>
 
@@ -130,84 +147,404 @@
           </div>
         </section>
 
-        <!-- Artwork & Showcase Section -->
+        <!-- Artwork & Showcase Section: Neat 2-Tier Media Studio -->
         <section class="form-section">
-          <h2 class="section-title">4. Cover Artwork & Visuals</h2>
-          
-          <!-- Preset Selector -->
-          <div class="preset-selector-box">
-            <span class="preset-label">Quick-select artwork theme preset:</span>
-            <div class="preset-grid">
-              @for (preset of artworkPresets; track preset.name) {
-                <button 
-                  type="button" 
-                  class="preset-card-btn" 
-                  [class.selected]="gameForm.get('coverImageUrl')?.value === preset.coverUrl"
-                  (click)="applyPreset(preset)">
-                  <img [src]="preset.coverUrl" [alt]="preset.name" class="preset-thumb" (error)="onImageError($event)">
-                  <span class="preset-name">{{ preset.name }}</span>
-                </button>
+          <div class="media-section-header">
+            <div>
+              <h2 class="section-title">4. Media & Screenshots</h2>
+              <p class="section-subtitle">Provide 1 store cover and 4 gameplay screenshots. Drag & drop images onto any box, click to browse, or use presets.</p>
+            </div>
+            
+            <!-- Quick Preset Pills -->
+            <div class="preset-pills-bar">
+              <span class="preset-pill-label">Theme Presets:</span>
+              <div class="preset-pill-group">
+                @for (preset of artworkPresets; track preset.name) {
+                  <button 
+                    type="button" 
+                    class="btn-theme-pill" 
+                    [class.selected]="gameForm.get('coverImageUrl')?.value === preset.coverUrl"
+                    (click)="applyPreset(preset)">
+                    <img [src]="preset.coverUrl" [alt]="preset.name" class="preset-pill-thumb" (error)="onImageError($event)">
+                    <span>{{ preset.name.split(' ')[0] }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+
+          <!-- Tier 1: Storefront Cover Artwork (Full-Width 16:9 Hero Banner) -->
+          <div class="media-cover-hero">
+            <div class="bento-card hero-card">
+              <div class="bento-card-header">
+                <span class="bento-slot-title">Storefront Cover Artwork <span class="req">*</span></span>
+                <span class="slot-badge-cyan">Storefront Face (16:9)</span>
+              </div>
+
+              <div 
+                class="bento-media-frame hero-frame"
+                [class.drag-active]="activeDragSlot() === 'cover'"
+                (dragenter)="onDragEnter($event, 'cover')"
+                (dragover)="onDragOver($event, 'cover')"
+                (dragleave)="onDragLeave($event, 'cover')"
+                (drop)="onDrop($event, 'cover')"
+                (click)="coverFileInput.click()">
+                <input #coverFileInput type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden-file-input" (change)="handleFileUpload($event, 'cover')">
+                
+                @if (slotUploading()['cover']) {
+                  <div class="slot-uploading-overlay">
+                    <span class="spinner-sm"></span>
+                    <span>Compressing...</span>
+                  </div>
+                } @else if (gameForm.get('coverImageUrl')?.value) {
+                  <img [src]="gameForm.get('coverImageUrl')?.value" alt="Cover preview" class="bento-img" (error)="onImageError($event)">
+                  <button type="button" class="btn-clear-slot" (click)="clearSlot('cover'); $event.stopPropagation()" title="Clear cover image">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                  </button>
+                  <div class="bento-overlay-bar">
+                    <button type="button" class="btn-overlay-pill" (click)="coverFileInput.click(); $event.stopPropagation()">
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <span>Replace</span>
+                    </button>
+                    <button type="button" class="btn-overlay-pill" (click)="toggleUrlInput('cover'); $event.stopPropagation()">
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg>
+                      <span>URL</span>
+                    </button>
+                  </div>
+                } @else {
+                  <div class="bento-empty-prompt">
+                    <svg class="svg-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <span class="prompt-main">Drop cover artwork or click to browse</span>
+                    <span class="prompt-sub">16:9 • 1920×1080 recommended • PNG, JPEG, WebP</span>
+                  </div>
+                }
+
+                <div class="drag-drop-overlay" [class.visible]="activeDragSlot() === 'cover'">
+                      <div class="drop-hint-pill">
+                        <svg class="svg-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m-5-5 5 5 5-5"/></svg>
+                    <span>Drop image to upload</span>
+                      </div>
+                  </div>
+              </div>
+
+              @if (showUrlInput()['cover']) {
+                <div class="url-input-wrap">
+                  <input type="text" formControlName="coverImageUrl" class="form-input form-input-sm" placeholder="Paste image URL...">
+                </div>
+              }
+              @if (slotError()['cover']) {
+                <span class="field-error-msg">{{ slotError()['cover'] }}</span>
+              }
+              @if (gameForm.get('coverImageUrl')?.invalid && gameForm.get('coverImageUrl')?.touched) {
+                <span class="field-error-msg">Cover image is required.</span>
               }
             </div>
           </div>
 
-          <div class="form-field">
-            <label for="coverImageUrl" class="field-label">Cover Image Asset URL <span class="req">*</span></label>
-            <div class="cover-input-and-preview">
-              <input 
-                id="coverImageUrl" 
-                type="text" 
-                formControlName="coverImageUrl" 
-                class="form-input"
-                placeholder="https://... or assets/images/..."
-                [class.field-error]="gameForm.get('coverImageUrl')?.invalid && gameForm.get('coverImageUrl')?.touched">
-              
-              @if (gameForm.get('coverImageUrl')?.value) {
-                <div class="cover-live-preview">
-                  <img 
-                    [src]="gameForm.get('coverImageUrl')?.value" 
-                    alt="Cover artwork preview" 
-                    class="live-cover-img"
-                    (error)="onImageError($event)">
-                  <span class="cover-badge-pill">Preview</span>
+          <!-- Tier 2: Gameplay Screenshots (Balanced 2x2 Grid with Clean 1-Word Titles) -->
+          <div class="media-screenshots-header">
+            <span class="screenshots-section-label">Gameplay Screenshots (4 Slots)</span>
+          </div>
+
+          <div class="bento-screenshots-grid">
+            <!-- Slot 1: 1. Gameplay -->
+            <div class="bento-card screenshot-slot">
+              <div class="bento-card-header">
+                <span class="bento-slot-title">1. Gameplay <span class="req">*</span></span>
+              </div>
+
+              <div 
+                class="bento-media-frame" 
+                [class.drag-active]="activeDragSlot() === 'ss1'"
+                (dragenter)="onDragEnter($event, 'ss1')"
+                (dragover)="onDragOver($event, 'ss1')"
+                (dragleave)="onDragLeave($event, 'ss1')"
+                (drop)="onDrop($event, 'ss1')"
+                (click)="ss1Input.click()">
+                <input #ss1Input type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden-file-input" (change)="handleFileUpload($event, 'ss1')">
+                
+                @if (slotUploading()['ss1']) {
+                  <div class="slot-uploading-overlay">
+                    <span class="spinner-sm"></span>
+                    <span>Compressing...</span>
+                  </div>
+                } @else if (gameForm.get('screenshot1')?.value) {
+                  <img [src]="gameForm.get('screenshot1')?.value" alt="Screenshot 1 preview" class="bento-img" (error)="onImageError($event)">
+                  <button type="button" class="btn-clear-slot" (click)="clearSlot('ss1'); $event.stopPropagation()" title="Clear screenshot 1">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                  <div class="bento-overlay-bar">
+                    <button type="button" class="btn-overlay-pill" (click)="ss1Input.click(); $event.stopPropagation()">
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <span>Replace</span>
+                    </button>
+                    <button type="button" class="btn-overlay-pill" (click)="toggleUrlInput('ss1'); $event.stopPropagation()">
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg>
+                      <span>URL</span>
+                    </button>
+                  </div>
+                } @else {
+                  <div class="bento-empty-prompt compact">
+                    <svg class="svg-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span class="prompt-main">Drop image or click to browse</span>
+                  </div>
+                }
+
+                <div class="drag-drop-overlay" [class.visible]="activeDragSlot() === 'ss1'">
+                      <div class="drop-hint-pill">
+                        <svg class="svg-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m-5-5 5 5 5-5"/></svg>
+                    <span>Drop image to upload</span>
+                      </div>
+                  </div>
+              </div>
+
+              @if (showUrlInput()['ss1']) {
+                <div class="url-input-wrap">
+                  <input type="text" formControlName="screenshot1" class="form-input form-input-sm" placeholder="Paste URL...">
                 </div>
               }
+              @if (slotError()['ss1']) {
+                <span class="field-error-msg">{{ slotError()['ss1'] }}</span>
+              }
             </div>
-            @if (gameForm.get('coverImageUrl')?.invalid && gameForm.get('coverImageUrl')?.touched) {
-              <span class="field-error-msg">Cover image URL is required.</span>
-            }
+
+            <!-- Slot 2: 2. World -->
+            <div class="bento-card screenshot-slot">
+              <div class="bento-card-header">
+                <span class="bento-slot-title">2. World</span>
+              </div>
+
+              <div 
+                class="bento-media-frame" 
+                [class.drag-active]="activeDragSlot() === 'ss2'"
+                (dragenter)="onDragEnter($event, 'ss2')"
+                (dragover)="onDragOver($event, 'ss2')"
+                (dragleave)="onDragLeave($event, 'ss2')"
+                (drop)="onDrop($event, 'ss2')"
+                (click)="ss2Input.click()">
+                <input #ss2Input type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden-file-input" (change)="handleFileUpload($event, 'ss2')">
+                
+                @if (slotUploading()['ss2']) {
+                  <div class="slot-uploading-overlay">
+                    <span class="spinner-sm"></span>
+                    <span>Compressing...</span>
+                  </div>
+                } @else if (gameForm.get('screenshot2')?.value) {
+                  <img [src]="gameForm.get('screenshot2')?.value" alt="Screenshot 2 preview" class="bento-img" (error)="onImageError($event)">
+                  <button type="button" class="btn-clear-slot" (click)="clearSlot('ss2'); $event.stopPropagation()" title="Clear screenshot 2">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                  <div class="bento-overlay-bar">
+                    <button type="button" class="btn-overlay-pill" (click)="ss2Input.click(); $event.stopPropagation()">
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <span>Replace</span>
+                    </button>
+                    <button type="button" class="btn-overlay-pill" (click)="toggleUrlInput('ss2'); $event.stopPropagation()">
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg>
+                      <span>URL</span>
+                    </button>
+                  </div>
+                } @else {
+                  <div class="bento-empty-prompt compact">
+                    <svg class="svg-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span class="prompt-main">Drop image or click to browse</span>
+                  </div>
+                }
+
+                <div class="drag-drop-overlay" [class.visible]="activeDragSlot() === 'ss2'">
+                      <div class="drop-hint-pill">
+                        <svg class="svg-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m-5-5 5 5 5-5"/></svg>
+                    <span>Drop image to upload</span>
+                      </div>
+                  </div>
+              </div>
+
+              @if (showUrlInput()['ss2']) {
+                <div class="url-input-wrap">
+                  <input type="text" formControlName="screenshot2" class="form-input form-input-sm" placeholder="Paste URL...">
+                </div>
+              }
+              @if (slotError()['ss2']) {
+                <span class="field-error-msg">{{ slotError()['ss2'] }}</span>
+              }
+            </div>
+
+            <!-- Slot 3: 3. Mechanics -->
+            <div class="bento-card screenshot-slot">
+              <div class="bento-card-header">
+                <span class="bento-slot-title">3. Mechanics</span>
+              </div>
+
+              <div 
+                class="bento-media-frame" 
+                [class.drag-active]="activeDragSlot() === 'ss3'"
+                (dragenter)="onDragEnter($event, 'ss3')"
+                (dragover)="onDragOver($event, 'ss3')"
+                (dragleave)="onDragLeave($event, 'ss3')"
+                (drop)="onDrop($event, 'ss3')"
+                (click)="ss3Input.click()">
+                <input #ss3Input type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden-file-input" (change)="handleFileUpload($event, 'ss3')">
+                
+                @if (slotUploading()['ss3']) {
+                  <div class="slot-uploading-overlay">
+                    <span class="spinner-sm"></span>
+                    <span>Compressing...</span>
+                  </div>
+                } @else if (gameForm.get('screenshot3')?.value) {
+                  <img [src]="gameForm.get('screenshot3')?.value" alt="Screenshot 3 preview" class="bento-img" (error)="onImageError($event)">
+                  <button type="button" class="btn-clear-slot" (click)="clearSlot('ss3'); $event.stopPropagation()" title="Clear screenshot 3">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                  <div class="bento-overlay-bar">
+                    <button type="button" class="btn-overlay-pill" (click)="ss3Input.click(); $event.stopPropagation()">
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <span>Replace</span>
+                    </button>
+                    <button type="button" class="btn-overlay-pill" (click)="toggleUrlInput('ss3'); $event.stopPropagation()">
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg>
+                      <span>URL</span>
+                    </button>
+                  </div>
+                } @else {
+                  <div class="bento-empty-prompt compact">
+                    <svg class="svg-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span class="prompt-main">Drop image or click to browse</span>
+                  </div>
+                }
+
+                <div class="drag-drop-overlay" [class.visible]="activeDragSlot() === 'ss3'">
+                      <div class="drop-hint-pill">
+                        <svg class="svg-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m-5-5 5 5 5-5"/></svg>
+                    <span>Drop image to upload</span>
+                      </div>
+                  </div>
+              </div>
+
+              @if (showUrlInput()['ss3']) {
+                <div class="url-input-wrap">
+                  <input type="text" formControlName="screenshot3" class="form-input form-input-sm" placeholder="Paste URL...">
+                </div>
+              }
+              @if (slotError()['ss3']) {
+                <span class="field-error-msg">{{ slotError()['ss3'] }}</span>
+              }
+            </div>
+
+            <!-- Slot 4: 4. Action -->
+            <div class="bento-card screenshot-slot">
+              <div class="bento-card-header">
+                <span class="bento-slot-title">4. Action</span>
+              </div>
+
+              <div 
+                class="bento-media-frame" 
+                [class.drag-active]="activeDragSlot() === 'ss4'"
+                (dragenter)="onDragEnter($event, 'ss4')"
+                (dragover)="onDragOver($event, 'ss4')"
+                (dragleave)="onDragLeave($event, 'ss4')"
+                (drop)="onDrop($event, 'ss4')"
+                (click)="ss4Input.click()">
+                <input #ss4Input type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden-file-input" (change)="handleFileUpload($event, 'ss4')">
+                
+                @if (slotUploading()['ss4']) {
+                  <div class="slot-uploading-overlay">
+                    <span class="spinner-sm"></span>
+                    <span>Compressing...</span>
+                  </div>
+                } @else if (gameForm.get('screenshot4')?.value) {
+                  <img [src]="gameForm.get('screenshot4')?.value" alt="Screenshot 4 preview" class="bento-img" (error)="onImageError($event)">
+                  <button type="button" class="btn-clear-slot" (click)="clearSlot('ss4'); $event.stopPropagation()" title="Clear screenshot 4">
+                    <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                  <div class="bento-overlay-bar">
+                    <button type="button" class="btn-overlay-pill" (click)="ss4Input.click(); $event.stopPropagation()">
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                      <span>Replace</span>
+                    </button>
+                    <button type="button" class="btn-overlay-pill" (click)="toggleUrlInput('ss4'); $event.stopPropagation()">
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/></svg>
+                      <span>URL</span>
+                    </button>
+                  </div>
+                } @else {
+                  <div class="bento-empty-prompt compact">
+                    <svg class="svg-icon-md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    <span class="prompt-main">Drop image or click to browse</span>
+                  </div>
+                }
+
+                <div class="drag-drop-overlay" [class.visible]="activeDragSlot() === 'ss4'">
+                      <div class="drop-hint-pill">
+                        <svg class="svg-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m-5-5 5 5 5-5"/></svg>
+                    <span>Drop image to upload</span>
+                      </div>
+                  </div>
+              </div>
+
+              @if (showUrlInput()['ss4']) {
+                <div class="url-input-wrap">
+                  <input type="text" formControlName="screenshot4" class="form-input form-input-sm" placeholder="Paste URL...">
+                </div>
+              }
+              @if (slotError()['ss4']) {
+                <span class="field-error-msg">{{ slotError()['ss4'] }}</span>
+              }
+            </div>
           </div>
         </section>
 
-        <!-- Submit & Actions -->
-        <div class="form-actions-footer">
-          <a routerLink="/studio" class="btn-cancel">Cancel</a>
-          <button type="submit" class="btn-submit" [disabled]="submitting || gameForm.invalid">
-            @if (submitting) {
-              <span class="spinner-sm"></span>
-              <span>Saving Listing...</span>
-            } @else {
-              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="20 6 9 17 4 12"/>
+        <!-- Sticky Submit & Actions Footer -->
+        <div class="form-actions-footer sticky">
+          <div class="footer-status-pill" [class.dirty]="hasUnsavedChanges()">
+            <span class="status-pulse-dot" [class.active]="hasUnsavedChanges()"></span>
+            <span>{{ hasUnsavedChanges() ? 'Unsaved changes' : 'Ready to save' }}</span>
+          </div>
+
+          <div class="footer-btn-group">
+            <a routerLink="/studio" class="btn-cancel">Cancel</a>
+            <button 
+              type="button" 
+              class="btn-save-draft" 
+              (click)="onSaveDraft()" 
+              [disabled]="submitting || !gameForm.get('title')?.value">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                <polyline points="17 21 17 13 7 13 7 21"/>
+                <polyline points="7 3 7 8 15 8"/>
               </svg>
-              <span>{{ isEditMode ? 'Update Listing' : 'Publish Game Listing' }}</span>
-            }
-          </button>
+              <span>Save as Draft</span>
+            </button>
+            <button type="submit" class="btn-submit" [disabled]="submitting || gameForm.invalid">
+              @if (submitting) {
+                <span class="spinner-sm"></span>
+                <span>Saving...</span>
+              } @else {
+                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                <span>{{ isEditMode ? 'Save Changes' : 'Publish Game' }}</span>
+              }
+            </button>
+          </div>
         </div>
       </form>
 
-      <!-- Right: Live Storefront Card Preview -->
-      <aside class="form-preview-aside" aria-label="Live Storefront Preview">
+      <!-- Right: Live Storefront Card Preview & Readiness Inspector -->
+      <aside class="form-preview-aside" aria-label="Live Storefront Preview & Inspector">
         <div class="preview-sticky-wrap">
           <div class="preview-header-tag">
             <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
               <circle cx="12" cy="12" r="3"/>
             </svg>
-            <span>Live Catalog Preview</span>
+            <span>Storefront Preview</span>
           </div>
 
-          <!-- Card Mockup (AC-1021 / AC-1038) -->
+          <!-- Card Mockup -->
           <div class="preview-game-card">
             <div class="preview-cover-wrap">
               <img 
@@ -228,9 +565,51 @@
                 }
               </div>
               <div class="preview-footer">
-                <span class="preview-distribution">100% DRM-Free Standalone</span>
+                <span class="preview-distribution">Standalone Installer</span>
               </div>
             </div>
+          </div>
+
+          <!-- Live Publish Readiness Checklist Card -->
+          <div class="readiness-inspector-card">
+            <div class="readiness-header">
+              <div class="readiness-title-row">
+                <svg class="svg-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 11l3 3L22 4"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                <span class="readiness-title">Publish Readiness</span>
+              </div>
+              <span class="readiness-badge" [class.ready]="isPublishReady()">
+                {{ readinessPercent() }}%
+              </span>
+            </div>
+
+            <!-- Progress Track -->
+            <div class="readiness-progress-track">
+              <div class="readiness-progress-fill" [style.width]="readinessPercent() + '%'" [class.ready]="isPublishReady()"></div>
+            </div>
+
+            <!-- Checklist Items List -->
+            <ul class="readiness-checklist">
+              @for (item of readinessItems(); track item.id) {
+                <li class="readiness-item" [class.complete]="item.complete">
+                  <span class="check-icon-wrap" [class.done]="item.complete">
+                    @if (item.complete) {
+                      <svg class="svg-icon-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    } @else {
+                      <span class="unmet-dot"></span>
+                    }
+                  </span>
+                  <div class="readiness-item-info">
+                    <span class="item-label">{{ item.label }}</span>
+                    <span class="item-detail">{{ item.detail }}</span>
+                  </div>
+                </li>
+              }
+            </ul>
           </div>
         </div>
       </aside>

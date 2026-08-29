@@ -6,17 +6,17 @@
         <span>NEXORA</span>
       </a>
       <p class="brand-desc">
-        Your home for indie and cyberpunk adventures. Discover handcrafted games, support passionate creators, and keep your library forever.
+        Desktop game storefront and creator platform. Buy games, download standalone installers, and keep your library forever.
       </p>
     </div>
 
     <div class="footer-column">
-      <h4 class="col-heading">Marketplace</h4>
+      <h4 class="col-heading">Store</h4>
       <ul class="footer-links">
-        <li><a routerLink="/catalog">Discover Games</a></li>
-        <li><a routerLink="/genres">Genre Directory</a></li>
+        <li><a routerLink="/catalog">Browse All</a></li>
+        <li><a routerLink="/genres">Genres</a></li>
         @if (authService.isAuthenticated()) {
-          <li><a routerLink="/library">My Library</a></li>
+          <li><a routerLink="/library">Library</a></li>
           <li><a routerLink="/wishlist">Wishlist</a></li>
         }
       </ul>
@@ -27,17 +27,17 @@
       <ul class="footer-links">
         @if (authService.isCreator()) {
           <li><a routerLink="/studio">Creator Studio</a></li>
-          <li><a routerLink="/studio/games/new">Publish New Game</a></li>
+          <li><a routerLink="/studio/games/new">Add New Game</a></li>
         }
-        <li><a routerLink="/support">Creator Guidelines</a></li>
+        <li><a routerLink="/support">Publishing Guide</a></li>
       </ul>
     </div>
 
     <div class="footer-column">
-      <h4 class="col-heading">Platform</h4>
+      <h4 class="col-heading">Help & Legal</h4>
       <ul class="footer-links">
-        <li><a routerLink="/support">Support Center & FAQ</a></li>
-        <li><a routerLink="/support">Privacy & Data Notice</a></li>
+        <li><a routerLink="/support">Help & FAQ</a></li>
+        <li><a routerLink="/support">Privacy Policy</a></li>
         @if (authService.isAuthenticated()) {
           <li><a routerLink="/profile">Account Settings</a></li>
         }

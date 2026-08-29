@@ -33,7 +33,6 @@
             </svg>
             <span>{{ user.email }}</span>
           </span>
-          <span class="meta-dot">•</span>
           <span class="meta-item">
             <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <circle cx="12" cy="12" r="10"/>
@@ -69,7 +68,7 @@
         <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"/>
         </svg>
-        <span>Profile information updated successfully!</span>
+        <span>Profile saved.</span>
       </div>
     }
 
@@ -164,7 +163,7 @@
             }
           </div>
           <span class="creator-bar-desc">
-            {{ auth.isCreator() ? 'Creator tools are active. You can publish and edit game listings.' : 'Enable creator mode to publish your indie games to the marketplace.' }}
+            {{ auth.isCreator() ? 'Creator tools are active. You can publish and edit game listings.' : 'Turn on Creator mode to publish games to the store.' }}
           </span>
         </div>
       </div>
@@ -187,7 +186,7 @@
           [attr.aria-pressed]="auth.isCreator()"
           [attr.aria-label]="auth.isCreator() ? 'Turn off creator mode' : 'Enable creator mode'"
           (click)="initiateToggleCreatorRole()">
-          <span>{{ auth.isCreator() ? 'Turn Off Creator Mode' : 'Become a Creator' }}</span>
+          <span>{{ auth.isCreator() ? 'Turn Off Creator Mode' : 'Enable Creator Mode' }}</span>
         </button>
       </div>
     </section>
@@ -213,7 +212,7 @@
                   <line x1="12" y1="17" x2="12.01" y2="17"/>
                 </svg>
               </div>
-              <h3 id="disable-creator-title" class="modal-title">Deactivate Creator Mode?</h3>
+              <h3 id="disable-creator-title" class="modal-title">Turn Off Creator Mode?</h3>
             </div>
             <button type="button" class="btn-modal-close" (click)="cancelDisableCreator()" aria-label="Close dialog">✕</button>
           </div>
@@ -222,34 +221,34 @@
             <div class="countdown-pill" [class.unlocked]="countdownSeconds === 0" aria-live="polite">
               <span class="countdown-pulse-dot" [class.unlocked]="countdownSeconds === 0" aria-hidden="true"></span>
               @if (countdownSeconds > 0) {
-                <span>Safety lock: Unlocking in <strong>{{ countdownSeconds }}s</strong></span>
+                <span>Wait <strong>{{ countdownSeconds }}s</strong> to confirm</span>
               } @else {
-                <span>Confirmation Unlocked</span>
+                <span>Ready to confirm</span>
               }
             </div>
 
             <p id="disable-creator-desc" class="reset-warning-text">
-              Disabling creator mode will hide the <strong>Creator Studio</strong> dashboard and pause live catalog publishing tools.
+              Disabling creator mode will hide Creator Studio from your navigation.
             </p>
 
             <div class="safe-data-callout">
               <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
-              <span>Your published games, store listings, and sales telemetry remain safely preserved in the database. You can re-enable Creator Mode anytime.</span>
+              <span>Your published games and sales data will stay saved. You can turn Creator mode back on anytime.</span>
             </div>
           </div>
 
           <div class="modal-actions">
             <button type="button" class="btn-cancel btn-keep-creator" (click)="cancelDisableCreator()" autofocus>
-              Keep Creator Active
+              Keep Creator Mode
             </button>
             <button 
               type="button" 
               class="btn-confirm-deactivate" 
               [disabled]="countdownSeconds > 0"
               (click)="confirmDisableCreator()">
-              {{ countdownSeconds > 0 ? 'Turn Off Creator Mode (' + countdownSeconds + 's)' : 'Yes, Turn Off Creator Mode' }}
+              Turn Off
             </button>
           </div>
         </div>

@@ -46,7 +46,7 @@
         <div class="carousel-info-capsule">
           <div class="capsule-top-cluster">
             <div class="capsule-header-meta">
-              <span class="capsule-eyebrow">FEATURED SPOTLIGHT</span>
+              <span class="capsule-eyebrow">FEATURED</span>
             </div>
 
             <h3 class="info-game-title">
@@ -72,7 +72,6 @@
                 <span class="status-badge">Now Available</span>
                 <div class="review-sentiment-pill" title="Overall User Reviews: Very Positive (4.9 / 5.0)" aria-label="Overall User Reviews: Very Positive, 4.9 rating">
                   <span class="rating-star-score">★ 4.9</span>
-                  <span class="rating-divider" aria-hidden="true">·</span>
                   <span class="rating-sentiment">Very Positive</span>
                 </div>
               </div>
@@ -147,7 +146,7 @@
             aria-label="Search games by title or genre"
             autocomplete="off"
             class="search-input" 
-            placeholder="Type to filter titles, genres, or creators..."
+            placeholder="Search games, tags, or creators..."
             [value]="searchTerm" 
             (input)="onSearchInput($event)"
             (keydown.escape)="clearSearch()">
@@ -182,8 +181,8 @@
         <div class="sort-selector-cluster">
           <label for="catalog-sort" class="sort-label">SORT BY:</label>
           <select id="catalog-sort" class="sort-select" [value]="sortBy" (change)="onSortChange($event)" aria-label="Sort catalog games">
-            <option value="featured">Featured (Default)</option>
-            <option value="newest">Newest Releases</option>
+            <option value="featured">Featured</option>
+            <option value="newest">New Releases</option>
             <option value="price-asc">Price: Low to High</option>
             <option value="price-desc">Price: High to Low</option>
             <option value="title-asc">Alphabetical: A to Z</option>
@@ -256,13 +255,13 @@
 
   <!-- Main Game Cards Grid -->
   @if (loading) {
-    <app-loading-spinner size="lg" label="Loading titles..."></app-loading-spinner>
+    <app-loading-spinner size="lg" label="Loading games..."></app-loading-spinner>
   } @else if (filteredGames.length === 0) {
     <app-empty-state 
       icon="gamepad"
-      title="No titles match your criteria"
-      message="Try adjusting your keyword search or switching to another category."
-      actionLabel="Show All Titles"
+      title="No games found"
+      message="Try different search terms or clear the tag filters."
+      actionLabel="Clear Filters"
       (actionClicked)="resetAllFilters()">
     </app-empty-state>
   } @else {

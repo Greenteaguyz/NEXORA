@@ -6,18 +6,24 @@ import { CanDeactivateFn } from '@angular/router';
  */
 export interface GameFormComponentLike {
   hasUnsavedChanges: () => boolean;
+  autoSaveDraftOnLeave?: () => boolean;
 }
 
 /**
- * Blocks route deactivation when the game form holds unsaved edits.
- * Confirms with the user via a native confirm dialog; never blocks
- * on the server (no window) or when the form is pristine/saved.
+ * Handles route deactivation when the game form holds unsaved edits.
+ * Automatically saves the in-progress draft to prevent work loss without
+ * blocking dialogs, falling back to confirm dialog if auto-save is unavailable.
+ * Never blocks on the server (SSR safe).
  */
 export const unsavedChangesGuard: CanDeactivateFn<GameFormComponentLike> = (component) => {
   if (typeof window === 'undefined') {
     return true; // SSR safety: no blocking dialogs outside the browser
   }
-  return component.hasUnsavedChanges()
-    ? window.confirm('You have unsaved changes. Leave this page?')
-    : true;
+  if (component.hasUnsavedChanges()) {
+    if (typeof component.autoSaveDraftOnLeave === 'function') {
+      return component.autoSaveDraftOnLeave();
+    }
+    return window.confirm('You have unsaved changes. Leave this page?');
+  }
+  return true;
 };

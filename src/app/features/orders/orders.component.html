@@ -3,17 +3,20 @@
   <header class="orders-header">
     <div class="orders-header-main">
       <div class="header-left-cluster">
-        <span class="header-eyebrow">ACCOUNT / TRANSACTIONS</span>
+        <span class="header-eyebrow">ORDERS</span>
         <h1 class="orders-title">Purchase History</h1>
-        <p class="orders-subtitle">Review your past orders, invoices, and view official digital receipts.</p>
+        <p class="orders-subtitle">Past orders, details, and receipts.</p>
       </div>
 
       <div class="orders-stats-pill" aria-label="Order summary statistics">
-        <span class="stats-count">{{ items.length }}</span>
-        <span class="stats-label">{{ items.length === 1 ? 'Purchase' : 'Purchases' }}</span>
-        <span class="stats-divider" aria-hidden="true">·</span>
-        <span class="stats-count highlight">${{ totalSpent.toFixed(2) }}</span>
-        <span class="stats-label">Spent</span>
+        <span class="stats-group">
+          <span class="stats-count">{{ items.length }}</span>
+          <span class="stats-label">{{ items.length === 1 ? 'Purchase' : 'Purchases' }}</span>
+        </span>
+        <span class="stats-group">
+          <span class="stats-count highlight">${{ totalSpent.toFixed(2) }}</span>
+          <span class="stats-label">Spent</span>
+        </span>
       </div>
     </div>
   </header>
@@ -26,8 +29,8 @@
       <app-empty-state 
         icon="receipt" 
         title="No Orders Yet" 
-        message="You haven't made any game purchases yet. When you buy or download games, your receipts will appear here."
-        actionLabel="Explore Games"
+        message="You haven't made any purchases yet. When you buy or claim games, your receipts will appear here."
+        actionLabel="Browse Store"
         routerLink="/catalog">
       </app-empty-state>
     } @else {
@@ -133,9 +136,9 @@
           <div class="receipt-brand-block">
             <div class="receipt-brand">
               <span class="brand-name">NEXORA</span>
-              <span class="receipt-stamp">OFFICIAL INVOICE</span>
+              <span class="receipt-stamp">RECEIPT</span>
             </div>
-            <span class="store-entity-tag">DRM-Free Digital Storefront & Game Distribution</span>
+            <span class="store-entity-tag">Digital Storefront & Game Distribution</span>
           </div>
           <button type="button" class="btn-close-receipt" (click)="closeReceipt()" aria-label="Close receipt">✕</button>
         </div>
@@ -161,12 +164,12 @@
               <span class="meta-content">{{ selectedReceiptOrder.order.paymentMethod || 'Credit Card (Visa •••• 4242)' }}</span>
             </div>
             <div class="meta-item">
-              <span class="meta-title">License Format</span>
-              <span class="meta-content highlight-emerald">100% DRM-Free Perpetual</span>
+              <span class="meta-title">Delivery</span>
+              <span class="meta-content highlight-emerald">Direct to Library</span>
             </div>
             <div class="meta-item">
-              <span class="meta-title">Fulfillment</span>
-              <span class="meta-content">Permanent Account Access</span>
+              <span class="meta-title">Format</span>
+              <span class="meta-content">Standalone Installer</span>
             </div>
           </div>
 
@@ -185,7 +188,7 @@
                 <tr>
                   <td class="td-desc">
                     <strong class="item-title">{{ selectedReceiptOrder.game?.title || 'Game Package' }}</strong>
-                    <span class="item-desc">Standalone Game for Windows & Linux (Offline DRM-Free)</span>
+                    <span class="item-desc">Standalone installer for Windows & Linux</span>
                   </td>
                   <td class="td-format">
                     <span class="format-badge">Digital Standalone</span>
@@ -206,11 +209,11 @@
               <span>${{ selectedReceiptOrder.order.price.toFixed(2) }}</span>
             </div>
             <div class="calc-row">
-              <span>Developer Revenue Share (90%)</span>
+              <span>Developer share (90%)</span>
               <span>${{ (selectedReceiptOrder.order.price * 0.9).toFixed(2) }}</span>
             </div>
             <div class="calc-row">
-              <span>Platform Distribution Fee (10%)</span>
+              <span>Platform fee (10%)</span>
               <span>${{ (selectedReceiptOrder.order.price * 0.1).toFixed(2) }}</span>
             </div>
             <div class="calc-row total-row">
@@ -225,10 +228,10 @@
               <svg class="shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
-              <strong>Verified Proof of Purchase • NEXORA Commerce Protocol</strong>
+              <strong>Receipt Details</strong>
             </div>
             <p class="security-legal-text">
-              This invoice confirms the perpetual legal license to download, install, and execute the DRM-free software listed above. Offline installation packages remain permanently available in your NEXORA library. For support, please contact <strong>support&#64;nexora.io</strong>.
+              This receipt confirms your purchase. Standalone installation packages remain available in your Library to download anytime. For support, contact <strong>support&#64;nexora.io</strong>.
             </p>
           </div>
         </div>

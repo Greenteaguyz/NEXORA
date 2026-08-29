@@ -58,4 +58,9 @@ export class MockOrdersDataService implements OrdersDataService {
     const userOrders = this.orders.filter(o => o.userId === userId);
     return of(userOrders);
   }
+
+  getAllOrders(): Observable<Order[]> {
+    return of([...this.orders]);
+  }
 }
+

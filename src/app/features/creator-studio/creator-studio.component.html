@@ -3,9 +3,9 @@
   <header class="studio-header">
     <div class="studio-header-main">
       <div class="header-left-cluster">
-        <span class="header-eyebrow">DEVELOPER / DASHBOARD</span>
+        <span class="header-eyebrow">DEVELOPER STUDIO</span>
         <h1 class="studio-title">Creator Studio</h1>
-        <p class="studio-subtitle">Manage your games, edit prices and details, or add a new game.</p>
+        <p class="studio-subtitle">Manage your listings, edit prices and details, or add a new game.</p>
       </div>
 
       <div class="studio-top-actions">
@@ -19,19 +19,26 @@
       </div>
     </div>
 
-    <!-- Studio Metrics Cards -->
+    <!-- Studio Metrics Grid (4 Cards) -->
     <div class="studio-metrics-grid">
-      <div class="metric-card">
-        <span class="metric-value">{{ activeGamesCount }}</span>
+      <div class="metric-card clickable" (click)="setTab('active')" role="button" tabindex="0" title="View Active Games">
+        <span class="metric-value green">{{ activeGamesCount }}</span>
         <span class="metric-label">Active Games</span>
       </div>
-      <div class="metric-card">
-        <span class="metric-value rose">{{ unpublishedGamesCount }}</span>
-        <span class="metric-label">Hidden / Archived</span>
+      <div class="metric-card clickable" (click)="setTab('drafts')" role="button" tabindex="0" title="View Drafts">
+        <span class="metric-value amber">{{ draftGamesCount }}</span>
+        <span class="metric-label">Drafts</span>
       </div>
       <div class="metric-card">
-        <span class="metric-value highlight">${{ catalogValue.toFixed(2) }}</span>
-        <span class="metric-label">Total Catalog Value</span>
+        <span class="metric-value cyan">{{ unitsSold }}</span>
+        <span class="metric-label">Units Sold</span>
+      </div>
+      <div class="metric-card revenue-card">
+        <span class="metric-value highlight">${{ totalRevenue.toFixed(2) }}</span>
+        <div class="metric-label-row">
+          <span class="metric-label">Total Revenue</span>
+          <span class="revenue-split-badge">90% Net</span>
+        </div>
       </div>
     </div>
   </header>
@@ -44,27 +51,73 @@
           <polyline points="20 6 9 17 4 12"/>
         </svg>
         <span class="publish-msg">
-          <strong>"{{ publishToastTitle }}"</strong> is now {{ publishToastMode === 'published' ? 'published on the public store' : 'updated' }}!
+          <strong>"{{ publishToastTitle }}"</strong> is now {{ publishToastMode === 'published' ? 'live in the store' : (publishToastMode === 'draft' ? 'saved as a draft' : 'saved') }}.
         </span>
       </div>
       <div class="publish-alert-right">
-        @if (publishedGameId) {
-          <a [routerLink]="['/games', publishedGameId]" class="btn-preview-store">Preview in Store →</a>
+        @if (publishedGameId && publishToastMode !== 'draft') {
+          <a [routerLink]="['/games', publishedGameId]" class="btn-preview-store">View in Store →</a>
         }
         <button type="button" class="btn-dismiss-toast" (click)="closePublishToast()" aria-label="Dismiss alert">✕</button>
       </div>
     </div>
   }
 
-  <!-- Delete Success Alert -->
-  @if (deleteSuccess) {
-    <div class="alert-banner success" role="status">
-      <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="20 6 9 17 4 12"/>
-      </svg>
-      <span>Game hidden from the store.</span>
+  <!-- View Filter Tabs & Action Strip -->
+  <div class="studio-controls-bar">
+    <div class="studio-view-tabs" role="tablist" aria-label="Game listing filters">
+      <button 
+        type="button" 
+        class="btn-tab" 
+        [class.active]="activeTab() === 'all'" 
+        (click)="setTab('all')" 
+        role="tab" 
+        [attr.aria-selected]="activeTab() === 'all'">
+        All ({{ activeGamesCount + draftGamesCount }})
+      </button>
+      <button 
+        type="button" 
+        class="btn-tab" 
+        [class.active]="activeTab() === 'active'" 
+        (click)="setTab('active')" 
+        role="tab" 
+        [attr.aria-selected]="activeTab() === 'active'">
+        <span class="dot green"></span> Active ({{ activeGamesCount }})
+      </button>
+      <button 
+        type="button" 
+        class="btn-tab" 
+        [class.active]="activeTab() === 'drafts'" 
+        (click)="setTab('drafts')" 
+        role="tab" 
+        [attr.aria-selected]="activeTab() === 'drafts'">
+        <span class="dot amber"></span> Drafts ({{ draftGamesCount }})
+      </button>
+      <button 
+        type="button" 
+        class="btn-tab tab-bin" 
+        [class.active]="activeTab() === 'bin'" 
+        (click)="setTab('bin')" 
+        role="tab" 
+        [attr.aria-selected]="activeTab() === 'bin'">
+        <svg class="tab-bin-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+        Recycle Bin ({{ binGamesCount }})
+      </button>
     </div>
-  }
+
+    @if (activeTab() === 'bin' && binGamesCount > 0) {
+      <button type="button" class="btn-empty-bin" (click)="emptyBin()" title="Permanently delete all games in Recycle Bin">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+        <span>Empty Recycle Bin</span>
+      </button>
+    }
+  </div>
 
   <!-- Main Content Stage -->
   <main class="studio-main-content">
@@ -73,11 +126,23 @@
     } @else if (games.length === 0) {
       <app-empty-state 
         icon="rocket" 
-        title="No Games Added Yet" 
-        message="You haven't listed any games yet. Add your first game to start sharing with players."
-        actionLabel="Add First Game"
+        title="No Games in Studio" 
+        message="You have no games listed. Add a game to publish it to the store."
+        actionLabel="Add Game"
         routerLink="/studio/games/new">
       </app-empty-state>
+    } @else if (filteredGames.length === 0) {
+      <div class="empty-tab-state">
+        <p class="empty-tab-text">
+          @if (activeTab() === 'bin') {
+            Your Recycle Bin is empty.
+          } @else if (activeTab() === 'drafts') {
+            No drafts currently saved. Save incomplete games as drafts to keep them private.
+          } @else {
+            No listings found in this category.
+          }
+        </p>
+      </div>
     } @else {
       <!-- Clean Minimal Table Format for Graded CRUD Spec -->
       <div class="studio-table-wrap" role="region" aria-label="Creator game listings">
@@ -88,16 +153,16 @@
               <th scope="col">Price</th>
               <th scope="col">Status</th>
               <th scope="col">Date Added</th>
-              <th scope="col" class="text-right">Actions</th>
+              <th scope="col">Actions</th>
             </tr>
           </thead>
           <tbody>
-            @for (game of games; track game.id) {
+            @for (game of filteredGames; track game.id) {
               <tr class="game-table-row" [class.unpublished-row]="!!game.deletedAt">
                 <!-- Title & Thumbnail -->
                 <td class="cell-showcase">
                   <div class="showcase-wrap">
-                    <img [src]="game.coverImageUrl" [alt]="game.title" class="showcase-thumb">
+                    <img [src]="game.coverImageUrl" [alt]="game.title" class="showcase-thumb" (error)="$any($event.target).src = 'assets/logo-icon.svg'">
                     <div class="showcase-info">
                       <a [routerLink]="['/games', game.id]" class="showcase-title" [attr.aria-label]="'Preview ' + game.title">
                         {{ game.title }}
@@ -121,9 +186,14 @@
                 <!-- Status Badge -->
                 <td class="cell-status">
                   @if (game.deletedAt) {
-                    <span class="status-pill unpublished" title="Unpublished: Hidden from public store">
+                    <span class="status-pill bin" title="In Recycle Bin: Hidden from public store">
                       <span class="dot rose"></span>
-                      Unpublished
+                      In Recycle Bin
+                    </span>
+                  } @else if (game.status === 'draft') {
+                    <span class="status-pill draft" title="Draft: Private to your studio">
+                      <span class="dot amber"></span>
+                      Draft
                     </span>
                   } @else {
                     <span class="status-pill active" title="Active: Discoverable in catalog">
@@ -139,27 +209,54 @@
                 </td>
 
                 <!-- Actions -->
-                <td class="cell-actions text-right">
+                <td class="cell-actions">
                   <div class="actions-cluster">
-                    <a [routerLink]="['/studio/games', game.id, 'edit']" class="btn-action edit" [attr.aria-label]="'Edit ' + game.title">
-                      <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                      </svg>
-                      <span>Edit</span>
-                    </a>
-
-                    @if (!game.deletedAt) {
+                    @if (game.deletedAt) {
+                      <!-- Recycle Bin Actions: Restore & Permanent Purge -->
                       <button 
                         type="button" 
-                        class="btn-action delete" 
-                        (click)="openDeleteModal(game, $event)"
-                        [attr.aria-label]="'Unpublish ' + game.title">
+                        class="btn-action restore" 
+                        [disabled]="isGameBusy(game.id)"
+                        (click)="restoreFromBin(game, $event)"
+                        [attr.aria-label]="'Restore ' + game.title">
+                        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="1 4 1 10 7 10"/>
+                          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                        </svg>
+                        <span>Restore</span>
+                      </button>
+
+                      <button 
+                        type="button" 
+                        class="btn-action purge-danger" 
+                        (click)="openPurgeModal(game, $event)"
+                        [attr.aria-label]="'Permanently delete ' + game.title">
                         <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                           <polyline points="3 6 5 6 21 6"/>
                           <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
                         </svg>
-                        <span>Unpublish</span>
+                        <span>Delete Permanently</span>
+                      </button>
+                    } @else {
+                      <!-- Active & Draft Actions: Edit & Move to Bin -->
+                      <a [routerLink]="['/studio/games', game.id, 'edit']" class="btn-action edit" [attr.aria-label]="'Edit ' + game.title">
+                        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        <span>Edit</span>
+                      </a>
+
+                      <button 
+                        type="button" 
+                        class="btn-action delete" 
+                        (click)="openDeleteModal(game, $event)"
+                        [attr.aria-label]="(game.status === 'draft' ? 'Delete draft ' : 'Unpublish ') + game.title">
+                        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <polyline points="3 6 5 6 21 6"/>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                        <span>{{ game.status === 'draft' ? 'Delete' : 'Unpublish' }}</span>
                       </button>
                     }
                   </div>
@@ -172,32 +269,74 @@
     }
   </main>
 
-  <!-- Soft-Delete Confirmation Modal -->
-  @if (gameToDelete) {
-    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Confirm Unpublish" appScrollLock (click)="closeDeleteModal()">
+  <!-- Stage 1: Move to Recycle Bin / Soft-Delete Confirmation Reminder Modal -->
+  @if (gameToBin) {
+    <div class="modal-backdrop" role="dialog" aria-modal="true" [attr.aria-label]="gameToBin.status === 'draft' ? 'Delete Draft' : 'Move to Recycle Bin'" appScrollLock (click)="closeDeleteModal()">
       <div class="modal-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3 class="modal-title">Unpublish Game Listing?</h3>
+          <h3 class="modal-title">
+            {{ gameToBin.status === 'draft' ? 'Delete Draft?' : 'Move to Recycle Bin?' }}
+          </h3>
           <button type="button" class="btn-close-modal" (click)="closeDeleteModal()" aria-label="Close modal">✕</button>
         </div>
 
         <div class="modal-body">
           <p class="modal-lead-text">
-            Are you sure you want to unpublish <strong>"{{ gameToDelete.title }}"</strong> from the public store catalog?
+            Are you sure you want to {{ gameToBin.status === 'draft' ? 'delete draft' : 'move' }} <strong>"{{ gameToBin.title }}"</strong> {{ gameToBin.status === 'draft' ? '' : 'to the Recycle Bin' }}?
           </p>
           <div class="unpublish-info-box">
-            <div class="info-point">This listing will no longer be sold by the developer in the store.</div>
-            <div class="info-point">Buyers who already own it keep full access in their library.</div>
+            @if (gameToBin.status === 'draft') {
+              <div class="info-point">This draft will be moved to the Recycle Bin.</div>
+              <div class="info-point">You can quickly undo or restore it anytime from your Recycle Bin.</div>
+            } @else {
+              <div class="info-point">This game will be hidden from the public store.</div>
+              <div class="info-point">Existing owners keep permanent access in their Library.</div>
+              <div class="info-point">You can restore it to the store anytime from your Recycle Bin tab.</div>
+            }
           </div>
         </div>
 
         <div class="modal-footer">
           <button type="button" class="btn-cancel" (click)="closeDeleteModal()" [disabled]="deleting">Cancel</button>
-          <button type="button" class="btn-confirm-delete" (click)="confirmSoftDelete()" [disabled]="deleting">
-            {{ deleting ? 'Unpublishing...' : 'Unpublish' }}
+          <button type="button" class="btn-confirm-delete" (click)="confirmMoveToBin()" [disabled]="deleting">
+            {{ deleting ? 'Moving...' : (gameToBin.status === 'draft' ? 'Delete Draft' : 'Move to Recycle Bin') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Stage 2: Permanent Purge Modal (Danger Modal) -->
+  @if (gameToPurge) {
+    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Permanently Delete Game" appScrollLock (click)="closePurgeModal()">
+      <div class="modal-card purge-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h3 class="modal-title text-danger">Permanently Delete Game?</h3>
+          <button type="button" class="btn-close-modal" (click)="closePurgeModal()" aria-label="Close modal">✕</button>
+        </div>
+
+        <div class="modal-body">
+          <p class="modal-lead-text">
+            Are you sure you want to permanently erase <strong>"{{ gameToPurge.title }}"</strong>?
+          </p>
+          <div class="purge-warning-box">
+            <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+              <line x1="12" y1="9" x2="12" y2="13"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <span>All media, screenshots, and metadata will be permanently wiped from storage. <strong>This action cannot be undone.</strong></span>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" (click)="closePurgeModal()" [disabled]="purging">Cancel</button>
+          <button type="button" class="btn-confirm-purge" (click)="confirmPermanentDelete()" [disabled]="purging">
+            {{ purging ? 'Erasing...' : 'Permanently Delete' }}
           </button>
         </div>
       </div>
     </div>
   }
 </div>
+

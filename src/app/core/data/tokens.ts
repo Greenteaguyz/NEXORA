@@ -22,6 +22,9 @@ export interface GamesDataService {
   createGame(dto: CreateGameDto, ownerId: string): Observable<Game>;
   updateGame(id: string, dto: UpdateGameDto): Observable<Game>;
   deleteGame(id: string): Observable<void>;
+  restoreGame?(id: string): Observable<Game>;
+  permanentlyDeleteGame?(id: string): Observable<void>;
+  emptyRecycleBin?(ownerId: string): Observable<void>;
   resetToDefaultSeed(): Observable<void>;
 }
 
@@ -45,6 +48,7 @@ export const LIBRARY_DATA = new InjectionToken<LibraryDataService>('LIBRARY_DATA
 export interface OrdersDataService {
   createOrder(userId: string, gameId: string, price: number, paymentMethod?: string): Observable<Order>;
   getOrders(userId: string): Observable<Order[]>;
+  getAllOrders?(): Observable<Order[]>;
 }
 
 export const ORDERS_DATA = new InjectionToken<OrdersDataService>('ORDERS_DATA');

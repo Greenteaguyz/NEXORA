@@ -3,9 +3,9 @@
   <header class="library-header">
     <div class="library-header-main">
       <div class="header-left-cluster">
-        <span class="header-eyebrow">COMMUNITY / COLLECTION</span>
-        <h1 class="library-title">My Game Library</h1>
-        <p class="library-subtitle">Your permanent collection — ready to jump back in and play offline anytime.</p>
+        <span class="header-eyebrow">COLLECTION</span>
+        <h1 class="library-title">Library</h1>
+        <p class="library-subtitle">Your collection of games and offline installers.</p>
       </div>
     </div>
 
@@ -74,8 +74,8 @@
       <app-empty-state 
         icon="gamepad" 
         title="Your Library is Empty" 
-        message="You haven't added any games yet. Explore the store to find games to play."
-        actionLabel="Browse Games"
+        message="You haven't added any games yet. Browse the store to find games."
+        actionLabel="Browse Store"
         routerLink="/catalog">
       </app-empty-state>
     } @else if (filteredItems.length === 0) {

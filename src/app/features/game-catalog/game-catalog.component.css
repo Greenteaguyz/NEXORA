@@ -265,7 +265,7 @@
 .review-sentiment-pill {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   padding: 3px 8px;
   border-radius: var(--radius-xs);
   background: rgba(102, 192, 244, 0.08);

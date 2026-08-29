@@ -17,7 +17,7 @@
       </div>
       <div class="header-text">
         <h2 class="modal-title">Confirm Purchase</h2>
-        <p class="modal-subtitle">Instant DRM-Free Acquisition</p>
+        <p class="modal-subtitle">Order Summary</p>
       </div>
       <button 
         type="button" 
@@ -51,7 +51,7 @@
       <!-- Payment Method Selector Section -->
       <div class="payment-method-section">
         <div class="section-label-row">
-          <span class="section-label">Select Payment Tender</span>
+          <span class="section-label">Payment Method</span>
           <a [routerLink]="'/account/payment'" (click)="onCancel()" class="manage-methods-link">
             <span>Manage Methods</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -83,7 +83,7 @@
                   <span class="wallet-bal-tag">{{ formatUsd(walletBalance()) }}</span>
                 </div>
                 <span class="brand-digits">
-                  {{ hasEnoughWallet() ? 'Available Store Credit' : 'Insufficient balance (Top-up required)' }}
+                  {{ hasEnoughWallet() ? 'Wallet balance' : 'Insufficient balance' }}
                 </span>
               </div>
               <div class="radio-indicator"></div>
@@ -116,7 +116,7 @@
                   }
                 </div>
                 <span class="brand-digits">
-                  {{ method.type === 'card' ? '•••• ' + method.last4 + ' (Exp: ' + method.expiry + ')' : method.handle }}
+                  {{ method.type === 'card' ? '•••• ' + method.last4 + ' (Expires ' + method.expiry + ')' : method.handle }}
                 </span>
               </div>
               <div class="radio-indicator"></div>
@@ -142,7 +142,7 @@
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
             <polyline points="22 4 12 14.01 9 11.01"/>
           </svg>
-          <span>Permanent ownership added directly to your NEXORA Library</span>
+          <span>Added to your Library immediately</span>
         </div>
         <div class="perk-row">
           <svg class="perk-icon cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -150,13 +150,13 @@
             <polyline points="7 10 12 15 17 10"/>
             <line x1="12" y1="15" x2="12" y2="3"/>
           </svg>
-          <span>Immediate standalone offline package file delivery</span>
+          <span>Standalone installer available right after checkout</span>
         </div>
         <div class="perk-row">
           <svg class="perk-icon cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
-          <span>100% DRM-Free with 90%+ direct creator revenue share</span>
+          <span>90% goes directly to the creator</span>
         </div>
       </div>
     </div>
@@ -184,7 +184,7 @@
           <svg class="confirm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"/>
           </svg>
-          <span>Authorize & Buy ${{ game.price.toFixed(2) }}</span>
+          <span>Buy for ${{ game.price.toFixed(2) }}</span>
         }
       </button>
     </div>

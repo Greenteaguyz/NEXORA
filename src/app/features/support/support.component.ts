@@ -90,57 +90,57 @@ export class SupportComponent implements OnInit {
       id: 'faq-1',
       category: 'downloads',
       categoryLabel: 'Downloads & Ownership',
-      question: 'Do I truly own the games I get on NEXORA?',
-      answer: 'Yes! Every game downloaded from NEXORA is 100% yours forever. You receive clean standalone install files with zero launcher requirements, no continuous online checks, and full offline freedom.'
+      question: 'Can I play downloaded games offline?',
+      answer: 'Yes. Every game downloaded from NEXORA comes as a standalone installer. There are no mandatory launchers or persistent online checks required to play.'
     },
     {
       id: 'faq-2',
       category: 'downloads',
       categoryLabel: 'Downloads & Ownership',
       question: 'How do paid and free game downloads work?',
-      answer: 'Free games can be claimed and downloaded instantly with a single click. Paid games require a one-time simulated purchase confirmation in this prototype, after which the package is permanently bound to your personal Library with direct offline download access.'
+      answer: 'Free games can be claimed directly to your Library. Paid games require checkout in the store, after which the installer is available to download anytime.'
     },
     {
       id: 'faq-3',
       category: 'downloads',
       categoryLabel: 'Downloads & Ownership',
       question: 'Can I back up my game installers and save files?',
-      answer: 'Absolutely. Because all packages are standalone, you can back up zip installers or save directories to external hard drives, USB drives, or personal cloud storage without losing access.'
+      answer: 'Yes. Since all game packages are standalone files, you can back up installers or save directories to external drives or cloud storage.'
     },
     {
       id: 'faq-4',
       category: 'creators',
       categoryLabel: 'Creator Studio',
       question: 'How do creators publish, update, and manage games?',
-      answer: 'Verified creators can access the Creator Studio to publish new game titles, upload high-resolution screenshot galleries, configure pricing, manage tags, and deploy updates. You can toggle your role to Creator mode anytime via registration or account switcher.'
+      answer: 'Creators can use Creator Studio to publish game listings, upload screenshots, set prices, and update tags. You can enable Creator mode anytime in your Account Settings.'
     },
     {
       id: 'faq-5',
       category: 'creators',
       categoryLabel: 'Creator Studio',
       question: 'What is NEXORA’s revenue share for indie developers?',
-      answer: 'NEXORA operates on an industry-leading 90/10 revenue split. Developers keep 90% of all gross sales directly, with no hidden hosting fees or distribution surcharges.'
+      answer: 'NEXORA uses a 90/10 revenue split. Developers keep 90% of game sales, and 10% covers platform maintenance.'
     },
     {
       id: 'faq-6',
       category: 'privacy',
       categoryLabel: 'Privacy & Storage',
       question: 'Where is my library, wishlist, and profile data stored?',
-      answer: 'For this platform preview, all user sessions, library states, wishlists, and created game listings are safely persisted locally in your browser using IndexedDB & LocalStorage.'
+      answer: 'In this prototype, your profile, library, wishlist, and game listings are stored locally in your browser via IndexedDB and LocalStorage.'
     },
     {
       id: 'faq-7',
       category: 'privacy',
       categoryLabel: 'Privacy & Storage',
       question: 'Are any real credit card charges made during testing?',
-      answer: 'No. All monetary transactions across the NEXORA marketplace prototype are 100% simulated sandbox mock purchases. No real payment gateways or credit cards are ever billed.'
+      answer: 'No. All transactions on this demo storefront are simulated with test balances and mock cards. No real money or payment gateways are billed.'
     },
     {
       id: 'faq-8',
       category: 'general',
       categoryLabel: 'Platform & Compatibility',
       question: 'Which operating systems are supported for games?',
-      answer: 'NEXORA games feature dedicated standalone binaries for 64-bit Windows 10/11 and native Linux (x86_64 distributions such as Ubuntu, Debian, Arch, and Fedora).'
+      answer: 'Most catalog games support 64-bit Windows 10/11 (.exe) and Linux / SteamOS (.AppImage). Check the store page of each game for specific system requirements.'
     }
   ];
 
