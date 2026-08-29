@@ -1,6 +1,9 @@
-import { Component, signal, HostListener, inject, PLATFORM_ID, OnDestroy } from '@angular/core';
+import { Component, signal, HostListener, inject, PLATFORM_ID, OnDestroy, DestroyRef } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ToastService } from './core/services/toast.service';
 import { HeaderComponent } from './layout/header/header.component';
 import { FooterComponent } from './layout/footer/footer.component';
 import { ToastComponent } from './shared/ui/toast/toast.component';
@@ -36,11 +39,69 @@ import { DownloadTrayComponent } from './shared/ui/download-tray/download-tray.c
 })
 export class AppComponent implements OnDestroy {
   private platformId = inject(PLATFORM_ID);
+  private router = inject(Router);
+  private toastService = inject(ToastService);
+  private destroyRef = inject(DestroyRef);
   scrollThumbTop = signal<number>(0);
   isScrollable = signal<boolean>(false);
   isScrollingActive = signal<boolean>(false);
   private scrollTimeout: any = null;
   private isRafScheduled = false;
+
+  constructor() {
+    // Guard-rejection feedback: guards redirect with a ?reason= param; the
+    // root component (always alive) surfaces it as a toast and strips the
+    // param from the URL. Browser-only: router URL rewriting touches history.
+    if (isPlatformBrowser(this.platformId)) {
+      this.router.events
+        .pipe(
+          filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+          takeUntilDestroyed(this.destroyRef)
+        )
+        .subscribe(() => this.reportGuardRejection());
+    }
+  }
+
+  /** Translate a guard-rejection ?reason= param into a toast, then strip it. */
+  private reportGuardRejection(): void {
+    const reason = this.router.routerState.snapshot.root.queryParamMap.get('reason');
+    if (!reason) return;
+
+    switch (reason) {
+      case 'auth-required':
+        this.toastService.show({
+          type: 'info',
+          title: 'Sign In Required',
+          message: 'You must be signed in to view that page.'
+        });
+        break;
+      case 'creator-required':
+        this.toastService.show({
+          type: 'warning',
+          title: 'Creator Access',
+          message: 'You need Creator access to view that page.'
+        });
+        break;
+      case 'not-owner':
+        this.toastService.show({
+          type: 'error',
+          title: 'Not Allowed',
+          message: 'You do not own this listing.'
+        });
+        break;
+      default:
+        return;
+    }
+
+    // Strip the reason param in place. The follow-up NavigationEnd carries no
+    // reason, so it cannot re-fire the toast (no loop).
+    this.router.navigate([], {
+      relativeTo: this.router.routerState.root,
+      queryParams: { reason: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
+  }
 
   @HostListener('window:scroll')
   @HostListener('window:resize')

@@ -1,6 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from './auth.service';
+import { sanitizeReturnUrl } from './return-url.util';
 
 export const authGuard: CanActivateFn = (
   route: ActivatedRouteSnapshot,
@@ -13,8 +14,9 @@ export const authGuard: CanActivateFn = (
     return true;
   }
 
-  // Preserve returnUrl for seamless redirect after login
+  // Preserve a sanitized returnUrl for seamless redirect after login;
+  // 'reason' drives the explicit sign-in feedback toast in the shell.
   return router.createUrlTree(['/login'], {
-    queryParams: { returnUrl: state.url }
+    queryParams: { returnUrl: sanitizeReturnUrl(state.url), reason: 'auth-required' }
   });
 };

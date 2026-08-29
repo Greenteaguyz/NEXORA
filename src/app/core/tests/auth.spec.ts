@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { AuthService } from '../auth/auth.service';
 import { LocalStoreService } from '../persistence/local-store.service';
 import { AuthMockService } from '../auth/auth.mock';
+import { sanitizeReturnUrl } from '../auth/return-url.util';
 import { firstValueFrom } from 'rxjs';
 
 describe('AuthService — Complete Authentication & Session Suite', () => {
@@ -98,5 +99,37 @@ describe('AuthService — Complete Authentication & Session Suite', () => {
     service.logout();
     expect(service.currentUser()).toBeNull();
     expect(service.isAuthenticated()).toBeFalse();
+  });
+});
+
+describe('sanitizeReturnUrl — Open-Redirect Prevention Suite', () => {
+  it('returns the fallback for null, undefined, and empty input', () => {
+    expect(sanitizeReturnUrl(null)).toBe('/catalog');
+    expect(sanitizeReturnUrl(undefined)).toBe('/catalog');
+    expect(sanitizeReturnUrl('')).toBe('/catalog');
+  });
+
+  it('keeps safe relative paths untouched', () => {
+    expect(sanitizeReturnUrl('/library')).toBe('/library');
+    expect(sanitizeReturnUrl('/wishlist?filter=on-sale')).toBe('/wishlist?filter=on-sale');
+    expect(sanitizeReturnUrl('/studio/games/game_001/edit')).toBe('/studio/games/game_001/edit');
+  });
+
+  it('rejects protocol-relative URLs', () => {
+    expect(sanitizeReturnUrl('//evil.com')).toBe('/catalog');
+  });
+
+  it('rejects absolute URLs with schemes', () => {
+    expect(sanitizeReturnUrl('https://evil.com')).toBe('/catalog');
+    expect(sanitizeReturnUrl('http://evil.com/library')).toBe('/catalog');
+    expect(sanitizeReturnUrl('javascript:alert(1)')).toBe('/catalog');
+  });
+
+  it('rejects backslash paths that browsers may treat as protocol-relative', () => {
+    expect(sanitizeReturnUrl('/\\evil')).toBe('/catalog');
+  });
+
+  it('rejects non-path inputs without a leading slash', () => {
+    expect(sanitizeReturnUrl('evil.com')).toBe('/catalog');
   });
 });

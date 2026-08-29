@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
+import { sanitizeReturnUrl } from '../../../core/auth/return-url.util';
 
 @Component({
   selector: 'app-login',
@@ -41,8 +42,9 @@ export class LoginComponent {
     this.authService.login({ email: this.email, password: this.password }).subscribe({
       next: () => {
         this.loading = false;
-        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/catalog';
-        this.router.navigateByUrl(returnUrl);
+        this.router.navigateByUrl(
+          sanitizeReturnUrl(this.route.snapshot.queryParams['returnUrl'])
+        );
       },
       error: (err) => {
         this.loading = false;
@@ -56,8 +58,9 @@ export class LoginComponent {
     this.authService.socialSignIn(provider).subscribe({
       next: () => {
         this.loading = false;
-        const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/catalog';
-        this.router.navigateByUrl(returnUrl);
+        this.router.navigateByUrl(
+          sanitizeReturnUrl(this.route.snapshot.queryParams['returnUrl'])
+        );
       },
       error: (err) => {
         this.loading = false;

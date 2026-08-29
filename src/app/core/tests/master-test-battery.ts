@@ -12,6 +12,7 @@ import { PLATFORM_ID, NgModule, ErrorHandler, createPlatformFactory, platformCor
 import { TestBed, TestComponentRenderer } from '@angular/core/testing';
 import { ScrollLockService } from '../services/scroll-lock.service';
 import { ToastService } from '../services/toast.service';
+import { sanitizeReturnUrl } from '../auth/return-url.util';
 
 /** Minimal NgModule root for the pure-Node TestBed environment (no DOM platform). */
 @NgModule()
@@ -285,6 +286,24 @@ export class MasterTestRunner {
 
       service.dismiss(service.toasts()[0].id);
       this.assert(service.toasts().length === 0, 'Dismissed action toast must be removed from the list');
+    });
+
+    // 10. Return URL Sanitization (Open-Redirect Prevention)
+    await this.runTest('Return URL Sanitization', 'Safe relative paths pass through untouched', () => {
+      this.assert(sanitizeReturnUrl('/library') === '/library', 'Plain internal path must pass through');
+      this.assert(sanitizeReturnUrl('/studio/games/game_001/edit') === '/studio/games/game_001/edit', 'Nested internal path must pass through');
+      this.assert(sanitizeReturnUrl('/wishlist?filter=on-sale') === '/wishlist?filter=on-sale', 'Internal path with query must pass through');
+    });
+
+    await this.runTest('Return URL Sanitization', 'External, protocol-relative, and malformed inputs fall back', () => {
+      this.assert(sanitizeReturnUrl(null) === '/catalog', 'null must fall back to /catalog');
+      this.assert(sanitizeReturnUrl(undefined) === '/catalog', 'undefined must fall back to /catalog');
+      this.assert(sanitizeReturnUrl('') === '/catalog', 'Empty string must fall back to /catalog');
+      this.assert(sanitizeReturnUrl('//evil.com') === '/catalog', 'Protocol-relative URL must fall back to /catalog');
+      this.assert(sanitizeReturnUrl('https://evil.com') === '/catalog', 'Absolute https URL must fall back to /catalog');
+      this.assert(sanitizeReturnUrl('javascript:alert(1)') === '/catalog', 'javascript: scheme must fall back to /catalog');
+      this.assert(sanitizeReturnUrl('/\\evil') === '/catalog', 'Backslash path must fall back to /catalog');
+      this.assert(sanitizeReturnUrl('evil.com') === '/catalog', 'Non-path input must fall back to /catalog');
     });
 
     const endTime = performance.now();
