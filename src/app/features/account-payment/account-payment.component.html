@@ -364,9 +364,12 @@
                 type="text" 
                 class="form-input" 
                 placeholder="4242 4242 4242 4242" 
+                appCardNumber
                 [(ngModel)]="cardNumber" 
                 name="cardNumber"
                 maxlength="19"
+                inputmode="numeric"
+                autocomplete="cc-number"
                 required>
               <span class="input-hint">Visa and Mastercard accepted (Luhn verified).</span>
             </div>
@@ -395,9 +398,12 @@
                   type="password" 
                   class="form-input" 
                   placeholder="123" 
+                  appCvv
                   [(ngModel)]="cardCvv" 
                   name="cardCvv"
                   maxlength="4"
+                  inputmode="numeric"
+                  autocomplete="cc-csc"
                   required>
               </div>
             </div>

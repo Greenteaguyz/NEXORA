@@ -4,6 +4,7 @@ import { RouterLink, Router } from '@angular/router';
 import { Game } from '../../../core/models/game.model';
 import { AuthService } from '../../../core/auth/auth.service';
 import { WISHLIST_DATA } from '../../../core/data/tokens';
+import { LIBRARY_DATA } from '../../../core/data/tokens';
 import { ToastService } from '../../../core/services/toast.service';
 import { ScrollLockDirective } from '../../directives/scroll-lock.directive';
 
@@ -20,10 +21,12 @@ export class GameCardComponent implements OnInit, OnChanges {
 
   authService = inject(AuthService);
   private wishlistData = inject(WISHLIST_DATA);
+  private libraryData = inject(LIBRARY_DATA);
   private router = inject(Router);
   private readonly toastService = inject(ToastService);
 
   isWishlisted = false;
+  isOwned = false;
 
   showRemoveConfirm = signal(false);
   @ViewChild('cardCancelBtn') cardCancelBtn?: ElementRef<HTMLButtonElement>;
@@ -42,12 +45,25 @@ export class GameCardComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.checkWishlistStatus();
+    this.checkOwnership();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['game'] && !changes['game'].firstChange) {
       this.checkWishlistStatus();
+      this.checkOwnership();
     }
+  }
+
+  checkOwnership(): void {
+    const user = this.authService.currentUser();
+    if (!user || !this.game) {
+      this.isOwned = false;
+      return;
+    }
+    this.libraryData.isOwned(user.id, this.game.id).subscribe(owned => {
+      this.isOwned = owned;
+    });
   }
 
   checkWishlistStatus(userId?: string): void {

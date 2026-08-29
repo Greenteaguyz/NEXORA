@@ -11,7 +11,7 @@ import '@angular/compiler';
 import { PLATFORM_ID, NgModule, ErrorHandler, createPlatformFactory, platformCore, provideZoneChangeDetection, ɵINJECTOR_SCOPE } from '@angular/core';
 import { TestBed, TestComponentRenderer } from '@angular/core/testing';
 import { ScrollLockService } from '../services/scroll-lock.service';
-import { formatExpiry, validateCardInput } from '../data/payments/payment-logic';
+import { formatExpiry, groupCardNumber, validateCardInput } from '../data/payments/payment-logic';
 import { ToastService } from '../services/toast.service';
 import { sanitizeReturnUrl } from '../auth/return-url.util';
 
@@ -29,6 +29,9 @@ interface TestResult {
   durationMs: number;
   error?: string;
 }
+
+/** Small async wait helper shared by timing-sensitive suites. */
+const sleep = (ms: number): Promise<void> => new Promise(resolve => setTimeout(resolve, ms));
 
 export class MasterTestRunner {
   private results: TestResult[] = [];
@@ -245,15 +248,16 @@ export class MasterTestRunner {
       this.assert(service.toasts()[0].type === 'success', 'First toast must be success severity');
       this.assert(service.toasts()[1].type === 'error', 'Second toast must be error severity');
 
-      service.dismiss(service.toasts()[0].id);
-      service.dismiss(service.toasts()[0].id);
-      this.assert(service.toasts().length === 0, 'Explicit dismiss must clear both toasts');
+      const first = service.toasts()[0];
+      const second = service.toasts()[1];
+      service.dismiss(first.id);
+      service.dismiss(second.id);
+      this.assert(service.toasts().find(t => t.id === first.id)?.leaving === true, 'Dismissed toast must be marked leaving for its exit transition');
+      this.assert(service.toasts().find(t => t.id === second.id)?.leaving === true, 'Second dismissed toast must be marked leaving');
     });
 
     await this.runTest('Toast Service', 'Pause on hover defers dismissal', async () => {
       const service = new ToastService();
-      const sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
-
       service.show({ type: 'info', title: 'hover', message: 'pause me' }, 120);
       const id = service.toasts()[0].id;
       service.pause(id);
@@ -262,7 +266,7 @@ export class MasterTestRunner {
       this.assert(service.toasts().length === 1, 'Toast must survive past its duration while paused');
 
       service.resume(id);
-      await sleep(200);
+      await sleep(450);
       this.assert(service.toasts().length === 0, 'Toast must dismiss after resume with remaining time');
     });
 
@@ -278,18 +282,54 @@ export class MasterTestRunner {
       }
     });
 
-    await this.runTest('Toast Service', 'Action payload is carried and cleaned up', () => {
+    await this.runTest('Toast Service', 'Action payload is carried and cleaned up', async () => {
       const service = new ToastService();
 
       service.show({ type: 'warning', title: 't', message: 'm', action: { label: 'Undo', run: () => {} } });
 
       this.assert(service.toasts()[0]?.action?.label === 'Undo', 'Action payload must be carried onto the toast');
 
-      service.dismiss(service.toasts()[0].id);
-      this.assert(service.toasts().length === 0, 'Dismissed action toast must be removed from the list');
+      const id = service.toasts()[0].id;
+      service.dismiss(id);
+      this.assert(service.toasts().find(t => t.id === id)?.leaving === true, 'Dismissed action toast must be marked leaving');
+      await sleep(250);
+      this.assert(service.toasts().length === 0, 'Dismissed action toast must be removed after the exit window');
     });
 
-    // 10. Return URL Sanitization (Open-Redirect Prevention)
+    // 10. Card Number Grouping
+    await this.runTest('Card Number Grouping', 'groupCardNumber formats digits in 4s', () => {
+      const cases: Array<[string, string]> = [
+        ['', ''],
+        ['4242', '4242'],
+        ['42424242', '4242 4242'],
+        ['4242424242424242', '4242 4242 4242 4242'],
+        ['4242 4242 4242 4242', '4242 4242 4242 4242'],
+        ['4a2b42424242424299', '4242 4242 4242 4299'],
+        ['12345', '1234 5']
+      ];
+      for (const [input, expected] of cases) {
+        this.assert(groupCardNumber(input) === expected, `groupCardNumber('${input}') must be '${expected}', got '${groupCardNumber(input)}'`);
+      }
+    });
+
+    // 11. Toast Queue Optimization (cap + dedupe)
+    await this.runTest('Toast Queue', 'Stack cap evicts oldest and identical toasts dedupe', () => {
+      const service = new ToastService();
+      const mk = (title: string) => ({ type: 'info' as const, title, message: 'm' });
+      service.show(mk('A'));
+      service.show(mk('B'));
+      service.show(mk('C'));
+      service.show(mk('D'));
+      const activeTitles = service.toasts().filter(t => !t.leaving).map(t => t.title);
+      this.assert(!activeTitles.includes('A'), 'Oldest toast must be evicted when cap exceeded');
+      this.assert(service.toasts().filter(t => !t.leaving).length <= 3, 'At most 3 active toasts allowed');
+      const before = service.toasts().filter(t => !t.leaving).length;
+      service.show(mk('B'));
+      this.assert(service.toasts().filter(t => !t.leaving && t.title === 'B').length === 1, 'Identical toast must dedupe, not stack');
+      this.assert(service.toasts().filter(t => !t.leaving).length === before, 'Dedupe must not add a new toast');
+    });
+
+    // 12. Return URL Sanitization (Open-Redirect Prevention)
     await this.runTest('Return URL Sanitization', 'Safe relative paths pass through untouched', () => {
       this.assert(sanitizeReturnUrl('/library') === '/library', 'Plain internal path must pass through');
       this.assert(sanitizeReturnUrl('/studio/games/game_001/edit') === '/studio/games/game_001/edit', 'Nested internal path must pass through');

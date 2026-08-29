@@ -9,7 +9,7 @@ import { ToastService, ToastMessage } from '../../../core/services/toast.service
   template: `
     <div class="toast-container" role="status" aria-live="polite">
       @for (toast of toastService.toasts(); track toast.id) {
-        <div class="toast-card toast-{{ toast.type }}" (click)="dismiss(toast.id)" (mouseenter)="toastService.pause(toast.id)" (mouseleave)="toastService.resume(toast.id)" (focusin)="toastService.pause(toast.id)" (focusout)="toastService.resume(toast.id)">
+        <div class="toast-card toast-{{ toast.type }}" [class.toast-leaving]="toast.leaving" (mouseenter)="toastService.pause(toast.id)" (mouseleave)="toastService.resume(toast.id)" (focusin)="toastService.pause(toast.id)" (focusout)="toastService.resume(toast.id)">
           <div class="toast-icon-wrap">
             @if (toast.type === 'download') {
               <svg class="toast-svg download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -49,7 +49,7 @@ import { ToastService, ToastMessage } from '../../../core/services/toast.service
           @if (toast.action) {
             <button type="button" class="btn-toast-action" (click)="runAction(toast)">{{ toast.action.label }}</button>
           }
-          <button type="button" class="btn-toast-close" (click)="dismiss(toast.id)" aria-label="Close notification">✕</button>
+          <button type="button" class="btn-toast-close" (click)="requestDismiss(toast)" aria-label="Close notification">✕</button>
         </div>
       }
     </div>
@@ -81,9 +81,15 @@ import { ToastService, ToastMessage } from '../../../core/services/toast.service
       border-radius: var(--radius-lg);
       box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75);
       color: var(--text-primary);
-      cursor: pointer;
       animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+
+    .toast-leaving {
+      opacity: 0;
+      transform: translateY(8px) scale(0.97);
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease;
     }
 
     :host-context([data-theme="light"]) .toast-card {
@@ -91,10 +97,6 @@ import { ToastService, ToastMessage } from '../../../core/services/toast.service
       border-color: var(--border-card);
       box-shadow: 0 16px 36px rgba(15, 23, 42, 0.15);
       color: var(--text-primary);
-    }
-
-    .toast-card:hover {
-      transform: translateY(-2px);
     }
 
     .toast-icon-wrap {
@@ -176,6 +178,12 @@ import { ToastService, ToastMessage } from '../../../core/services/toast.service
       border: none;
       color: var(--text-muted);
       font-size: 0.9rem;
+      width: 44px;
+      height: 44px;
+      margin: -12px -12px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
       padding: 0;
       line-height: 1;
@@ -204,9 +212,11 @@ export class ToastComponent {
   toastService = inject(ToastService);
 
   private ranActions = new Set<string>();
+  private readonly graceMs = 250;
 
   runAction(toast: ToastMessage): void {
     if (!toast.action || this.ranActions.has(toast.id)) return;
+    if (Date.now() - toast.timestamp < this.graceMs) return;
     this.ranActions.add(toast.id);
     toast.action.run();
     this.dismiss(toast.id);
@@ -214,5 +224,11 @@ export class ToastComponent {
 
   dismiss(id: string): void {
     this.toastService.dismiss(id);
+  }
+
+  /** Grace-aware close: ignores taps in the first 250ms after spawn (ghost/double-tap guard). */
+  requestDismiss(toast: ToastMessage): void {
+    if (Date.now() - toast.timestamp < this.graceMs) return;
+    this.toastService.dismiss(toast.id);
   }
 }

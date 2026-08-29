@@ -55,7 +55,9 @@
       </div>
 
       <div class="price-badge-wrapper">
-        @if (game.price === 0) {
+        @if (isOwned) {
+          <span class="price-badge owned">Owned</span>
+        } @else if (game.price === 0) {
           <span class="price-badge free">FREE</span>
         } @else {
           <span class="price-badge paid">${{ game.price.toFixed(2) }}</span>

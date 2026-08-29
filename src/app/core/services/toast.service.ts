@@ -6,9 +6,14 @@ export interface ToastMessage {
   title: string;
   message: string;
   timestamp: number;
+  /** True while the toast plays its exit transition before removal. */
+  leaving?: boolean;
   /** Optional inline action (e.g. Undo). Clicking it runs the callback and dismisses the toast. */
   action?: { label: string; run: () => void };
 }
+
+/** How long a leaving toast stays on screen for its exit transition (ms). */
+const EXIT_MS = 180;
 
 @Injectable({
   providedIn: 'root'
@@ -31,8 +36,22 @@ export class ToastService {
   private deadlines = new Map<string, number>();
   /** Remaining milliseconds for paused toasts, keyed by toast id. */
   private pausedRemaining = new Map<string, number>();
+  /** Maximum number of simultaneously visible (non-leaving) toasts. */
+  private readonly maxVisible = 3;
 
   show(toast: Omit<ToastMessage, 'id' | 'timestamp'>, durationMs?: number): void {
+    const duration = durationMs ?? this.defaultDurations[toast.type];
+
+    // Dedupe: an identical visible toast just gets its timer reset.
+    const duplicate = this.toasts().find(t =>
+      !t.leaving && t.type === toast.type && t.title === toast.title && t.message === toast.message);
+    if (duplicate) {
+      this.clearTimer(duplicate.id);
+      this.pausedRemaining.delete(duplicate.id);
+      this.armTimer(duplicate.id, duration);
+      return;
+    }
+
     const id = `toast_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     const newToast: ToastMessage = {
       ...toast,
@@ -40,9 +59,21 @@ export class ToastService {
       timestamp: Date.now()
     };
 
-    this.toasts.update(list => [...list, newToast]);
+    this.toasts.update(list => {
+      const updated = [...list, newToast];
+      // Cap the stack: the oldest active toasts start their exit immediately.
+      const active = updated.filter(t => !t.leaving);
+      const overflow = active.length - this.maxVisible;
+      if (overflow > 0) {
+        const evicted = active.slice(0, overflow);
+        evicted.forEach(t => this.clearTimer(t.id));
+        const evictedIds = new Set(evicted.map(t => t.id));
+        this.scheduleRemovalFor(evictedIds);
+        return updated.map(t => evictedIds.has(t.id) ? { ...t, leaving: true } : t);
+      }
+      return updated;
+    });
 
-    const duration = durationMs ?? this.defaultDurations[toast.type];
     this.armTimer(id, duration);
   }
 
@@ -66,17 +97,36 @@ export class ToastService {
   }
 
   dismiss(id: string): void {
+    const toast = this.toasts().find(t => t.id === id);
+    if (!toast || toast.leaving) return;
+
+    this.clearTimer(id);
+    this.toasts.update(list => list.map(t => t.id === id ? { ...t, leaving: true } : t));
+    this.scheduleRemovalFor(new Set([id]));
+  }
+
+  private scheduleRemovalFor(ids: Set<string>): void {
+    setTimeout(() => {
+      this.toasts.update(list => list.filter(t => !ids.has(t.id)));
+      ids.forEach(id => {
+        this.timers.delete(id);
+        this.deadlines.delete(id);
+        this.pausedRemaining.delete(id);
+      });
+    }, EXIT_MS);
+  }
+
+  private clearTimer(id: string): void {
     const handle = this.timers.get(id);
     if (handle !== undefined) {
       clearTimeout(handle);
       this.timers.delete(id);
     }
     this.deadlines.delete(id);
-    this.pausedRemaining.delete(id);
-    this.toasts.update(list => list.filter(t => t.id !== id));
   }
 
   private armTimer(id: string, durationMs: number): void {
+    this.clearTimer(id);
     this.deadlines.set(id, Date.now() + durationMs);
     const handle = setTimeout(() => {
       this.timers.delete(id);

@@ -94,13 +94,23 @@ export interface CardValidationResult {
   last4: string;
 }
 
+/**
+ * Groups raw card digits in blocks of 4 (max 16 digits) for display:
+ * '4242424242424242' -> '4242 4242 4242 4242'. Pure helper shared by
+ * CardNumberDirective and tests.
+ */
+export function groupCardNumber(raw: string): string {
+  const digits = raw.replace(/\D/g, '').slice(0, 16);
+  return digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+}
+
 export function validateCardInput(dto: AddCardMethodDto, methods: PaymentMethod[], now: Date = new Date()): CardValidationResult {
   const errors: string[] = [];
   const digits = dto.number.replace(/[\s-]/g, '');
   const brand = detectCardBrand(digits);
 
   if (!luhnCheck(digits)) {
-    errors.push('Check the card number');
+    errors.push('Enter a valid 16-digit card number');
   }
   if (!brand) {
     errors.push('Only Visa and Mastercard are supported');

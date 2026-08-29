@@ -289,6 +289,13 @@
   border-color: rgba(2, 132, 199, 0.25);
 }
 
+.price-badge.owned {
+  background-color: rgba(5, 150, 105, 0.15);
+  color: var(--emerald-400, #34D399);
+  border-color: rgba(5, 150, 105, 0.35);
+  font-weight: 800;
+}
+
 :host-context([data-theme="light"]) .price-badge.free {
   background-color: rgba(5, 150, 105, 0.12);
   color: #047857;

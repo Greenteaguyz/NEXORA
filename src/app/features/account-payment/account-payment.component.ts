@@ -10,6 +10,8 @@ import { PaymentBrandMarkComponent } from '../../shared/ui/payment-brand-mark/pa
 import { KhqrCardComponent } from '../../shared/ui/khqr-card/khqr-card.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 import { ExpiryDateDirective } from '../../shared/directives/expiry-date.directive';
+import { CardNumberDirective } from '../../shared/directives/card-number.directive';
+import { CvvDirective } from '../../shared/directives/cvv.directive';
 
 @Component({
   selector: 'app-account-payment',
@@ -22,7 +24,9 @@ import { ExpiryDateDirective } from '../../shared/directives/expiry-date.directi
     PaymentBrandMarkComponent,
     KhqrCardComponent,
     ScrollLockDirective,
-    ExpiryDateDirective
+    ExpiryDateDirective,
+    CardNumberDirective,
+    CvvDirective
   ],
   templateUrl: './account-payment.component.html',
   styleUrl: './account-payment.component.css'
