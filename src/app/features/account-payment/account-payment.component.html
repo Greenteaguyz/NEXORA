@@ -379,9 +379,12 @@
                   type="text" 
                   class="form-input" 
                   placeholder="08/28" 
+                  appExpiryDate
                   [(ngModel)]="cardExpiry" 
                   name="cardExpiry"
                   maxlength="5"
+                  inputmode="numeric"
+                  autocomplete="cc-exp"
                   required>
               </div>
 

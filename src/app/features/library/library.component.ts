@@ -8,6 +8,7 @@ import { Game } from '../../core/models/game.model';
 import { LibraryEntry } from '../../core/models/library-entry.model';
 import { LIBRARY_DATA, GAMES_DATA } from '../../core/data/tokens';
 import { AuthService } from '../../core/auth/auth.service';
+import { ToastService } from '../../core/services/toast.service';
 import { DownloadService } from '../../core/services/download.service';
 import { DownloadButtonComponent } from '../../shared/ui/download-button/download-button.component';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
@@ -40,6 +41,7 @@ export class LibraryComponent {
   private libraryData = inject(LIBRARY_DATA);
   private gamesData = inject(GAMES_DATA);
   private auth = inject(AuthService);
+  private toast = inject(ToastService);
   protected downloadService = inject(DownloadService);
 
   items: LibraryDisplayItem[] = [];
@@ -183,10 +185,12 @@ export class LibraryComponent {
         this.items = this.items.filter(item => item.game.id !== gameId);
         this.removing = false;
         this.gameToRemove = null;
+        this.toast.show({ type: 'success', title: 'Removed from Library', message: 'The game was removed from your library.' });
       },
       error: () => {
         this.removing = false;
         this.gameToRemove = null;
+        this.toast.show({ type: 'error', title: 'Removal Failed', message: 'Could not remove this game from your library. Please try again.' });
       }
     });
   }

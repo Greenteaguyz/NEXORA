@@ -7,6 +7,7 @@ import { Order } from '../../core/models/order.model';
 import { GAMES_DATA, USERS_DATA, WISHLIST_DATA, LIBRARY_DATA, ORDERS_DATA } from '../../core/data/tokens';
 import { AuthService } from '../../core/auth/auth.service';
 import { DownloadService } from '../../core/services/download.service';
+import { ToastService } from '../../core/services/toast.service';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { PurchaseConfirmModalComponent, PurchaseConfirmationEvent } from '../../shared/ui/purchase-confirm-modal/purchase-confirm-modal.component';
@@ -45,6 +46,7 @@ export class GameDetailComponent implements OnInit {
   private router = inject(Router);
   private gamesData = inject(GAMES_DATA);
   private usersData = inject(USERS_DATA);
+  private toastService = inject(ToastService);
   private wishlistData = inject(WISHLIST_DATA);
   private libraryData = inject(LIBRARY_DATA);
   private ordersData = inject(ORDERS_DATA);
@@ -60,6 +62,7 @@ export class GameDetailComponent implements OnInit {
   // Purchase & Creator Modal State
   showPurchaseModal = false;
   purchaseProcessing = false;
+  claiming = false;
   showCreatorNoticeModal = false;
   showOrderConfirmedModal = false;
   confirmedOrder: Order | null = null;
@@ -433,32 +436,58 @@ export class GameDetailComponent implements OnInit {
 
     // Free game direct acquisition
     if (this.game.price === 0) {
-      this.libraryData.addToLibrary(user.id, this.game.id).subscribe(() => {
-        this.isOwned = true;
-        this.downloadService.downloadGameFile(this.game!, this.selectedDownloadPlatform);
+      if (this.claiming) return;
+      this.claiming = true;
+      this.libraryData.addToLibrary(user.id, this.game.id).subscribe({
+        next: () => {
+          this.claiming = false;
+          this.isOwned = true;
+          this.toastService.show({ type: 'success', title: 'Added to Library', message: `${this.game!.title} is now in your library.` });
+          // Wishlist-to-library sync: a failed cleanup must not fail the claim.
+          if (this.isWishlisted) {
+            this.wishlistData.removeFromWishlist(user.id, this.game!.id).subscribe({
+              next: () => { this.isWishlisted = false; },
+              error: () => { /* non-fatal */ }
+            });
+          }
+          this.downloadService.downloadGameFile(this.game!, this.selectedDownloadPlatform);
+        },
+        error: () => {
+          this.claiming = false;
+          this.toastService.show({ type: 'error', title: 'Claim Failed', message: 'Could not add this game to your library. Please try again.' });
+        }
       });
     }
   }
 
   claimFreeToLibrary(): void {
-    if (!this.game) return;
+    if (!this.game || this.claiming) return;
     const user = this.authService.currentUser();
     if (!user) {
       this.onLoginRequired();
       return;
     }
 
-    this.libraryData.addToLibrary(user.id, this.game.id).subscribe(() => {
-      this.isOwned = true;
-      this.showFreeClaimToast = true;
-      if (this.isWishlisted) {
-        this.wishlistData.removeFromWishlist(user.id, this.game!.id).subscribe(() => {
-          this.isWishlisted = false;
-        });
+    this.claiming = true;
+    this.libraryData.addToLibrary(user.id, this.game.id).subscribe({
+      next: () => {
+        this.claiming = false;
+        this.isOwned = true;
+        this.showFreeClaimToast = true;
+        // Wishlist-to-library sync (fire-and-forget; failure is non-fatal).
+        if (this.isWishlisted) {
+          this.wishlistData.removeFromWishlist(user.id, this.game!.id).subscribe(() => {
+            this.isWishlisted = false;
+          });
+        }
+        setTimeout(() => {
+          this.showFreeClaimToast = false;
+        }, 4500);
+      },
+      error: () => {
+        this.claiming = false;
+        this.toastService.show({ type: 'error', title: 'Claim Failed', message: 'Could not add this game to your library. Please try again.' });
       }
-      setTimeout(() => {
-        this.showFreeClaimToast = false;
-      }, 4500);
     });
   }
 
@@ -467,13 +496,23 @@ export class GameDetailComponent implements OnInit {
   }
 
   confirmRemoveFromLibrary(): void {
-    if (!this.game) return;
+    if (!this.game || this.claiming) return;
     const user = this.authService.currentUser();
     if (!user) return;
 
-    this.libraryData.removeFromLibrary(user.id, this.game.id).subscribe(() => {
-      this.isOwned = false;
-      this.showLibraryRemoveModal = false;
+    this.claiming = true;
+    this.libraryData.removeFromLibrary(user.id, this.game.id).subscribe({
+      next: () => {
+        this.claiming = false;
+        this.isOwned = false;
+        this.showLibraryRemoveModal = false;
+        this.toastService.show({ type: 'success', title: 'Removed from Library', message: `${this.game!.title} was removed from your library.` });
+      },
+      error: () => {
+        this.claiming = false;
+        this.showLibraryRemoveModal = false;
+        this.toastService.show({ type: 'error', title: 'Removal Failed', message: 'Could not remove this game from your library. Please try again.' });
+      }
     });
   }
 
@@ -494,7 +533,7 @@ export class GameDetailComponent implements OnInit {
   }
 
   onModalConfirm(event?: PurchaseConfirmationEvent): void {
-    if (!this.game) return;
+    if (!this.game || this.purchaseProcessing) return;
     const user = this.authService.currentUser();
     if (!user) {
       this.showPurchaseModal = false;
@@ -513,6 +552,7 @@ export class GameDetailComponent implements OnInit {
             this.showPurchaseModal = false;
             this.confirmedOrder = order;
             this.showOrderConfirmedModal = true;
+            this.toastService.show({ type: 'success', title: 'Purchase Complete', message: `${this.game!.title} was added to your library.` });
             if (this.isWishlisted) {
               this.wishlistData.removeFromWishlist(user.id, this.game!.id).subscribe(() => {
                 this.isWishlisted = false;
@@ -522,11 +562,14 @@ export class GameDetailComponent implements OnInit {
           },
           error: () => {
             this.purchaseProcessing = false;
+            this.toastService.show({ type: 'error', title: 'Purchase Failed', message: 'Could not add the game to your library. Please contact support.' });
           }
         });
       },
       error: () => {
         this.purchaseProcessing = false;
+        this.showPurchaseModal = false;
+        this.toastService.show({ type: 'error', title: 'Purchase Failed', message: 'The payment could not be processed. Please try again.' });
       }
     });
   }

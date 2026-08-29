@@ -11,6 +11,7 @@ import '@angular/compiler';
 import { PLATFORM_ID, NgModule, ErrorHandler, createPlatformFactory, platformCore, provideZoneChangeDetection, ɵINJECTOR_SCOPE } from '@angular/core';
 import { TestBed, TestComponentRenderer } from '@angular/core/testing';
 import { ScrollLockService } from '../services/scroll-lock.service';
+import { formatExpiry } from '../data/payments/payment-logic';
 import { ToastService } from '../services/toast.service';
 import { sanitizeReturnUrl } from '../auth/return-url.util';
 
@@ -304,6 +305,23 @@ export class MasterTestRunner {
       this.assert(sanitizeReturnUrl('javascript:alert(1)') === '/catalog', 'javascript: scheme must fall back to /catalog');
       this.assert(sanitizeReturnUrl('/\\evil') === '/catalog', 'Backslash path must fall back to /catalog');
       this.assert(sanitizeReturnUrl('evil.com') === '/catalog', 'Non-path input must fall back to /catalog');
+    });
+
+    // 9. Expiry Formatting (MM/YY auto-slash helper)
+    await this.runTest('Expiry Formatting', 'formatExpiry normalizes raw input to MM/YY', () => {
+      const cases: Array<[string, string]> = [
+        ['', ''],
+        ['1', '1'],
+        ['12', '12'],
+        ['123', '12/3'],
+        ['1234', '12/34'],
+        ['1a2b3c4d5e', '12/34'],
+        ['99', '99'],
+        ['12/3', '12/3']
+      ];
+      for (const [input, expected] of cases) {
+        this.assert(formatExpiry(input) === expected, `formatExpiry('${input}') must be '${expected}', got '${formatExpiry(input)}'`);
+      }
     });
 
     const endTime = performance.now();

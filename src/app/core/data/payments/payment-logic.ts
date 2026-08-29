@@ -52,6 +52,16 @@ export function detectCardBrand(number: string): 'visa' | 'mastercard' | null {
   return null;
 }
 
+/**
+ * Normalizes raw card-expiry input to MM/YY: strips non-digits, caps at 4
+ * digits, and inserts the slash after the second digit. Pure helper shared
+ * by ExpiryDateDirective and tests.
+ */
+export function formatExpiry(raw: string): string {
+  const digits = raw.replace(/\D/g, '').slice(0, 4);
+  return digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
+}
+
 export function isCardExpired(expiry: string, now: Date = new Date()): boolean {
   const match = /^(\d{2})\s*\/\s*(\d{2})$/.exec(expiry.trim());
   if (!match) {

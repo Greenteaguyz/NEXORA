@@ -5,6 +5,7 @@ import { Game } from '../../core/models/game.model';
 import { GAMES_DATA } from '../../core/data/tokens';
 import { AuthService } from '../../core/auth/auth.service';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
+import { ToastService } from '../../core/services/toast.service';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 
@@ -27,6 +28,8 @@ export class CreatorStudioComponent implements OnInit {
   auth = inject(AuthService);
 
   games: Game[] = [];
+  private toast = inject(ToastService);
+
   loading = true;
 
   // Soft-Delete Modal State
@@ -137,6 +140,7 @@ export class CreatorStudioComponent implements OnInit {
       },
       error: () => {
         this.deleting = false;
+        this.toast.show({ type: 'error', title: 'Unpublish Failed', message: 'Could not delete this listing. Please try again.' });
       }
     });
   }

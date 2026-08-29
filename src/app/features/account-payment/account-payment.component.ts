@@ -9,6 +9,7 @@ import { approxKhr, detectCardBrand, formatUsd, validateCardInput } from '../../
 import { PaymentBrandMarkComponent } from '../../shared/ui/payment-brand-mark/payment-brand-mark.component';
 import { KhqrCardComponent } from '../../shared/ui/khqr-card/khqr-card.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
+import { ExpiryDateDirective } from '../../shared/directives/expiry-date.directive';
 
 @Component({
   selector: 'app-account-payment',
@@ -20,7 +21,8 @@ import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directi
     RouterLink,
     PaymentBrandMarkComponent,
     KhqrCardComponent,
-    ScrollLockDirective
+    ScrollLockDirective,
+    ExpiryDateDirective
   ],
   templateUrl: './account-payment.component.html',
   styleUrl: './account-payment.component.css'
