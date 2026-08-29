@@ -164,22 +164,24 @@
 
 .steam-thumb-strip {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(clamp(64px, 9vw, 96px), 1fr));
+  gap: var(--space-2);
 }
 
 .steam-thumb-btn {
   aspect-ratio: 16 / 9;
   padding: 0;
-  border: 2px solid transparent;
+  border: none;
   border-radius: var(--radius-xs, 2px);
   overflow: hidden;
   background: #000000;
   cursor: pointer;
-  transition: border-color 0.15s ease;
+  opacity: 0.55;
+  transition: opacity 0.15s ease;
 }
-.steam-thumb-btn:hover { border-color: var(--text-muted); }
-.steam-thumb-btn.active { border-color: var(--cyan-400, #66C0F4); }
+.steam-thumb-btn:hover { opacity: 0.8; }
+.steam-thumb-btn.active { opacity: 1; }
+.steam-thumb-btn:focus-visible { outline: 2px solid var(--cyan-400, #66C0F4); outline-offset: 2px; }
 .steam-thumb-img {
   width: 100%;
   height: 100%;
@@ -1079,16 +1081,8 @@
 }
 
 @media (max-width: 640px) {
-  .steam-thumb-strip {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    padding-bottom: 4px;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-  .steam-thumb-btn {
-    flex: 0 0 72px;
-  }
+  /* Thumbnail strip stays on the same auto-fit grid as desktop so thumb
+     width stays continuous across this breakpoint (no 64px↔137px jump). */
   .steam-purchase-box {
     flex-direction: column;
     align-items: stretch;
