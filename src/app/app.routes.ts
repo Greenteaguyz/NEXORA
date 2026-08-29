@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/auth/auth.guard';
 import { roleGuard } from './core/auth/role.guard';
 import { ownershipGuard } from './core/auth/ownership.guard';
+import { unsavedChangesGuard } from './features/creator-studio/game-form/unsaved-changes.guard';
 
 export const routes: Routes = [
   {
@@ -83,12 +84,14 @@ export const routes: Routes = [
   {
     path: 'studio/games/new',
     canActivate: [authGuard, roleGuard('creator')],
+    canDeactivate: [unsavedChangesGuard],
     loadComponent: () => import('./features/creator-studio/game-form/game-form.component').then(m => m.GameFormComponent),
     title: 'Publish New Game — NEXORA'
   },
   {
     path: 'studio/games/:id/edit',
     canActivate: [authGuard, roleGuard('creator'), ownershipGuard],
+    canDeactivate: [unsavedChangesGuard],
     loadComponent: () => import('./features/creator-studio/game-form/game-form.component').then(m => m.GameFormComponent),
     title: 'Edit Game Listing — NEXORA'
   },

@@ -8,6 +8,7 @@ import { GAMES_DATA } from '../../../core/data/tokens';
 import { AuthService } from '../../../core/auth/auth.service';
 import { TagChipInputComponent } from '../../../shared/ui/tag-chip-input/tag-chip-input.component';
 import { LoadingSpinnerComponent } from '../../../shared/ui/loading-spinner/loading-spinner.component';
+import { GameFormComponentLike } from './unsaved-changes.guard';
 
 export interface ArtworkPreset {
   name: string;
@@ -30,7 +31,7 @@ export interface ArtworkPreset {
   templateUrl: './game-form.component.html',
   styleUrls: ['./game-form.component.css']
 })
-export class GameFormComponent implements OnInit {
+export class GameFormComponent implements OnInit, GameFormComponentLike {
   private fb = inject(FormBuilder);
   private gamesData = inject(GAMES_DATA);
   private auth = inject(AuthService);
@@ -44,6 +45,9 @@ export class GameFormComponent implements OnInit {
   loading = true;
   submitting = false;
   errorMessage = '';
+
+  /** Set right before the success navigation so the unsaved-changes guard never prompts. */
+  justSaved = false;
 
   readonly defaultCoverFallback = 'assets/games/game-1-cover.svg';
 
@@ -118,6 +122,7 @@ export class GameFormComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    this.justSaved = false;
     this.initForm();
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
@@ -172,6 +177,7 @@ export class GameFormComponent implements OnInit {
           tags: game.tags
         });
         this.formValues.set({ ...this.gameForm.getRawValue() });
+        this.gameForm.markAsPristine(); // Seeded edit data must not count as "dirty"
         this.loading = false;
       },
       error: () => {
@@ -187,6 +193,10 @@ export class GameFormComponent implements OnInit {
       tags: [...preset.suggestedTags]
     });
     this.formValues.set({ ...this.gameForm.getRawValue() });
+  }
+
+  hasUnsavedChanges(): boolean {
+    return (this.gameForm?.dirty ?? false) && !this.justSaved;
   }
 
   onImageError(event: Event): void {
@@ -230,6 +240,7 @@ export class GameFormComponent implements OnInit {
       this.gamesData.updateGame(this.gameId, dto).subscribe({
         next: () => {
           this.submitting = false;
+          this.justSaved = true; // Skip unsaved-changes prompt on programmatic navigation
           this.router.navigate(['/studio'], {
             queryParams: { updated: 'true', title: dto.title, gameId: this.gameId }
           });
@@ -243,6 +254,7 @@ export class GameFormComponent implements OnInit {
       this.gamesData.createGame(dto, user.id).subscribe({
         next: (createdGame) => {
           this.submitting = false;
+          this.justSaved = true; // Skip unsaved-changes prompt on programmatic navigation
           this.router.navigate(['/studio'], {
             queryParams: { published: 'true', title: createdGame.title, gameId: createdGame.id }
           });
