@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, OnDestroy, HostListener } from '@angular/core';
-import { CommonModule, Location } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
@@ -31,7 +31,6 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
   private gamesData = inject(GAMES_DATA);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private location = inject(Location);
   private ambientExtractor = inject(AmbientColorExtractorService);
 
   allGames: Game[] = [];
@@ -62,6 +61,7 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<string>();
   private subs = new Subscription();
   private autoRotateInterval: any = null;
+  private visibilityHandler: (() => void) | null = null;
 
   get currentHeroGame(): Game | null {
     if (this.featuredGames.length > 0) {
@@ -91,14 +91,36 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
     this.setupSearchDebounce();
     this.loadCatalog();
     this.startAutoRotate();
+    this.setupVisibilityPause();
   }
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
     this.stopAutoRotate();
+    this.teardownVisibilityPause();
     if (this.transitionTimer) {
       clearTimeout(this.transitionTimer);
       this.transitionTimer = null;
+    }
+  }
+
+  /** Pause hero rotation when the tab is hidden; resume when visible again. */
+  private setupVisibilityPause(): void {
+    if (typeof document === 'undefined') return;
+    this.visibilityHandler = () => {
+      if (document.hidden) {
+        this.stopAutoRotate();
+      } else {
+        this.startAutoRotate();
+      }
+    };
+    document.addEventListener('visibilitychange', this.visibilityHandler);
+  }
+
+  private teardownVisibilityPause(): void {
+    if (this.visibilityHandler && typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.visibilityHandler);
+      this.visibilityHandler = null;
     }
   }
 
@@ -110,7 +132,7 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
       ).subscribe(term => {
         this.searchTerm = term;
         this.applyFilters();
-        this.updateQueryParams();
+        this.syncUrl();
       })
     );
   }
@@ -273,6 +295,13 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
 
   startAutoRotate(): void {
     this.stopAutoRotate();
+    // SSR-safe reduced-motion guard: never schedule auto-advance for users
+    // who ask for reduced motion (or when no window exists).
+    if (typeof window === 'undefined' ||
+        (typeof window.matchMedia === 'function' &&
+         window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
+      return;
+    }
     this.autoRotateInterval = setInterval(() => {
       if (!this.hoveredScreenshotUrl && !this.isDragging && this.featuredGames.length > 1) {
         this.nextHero();
@@ -345,13 +374,13 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
       this.selectedTags.add(tag);
     }
     this.applyFilters();
-    this.updateQueryParams();
+    this.syncUrl();
   }
 
   clearTags(): void {
     this.selectedTags.clear();
     this.applyFilters();
-    this.updateQueryParams();
+    this.syncUrl();
   }
 
   onSortChange(event: Event): void {
@@ -359,7 +388,7 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
     if (target) {
       this.sortBy = target.value as any;
       this.applyFilters();
-      this.updateQueryParams();
+      this.syncUrl();
     }
   }
 
@@ -395,20 +424,23 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
     this.filteredGames = result;
   }
 
-  private updateQueryParams(): void {
-    const params = new URLSearchParams();
-    if (this.selectedTags.size > 0) {
-      params.set('tags', Array.from(this.selectedTags).join(','));
-    }
-    if (this.searchTerm.trim()) {
-      params.set('search', this.searchTerm.trim());
-    }
-    if (this.sortBy && this.sortBy !== 'featured') {
-      params.set('sort', this.sortBy);
-    }
-    const query = params.toString();
-    const url = query ? `/catalog?${query}` : '/catalog';
-    this.location.replaceState(url);
+  /**
+   * Reflect current filters into the URL (replaceUrl: no history spam).
+   * Null params are dropped so the URL stays clean. The route.queryParams
+   * subscription guards against feedback loops by comparing values before
+   * assigning — params written here already match local state, so it no-ops.
+   */
+  private syncUrl(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        search: this.searchTerm.trim() || null,
+        tags: this.selectedTags.size > 0 ? Array.from(this.selectedTags).join(',') : null,
+        sort: this.sortBy !== 'featured' ? this.sortBy : null
+      },
+      queryParamsHandling: '',
+      replaceUrl: true
+    });
   }
 
   resetAllFilters(): void {
@@ -416,7 +448,7 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
     this.selectedTags.clear();
     this.sortBy = 'featured';
     this.applyFilters();
-    this.updateQueryParams();
+    this.syncUrl();
   }
 
   scrollChips(direction: 'left' | 'right'): void {

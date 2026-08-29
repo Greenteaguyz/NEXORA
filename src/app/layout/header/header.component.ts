@@ -34,6 +34,7 @@ export class HeaderComponent implements OnDestroy {
   private headerScrollLockActive = false;
 
   wishlistCount = signal(0);
+  private lastWishlistUserId: string | null = null;
   mobileMenuOpen = signal(false);
   drawerMounted = signal(false);
   headerHidden = signal(false);
@@ -68,11 +69,16 @@ export class HeaderComponent implements OnDestroy {
     effect(() => {
       const user = this.authService.currentUser();
       if (user) {
-        this.wishlistData.getWishlist(user.id).subscribe({
-          next: (entries) => this.wishlistCount.set(entries ? entries.length : 0),
-          error: () => this.wishlistCount.set(0)
-        });
+        // Dedupe: skip refetch when the user identity is unchanged.
+        if (this.lastWishlistUserId !== user.id) {
+          this.lastWishlistUserId = user.id;
+          this.wishlistData.getWishlist(user.id).subscribe({
+            next: (entries) => this.wishlistCount.set(entries ? entries.length : 0),
+            error: () => this.wishlistCount.set(0)
+          });
+        }
       } else {
+        this.lastWishlistUserId = null;
         this.wishlistCount.set(0);
       }
     }, { allowSignalWrites: true });
