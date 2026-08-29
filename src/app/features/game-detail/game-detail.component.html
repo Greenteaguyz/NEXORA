@@ -1,15 +1,16 @@
 <div class="steam-game-detail-page">
   @if (loading) {
     <app-loading-spinner size="lg" label="Loading game showcase..."></app-loading-spinner>
-  } @else if (!game) {
-    <app-empty-state 
-      icon="warning" 
-      title="Game Not Found" 
-      message="We couldn't find the game you are looking for in our catalog."
-      actionLabel="Return to Store"
-      routerLink="/catalog">
+  } @else if (loadError) {
+    <app-empty-state
+      icon="warning"
+      title="Connection Problem"
+      message="We couldn't load this game. Check your connection and try again."
+      actionLabel="Retry"
+      (actionClicked)="retryLoad()">
     </app-empty-state>
-  } @else {
+  } @else if (game) {
+    <!-- Unknown ids redirect to /catalog?reason=game-not-found while loading shows. -->
     <!-- Breadcrumb & Title Header -->
     <header class="steam-top-header">
       <nav class="steam-breadcrumbs" aria-label="Breadcrumb">

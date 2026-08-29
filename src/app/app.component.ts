@@ -145,6 +145,13 @@ export class AppComponent implements OnDestroy {
           message: 'You need Creator access to view that page.'
         });
         break;
+      case 'game-not-found':
+        this.toastService.show({
+          type: 'warning',
+          title: 'Game Not Found',
+          message: "We couldn't find that game in our catalog."
+        });
+        break;
       case 'not-owner':
         this.toastService.show({
           type: 'error',

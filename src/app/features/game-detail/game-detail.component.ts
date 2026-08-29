@@ -1,6 +1,7 @@
-import { Component, inject, OnInit, HostListener, effect } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, HostListener, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Meta, Title } from '@angular/platform-browser';
 import { Game } from '../../core/models/game.model';
 import { User } from '../../core/models/user.model';
 import { Order } from '../../core/models/order.model';
@@ -41,9 +42,11 @@ export interface SpecTier {
   templateUrl: './game-detail.component.html',
   styleUrls: ['./game-detail.component.css']
 })
-export class GameDetailComponent implements OnInit {
+export class GameDetailComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private title = inject(Title);
+  private meta = inject(Meta);
   private gamesData = inject(GAMES_DATA);
   private usersData = inject(USERS_DATA);
   private toastService = inject(ToastService);
@@ -56,6 +59,8 @@ export class GameDetailComponent implements OnInit {
   game: Game | null = null;
   creator: User | null = null;
   loading = true;
+  loadError = false;
+  private currentGameId: string | null = null;
   isWishlisted = false;
   isOwned = false;
 
@@ -325,23 +330,108 @@ export class GameDetailComponent implements OnInit {
 
   loadGame(id: string): void {
     this.loading = true;
+    this.loadError = false;
+    this.currentGameId = id;
     this.selectedStageIndex = 0;
     this.activeScreenshotIndex = 0;
     this.selectedOs = 'windows';
     this.selectedSpecsTab = 'minimum';
-    this.gamesData.getGameById(id).subscribe(game => {
-      if (!game) {
-        this.game = null;
-        this.loading = false;
-        return;
-      }
+    let intentHandled = false;
+    this.gamesData.getGameById(id).subscribe({
+      next: game => {
+        if (!game) {
+          // Unknown id: return the user to the catalog with explicit
+          // feedback (reason param drives the shell toast, Phase 1 pipeline).
+          this.title.setTitle('Game Details — NEXORA');
+          this.clearOgTags();
+          this.loading = true;
+          this.router.navigate(['/catalog'], {
+            queryParams: { reason: 'game-not-found' },
+            replaceUrl: true
+          });
+          return;
+        }
 
-      this.game = game;
-      this.loadCreator(game.ownerId);
-      this.checkWishlist(game.id);
-      this.checkOwnership(game.id);
-      this.loading = false;
+        this.game = game;
+        this.loadCreator(game.ownerId);
+        this.checkWishlist(game.id);
+        this.checkOwnership(game.id);
+        this.loading = false;
+
+        this.title.setTitle(`${game.title} — NEXORA`);
+        this.updateMetaTags(game);
+
+        if (!intentHandled) {
+          intentHandled = true;
+          this.handleIntentParam(game);
+        }
+      },
+      error: () => {
+        this.loadError = true;
+        this.loading = false;
+        this.game = null;
+        this.title.setTitle('Game Details — NEXORA');
+        this.clearOgTags();
+      }
     });
+  }
+
+  retryLoad(): void {
+    if (this.currentGameId) {
+      this.loadGame(this.currentGameId);
+    }
+  }
+
+  private updateMetaTags(game: Game): void {
+    const description = game.description.length > 160
+      ? game.description.slice(0, 157) + '...'
+      : game.description;
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ property: 'og:title', content: game.title });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:image', content: game.coverImageUrl });
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
+  }
+
+  private clearOgTags(): void {
+    this.meta.removeTag("property='og:title'");
+    this.meta.removeTag("property='og:description'");
+    this.meta.removeTag("property='og:image'");
+    this.meta.removeTag("property='og:type'");
+  }
+
+  private handleIntentParam(game: Game): void {
+    const intent = this.route.snapshot.queryParamMap.get('intent');
+    if (!intent) {
+      return;
+    }
+
+    if (intent === 'purchase') {
+      if (game.price > 0 && !this.isOwned && !this.isCreatorOwner) {
+        this.showPurchaseModal = true;
+      }
+    } else if (intent === 'download') {
+      if (this.isOwned) {
+        this.onDownload();
+      } else {
+        this.toastService.show({ type: 'info', title: 'Not in Library', message: 'Get the game first, then download it here.' });
+      }
+    }
+
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { intent: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    }).then(() => {
+      // The strip navigation re-applies the static route title; re-assert
+      // the dynamic game title so deep links keep the correct document title.
+      this.title.setTitle(`${game.title} — NEXORA`);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.clearOgTags();
   }
 
   private loadCreator(ownerId: string): void {

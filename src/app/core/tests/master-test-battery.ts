@@ -11,7 +11,7 @@ import '@angular/compiler';
 import { PLATFORM_ID, NgModule, ErrorHandler, createPlatformFactory, platformCore, provideZoneChangeDetection, ɵINJECTOR_SCOPE } from '@angular/core';
 import { TestBed, TestComponentRenderer } from '@angular/core/testing';
 import { ScrollLockService } from '../services/scroll-lock.service';
-import { formatExpiry } from '../data/payments/payment-logic';
+import { formatExpiry, validateCardInput } from '../data/payments/payment-logic';
 import { ToastService } from '../services/toast.service';
 import { sanitizeReturnUrl } from '../auth/return-url.util';
 
@@ -322,6 +322,17 @@ export class MasterTestRunner {
       for (const [input, expected] of cases) {
         this.assert(formatExpiry(input) === expected, `formatExpiry('${input}') must be '${expected}', got '${formatExpiry(input)}'`);
       }
+    });
+
+    await this.runTest('Expiry Formatting', 'Expiry validation distinguishes malformed from expired', () => {
+      const now = new Date('2026-08-29');
+      const malformed = validateCardInput({ type: 'card' as const, brand: 'visa', holder: 'Bob Mercer', number: '4242424242424242', expiry: '082' }, [], now);
+      this.assert(malformed.errors.includes('Use MM/YY format'), `Malformed expiry must report 'Use MM/YY format', got [${malformed.errors.join('; ')}]`);
+      this.assert(!malformed.errors.includes('This card has expired'), 'Malformed expiry must NOT report expired');
+
+      const expired = validateCardInput({ type: 'card' as const, brand: 'visa', holder: 'Bob Mercer', number: '4242424242424242', expiry: '01/20' }, [], now);
+      this.assert(expired.errors.includes('This card has expired'), `Well-formed expired card must report 'This card has expired', got [${expired.errors.join('; ')}]`);
+      this.assert(!expired.errors.includes('Use MM/YY format'), 'Well-formed expired card must NOT report format error');
     });
 
     const endTime = performance.now();

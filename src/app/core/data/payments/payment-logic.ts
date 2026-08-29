@@ -105,7 +105,9 @@ export function validateCardInput(dto: AddCardMethodDto, methods: PaymentMethod[
   if (!brand) {
     errors.push('Only Visa and Mastercard are supported');
   }
-  if (isCardExpired(dto.expiry, now)) {
+  if (!/^\d{2}\s*\/\s*\d{2}$/.test(dto.expiry.trim())) {
+    errors.push('Use MM/YY format');
+  } else if (isCardExpired(dto.expiry, now)) {
     errors.push('This card has expired');
   }
   if (!dto.holder || dto.holder.trim().length < 2) {
