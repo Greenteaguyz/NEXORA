@@ -58,11 +58,11 @@ Recipe-style guides for solving specific engineering challenges.
 Unambiguous specifications, data contracts, and routing tables.
 
 * **[Data models reference](./reference-data-models.md)**  
-  TypeScript interfaces for `User`, `Game`, `LibraryEntry`, `Order`, and `WishlistEntry`, including field constraints, validation rules, and soft-delete schemas.
+  TypeScript interfaces for `User`, `Game`, `LibraryEntry`, `Order`, `WishlistEntry`, `PaymentMethod`, `Wallet`, and `GiftCard`, including field constraints, validation rules, and soft-delete schemas.
 * **[API and data services reference](./reference-api-services.md)**  
-  Method signatures, parameter types, Observable return types, and DI token constants for all 5 core data services (`GAMES_DATA`, `LIBRARY_DATA`, `ORDERS_DATA`, `USERS_DATA`, `WISHLIST_DATA`).
+  Method signatures, parameter types, Observable return types, and DI token constants for all 6 core data services (`GAMES_DATA`, `LIBRARY_DATA`, `ORDERS_DATA`, `USERS_DATA`, `WISHLIST_DATA`, `PAYMENTS_DATA`) and singleton application services (`ScrollLockService`, `ToastService`, `DownloadService`).
 * **[Routes and guards reference](./reference-routes-guards.md)**  
-  Central route table, functional guard definitions, authorization matrix, and deep-linked `returnUrl` behavior.
+  Central route table (18 routes including `/account/payment`), functional guard definitions (`authGuard`, `roleGuard`, `ownershipGuard`, `unsavedChangesGuard`), authorization matrix, return URL sanitization, and deep-link intent handling.
 
 ---
 
@@ -81,10 +81,10 @@ Architectural rationale, design choices, and trade-off analysis.
 
 * **[Steam Design System (DESIGN.md)](../DESIGN.md)** — Comprehensive design specification detailing color tokens, typography scales, zero-shift media architecture, fluid `clamp()` tokens, 4/3/2/1 grid progression, and 50+ anti-slop guardrails.
 * **[Frontend architecture specification](../frontend-architecture.md)** — Architectural document covering system design, state management with Signals, DI abstraction, error handling, and design tokens.
-* **[Pages and components map](../pages_components_map.md)** — Component registry (25 components with build status), layout wireframes, cross-cutting DI dependency matrix, and Mermaid component graph.
+* **[Pages and components map](../pages_components_map.md)** — Component registry (26 components and 5 directives), layout wireframes, cross-cutting DI dependency matrix, and Mermaid component graph.
 * **[Site architecture](../site_architecture.md)** — Site map, 18-route table, 5-state download machine, guard chains, data flow diagrams, and page inventory.
 * **[Solo build plan](../design_doc.md)** — Milestone triage plan, solo execution strategy, success criteria checklist, and Decision Audit Trail.
-* **[Project tracked tasks](../TODOS.md)** — Active execution tasks and backlog tracker across Phases 1 through 10.
+* **[Project tracked tasks](../TODOS.md)** — Active execution tasks and backlog tracker across Phases 1 through 19.
 
 ---
 
@@ -102,7 +102,7 @@ Audited via Angular esbuild application builder:
 
 ## Run automated test suites
 
-Execute the unified 4-tier automated test battery (166 assertions — 100% Green in under 4 seconds):
+Execute the unified 4-tier automated test battery (550 assertions — 100% Green across all suites):
 
 ```bash
 # 1. Full Build & Regression Gate (Unit, Integration, Master, Impeccable Anti-Slop)

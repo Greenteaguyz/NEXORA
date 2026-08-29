@@ -273,6 +273,11 @@ No deployment needed — this runs locally via `ng serve`. The deliverable is th
 | 13 | Scope     | CRUD ruling resolved: Creator Studio promoted to committed, minimal scope | Structural Scope | P1 (Completeness) | Problem Statement already names CRUD as graded; deferring the only CRUD surface contradicted the brief. Resolved per Council Verdict. |
 | 14 | Arch      | Wishlist given `WISHLIST_DATA` token + `WishlistDataService` | Architecture | P1 (Completeness) | Closes the one gap where the DI-abstraction claim ("every feature codes against an interface") wasn't actually true. |
 | 15 | Process   | `test-suite-plan.md` downgraded to aspirational reference | Test Strategy | P3 (Pragmatic action) | A 4-framework, CI-gated, 90%-mutation-score test pyramid is not achievable alongside CRUD + docs + polish in 10 solo days; keeping it as a binding requirement risked crowding out the graded competencies. |
+| 16 | Arch      | Payment & Wallet subsystem (`PAYMENTS_DATA`, KHQR Bakong, Card DTOs) | Architecture | P1 (Completeness) | Modeled realistic checkout flows with dual-currency/KHQR mobile support without external API dependencies. |
+| 17 | Arch      | Ref-counted `ScrollLockService` & `[appScrollLock]` directive | Mobile/Desktop UX | P3 (Pragmatic action) | Solves layered overlay body scroll leaks and iOS rubber-band background dragging across 15 modal surfaces. |
+| 18 | UX        | Resilient Toast Notification Queue with Exit Transitions | User Feedback | P5 (Explicit over clever) | Replaces abrupt DOM removal with 180ms leaving state, stack cap of 3, hover-pause, and composite key deduplication. |
+| 19 | Security  | Return URL Sanitization (`sanitizeReturnUrl`) & Reason Feedback | Security/Robustness | P1 (Completeness) | Neutralizes open redirect attack vectors (`//`, external schemes, backslashes) and provides contextual toast alerts. |
+| 20 | Routing   | Creator Studio `unsavedChangesGuard` CanDeactivate Guard | Data Integrity | P5 (Explicit) | Prevents accidental loss of uncommitted game form drafts while allowing programmatic post-save navigation. |
 
 ---
 

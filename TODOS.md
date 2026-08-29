@@ -16,7 +16,13 @@ This document tracks all engineering milestones and implementation tasks for the
 | **Phase 11** (Task 16) | Speedtest Dual-Segment Switcher, Unified Steam Deck Hub Mobile Navigation & Crawler | ✅ Complete | 223/223 tests passing, 24/24 crawler links valid, 5/5 Playwright E2E passed |
 | **Phase 12** (Task 17) | Hero Carousel Touch Drag-to-Swipe, Hardware-Accelerated Motion & Clean Pagination | ✅ Complete | 234/234 tests passing, 142 unit tests across 27 sections, 100% green |
 | **Phase 13** (Task 18) | Smart Scroll-Aware Header, Mobile Viewport Clearance & Bottom Bar UX | ✅ Complete | 243/243 tests passing, 151 unit tests across 28 sections, 100% green |
-| **Deployment and Ops** | Cloud hosting, tunnels & performance budgets | ✅ Ready | `vercel.json` SPA rewrites active, Cloudflare tunnel active, 96.8 kB initial bundle, DOM Interactive: 38ms |
+| **Phase 14** (Task 19) | Payment & Wallet Architecture, Cambodian KHQR Bakong, Card DTOs & Checkout Modal | ✅ Complete | Full mock ledger, 4 KHQR banks, credit card validation, 550 total tests |
+| **Phase 15** (Task 20) | Ref-Counted Scroll Lock Engine & Directive for 15 Fullscreen Overlays | ✅ Complete | Multi-overlay ref-count, iOS fixed-body compensation, scrollbar width balancing |
+| **Phase 16** (Task 21) | Resilient Toast Notification Queue, Severity Tiers, Exit Transitions & Hover-Pause | ✅ Complete | 4 severity tiers, 180ms CSS exit transition, deduplication, stack cap 3, undo payload |
+| **Phase 17** (Task 22) | Deep Link Intent Engine, Return URL Sanitization & Dynamic Route Titles | ✅ Complete | `?intent=purchase|download`, `sanitizeReturnUrl` against open redirects, `?reason=` alerts |
+| **Phase 18** (Task 23) | Creator Studio Unsaved Changes CanDeactivate Guard & Dirty Detection | ✅ Complete | Safe form navigation guard, `justSaved` bypass, buyer-impact unpublish dialog |
+| **Phase 19** (Task 24) | Storefront Card UX, Owned Badges, Formatting Directives & Profile Cleanup | ✅ Complete | `Owned` badge on catalog cards, `appCardNumber` / `appCvv` / `appExpiryDate`, live wallet stat |
+| **Deployment and Ops** | Cloud hosting, tunnels, caching headers & performance budgets | ✅ Ready | `vercel.json` caching headers (1y immutable assets), 550 tests passing (100% green) |
 
 ---
 
@@ -45,6 +51,66 @@ This document tracks all engineering milestones and implementation tasks for the
 - [x] **18.6** Automated Regression Expansion: Added Section 28 to `unit-tests.spec.ts` (151 unit tests), expanding total verified test assertions to 243 (100% green pass rate across all suites).
 
 ---
+
+## Phase 14: Payment & Wallet Architecture, Cambodian KHQR Bakong & Checkout Modal (Task 19)
+
+### Task 19: Payments & Wallet Architecture
+- [x] **19.1** Payment Domain Models & DI Tokens: Implemented `payment.model.ts` (`PaymentMethod`, `CardPaymentMethod`, `KhqrPaymentMethod`, `Wallet`, `WalletTransaction`, `GiftCard`) and registered `PAYMENTS_DATA` injection token.
+- [x] **19.2** Mock Payment Data Service: Built `MockPaymentsDataService` with local storage persistence, method creation/deletion/default toggles, wallet balance mutation, and immutable transaction ledgering.
+- [x] **19.3** Dedicated Payment & Wallet Feature Page: Built `AccountPaymentComponent` (`/account/payment`) featuring Credit Card cards, Cambodian KHQR Bakong cards (ABA, ACLEDA, Wing, Bakong), wallet balance top-up modal, and prepaid gift code redemption.
+- [x] **19.4** Integrated Checkout Modal: Upgraded `PurchaseConfirmModalComponent` to query `PAYMENTS_DATA`, supporting direct wallet balance deduction or default card selection with fallback prompts.
+- [x] **19.5** Shared Payment Brand Mark & KHQR Components: Created `PaymentBrandMarkComponent` and `KhqrCardComponent` with authentic vector brand badges and QR preview containers.
+
+---
+
+## Phase 15: Ref-Counted Scroll Lock Engine for Fullscreen Overlays (Task 20)
+
+### Task 20: Scroll Locking Architecture
+- [x] **20.1** Atomic Ref-Counting Service: Implemented `ScrollLockService` maintaining an internal `lockCount` to safely manage multiple concurrently open dialogs and drawers.
+- [x] **20.2** iOS Fixed-Body Neutralization: Used `position: fixed; width: 100%; top: -${scrollY}px;` on body to prevent iOS Safari rubber-band background scrolling while preserving exact scroll position on restore.
+- [x] **20.3** Gutter Shift Compensation: Added dynamic desktop scrollbar width measurement and padding compensation to prevent layout reflows when scrollbars disappear.
+- [x] **20.4** Declarative Directive Integration: Built `[appScrollLock]` directive and attached it to 15 fullscreen overlay surfaces across the application.
+
+---
+
+## Phase 16: Resilient Toast Notification Queue & Lifecycle Engine (Task 21)
+
+### Task 21: Toast Queue & Lifecycle Architecture
+- [x] **21.1** Multi-Tier Severity System: Configured auto-dismiss timers by severity (`success`: 3.5s, `info`/`download`: 4s, `warning`: 5s, `error`: 7s).
+- [x] **21.2** Leaving State & Exit Animations: Introduced `leaving: true` flag enabling 180ms CSS fade-out before array eviction to eliminate abrupt visual pop-out.
+- [x] **21.3** Stack Capacity & Queue Deduplication: Implemented cap of 3 visible toasts with oldest-item eviction and identical message deduplication with timer reset.
+- [x] **21.4** Interactive Hover-Pause & Double-Fire Guarded Undo: Added `pause(id)` and `resume(id)` on hover/focus, and optional `action` payload supporting undo callbacks with execution locks.
+
+---
+
+## Phase 17: Deep Link Intent Engine, URL Synchronizer & Route Metadata (Task 22)
+
+### Task 22: Deep Link Intents & Route Polish
+- [x] **22.1** Intent Deep Linking: Added `?intent=purchase` and `?intent=download` on `/games/:id` with auto-triggering on load and silent URL parameter stripping via `replaceUrl: true`.
+- [x] **22.2** Return URL Sanitization: Implemented `sanitizeReturnUrl` protecting against `//`, schemes, and backslashes with automatic fallback to `/catalog`.
+- [x] **22.3** Guard Rejection Feedback: Root `AppComponent` translates `?reason=` codes (`auth-required`, `creator-required`, `not-owner`, `game-not-found`) into user-facing toast notifications.
+- [x] **22.4** Dynamic Titles & Meta Tags: Configured dynamic document title updates across all 18 routes and OpenGraph metadata per game detail.
+
+---
+
+## Phase 18: Creator Studio Unsaved Changes CanDeactivate Guard (Task 23)
+
+### Task 23: Unsaved Changes Guard & Studio Polish
+- [x] **23.1** CanDeactivate Form Guard: Built `unsavedChangesGuard` attached to `/studio/games/new` and `/studio/games/:id/edit`.
+- [x] **23.2** Dirty State Detection & Save Bypass: Implemented `hasUnsavedChanges()` with `markAsPristine()` and `justSaved` state machine flag to guarantee seamless post-save navigation.
+- [x] **23.3** Buyer-Impact Unpublish Dialog: Added contextual warnings in soft-delete unpublish modal reminding creators that existing owners retain library access.
+- [x] **23.4** Mobile Input Ergonomics: Enforced 16px font floor on mobile inputs to prevent iOS automatic zoom.
+
+---
+
+## Phase 19: Storefront Card UX, Owned Badges & Profile Cleanup (Task 24)
+
+### Task 24: Card UX & Profile Dashboard Refinements
+- [x] **24.1** Real-Time Owned Badges: Updated catalog `GameCardComponent` to query `LIBRARY_DATA.isOwned`, displaying an Emerald `Owned` badge for acquired games.
+- [x] **24.2** Caret-Safe Payment Directives: Built `CardNumberDirective` (4-digit grouping), `CvvDirective` (numeric cap 4), and `ExpiryDateDirective` (MM/YY auto-slash).
+- [x] **24.3** Mis-Click Prevention: Removed whole-card click dismissal on toasts, restricting closure to 44px close target or auto-expiry with 250ms spawn grace.
+- [x] **24.4** Profile Dashboard Cleanup: Removed demo "System Reset" bar and avatar glow ring, and wired live `formatUsd(balance)` wallet stat card.
+- [x] **24.5** Test Battery Expansion to 550 Tests: Expanded test coverage to 469 unit tests (across 87 sections), 51 integration tests, 23 master battery tests, and 7 impeccable tests (100% green).
 
 ## Agent execution and quality workflow
 

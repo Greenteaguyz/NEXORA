@@ -20,6 +20,7 @@ graph TD
     WISHLIST["/wishlist"]
     ORDERS["/orders"]
     PROFILE["/profile"]
+    PAYMENT["/account/payment"]
     STUDIO["/studio"]
     STUDIO_NEW["/studio/games/new"]
     STUDIO_EDIT["/studio/games/:id/edit"]
@@ -40,6 +41,8 @@ graph TD
     LOGIN -->|"authenticated"| WISHLIST
     LOGIN -->|"authenticated"| ORDERS
     LOGIN -->|"authenticated"| PROFILE
+    LOGIN -->|"authenticated"| PAYMENT
+    PROFILE <--> PAYMENT
     LOGIN -->|"creator role"| STUDIO
     LIBRARY -->|"Click game"| DETAIL
     WISHLIST -->|"Click game"| DETAIL
@@ -53,7 +56,7 @@ graph TD
     classDef stretch fill:#FEF3C7,stroke:#D97706,stroke-width:2px,color:#92400E;
 
     class ROOT,CATALOG,GENRES,DETAIL,CREATOR,FORGOT,SUPPORT,NOTFOUND public
-    class LOGIN,REGISTER,LIBRARY,WISHLIST,ORDERS,PROFILE auth
+    class LOGIN,REGISTER,LIBRARY,WISHLIST,ORDERS,PROFILE,PAYMENT auth
     class STUDIO,STUDIO_NEW,STUDIO_EDIT stretch
 ```
 
@@ -63,26 +66,27 @@ graph TD
 
 ## Route Table
 
-| Route                   | Page              | Guard(s)                                             | Role              | Component                 |
-|-------------------------|-------------------|------------------------------------------------------|-------------------|---------------------------|
-| `/`                     | Redirect          | —                                                    | —                 | Redirects to `/catalog`   |
-| `/catalog`              | Game Catalog      | None                                                 | Public            | `GameCatalogComponent`    |
-| `/genres`               | Genre Directory   | None                                                 | Public            | `GenreDirectoryComponent` |
-| `/games/:id`            | Game Detail       | None                                                 | Public            | `GameDetailComponent`     |
-| `/creators/:id`         | Creator Portfolio | None                                                 | Public            | `CreatorProfileComponent` |
-| `/login`                | Login             | None                                                 | Public            | `LoginComponent`          |
-| `/register`             | Register          | None                                                 | Public            | `RegisterComponent`       |
-| `/forgot-password`      | Forgot Password   | None                                                 | Public            | `ForgotPasswordComponent` |
-| `/library`              | My Library        | `authGuard`                                          | Any authenticated | `LibraryComponent`        |
-| `/wishlist`             | Saved Games       | `authGuard`                                          | Any authenticated | `WishlistComponent`       |
-| `/orders`               | Order History     | `authGuard`                                          | Any authenticated | `OrdersComponent`         |
-| `/profile`              | User Profile      | `authGuard`                                          | Any authenticated | `ProfileComponent`        |
-| `/studio`               | Creator Studio    | `authGuard` + `roleGuard('creator')`                  | Creator           | `CreatorStudioComponent`  |
-| `/studio/games/new`     | New Listing       | `authGuard` + `roleGuard('creator')`                  | Creator           | `GameFormComponent`       |
-| `/studio/games/:id/edit`| Edit Listing      | `authGuard` + `roleGuard('creator')` + `ownershipGuard` | Creator (own)     | `GameFormComponent`       |
-| `/support`              | Support & Privacy | None                                                 | Public            | `SupportComponent`        |
-| `/not-found`            | 404 Not Found     | None                                                 | Public            | `NotFoundComponent`       |
-| `**`                    | Wildcard Catch    | None                                                 | Public            | Redirects to `/not-found` |
+| Route                   | Page              | Guard(s)                                                                                    | Role              | Component                 |
+|-------------------------|-------------------|---------------------------------------------------------------------------------------------|-------------------|---------------------------|
+| `/`                     | Redirect          | —                                                                                           | —                 | Redirects to `/catalog`   |
+| `/catalog`              | Game Catalog      | None                                                                                        | Public            | `GameCatalogComponent`    |
+| `/genres`               | Genre Directory   | None                                                                                        | Public            | `GenreDirectoryComponent` |
+| `/games/:id`            | Game Detail       | None                                                                                        | Public            | `GameDetailComponent`     |
+| `/creators/:id`         | Creator Portfolio | None                                                                                        | Public            | `CreatorProfileComponent` |
+| `/login`                | Login             | None                                                                                        | Public            | `LoginComponent`          |
+| `/register`             | Register          | None                                                                                        | Public            | `RegisterComponent`       |
+| `/forgot-password`      | Forgot Password   | None                                                                                        | Public            | `ForgotPasswordComponent` |
+| `/library`              | My Library        | `authGuard`                                                                                 | Any authenticated | `LibraryComponent`        |
+| `/wishlist`             | Saved Games       | `authGuard`                                                                                 | Any authenticated | `WishlistComponent`       |
+| `/orders`               | Order History     | `authGuard`                                                                                 | Any authenticated | `OrdersComponent`         |
+| `/profile`              | User Profile      | `authGuard`                                                                                 | Any authenticated | `ProfileComponent`        |
+| `/account/payment`      | Payment & Wallet  | `authGuard`                                                                                 | Any authenticated | `AccountPaymentComponent` |
+| `/studio`               | Creator Studio    | `authGuard` + `roleGuard('creator')`                                                         | Creator           | `CreatorStudioComponent`  |
+| `/studio/games/new`     | New Listing       | `authGuard` + `roleGuard('creator')` + `canDeactivate(unsavedChangesGuard)`                  | Creator           | `GameFormComponent`       |
+| `/studio/games/:id/edit`| Edit Listing      | `authGuard` + `roleGuard('creator')` + `ownershipGuard` + `canDeactivate(unsavedChangesGuard)`| Creator (own)     | `GameFormComponent`       |
+| `/support`              | Support & Privacy | None                                                                                        | Public            | `SupportComponent`        |
+| `/not-found`            | 404 Not Found     | None                                                                                        | Public            | `NotFoundComponent`       |
+| `**`                    | Wildcard Catch    | None                                                                                        | Public            | Redirects to `/not-found` |
 
 ---
 
@@ -282,6 +286,21 @@ Single game's full information. The download button is the primary CTA.
 | **Empty State**               | Shown if creator has no active public listings                                            |
 
 **Data dependencies:** `UsersDataService.getUser(id)`, `GamesDataService.getGames()`
+
+---
+
+### 16. Payment & Wallet (`/account/payment`) — Auth Required
+
+| Element                       | Description                                                                               |
+|-------------------------------|-------------------------------------------------------------------------------------------|
+| **Wallet Balance Hero**       | Displays current available balance in USD with quick `Top Up` CTA                         |
+| **Saved Cards Section**       | Grid of credit cards (Visa / Mastercard) with default pill, expiry, and delete actions     |
+| **Cambodian KHQR Section**    | Cards for Bakong, ABA, ACLEDA, and Wing mobile banking accounts with dynamic QR modals    |
+| **Add Payment Method Form**   | Caret-safe card input form with `appCardNumber`, `appExpiryDate`, `appCvv` formatters     |
+| **Gift Card Redemption**      | Input field to redeem prepaid vouchers (`NEXORA-GIFT-50`, etc.) into direct wallet funds  |
+| **Transaction History Ledger**| Chronological table of all top-ups, purchases, and gift card redemptions                  |
+
+**Data dependencies:** `PaymentsDataService.getMethods()`, `PaymentsDataService.getWalletSnapshot()`, `AuthService.currentUser()`
 
 ---
 

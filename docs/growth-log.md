@@ -402,3 +402,75 @@
 1. When transitioning a dynamically mounted element, gate all transitions behind a base state (e.g., `transform + visibility`) and only add the active class inside double-rAF.
 2. Split enter/exit timing into separate constants; derive any unmount/teardown timer from the *exit* duration only.
 3. Extract transition-completion scheduling into a pure, framework-free class with a generation counter so rapid open/close races are unit-testable with fake timers (no TestBed required).
+
+---
+
+## [Pattern] Ref-Counted Scroll Lock Engine with iOS Fixed-Body Neutralization
+
+### Context
+- Desktop and mobile applications with multiple layered modal overlays (e.g., purchase confirm, image lightbox, command palette, drawer, confirm dialogs) suffer from background scrolling leaks, iOS rubber-band dragging, and scroll position loss when overlays close.
+- Closing one nested modal would prematurely restore body scrolling while an underlying dialog remained open.
+
+### Root Cause / Core Insight
+- A binary boolean flag cannot manage overlapping or stacked overlays.
+- An atomic reference counter (`lockCount++` / `lockCount--`) ensures the document body remains locked until the last registered overlay unmounts.
+- On iOS Safari, `overflow: hidden` on `body` or `html` does not prevent rubber-band touch scrolling. The robust cross-platform solution applies `position: fixed; width: 100%; top: -${scrollY}px;` while recording the existing scroll offset.
+- When unlocking, restoring `top` and executing `window.scrollTo(0, savedScrollY)` returns the user to the exact pixel coordinate. Compensating with `padding-right: calc(${scrollbarWidth}px)` prevents layout jumps from disappearing desktop scrollbars.
+
+### The Pattern (Transferable)
+1. Implement a singleton `ScrollLockService` maintaining an internal `lockCount` and `savedScrollY`.
+2. Apply a reusable structural/attribute directive (`[appScrollLock]`) to modal roots that invokes `lock()` on `ngOnInit` and `unlock()` on `ngOnDestroy`.
+3. Guard all DOM operations with `isPlatformBrowser(platformId)` for SSR safety, and treat negative decrements as safe no-ops.
+
+---
+
+## [Pattern] Resilient Toast Notification Lifecycle with Exit Transition Guarding & Deduplication
+
+### Context
+- User feedback toasts in high-frequency shopping workflows (rapid wishlist toggling, quick purchases, validation rejections) cause toast flooding, overlapping dismissals, and abrupt DOM removal before exit animations finish.
+
+### Root Cause / Core Insight
+- Removing an item from an active array immediately destroys its DOM node, making CSS fade/slide exit transitions impossible.
+- Marking an item with `leaving: true` allows CSS `@keyframes` (180ms opacity and translateY slide) to run gracefully, while a deferred timer schedules actual array eviction.
+- Deduplicating sequential notifications by a composite key (`${type}:${title}:${message}`) resets the auto-dismiss timer instead of spamming identical pills.
+- Hovering or focusing a toast pauses its deadline (`pause(id)`) and calculates elapsed milliseconds; mouseleave/blur restores the remaining duration (`resume(id)`).
+
+### The Pattern (Transferable)
+1. Separate notification state into `active` and `leaving`.
+2. Cap visible toasts (e.g., maximum 3) by auto-evicting the oldest item when new alerts arrive.
+3. Offer an optional `action` payload with a callback (e.g., `Undo`) protected against double-execution flags.
+
+---
+
+## [Pattern] Dual-Method E-Commerce Checkout with Cambodian KHQR Bakong & Direct Card Validation
+
+### Context
+- Expanding storefront payment options beyond credit cards to Southeast Asian mobile-first economies requiring National Bank of Cambodia KHQR (Bakong, ABA, ACLEDA, Wing) standards without breaking existing checkout contracts.
+
+### Root Cause / Core Insight
+- Abstracting payment methods under a discriminated union `PaymentMethod = CardPaymentMethod | KhqrPaymentMethod` allows UI components to switch between card form validation and dynamic QR code generation.
+- Dedicated input directives (`appCardNumber`, `appExpiryDate`, `appCvv`) enforce sanitization at the keystroke level: 4-digit card grouping with caret preservation, automatic MM/YY slashes, and numeric-only boundaries.
+- Storing balances in an explicit `Wallet` record backed by an immutable `WalletTransaction[]` audit ledger satisfies financial double-entry bookkeeping requirements in frontend mock stores.
+
+### The Pattern (Transferable)
+1. Structure checkout forms around a polymorphic union token `PAYMENTS_DATA`.
+2. Use dedicated caret-safe formatting directives rather than brittle mask libraries.
+3. Validate format anomalies separately: distinguish malformed dates (`MM/YY`) from expired dates in error copy.
+
+---
+
+## [Pattern] Form CanDeactivate Guard with Explicit Save Flags and Dirty Detection
+
+### Context
+- Creators editing extensive game listings in studio forms lose uncommitted changes if they accidentally click navigation links or browser back buttons.
+
+### Root Cause / Core Insight
+- Angular router's `CanDeactivateFn<T>` interface allows querying component methods before allowing navigation away from a route.
+- A naive `form.dirty` check blocks navigation even after a successful form submission because the form remains dirty until reloaded.
+- Introducing a state machine flag (`justSaved = true`) and invoking `form.markAsPristine()` immediately following successful submission allows smooth programmatic redirects while intercepting accidental departures.
+
+### The Pattern (Transferable)
+1. Define a standard interface `HasUnsavedChanges { hasUnsavedChanges(): boolean; }`.
+2. Implement `unsavedChangesGuard` checking `component.hasUnsavedChanges()`.
+3. Set `justSaved = true` inside the save handler and reset it when form values change.
+

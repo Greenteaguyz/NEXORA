@@ -87,12 +87,42 @@ export interface WishlistDataService {
   getWishlist(userId: string): Observable<WishlistEntry[]>;
   addToWishlist(userId: string, gameId: string): Observable<WishlistEntry>;
   removeFromWishlist(userId: string, gameId: string): Observable<void>;
+  isWishlisted(userId: string, gameId: string): Observable<boolean>;
 }
 ```
 
 * **`getWishlist(userId)`**: Retrieves all saved wishlist items for the specified user.
 * **`addToWishlist(userId, gameId)`**: Creates a new `WishlistEntry`.
 * **`removeFromWishlist(userId, gameId)`**: Removes the corresponding wishlist record.
+* **`isWishlisted(userId, gameId)`**: Returns boolean indicating if title is in user's wishlist.
+
+---
+
+### PaymentsDataService
+
+Manages stored payment methods (Credit Cards and Cambodian KHQR Bakong), prepaid gift card redemptions, and wallet transactions.
+
+```typescript
+export interface PaymentsDataService {
+  getMethods(userId: string): Observable<PaymentMethod[]>;
+  addMethod(userId: string, dto: AddPaymentMethodDto): Observable<AddMethodResult>;
+  removeMethod(userId: string, methodId: string): Observable<PaymentMethod[]>;
+  setDefaultMethod(userId: string, methodId: string): Observable<PaymentMethod[]>;
+  getWalletSnapshot(userId: string): Observable<WalletSnapshot>;
+  topUp(userId: string, amount: number, methodId: string): Observable<TopUpResult>;
+  getGiftCards(): Observable<GiftCard[]>;
+  redeemGiftCode(userId: string, code: string): Observable<RedeemCodeResult>;
+}
+```
+
+* **`getMethods(userId)`**: Retrieves saved credit card and KHQR payment methods for the user.
+* **`addMethod(userId, dto)`**: Validates and saves a new card or KHQR handle.
+* **`removeMethod(userId, methodId)`**: Removes a saved funding source.
+* **`setDefaultMethod(userId, methodId)`**: Marks a specific payment method as primary default.
+* **`getWalletSnapshot(userId)`**: Returns current wallet balance and transaction ledger.
+* **`topUp(userId, amount, methodId)`**: Credits funds to the wallet from a chosen payment method.
+* **`getGiftCards()`**: Returns available prepaid codes.
+* **`redeemGiftCode(userId, code)`**: Validates gift code, credits balance, and records transaction.
 
 ---
 
@@ -107,21 +137,59 @@ NEXORA registers data services using Angular `InjectionToken` instances declared
 | `ORDERS_DATA` | `OrdersDataService` | `MockOrdersDataService` |
 | `USERS_DATA` | `UsersDataService` | `MockUsersDataService` |
 | `WISHLIST_DATA` | `WishlistDataService` | `MockWishlistDataService` |
+| `PAYMENTS_DATA` | `PaymentsDataService` | `MockPaymentsDataService` |
 
 ### Provider registration example
 
 ```typescript
 // src/app/app.config.ts
 import { ApplicationConfig } from '@angular/core';
-import { GAMES_DATA } from './core/data/tokens';
+import { GAMES_DATA, PAYMENTS_DATA } from './core/data/tokens';
 import { MockGamesDataService } from './core/data/games/mock-games-data.service';
+import { MockPaymentsDataService } from './core/data/payments/mock-payments-data.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    { provide: GAMES_DATA, useClass: MockGamesDataService }
+    { provide: GAMES_DATA, useClass: MockGamesDataService },
+    { provide: PAYMENTS_DATA, useClass: MockPaymentsDataService }
   ]
 };
 ```
+
+---
+
+## Core application services
+
+In addition to data abstraction tokens, NEXORA provides reactive singleton services in `src/app/core/services/`:
+
+### ScrollLockService (`scroll-lock.service.ts`)
+Atomic ref-counted scroll lock for fullscreen overlays, dialogs, drawers, and modal popups.
+* **`lock()`**: Increments ref count; when transition from 0 to 1, freezes body via `position: fixed` technique on iOS/Safari, compensates for scrollbar gutter shift (`padding-right`), and remembers vertical scroll position.
+* **`unlock()`**: Decrements ref count; when reaching 0, restores native body position and restores scroll offset. Safe no-op if called below 0.
+* **`isLocked`**: Reactive `Signal<boolean>`.
+
+### ToastService (`toast.service.ts`)
+Notification queue with severity auto-hide tiers, pause-on-hover, stack limits, and exit animations.
+* **`show(payload, durationMs?)`**: Enqueues a toast. Default auto-hide durations: `success` (3.5s), `info`/`download` (4s), `warning` (5s), `error` (7s). Max 3 visible; older toasts evicted. Deduplicates identical alerts.
+* **`dismiss(id)`**: Transitions toast to `leaving: true` for 180ms CSS exit animation before removing from queue.
+* **`pause(id)` / `resume(id)`**: Suspends and resumes auto-dismiss timer on mouseenter/focus.
+* **`toasts`**: Reactive `Signal<ToastItem[]>`.
+
+### DownloadService (`download.service.ts`)
+Manages background game acquisition packages, speed calculation, and bottom download tray state.
+* **`activeDownloads`**: Reactive `Signal<DownloadItem[]>`.
+* **`isTrayOpen`**: Reactive `Signal<boolean>`.
+* **`startDownload(game, platform)`**: Simulates multi-stage package stream with progress percentages and speed simulation.
+* **`cancelDownload(gameId)`**: Terminates active stream.
+* **`openTray()` / `closeTray()` / `toggleTray()`**: Controls tray drawer visibility.
+
+### CommandPaletteService (`command-palette.service.ts`)
+Global shortcut (`Ctrl+K` / `Cmd+K`) spotlight dialog for search, navigation, and shortcuts.
+* **`isOpen`**: Reactive `Signal<boolean>`.
+* **`open()` / `close()` / `toggle()`**: Manages palette visibility.
+
+### AmbientColorExtractorService (`ambient-color-extractor.service.ts`)
+Client-side Canvas color quantization extracting prominent theme hues from cover images for dynamic ambient glow backdrops.
 
 ---
 

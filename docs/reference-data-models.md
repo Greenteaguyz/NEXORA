@@ -1,6 +1,6 @@
 # Data models reference
 
-This document provides a complete reference for the TypeScript entity models used in NEXORA. It describes the `User`, `Game`, `LibraryEntry`, `WishlistEntry`, and `Order` interfaces, including field types, constraints, and validation schemas.
+This document provides a complete reference for the TypeScript entity models used in NEXORA. It describes the `User`, `Game`, `LibraryEntry`, `WishlistEntry`, `Order`, `PaymentMethod`, `Wallet`, and `GiftCard` interfaces, including field types, constraints, and validation schemas.
 
 ---
 
@@ -114,18 +114,103 @@ The `Order` model records transaction history for paid title acquisitions.
 * **`userId`** (`string`): Foreign key referencing `User.id` (buyer).
 * **`gameId`** (`string`): Foreign key referencing `Game.id`.
 * **`price`** (`number`): Price snapshot at the time of purchase.
-* **`status`** (`'confirmed'`): Transaction status.
+* **`paymentMethod`** (`string`, optional): Identifier or description of payment method used.
+* **`status`** (`'confirmed' | 'pending' | 'failed'`): Transaction processing status.
 * **`createdAt`** (`string`): ISO timestamp of the transaction.
 
 ```typescript
+export type OrderStatus = 'confirmed' | 'pending' | 'failed';
+
 export interface Order {
   id: string;
   userId: string;
   gameId: string;
   price: number;
-  status: 'confirmed';
+  paymentMethod?: string;
+  status: OrderStatus;
   createdAt: string;
 }
+```
+
+---
+
+### Payment & Wallet Models
+
+The payment models manage saved funding sources, Cambodian KHQR integration, prepaid gift cards, and wallet ledger balances.
+
+#### PaymentMethod & Types
+
+```typescript
+export type PaymentMethodType = 'card' | 'khqr';
+export type CardBrand = 'visa' | 'mastercard';
+export type KhqrBank = 'ABA' | 'ACLEDA' | 'Wing' | 'Bakong';
+
+export interface CardPaymentMethod {
+  type: 'card';
+  id: string;
+  userId: string;
+  brand: CardBrand;
+  holder: string;
+  last4: string;
+  expiry: string;
+  isDefault: boolean;
+  createdAt: string;
+}
+
+export interface KhqrPaymentMethod {
+  type: 'khqr';
+  id: string;
+  userId: string;
+  bank: KhqrBank;
+  handle: string;
+  isDefault: boolean;
+  createdAt: string;
+}
+
+export type PaymentMethod = CardPaymentMethod | KhqrPaymentMethod;
+```
+
+#### Wallet & Transactions
+
+```typescript
+export type WalletTransactionSource = 'top_up' | 'gift_card' | 'purchase';
+
+export interface WalletTransaction {
+  id: string;
+  userId: string;
+  amount: number;
+  source: WalletTransactionSource;
+  label: string;
+  createdAt: string;
+}
+
+export interface Wallet {
+  userId: string;
+  balance: number;
+}
+
+export interface GiftCard {
+  code: string;
+  amount: number;
+  redeemedBy: string | null;
+  redeemedAt: string | null;
+}
+
+export interface AddCardMethodDto {
+  type: 'card';
+  brand: CardBrand;
+  holder: string;
+  number: string;
+  expiry: string;
+}
+
+export interface AddKhqrMethodDto {
+  type: 'khqr';
+  bank: KhqrBank;
+  handle: string;
+}
+
+export type AddPaymentMethodDto = AddCardMethodDto | AddKhqrMethodDto;
 ```
 
 ---

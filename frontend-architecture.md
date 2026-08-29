@@ -48,53 +48,59 @@ src/app/
 │   │   ├── auth.service.ts          (interface-driven, session state via signals)
 │   │   ├── auth.mock.ts             (fake login/roles, no real server)
 │   │   ├── auth.guard.ts
-│   │   └── role.guard.ts
+│   │   ├── role.guard.ts
+│   │   └── ownership.guard.ts
+│   │
+│   ├── services/                    (singleton reactive services)
+│   │   ├── scroll-lock.service.ts   (ref-counted overlay scroll lock with iOS compensation)
+│   │   ├── toast.service.ts         (notification queue, severity tiers, exit transitions)
+│   │   ├── download.service.ts      (background download streams, bottom tray signals)
+│   │   ├── command-palette.service.ts (global spotlight search shortcut)
+│   │   └── ambient-color-extractor.service.ts (dynamic dominant hue quantization)
 │   │
 │   ├── data/                         ← the abstraction layer
-│   │   ├── tokens.ts                  (InjectionTokens for each data service)
+│   │   ├── tokens.ts                  (InjectionTokens: GAMES, LIBRARY, ORDERS, USERS, WISHLIST, PAYMENTS)
 │   │   ├── games/
-│   │   │   ├── games-data.interface.ts
-│   │   │   ├── games-data.mock.ts     (in-memory array, simulated latency)
-│   │   │   └── games-data.http.ts     (swap-in later, unused for now)
 │   │   ├── users/
 │   │   ├── library/
-│   │   ├── orders/                    (implemented — order receipts, required feature)
-│   │   └── wishlist/                  (implemented — same DI-token pattern as the rest)
+│   │   ├── orders/
+│   │   ├── wishlist/
+│   │   └── payments/                  (implemented — mock payment methods, KHQR Bakong, wallet ledger)
 │   │
 │   ├── persistence/
-│   │   └── local-store.service.ts    (IndexedDB/localStorage — fake "database")
+│   │   └── local-store.service.ts    (IndexedDB/localStorage — reactive "database")
 │   │
 │   └── models/                        (shared interfaces/types — the "contract")
 │
 ├── shared/
-│   ├── ui/                            (game-card, rating-stars, download-button…)
+│   ├── ui/                            (game-card, download-button, khqr-card, payment-brand-mark, toast…)
+│   ├── directives/                    (card-number, cvv, expiry-date, scroll-lock, spatial-nav)
 │   ├── pipes/
-│   ├── directives/
 │   └── utils/
 │
 ├── features/
-│   ├── game-catalog/                  (public discovery)
+│   ├── game-catalog/                  (public discovery, search, tags, URL sync)
 │   ├── genres/                        (genre directory & tag aggregation)
-│   ├── game-detail/                   (game details & 5-state download action)
+│   ├── game-detail/                   (game details, 5-state download action, intent deep links)
 │   ├── creator-profile/               (public creator storefront & game listings)
-│   ├── creator-studio/                (CRUD listing forms, role-gated)
+│   ├── creator-studio/                (CRUD listings, TagChipInput, unsavedChangesGuard)
 │   ├── library/                       (ownership checks, sample downloads)
 │   ├── wishlist/                      (buyer bookmarks & saved games)
-│   ├── orders/                        (order receipts & purchase history)
-│   ├── profile/                       (account settings & demo db controls)
+│   ├── orders/                        (order receipts & printable A4 invoicing)
+│   ├── profile/                       (account settings, wallet stat card)
+│   ├── account-payment/               (credit cards, KHQR Bakong, gift cards, wallet balance ledger)
 │   ├── support/                       (FAQ accordion, contact form & privacy notice)
 │   ├── not-found/                     (404 error fallback)
 │   └── auth/                          (login/register/forgot-password — mocked)
 │
 ├── layout/
-│   ├── header/
-│   ├── footer/
-│   └── sidebar/
+│   ├── header/                        (smart scroll-aware, Steam Deck Hub mobile drawer)
+│   └── footer/                        (conditional navigation, legal safe-area clearance)
 │
-└── app.routes.ts
+└── app.routes.ts                      (18-route central table with functional guards)
 ```
 
-`checkout/` and `community/` are deliberately absent — no real payments, no social features.
+Community and live multiplayer features are deliberately absent (out of scope for this architecture). Commerce and payment workflows are fully supported via an interface-driven mock payments and wallet architecture (`PAYMENTS_DATA` injection token, `/account/payment` management hub, Cambodian KHQR Bakong mobile payments, credit card validation directives, prepaid gift card voucher redemption, and checkout modal integration).
 
 ---
 

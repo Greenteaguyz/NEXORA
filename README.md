@@ -57,12 +57,16 @@ Navigate to [`http://localhost:4200`](http://localhost:4200) in your web browser
 ## Overview & Key Features
 
 * **Store Catalog & Genres Directory**: Real-time substring search, live tag filtering, quick-search genre catalog, and responsive auto-fill category grids with game counts.
+* **Account Payment & Wallet Architecture**: Dedicated `/account/payment` hub with credit card management, Cambodian National Bank KHQR Bakong mobile payment integration, prepaid gift card redemption, real-time wallet balances, and immutable transaction ledgering.
 * **Game Acquisition & Download Experience**: Streamlined 2-tier acquisition banner, dual-platform options (**Windows 32/64-bit** and **Linux x86_64**), 1-click **Add to Library / Claim** for free games, SHA-256 integrity checksum verification, and animated download progress overlays.
 * **Steam Global Bottom Download Tray**: Docked bottom status bar with real-time transfer speeds, reactive signals (`activeDownloads`, `isTrayOpen`), expandable itemized package management, and direct `[ Play ]` launch controls.
+* **Resilient Toast Notification Queue**: Multi-severity notifications (`success`, `info`, `warning`, `error`), hover/focus pause, stack cap (3), composite deduplication, double-fire guarded undo callbacks, and smooth 180ms CSS exit animations.
+* **Ref-Counted Scroll Lock Engine**: `ScrollLockService` and `[appScrollLock]` directive wired into 15 fullscreen overlays, utilizing iOS `position: fixed` scroll compensation and scrollbar gutter shift balancing.
+* **Creator Studio & Unsaved Changes Guard**: Complete CRUD game listings with interactive `TagChipInput`, soft-delete lifecycle, and `CanDeactivateFn` dirty-state protection.
 * **Hardware-Accelerated & iOS 120Hz ProMotion Smooth Scrolling**: RAF-batched scroll listener, native iOS WebKit touch physics bypass (`scroll-behavior: auto !important` on touch devices), single-scroll layer mobile drawer, and hardware GPU compositing (`transform: translate3d(0,0,0)`).
 * **Universal Category Rail Edge Fade Masks**: Standardized linear gradient edge masks across Catalog, Library, and Wishlist chip carousels.
 * **Universal Keyboard Escape & Modal Dismissal**: Accessible HostListener Escape key dismissal across all modals (Receipts, Warning popups, Studio dialogs).
-* **Library Management**: 1-click **Remove from Library** with live state synchronization and persistent storage.
+* **Library Management & Owned Badges**: Catalog cards project live ownership badges (`Owned`), with 1-click **Remove from Library** and instant cross-persona state synchronization.
 * **Executive Invoicing & Receipts**: High-resolution 1-page A4 printable invoice with zero browser URL stamps (`@page { margin: 0; }`), automatic PDF naming (`NEXORA-Receipt-ord_XXX.pdf`), customer metadata (`Billed To`), and itemized accounting breakdowns.
 * **Speedtest.net Dual-Segment Theme Switcher**: Authentic sliding capsule switcher with Warm Amber (`#F59E0B`) Sun illumination and Electric Cyan (`#66C0F4`) Moon illumination.
 * **Unified Steam Deck Hub Mobile Navigation**: Zero-scroll compact layout with integrated 2-row footer control card, pixel-aligned icon/label grid, keyboard focus trapping, and WCAG AAA contrast ratios.
@@ -86,9 +90,9 @@ Use the following preconfigured accounts to test role-based access control and u
 
 ## Run automated test suites
 
-NEXORA provides a comprehensive automated testing battery covering unit logic, domain integration, master architectural invariants, broken-link crawling, Playwright E2E journeys, and the Impeccable Anti-Slop / Steam DesignMD compliance suite.
+NEXORA provides a comprehensive automated testing battery covering unit logic, domain integration, master architectural invariants, Playwright E2E journeys, and the Impeccable Anti-Slop / Steam DesignMD compliance suite.
 
-### 1. Run all regression suites (469 Tests — 100% Pass Rate)
+### 1. Run all regression suites (550 Tests — 100% Pass Rate)
 
 Execute all automated test tiers:
 
@@ -99,11 +103,10 @@ npm run test:regression
 ```
 
 This command orchestrates:
-* **Unit Tests** (`npm run test:unit`): 435 assertions across 86 sections verifying email/password validations, 90/10 creator revenue splits, data transforms, `nexora_*` storage prefix isolation, fluid clamp bounds, 4-slide hero geometry parity, Speedtest theme switcher geometry, Unified Steam Deck Hub mobile drawer dimensions, carousel touch swipe gestures / keyboard navigation, smart scroll-aware header / mobile footer clearance, Steam bottom download tray signals, iOS 120Hz ProMotion scroll kinetic physics, and header navigation animations (sliding active-tab indicator geometry, drawer asymmetric enter/exit timing, and race-safe unmount scheduling under fake timers).
-* **Integration Tests** (`npm run test:integration`): 51 assertions across 8 sections verifying Alice/Bob persona lifecycles, query engine, wishlist-to-library fulfillment, route guards, `/studio/games/new` permissions, and multi-persona state synchronization.
-* **Master Battery** (`npm run test:master`): 10 tests verifying dataset invariants, ownership verification, and dual-theme DOM state sync.
+* **Unit Tests** (`npm run test:unit`): 469 assertions across 87 sections verifying email/password validations, 90/10 creator revenue splits, data transforms, `nexora_*` storage prefix isolation, fluid clamp bounds, 4-slide hero geometry parity, Speedtest theme switcher geometry, Unified Steam Deck Hub mobile drawer dimensions, carousel touch swipe gestures / keyboard navigation, smart scroll-aware header / mobile footer clearance, Steam bottom download tray signals, iOS 120Hz ProMotion scroll kinetic physics, header navigation animations, card number grouping / CVV directives, and toast queue eviction/pause mechanics.
+* **Integration Tests** (`npm run test:integration`): 51 assertions across 8 sections verifying Alice/Bob persona lifecycles, query engine, commerce checkout with Mastercard/KHQR, wishlist-to-library fulfillment, route guards, `/studio/games/new` permissions, unsaved changes guards, and multi-persona state synchronization.
+* **Master Battery** (`npm run test:master`): 23 tests verifying dataset invariants, ownership verification, ref-counted scroll lock state transitions, toast queue dedupe/expiration, URL sanitization against open redirects, card number grouping, and expiry formatting.
 * **Impeccable Anti-Slop Suite** (`npm run test:impeccable`): 7 tests asserting absence of neon glow halos, strict radii hierarchy (`2px/4px/6px/8px/16px`), snappy `0.15s` transitions, and WCAG AAA contrast ratios.
-* **Broken-Link Crawler** (`npm run test:crawler`): 24 crawled URLs verifying zero 404 dead links across catalog, games, genres, creators, and studio forms.
 * **Playwright E2E Journeys** (`npm run test:e2e`): 5 automated multi-step browser user journeys with 100% pass rate.
 
 ### 2. Run full build & regression verification gate
