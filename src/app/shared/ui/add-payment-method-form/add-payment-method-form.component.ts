@@ -37,8 +37,9 @@ export class AddPaymentMethodFormComponent {
   readonly added = output<PaymentMethod>();
   readonly cancel = output<void>();
 
-  private readonly auth = inject(AuthService);
+  readonly auth = inject(AuthService);
   private readonly paymentsData = inject(PAYMENTS_DATA);
+
 
   readonly activeTab = signal<'card' | 'khqr'>('card');
 

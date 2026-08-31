@@ -270,22 +270,23 @@
           </div>
         }
 
-        <!-- Interactive KHQR Showcase Preview -->
-        @if (khqrMethod()) {
+        <!-- Interactive KHQR Showcase Preview (Creator/Developer Payout Only) -->
+        @if (auth.isCreator() && khqrMethod()) {
           <div class="khqr-preview-container">
             <div class="khqr-preview-header">
               <h3 class="preview-title">Active Bakong KHQR Link</h3>
-              <span class="preview-badge">Ready for Quick Scan</span>
+              <span class="preview-badge">Creator Payout Active</span>
             </div>
             <div class="khqr-preview-stage">
               <app-khqr-card 
-                [holderName]="auth.currentUser()?.displayName ?? 'NEXORA Player'"
+                [holderName]="auth.currentUser()?.displayName ?? 'NEXORA Creator'"
                 [seed]="khqrMethod()?.id ?? 'nexora-demo'">
               </app-khqr-card>
             </div>
           </div>
         }
       </section>
+
     </div>
   </div>
 

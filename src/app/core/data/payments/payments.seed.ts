@@ -27,13 +27,14 @@ export const SEED_PAYMENT_METHODS: PaymentMethod[] = [
   {
     type: 'khqr',
     id: 'pm_bob_khqr',
-    userId: 'usr_bob',
+    userId: 'usr_alice',
     bank: 'ABA',
-    handle: 'bobmercer@aba',
+    handle: 'alicevance@aba',
     isDefault: false,
     createdAt: daysAgo(10, 2)
   }
 ];
+
 
 export const SEED_WALLETS: Wallet[] = [
   { userId: 'usr_alice', balance: 24.5 },

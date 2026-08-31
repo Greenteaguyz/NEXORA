@@ -1804,6 +1804,28 @@ assert('Neutral Checkout', 'Purchase CTA button is disabled and displays "Select
   checkoutModalHtmlContent.includes('Select a Payment Method'));
 
 // ---------------------------------------------------------------------------
+// 26. INTEGRATION TESTS: Creator-Exclusive Bakong KHQR Payout & Clean Buyer UX
+// ---------------------------------------------------------------------------
+const paymentsSeedTsContent = fs.readFileSync(path.join(rootDir, 'src/app/core/data/payments/payments.seed.ts'), 'utf8');
+const latestAddMethodFormHtmlContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/add-payment-method-form/add-payment-method-form.component.html'), 'utf8');
+const latestAddMethodFormTsContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/add-payment-method-form/add-payment-method-form.component.ts'), 'utf8');
+const latestAccountPaymentHtmlContent = fs.readFileSync(path.join(rootDir, 'src/app/features/account-payment/account-payment.component.html'), 'utf8');
+
+assert('Creator KHQR Payout', 'Account payment page gates the active KHQR showcase container behind auth.isCreator()',
+  latestAccountPaymentHtmlContent.includes('auth.isCreator() && khqrMethod()'));
+
+assert('Creator KHQR Payout', 'AddPaymentMethodFormComponent exposes auth service publicly to gate template tabs',
+  latestAddMethodFormTsContent.includes('readonly auth = inject(AuthService)'));
+
+assert('Creator KHQR Payout', 'Add payment method form gates method-type-tabs behind auth.isCreator() for direct buyer card entry',
+  latestAddMethodFormHtmlContent.includes('@if (auth.isCreator())') &&
+  latestAddMethodFormHtmlContent.includes('class="method-type-tabs"'));
+
+assert('Creator KHQR Payout', 'Seed payments data leaves consumer Bob Mercer with cards only (pm_bob_khqr reassigned to creator Alice Vance)',
+  !paymentsSeedTsContent.includes("id: 'pm_bob_khqr',\n    userId: 'usr_bob'") &&
+  paymentsSeedTsContent.includes("id: 'pm_bob_khqr',\n    userId: 'usr_alice'"));
+
+// ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
 const passed = results.filter(r => r.passed).length;
@@ -1815,4 +1837,5 @@ console.log('===================================================================
 if (passed !== total) {
   process.exit(1);
 }
+
 
