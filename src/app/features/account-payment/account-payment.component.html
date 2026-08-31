@@ -13,7 +13,7 @@
   <header class="payment-header">
     <div class="header-titles">
       <h1 class="page-title">Payment & Wallet</h1>
-      <p class="page-subtitle">Manage saved payment cards, Bakong KHQR accounts, wallet funds, and gift cards.</p>
+      <p class="page-subtitle">{{ auth.isCreator() ? 'Manage saved payment cards, Bakong KHQR payout accounts, wallet funds, and gift cards.' : 'Manage saved payment cards, wallet funds, and gift cards.' }}</p>
     </div>
   </header>
 
@@ -102,6 +102,7 @@
               class="form-input gift-input" 
               placeholder="e.g. NEXO-WELCOME-2026" 
               [(ngModel)]="giftCode" 
+              (input)="onGiftCodeInput($event)"
               name="giftCode"
               maxlength="24"
               autocomplete="off"
@@ -144,7 +145,14 @@
         } @else {
           <div class="tx-list">
             @for (tx of transactions(); track tx.id) {
-              <div class="tx-item">
+              <div 
+                class="tx-item clickable" 
+                role="button" 
+                tabindex="0" 
+                [attr.aria-label]="'View details for ' + tx.label"
+                (click)="openTransactionDetails(tx)"
+                (keydown.enter)="openTransactionDetails(tx)"
+                (keydown.space)="$event.preventDefault(); openTransactionDetails(tx)">
                 <div class="tx-left">
                   <div class="tx-badge" [class.credit]="tx.amount > 0" [class.debit]="tx.amount < 0">
                     @if (tx.amount > 0) {
@@ -162,8 +170,13 @@
                     <span class="tx-date">{{ formatDate(tx.createdAt) }} &bull; {{ tx.source }}</span>
                   </div>
                 </div>
-                <div class="tx-amount" [class.positive]="tx.amount > 0">
-                  {{ tx.amount > 0 ? '+' : '' }}{{ tx.amount | currency:'USD':'symbol':'1.2-2' }}
+                <div class="tx-right">
+                  <div class="tx-amount" [class.positive]="tx.amount > 0">
+                    {{ tx.amount > 0 ? '+' : '' }}{{ tx.amount | currency:'USD':'symbol':'1.2-2' }}
+                  </div>
+                  <svg class="tx-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
                 </div>
               </div>
             }
@@ -196,7 +209,7 @@
         </div>
 
         <!-- Methods List -->
-        @if (methods().length === 0) {
+        @if (displayedMethods().length === 0) {
           <div class="empty-methods-card">
             <div class="empty-icon-box">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -205,12 +218,12 @@
               </svg>
             </div>
             <h3>No payment methods linked</h3>
-            <p>Save a credit card or link Bakong KHQR to add funds and check out.</p>
+            <p>{{ auth.isCreator() ? 'Save a credit card or link Bakong KHQR for revenue payouts.' : 'Save a credit card to add funds and check out.' }}</p>
             <button type="button" class="btn-primary-compact" (click)="openAddModal()">Add Method</button>
           </div>
         } @else {
           <div class="methods-grid">
-            @for (method of methods(); track method.id) {
+            @for (method of displayedMethods(); track method.id) {
               <div class="method-card" [class.is-default]="method.isDefault">
                 <div class="method-card-header">
                   <div class="method-brand">
@@ -349,10 +362,9 @@
           <div class="form-group">
             <label class="form-label" for="topUpMethodSelect">Pay Using</label>
             <select id="topUpMethodSelect" class="form-select" [(ngModel)]="selectedTopUpMethodId" name="topUpMethod" required>
-              @for (m of methods(); track m.id) {
+              @for (m of cardMethods(); track m.id) {
                 <option [value]="m.id">
-                  {{ m.type === 'card' ? (m.brand | uppercase) + ' •••• ' + m.last4 : m.bank + ' KHQR (' + m.handle + ')' }}
-                  {{ m.isDefault ? ' (Default)' : '' }}
+                  {{ (m.brand | uppercase) }} •••• {{ m.last4 }}{{ m.isDefault ? ' (Default)' : '' }}
                 </option>
               }
             </select>
@@ -392,6 +404,75 @@
         <div class="modal-actions">
           <button type="button" class="btn-cancel" (click)="closeRemoveModal()">Cancel</button>
           <button type="button" class="btn-confirm-remove" (click)="confirmRemove()">Remove</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Transaction Details Modal -->
+  @if (selectedTransaction(); as tx) {
+    <div class="modal-backdrop" appScrollLock role="dialog" aria-modal="true" aria-labelledby="tx-detail-title" (click)="closeTransactionDetails()">
+      <div class="modal-card tx-details-card" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="tx-header-left">
+            <h3 id="tx-detail-title" class="modal-title">Transaction Details</h3>
+            <span class="status-pill completed">Completed</span>
+          </div>
+          <button type="button" class="btn-modal-close" (click)="closeTransactionDetails()" aria-label="Close modal">&times;</button>
+        </div>
+
+        <div class="tx-details-body">
+          <div class="tx-amount-hero" [class.positive]="tx.amount > 0">
+            <span class="tx-hero-sign">{{ tx.amount > 0 ? '+' : '' }}</span>
+            <span class="tx-hero-val">{{ tx.amount | currency:'USD':'symbol':'1.2-2' }}</span>
+            <span class="tx-hero-currency">USD</span>
+          </div>
+
+          <div class="tx-details-grid">
+            <div class="tx-detail-row">
+              <span class="detail-label">Transaction ID</span>
+              <div class="detail-val-copy">
+                <code class="tx-id-code">{{ tx.id }}</code>
+                <button type="button" class="btn-copy-id" (click)="copyTransactionId(tx.id)" aria-label="Copy Transaction ID">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                  <span>Copy</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="tx-detail-row">
+              <span class="detail-label">Description</span>
+              <span class="detail-val highlight">{{ tx.label }}</span>
+            </div>
+
+            <div class="tx-detail-row">
+              <span class="detail-label">Source / Type</span>
+              <span class="detail-val source-badge">{{ tx.source === 'top_up' ? 'Wallet Top-Up' : tx.source === 'gift_card' ? 'Gift Card Voucher' : 'Purchase' }}</span>
+            </div>
+
+            <div class="tx-detail-row">
+              <span class="detail-label">Date & Time</span>
+              <span class="detail-val">{{ formatDate(tx.createdAt) }}</span>
+            </div>
+
+            <div class="tx-detail-row">
+              <span class="detail-label">Audit Status</span>
+              <span class="detail-val verified">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Verified Ledger Record
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-actions tx-modal-actions">
+          <button type="button" class="btn-submit" (click)="closeTransactionDetails()">Done</button>
         </div>
       </div>
     </div>

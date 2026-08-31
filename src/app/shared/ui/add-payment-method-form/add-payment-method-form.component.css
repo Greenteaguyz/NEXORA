@@ -1,7 +1,17 @@
+:host {
+  display: block;
+  padding: 24px;
+}
+
+:host(.compact) {
+  padding: 12px 0;
+}
+
 .method-type-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 10px;
+  margin-bottom: 18px;
 }
 
 .type-tab {
@@ -9,12 +19,12 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 8px 10px;
+  padding: 10px 14px;
   background: transparent;
   border: 1px solid var(--border-card);
   border-radius: var(--radius);
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
@@ -49,27 +59,27 @@
 .amf-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 18px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 7px;
 }
 
 .form-row-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  gap: 16px;
 }
 
 .form-label {
-  font-size: 0.7rem;
-  font-weight: 800;
+  font-size: 0.74rem;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .label-with-brand {
@@ -81,12 +91,12 @@
 
 .form-input {
   width: 100%;
-  padding: 8px 10px;
+  padding: 10px 14px;
   background: var(--bg-input);
   border: 1px solid var(--border-card);
-  border-radius: var(--radius);
+  border-radius: 6px;
   color: var(--text-primary);
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-family: var(--font-mono);
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -124,41 +134,53 @@
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+  margin-top: 6px;
 }
 
 .btn-amf-cancel {
-  padding: 7px 14px;
-  background: transparent;
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius);
-  color: var(--text-secondary);
-  font-size: 0.78rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-card, rgba(255, 255, 255, 0.12));
+  border-radius: var(--radius, 6px);
+  color: var(--text-secondary, #C7D5E0);
+  font-size: 0.82rem;
   font-weight: 700;
+  padding: 8px 16px;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .btn-amf-cancel:hover:not(:disabled) {
-  border-color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #FFFFFF;
 }
 
 .btn-amf-submit {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 16px;
+  padding: 8px 18px;
   background: var(--accent-600);
-  border: none;
-  border-radius: var(--radius);
+  background: linear-gradient(180deg, #3aaeed 0%, var(--accent-600) 60%, #1574ae 100%);
+  border: 1px solid rgba(102, 192, 244, 0.4);
+  border-top-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius, 6px);
   color: #FFFFFF;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   font-weight: 800;
+  letter-spacing: 0.02em;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: filter 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-amf-submit:hover:not(:disabled) {
-  background: var(--accent-700);
+  filter: brightness(1.1);
+  box-shadow: 0 0 10px rgba(102, 192, 244, 0.3);
+}
+
+.btn-amf-submit:active:not(:disabled) {
+  filter: brightness(0.94);
 }
 
 .btn-amf-submit:disabled,

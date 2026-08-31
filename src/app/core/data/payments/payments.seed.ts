@@ -64,7 +64,7 @@ export const SEED_WALLET_TRANSACTIONS: WalletTransaction[] = [
     userId: 'usr_bob',
     amount: 15,
     source: 'top_up',
-    label: 'Wallet top-up · ABA KHQR',
+    label: 'Wallet top-up · Visa •••• 1881',
     createdAt: daysAgo(6, 4)
   }
 ];

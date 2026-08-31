@@ -183,9 +183,22 @@ export type RedeemResult =
   | { ok: true; giftCard: GiftCard; updatedCards: GiftCard[]; amount: number }
   | { ok: false; reason: 'not_found' | 'already_redeemed' };
 
+/**
+ * Groups alphanumeric voucher codes into 4-letter blocks joined by hyphens:
+ * 'NEXOWELCOME2026' -> 'NEXO-WELC-OME2-026'
+ * Pure helper for gift card inputs and voucher verification.
+ */
+export function formatGiftCode(raw: string): string {
+  const clean = raw.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 20);
+  if (!clean) return '';
+  const chunks = clean.match(/.{1,4}/g) ?? [];
+  return chunks.join('-');
+}
+
 export function redeemGiftCard(cards: GiftCard[], code: string, userId: string, now: Date = new Date()): RedeemResult {
   const normalized = code.trim().toUpperCase();
-  const card = cards.find(c => c.code === normalized);
+  const stripped = normalized.replace(/-/g, '');
+  const card = cards.find(c => c.code.toUpperCase() === normalized || c.code.replace(/-/g, '').toUpperCase() === stripped);
   if (!card) {
     return { ok: false, reason: 'not_found' };
   }

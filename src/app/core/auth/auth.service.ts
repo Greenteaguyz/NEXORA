@@ -21,7 +21,13 @@ export class AuthService {
   readonly isBuyer = computed(() => this.currentUser()?.roles.includes('buyer') ?? false);
 
   private loadSessionUser(): User | null {
-    return this.localStore.getItem<User>(this.SESSION_KEY);
+    const user = this.localStore.getItem<User>(this.SESSION_KEY);
+    if (user && user.id === 'usr_bob' && user.roles.includes('creator')) {
+      const sanitized: User = { ...user, roles: ['buyer'] };
+      this.localStore.setItem(this.SESSION_KEY, sanitized);
+      return sanitized;
+    }
+    return user;
   }
 
   private setSessionUser(user: User | null): void {

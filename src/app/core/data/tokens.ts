@@ -127,6 +127,18 @@ export interface PaymentsDataService {
   getFinanceTransactions(userId: string): Observable<FinanceTransaction[]>;
   /** Purchase revert: credits the wallet via a completed refund_credit ledger entry. */
   refundWallet(userId: string, amountMinor: number, reference: string): Observable<FinanceWallet>;
+  /**
+   * Instant automated 90/10 revenue split on game purchase.
+   * 90% credited to creator (ownerId) wallet/ledger; 10% platform commission retained.
+   */
+  recordRevenueSplit(
+    orderId: string,
+    gameId: string,
+    gameTitle: string,
+    price: number,
+    ownerId: string,
+    buyerId: string
+  ): Observable<{ devEarnedMinor: number; platformFeeMinor: number }>;
 }
 
 export const PAYMENTS_DATA = new InjectionToken<PaymentsDataService>('PAYMENTS_DATA');

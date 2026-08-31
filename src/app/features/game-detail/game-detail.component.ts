@@ -727,6 +727,18 @@ export class GameDetailComponent implements OnInit, OnDestroy {
     this.purchaseProcessing = true;
     this.ordersData.createOrder(user.id, this.game.id, this.game.price, paymentMethod).subscribe({
       next: (order) => {
+        // Trigger instant automated 90/10 revenue split if game is paid
+        if (this.game!.price > 0 && this.game!.ownerId) {
+          this.paymentsData.recordRevenueSplit(
+            order.id,
+            this.game!.id,
+            this.game!.title,
+            this.game!.price,
+            this.game!.ownerId,
+            user.id
+          ).subscribe();
+        }
+
         this.libraryData.addToLibrary(user.id, this.game!.id, order.id).subscribe({
           next: () => {
             this.isOwned = true;

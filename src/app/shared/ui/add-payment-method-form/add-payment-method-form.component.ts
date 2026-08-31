@@ -33,13 +33,14 @@ export class AddPaymentMethodFormComponent {
   readonly methods = input<PaymentMethod[]>([]);
   /** Compact variant for inline checkout panels (smaller paddings). */
   readonly compact = input(false);
+  /** Whether to allow linking a KHQR payout bank (strictly developer exclusive). */
+  readonly allowKhqr = input<boolean>(false);
 
   readonly added = output<PaymentMethod>();
   readonly cancel = output<void>();
 
   readonly auth = inject(AuthService);
   private readonly paymentsData = inject(PAYMENTS_DATA);
-
 
   readonly activeTab = signal<'card' | 'khqr'>('card');
 

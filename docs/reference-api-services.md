@@ -123,17 +123,19 @@ export interface PaymentsDataService {
   topUpWallet(request: TopUpWalletRequest): Observable<TopUpWalletResult>;
   getFinanceTransactions(userId: string): Observable<FinanceTransaction[]>;
   refundWallet(userId: string, amountMinor: number, orderId: string): Observable<FinanceWallet>;
+  recordRevenueSplit(gameId: string, orderId: string, totalMinor: number, developerId: string): Observable<RevenueSplitResult>;
 }
 ```
 
-* **`getMethods(userId)`**: Retrieves saved credit card and KHQR payment methods for the user.
+* **`getMethods(userId)`**: Retrieves saved payment methods (cards for regular buyers, cards + Bakong KHQR for creators).
 * **`addMethod(userId, dto)`**: Validates and saves a new card or KHQR handle.
 * **`removeMethod(userId, methodId)`**: Removes a saved funding source.
 * **`setDefaultMethod(userId, methodId)`**: Marks a specific payment method as primary default.
 * **`getWalletSnapshot(userId)`**: Returns current wallet balance and transaction ledger.
-* **`topUp(userId, amount, methodId)`**: Credits funds to the wallet from a chosen payment method.
+* **`topUp(userId, amount, methodId)`**: Credits funds to the wallet strictly via saved credit/debit card.
 * **`getGiftCards()`**: Returns available prepaid codes.
 * **`redeemGiftCode(userId, code)`**: Validates gift code, credits balance, and records transaction.
+* **`recordRevenueSplit(gameId, orderId, totalMinor, developerId)`**: Performs instant 90/10 automated split on game purchase. Credits 90% to developer wallet and royalty ledger, and logs 10% platform commission to `platform_treasury`.
 * **`refundWallet(userId, amountMinor, orderId)`**: Appends a completed `refund_credit` ledger entry, updates the wallet balance in integer minor units, and syncs the legacy float wallet.
 * **`processPayment(request)`**: Validates tenders against payment intent, enforces overpayment rules, performs idempotent replays, and writes ledger entries.
 

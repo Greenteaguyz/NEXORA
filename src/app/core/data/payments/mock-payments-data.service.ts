@@ -90,9 +90,35 @@ export class MockPaymentsDataService implements PaymentsDataService {
   }
 
   private initData(): void {
-    this.methods = this.healDefaults(this.localStore.getItem<PaymentMethod[]>(this.METHODS_KEY) ?? [...SEED_PAYMENT_METHODS]);
+    let loadedMethods = this.localStore.getItem<PaymentMethod[]>(this.METHODS_KEY) ?? [...SEED_PAYMENT_METHODS];
+    // Self-healing migration: Ensure pm_bob_khqr is assigned to usr_alice, and no KHQR exists for usr_bob
+    let methodsChanged = false;
+    loadedMethods = loadedMethods.map(m => {
+      if (m.id === 'pm_bob_khqr' && m.userId === 'usr_bob') {
+        methodsChanged = true;
+        return { ...m, userId: 'usr_alice', handle: 'alicevance@aba' };
+      }
+      return m;
+    });
+    const cleanedMethods = loadedMethods.filter(m => !(m.userId === 'usr_bob' && m.type === 'khqr'));
+    if (cleanedMethods.length !== loadedMethods.length) {
+      methodsChanged = true;
+      loadedMethods = cleanedMethods;
+    }
+    this.methods = this.healDefaults(loadedMethods);
+
     this.wallets = this.localStore.getItem<Wallet[]>(this.WALLETS_KEY) ?? [...SEED_WALLETS];
-    this.transactions = this.localStore.getItem<WalletTransaction[]>(this.TXNS_KEY) ?? [...SEED_WALLET_TRANSACTIONS];
+
+    let loadedTxns = this.localStore.getItem<WalletTransaction[]>(this.TXNS_KEY) ?? [...SEED_WALLET_TRANSACTIONS];
+    // Cleanse any legacy buyer transaction mentioning ABA KHQR
+    loadedTxns = loadedTxns.map(t => {
+      if (t.userId === 'usr_bob' && t.label.includes('ABA KHQR')) {
+        return { ...t, label: 'Wallet top-up · Visa •••• 1881' };
+      }
+      return t;
+    });
+    this.transactions = loadedTxns;
+
     this.giftCards = this.localStore.getItem<GiftCard[]>(this.GIFTS_KEY) ?? [...SEED_GIFT_CARDS];
     this.ledger = this.localStore.getItem<LedgerEntry[]>(this.LEDGER_KEY) ?? this.buildSeedLedger();
     this.intents = this.localStore.getItem<PaymentIntent[]>(this.INTENTS_KEY) ?? [];
@@ -485,6 +511,10 @@ export class MockPaymentsDataService implements PaymentsDataService {
       const notFound: TopUpWalletResult = { ok: false, reason: 'method_not_found' };
       return of(notFound).pipe(delay(120));
     }
+    if (method.type !== 'card') {
+      const notCard: TopUpWalletResult = { ok: false, reason: 'invalid_method_type' as any };
+      return of(notCard).pipe(delay(120));
+    }
 
     const entry = this.appendLedgerEntry(
       request.userId,
@@ -584,6 +614,9 @@ export class MockPaymentsDataService implements PaymentsDataService {
     if (!method) {
       throw new Error(`MockPaymentsDataService: unknown method ${methodId} for user ${userId}`);
     }
+    if (method.type !== 'card') {
+      throw new Error(`MockPaymentsDataService: top-up allowed strictly via card, received ${method.type}`);
+    }
     const safeAmount = Math.min(Math.max(Math.round(amount * 100) / 100, 0), MAX_TOP_UP_USD);
     const transaction = makeTransaction(userId, safeAmount, 'top_up', `Wallet top-up · ${methodDisplayName(method)}`);
     const wallet = this.creditWallet(userId, safeAmount, transaction);
@@ -639,4 +672,73 @@ export class MockPaymentsDataService implements PaymentsDataService {
     const snapshot: FinanceWallet = { userId, balanceMinor: entry.balanceAfterMinor, currency: 'USD', status: 'active' };
     return of(snapshot).pipe(delay(120));
   }
+
+  recordRevenueSplit(
+    orderId: string,
+    gameId: string,
+    gameTitle: string,
+    price: number,
+    ownerId: string,
+    buyerId: string
+  ): Observable<{ devEarnedMinor: number; platformFeeMinor: number }> {
+    const now = new Date();
+    const totalMinor = Math.round(price * 100);
+    if (totalMinor <= 0) {
+      return of({ devEarnedMinor: 0, platformFeeMinor: 0 });
+    }
+
+    // Exact integer minor unit split (90% developer, 10% platform commission)
+    const devEarnedMinor = Math.round(totalMinor * 0.90);
+    const platformFeeMinor = totalMinor - devEarnedMinor;
+
+    // 1. Credit developer wallet and record royalty ledger entry
+    const devEntry = this.appendLedgerEntry(
+      ownerId,
+      'top_up',
+      devEarnedMinor,
+      orderId,
+      `Game sale royalty · ${gameTitle} (90%)`,
+      now
+    );
+    this.syncLegacyWallet(ownerId);
+
+    // Also record legacy wallet transaction for developer
+    const devTxn = makeTransaction(
+      ownerId,
+      devEarnedMinor / 100,
+      'top_up',
+      `Game sale royalty · ${gameTitle} (90%)`
+    );
+    this.transactions = [devTxn, ...this.transactions];
+    this.localStore.setItem(this.TXNS_KEY, this.transactions);
+
+    // 2. Record 10% platform commission fee into the platform company ledger
+    this.appendLedgerEntry(
+      'platform_treasury',
+      'fee',
+      platformFeeMinor,
+      orderId,
+      `Platform commission (10%) · ${gameTitle}`,
+      now
+    );
+
+    // Record developer financial transaction audit record
+    const fTxn: FinanceTransaction = {
+      id: 'ftxn_' + now.getTime().toString(36) + Math.random().toString(36).substring(2, 5),
+      userId: ownerId,
+      type: 'top_up',
+      method: 'Game Royalty Split',
+      amountMinor: devEarnedMinor,
+      currency: 'USD',
+      status: 'completed',
+      createdAt: now.toISOString(),
+      orderId,
+      receiptId: 'rcpt_' + orderId
+    };
+    this.financeTransactions = [fTxn, ...this.financeTransactions];
+    this.persistFinance();
+
+    return of({ devEarnedMinor, platformFeeMinor });
+  }
 }
+

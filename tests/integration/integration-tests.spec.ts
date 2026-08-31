@@ -1818,12 +1818,77 @@ assert('Creator KHQR Payout', 'AddPaymentMethodFormComponent exposes auth servic
   latestAddMethodFormTsContent.includes('readonly auth = inject(AuthService)'));
 
 assert('Creator KHQR Payout', 'Add payment method form gates method-type-tabs behind auth.isCreator() for direct buyer card entry',
-  latestAddMethodFormHtmlContent.includes('@if (auth.isCreator())') &&
+  latestAddMethodFormHtmlContent.includes('auth.isCreator()') &&
   latestAddMethodFormHtmlContent.includes('class="method-type-tabs"'));
 
 assert('Creator KHQR Payout', 'Seed payments data leaves consumer Bob Mercer with cards only (pm_bob_khqr reassigned to creator Alice Vance)',
   !paymentsSeedTsContent.includes("id: 'pm_bob_khqr',\n    userId: 'usr_bob'") &&
   paymentsSeedTsContent.includes("id: 'pm_bob_khqr',\n    userId: 'usr_alice'"));
+
+// ---------------------------------------------------------------------------
+// 27. INTEGRATION TESTS: Card-Only Top-Up & Instant 90/10 Revenue Split
+// ---------------------------------------------------------------------------
+const latestAccountPaymentTsContent = fs.readFileSync(path.join(rootDir, 'src/app/features/account-payment/account-payment.component.ts'), 'utf8');
+const latestMockPaymentsServiceContent = fs.readFileSync(path.join(rootDir, 'src/app/core/data/payments/mock-payments-data.service.ts'), 'utf8');
+const latestGameDetailTsContent = fs.readFileSync(path.join(rootDir, 'src/app/features/game-detail/game-detail.component.ts'), 'utf8');
+
+assert('Card-Only Top-Up', 'Account payment component defines cardMethods and displayedMethods computed signals',
+  latestAccountPaymentTsContent.includes("readonly cardMethods = computed(() => this.methods().filter(m => m.type === 'card'))") &&
+  latestAccountPaymentTsContent.includes("readonly displayedMethods = computed(() => this.auth.isCreator() ? this.methods() : this.cardMethods())"));
+
+assert('Card-Only Top-Up', 'Top-up modal dropdown strictly iterates over cardMethods() instead of all methods',
+  latestAccountPaymentHtmlContent.includes('@for (m of cardMethods(); track m.id)'));
+
+assert('Card-Only Top-Up', 'Methods grid iterates over displayedMethods() to ensure non-creators see 0 KHQR cards',
+  latestAccountPaymentHtmlContent.includes('@for (method of displayedMethods(); track method.id)'));
+
+assert('Card-Only Top-Up', 'MockPaymentsDataService initData performs self-healing migration to clean legacy usr_bob KHQR',
+  latestMockPaymentsServiceContent.includes("m.id === 'pm_bob_khqr' && m.userId === 'usr_bob'") &&
+  latestMockPaymentsServiceContent.includes("!(m.userId === 'usr_bob' && m.type === 'khqr')"));
+
+assert('Card-Only Top-Up', 'MockPaymentsDataService enforces card-only in topUp and topUpWallet methods',
+  latestMockPaymentsServiceContent.includes("if (method.type !== 'card')") &&
+  latestMockPaymentsServiceContent.includes("top-up allowed strictly via card"));
+
+assert('Instant Revenue Split', 'MockPaymentsDataService implements recordRevenueSplit with 90% dev / 10% platform split',
+  latestMockPaymentsServiceContent.includes('recordRevenueSplit(') &&
+  latestMockPaymentsServiceContent.includes('Math.round(totalMinor * 0.90)') &&
+  latestMockPaymentsServiceContent.includes('platform_treasury') &&
+  latestMockPaymentsServiceContent.includes('Platform commission (10%)'));
+
+assert('Instant Revenue Split', 'GameDetailComponent automatically calls recordRevenueSplit on order confirmation',
+  latestGameDetailTsContent.includes('this.paymentsData.recordRevenueSplit(') &&
+  latestGameDetailTsContent.includes('this.game!.price > 0 && this.game!.ownerId'));
+
+// ---------------------------------------------------------------------------
+// 28. INTEGRATION TESTS: Buyer Bakong Link Removal, Auto-Dash & Transaction Modal
+// ---------------------------------------------------------------------------
+const latestPaymentLogicContent = fs.readFileSync(path.join(rootDir, 'src/app/core/data/payments/payment-logic.ts'), 'utf8');
+
+assert('Auto-Dash Gift Code', 'payment-logic.ts exports formatGiftCode helper formatting groups of 4 with hyphens',
+  latestPaymentLogicContent.includes('export function formatGiftCode(') &&
+  latestPaymentLogicContent.includes('replace(/[^A-Za-z0-9]/g'));
+
+assert('Auto-Dash Gift Code', 'AccountPaymentComponent implements onGiftCodeInput auto-dashing gift vouchers',
+  latestAccountPaymentTsContent.includes('onGiftCodeInput(') &&
+  latestAccountPaymentHtmlContent.includes('(input)="onGiftCodeInput($event)"'));
+
+assert('Transaction Details Modal', 'AccountPaymentComponent exposes selectedTransaction signal and modal controls',
+  latestAccountPaymentTsContent.includes('selectedTransaction = signal<') &&
+  latestAccountPaymentTsContent.includes('openTransactionDetails(') &&
+  latestAccountPaymentTsContent.includes('closeTransactionDetails('));
+
+assert('Transaction Details Modal', 'AccountPayment template renders interactive tx-item buttons and transaction details modal',
+  latestAccountPaymentHtmlContent.includes('openTransactionDetails(tx)') &&
+  latestAccountPaymentHtmlContent.includes('selectedTransaction()'));
+
+assert('Buyer Bakong Link Removal', 'AddPaymentMethodFormComponent defines allowKhqr input signal defaulting to false',
+  latestAddMethodFormTsContent.includes('readonly allowKhqr = input<boolean>(false)') &&
+  latestAddMethodFormHtmlContent.includes('auth.isCreator() && allowKhqr()'));
+
+assert('UI Spacing Polish', 'AddPaymentMethodFormComponent CSS specifies host padding and generous gap tokens',
+  fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/add-payment-method-form/add-payment-method-form.component.css'), 'utf8').includes(':host') &&
+  fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/add-payment-method-form/add-payment-method-form.component.css'), 'utf8').includes('padding: 24px;'));
 
 // ---------------------------------------------------------------------------
 // Summary

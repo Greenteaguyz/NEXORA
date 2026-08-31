@@ -211,7 +211,19 @@ export interface AddKhqrMethodDto {
 }
 
 export type AddPaymentMethodDto = AddCardMethodDto | AddKhqrMethodDto;
+
+export interface RevenueSplitResult {
+  ok: boolean;
+  orderId: string;
+  developerCreditMinor: number;
+  platformFeeMinor: number;
+  developerWalletBalanceMinor: number;
+}
 ```
+
+> [!NOTE]
+> **Developer Payout Exclusivity**: `AddKhqrMethodDto` is restricted to creator payout profiles (`roles: ['creator']`). Regular buyers (`roles: ['buyer']`) use `AddCardMethodDto` exclusively.
+> **Gift Card Codes**: Gift card codes use a 4-letter hyphenated format (`XXXX-XXXX-XXXX-XXXX`) normalized via `formatGiftCode()`. Verification is dash-agnostic.
 
 ---
 

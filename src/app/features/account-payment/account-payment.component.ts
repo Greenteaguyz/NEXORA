@@ -5,7 +5,7 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { PAYMENTS_DATA } from '../../core/data/tokens';
 import { PaymentMethod, Wallet, WalletTransaction } from '../../core/models/payment.model';
-import { formatUsd } from '../../core/data/payments/payment-logic';
+import { formatGiftCode, formatUsd } from '../../core/data/payments/payment-logic';
 import { PaymentBrandMarkComponent } from '../../shared/ui/payment-brand-mark/payment-brand-mark.component';
 import { KhqrCardComponent } from '../../shared/ui/khqr-card/khqr-card.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
@@ -45,6 +45,7 @@ export class AccountPaymentComponent {
   readonly showAddModal = signal<boolean>(false);
   readonly methodToRemove = signal<PaymentMethod | null>(null);
   readonly showTopUpModal = signal<boolean>(false);
+  readonly selectedTransaction = signal<WalletTransaction | null>(null);
 
   // Top Up form
   topUpAmount = 25;
@@ -58,7 +59,9 @@ export class AccountPaymentComponent {
 
   // Computed Values
   readonly usdBalance = computed(() => formatUsd(this.wallet()?.balance ?? 0));
-  readonly defaultMethod = computed(() => this.methods().find(m => m.isDefault) ?? null);
+  readonly cardMethods = computed(() => this.methods().filter(m => m.type === 'card'));
+  readonly displayedMethods = computed(() => this.auth.isCreator() ? this.methods() : this.cardMethods());
+  readonly defaultMethod = computed(() => this.displayedMethods().find(m => m.isDefault) ?? null);
   readonly khqrMethod = computed(() => this.methods().find(m => m.type === 'khqr') ?? null);
 
   constructor() {
@@ -156,11 +159,14 @@ export class AccountPaymentComponent {
 
   // Top Up Modal
   openTopUpModal(): void {
-    const def = this.defaultMethod();
-    if (def) {
-      this.selectedTopUpMethodId = def.id;
-    } else if (this.methods().length > 0) {
-      this.selectedTopUpMethodId = this.methods()[0].id;
+    const cards = this.cardMethods();
+    const defCard = cards.find(m => m.isDefault);
+    if (defCard) {
+      this.selectedTopUpMethodId = defCard.id;
+    } else if (cards.length > 0) {
+      this.selectedTopUpMethodId = cards[0].id;
+    } else {
+      this.selectedTopUpMethodId = '';
     }
     this.topUpAmount = 25;
     this.showTopUpModal.set(true);
@@ -197,6 +203,13 @@ export class AccountPaymentComponent {
   }
 
   // Gift Card Redemption
+  onGiftCodeInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const formatted = formatGiftCode(input.value);
+    this.giftCode = formatted;
+    input.value = formatted;
+  }
+
   submitRedeemGiftCode(): void {
     const user = this.auth.currentUser();
     const code = this.giftCode.trim();
@@ -227,6 +240,27 @@ export class AccountPaymentComponent {
     });
   }
 
+  // Detailed Transaction View
+  openTransactionDetails(tx: WalletTransaction): void {
+    this.selectedTransaction.set(tx);
+  }
+
+  closeTransactionDetails(): void {
+    this.selectedTransaction.set(null);
+  }
+
+  copyTransactionId(id: string): void {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(id).then(() => {
+        this.showToast(`Transaction ID copied: ${id}`);
+      }).catch(() => {
+        this.showToast(`Copied: ${id}`);
+      });
+    } else {
+      this.showToast(`Copied: ${id}`);
+    }
+  }
+
   private showToast(msg: string): void {
     this.alertSuccess.set(msg);
     this.alertError.set(null);
@@ -245,6 +279,7 @@ export class AccountPaymentComponent {
 
   @HostListener('window:keydown.escape')
   onEscape(): void {
+    if (this.selectedTransaction()) this.closeTransactionDetails();
     if (this.showAddModal()) this.closeAddModal();
     if (this.showTopUpModal()) this.closeTopUpModal();
     if (this.methodToRemove()) this.closeRemoveModal();

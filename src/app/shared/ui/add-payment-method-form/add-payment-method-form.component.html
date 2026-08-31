@@ -1,5 +1,5 @@
-<!-- Method Type Tabs (Creator/Developer only) -->
-@if (auth.isCreator()) {
+<!-- Method Type Tabs (Creator/Developer only and when explicitly allowed) -->
+@if (auth.isCreator() && allowKhqr()) {
   <div class="method-type-tabs" role="tablist" aria-label="Payment method type">
     <button
       type="button"

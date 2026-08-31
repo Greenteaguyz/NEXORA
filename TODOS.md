@@ -26,7 +26,8 @@ This document tracks all engineering milestones and implementation tasks for the
 | **Phase 21** (Task 26) | Paid-Game Removal Purchase Reversion & Automatic Ledger Wallet Refund | ✅ Complete | Order status `'refunded'`, `revertOrder` on `OrdersDataService`, `refundWallet` balance restore |
 | **Phase 22** (Task 27) | Checkout Modal Inline Add-Method & ABA PayWay KHQR Rail | ✅ Complete | `AddPaymentMethodFormComponent`, `AbaPaywaySheetComponent`, USD-only scan card, 5m timer |
 | **Phase 23** (Task 28) | Universal Password Security, Brute-Force Lockout & Creator Studio Safety Lock | ✅ Complete | Hardened password checks, 5-attempt/60s lockout, 5s purge lock, 5.5s draft banner dismiss |
-| **Deployment and Ops** | Cloud hosting, tunnels, caching headers & performance budgets | ✅ Ready | `vercel.json` caching headers (1y immutable assets), 851 tests passing (100% green) |
+| **Phase 24** (Task 29) | Buyer Card Isolation, 90/10 Revenue Split, Auto-Dash Vouchers, Tx Modal & Compact Polish | ✅ Complete | 874 tests passing (100% green), 0-tab buyer modal, instant dev split, real-time voucher dash |
+| **Deployment and Ops** | Cloud hosting, tunnels, caching headers & performance budgets | ✅ Ready | `vercel.json` caching headers (1y immutable assets), 874 tests passing (100% green) |
 
 ---
 
@@ -359,3 +360,17 @@ Standard skills applied during development:
 - [x] **17.4** Race-Safe Unmount Scheduling: Pure `DrawerCloseScheduler` (generation counter + `transitionend` primary trigger + timer fallback in `header-animations.ts`) guarantees rapid open/close toggling can never tear down an open drawer; focus restore to trigger element on close.
 - [x] **17.5** Reduced-Motion & SSR Guards: Component-level `prefers-reduced-motion` overrides (~0.01ms transitions, no stagger) and `isPlatformBrowser` measurement guards keep the app SSR-safe.
 - [x] **17.6** Expanded Automated Test Battery: 435 / 435 passing assertions (100% Green) across Unit Tests (Sections 1–86, incl. Section 86 header animation logic with fake-timer race tests), Integration Tests (51/51), Master Battery (10/10), and Impeccable Anti-Slop suite (7/7). Full `npm run verify` gate exit code 0.
+
+---
+
+## Phase 24: Buyer Card Isolation, 90/10 Revenue Split, Auto-Dash Vouchers & Compact Modal Polish (Task 29)
+
+### Task 29: Payment Flow Isolation, Automated Creator Settlement & Desktop Ergonomics
+- [x] **29.1** Buyer Card Isolation & 0-Tab Add Method Modal: Gated `.method-type-tabs` behind `auth.isCreator() && allowKhqr()`. Non-creators (Bob Mercer) render 0 tabs and directly access card entry with 0 mention of Bakong Link.
+- [x] **29.2** Instant 90/10 Automated Revenue Split: Built `recordRevenueSplit(gameId, orderId, totalMinor, developerId)` on `PaymentsDataService` and `MockPaymentsDataService`. Game purchase confirmation immediately credits 90% to developer wallet and logs 10% platform fee to `platform_treasury`.
+- [x] **29.3** Card-Only Wallet Top-Up Enforcement: Restricted `topUp` and `topUpWallet` methods strictly to card tenders. Filtered top-up selector to `cardMethods()`, hiding KHQR from wallet funding.
+- [x] **29.4** Real-Time 4-Letter Voucher Auto-Dashing: Built `formatGiftCode()` normalizing voucher inputs into uppercase 4-character hyphenated chunks (`XXXX-XXXX-XXXX-XXXX`). Updated `redeemGiftCard()` to be dash-agnostic.
+- [x] **29.5** Detailed Transaction History Modal: Made `.tx-item` entries clickable buttons with hover affordances and built inspectable modal with amount hero, copyable transaction ID, category, date, and audit badge.
+- [x] **29.6** UI Spacing & Compact Button Polish: Added balanced 24px modal body padding, 18px form section gaps, and compact `8px 18px` action buttons with directional linear gradients and subtle top highlight bevels.
+- [x] **29.7** Quality Gate Expansion: Added Section 28 integration test suite. All 874 automated checks passed across all suites (520 unit, 324 integration, 23 master, 7 impeccable) with 0 errors.
+
