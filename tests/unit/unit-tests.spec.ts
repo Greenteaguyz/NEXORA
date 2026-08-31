@@ -4475,9 +4475,9 @@ import { WISHLIST_DATA } from '../../src/app/core/data/tokens';
 // JIT-load under the plain tsc runner (standard-emitted decorators). The header
 // state-machine test never renders it, so stub its module before requiring the
 // header component (lazily, after the patch, since static imports hoist).
-const nodeModule = require('module') as { _extensions: Record<string, (m: unknown, f: string) => void> };
+const nodeModule = require('module') as { _extensions: Record<string, (m: any, f: string) => void> };
 const originalJsHandler = nodeModule._extensions['.js'];
-nodeModule._extensions['.js'] = function (modInstance: { _compile: (code: string, f: string) => void }, filename: string) {
+nodeModule._extensions['.js'] = function (modInstance: any, filename: string) {
   if (filename.endsWith('role-badge.component.js')) {
     modInstance._compile('class RoleBadgeStub {}\nmodule.exports = { RoleBadgeComponent: RoleBadgeStub };', filename);
     return;
