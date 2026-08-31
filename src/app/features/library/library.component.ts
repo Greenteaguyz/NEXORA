@@ -6,7 +6,10 @@ import { forkJoin, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { Game } from '../../core/models/game.model';
 import { LibraryEntry } from '../../core/models/library-entry.model';
-import { LIBRARY_DATA, GAMES_DATA } from '../../core/data/tokens';
+import { Order } from '../../core/models/order.model';
+import { LIBRARY_DATA, GAMES_DATA, ORDERS_DATA, PAYMENTS_DATA, FinanceWallet } from '../../core/data/tokens';
+import { formatUsd } from '../../core/data/payments/payment-logic';
+import { Observable } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { ToastService } from '../../core/services/toast.service';
 import { DownloadService } from '../../core/services/download.service';
@@ -40,6 +43,8 @@ export interface LibraryDisplayItem {
 export class LibraryComponent {
   private libraryData = inject(LIBRARY_DATA);
   private gamesData = inject(GAMES_DATA);
+  private ordersData = inject(ORDERS_DATA);
+  private paymentsData = inject(PAYMENTS_DATA);
   private auth = inject(AuthService);
   private toast = inject(ToastService);
   protected downloadService = inject(DownloadService);
@@ -180,19 +185,57 @@ export class LibraryComponent {
     const gameId = this.gameToRemove.id;
     this.removing = true;
 
-    this.libraryData.removeFromLibrary(user.id, gameId).subscribe({
+    // Paid purchase? Revert the payment before dropping the entitlement,
+    // so the not-owned state is legitimate.
+    this.ordersData.getOrders(user.id).subscribe(orders => {
+      const paidOrder = orders.find(o => o.gameId === gameId && o.status === 'confirmed' && o.price > 0);
+      if (!paidOrder) {
+        this.proceedRemove(user.id, gameId, null);
+        return;
+      }
+      const walletTender = paidOrder.paymentMethod?.startsWith('NEXORA Store Wallet') ?? false;
+      const refund$: Observable<FinanceWallet | null> = walletTender
+        ? this.paymentsData.refundWallet(user.id, Math.round(paidOrder.price * 100), paidOrder.id)
+        : of(null);
+      refund$.subscribe({
+        next: () => {
+          this.ordersData.revertOrder(paidOrder.id).subscribe({
+            next: () => this.proceedRemove(user.id, gameId, paidOrder),
+            error: () => this.failRemove()
+          });
+        },
+        error: () => this.failRemove()
+      });
+    }, () => this.failRemove());
+  }
+
+  private proceedRemove(userId: string, gameId: string, refundedOrder: Order | null): void {
+    this.libraryData.removeFromLibrary(userId, gameId).subscribe({
       next: () => {
         this.items = this.items.filter(item => item.game.id !== gameId);
         this.removing = false;
         this.gameToRemove = null;
-        this.toast.show({ type: 'success', title: 'Removed from Library', message: 'The game was removed from your library.' });
+        if (refundedOrder) {
+          const walletRefund = refundedOrder.paymentMethod?.startsWith('NEXORA Store Wallet') ?? false;
+          this.toast.show({
+            type: 'success',
+            title: 'Purchase Reverted',
+            message: walletRefund
+              ? `${formatUsd(refundedOrder.price)} was refunded to your wallet.`
+              : 'The purchase was reverted and the game is no longer owned.'
+          });
+        } else {
+          this.toast.show({ type: 'success', title: 'Removed from Library', message: 'The game was removed from your library.' });
+        }
       },
-      error: () => {
-        this.removing = false;
-        this.gameToRemove = null;
-        this.toast.show({ type: 'error', title: 'Removal Failed', message: 'Could not remove this game from your library. Please try again.' });
-      }
+      error: () => this.failRemove()
     });
+  }
+
+  private failRemove(): void {
+    this.removing = false;
+    this.gameToRemove = null;
+    this.toast.show({ type: 'error', title: 'Removal Failed', message: 'Could not remove this game from your library. Please try again.' });
   }
 
   removeGame(gameId: string, event?: Event): void {

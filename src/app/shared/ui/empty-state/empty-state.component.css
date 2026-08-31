@@ -48,13 +48,13 @@
 .empty-icon-wrap[data-icon="rocket"] {
   background: rgba(245, 158, 11, 0.1);
   border-color: rgba(245, 158, 11, 0.3);
-  color: #F59E0B;
+  color: var(--amber-400);
 }
 
 .empty-icon-wrap[data-icon="warning"] {
   background: rgba(239, 68, 68, 0.1);
   border-color: rgba(239, 68, 68, 0.3);
-  color: #EF4444;
+  color: var(--rose-500);
 }
 
 :host-context([data-theme="light"]) .empty-icon-wrap {
@@ -75,7 +75,7 @@
 :host-context([data-theme="light"]) .empty-icon-wrap[data-icon="receipt"] {
   background: #ECFDF5;
   border-color: #A7F3D0;
-  color: #059669;
+  color: var(--emerald-500);
 }
 :host-context([data-theme="light"]) .empty-icon-wrap[data-icon="rocket"] {
   background: #FFFBEB;

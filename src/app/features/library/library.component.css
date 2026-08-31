@@ -102,8 +102,21 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
-  font-size: 0.9rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 4px;
+}
+
+.clear-search-svg,
+.clear-cross-svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  flex-shrink: 0;
 }
 
 .tag-filters-track {
@@ -410,7 +423,7 @@
 /* Light Mode Overrides for High Visibility */
 :host-context([data-theme="light"]) .library-card {
   background: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
 }
 
@@ -421,8 +434,8 @@
 
 :host-context([data-theme="light"]) .filter-tag-chip {
   background: #FFFFFF;
-  border-color: #D5DCE6;
-  color: #475569;
+  border-color: var(--border-card);
+  color: var(--text-secondary);
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
 }
 
@@ -441,7 +454,7 @@
 
 :host-context([data-theme="light"]) .filter-count-badge {
   background: rgba(15, 23, 42, 0.06);
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 :host-context([data-theme="light"]) .filter-tag-chip.active .filter-count-badge {
@@ -451,13 +464,13 @@
 
 :host-context([data-theme="light"]) .library-search-input {
   background-color: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
   color: #090D16;
 }
 
 :host-context([data-theme="light"]) .view-toggle-btn {
   background-color: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
   color: #2D3748;
 }
 
@@ -495,7 +508,7 @@
 
 :host-context([data-theme="light"]) .modal-card {
   background: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
 }
 
@@ -578,7 +591,7 @@
 }
 
 :host-context([data-theme="light"]) .info-point {
-  color: #334155;
+  color: var(--text-secondary);
 }
 
 .info-point {
@@ -623,7 +636,7 @@
 :host-context([data-theme="light"]) .btn-cancel {
   background: #FFFFFF;
   border-color: #CBD5E1;
-  color: #334155;
+  color: var(--text-secondary);
 }
 
 :host-context([data-theme="light"]) .btn-cancel:hover {
@@ -657,5 +670,17 @@
 .btn-confirm-delete:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+:host-context([data-theme="light"]) .btn-clear-multi {
+  border-color: #0078D4;
+  color: #0078D4;
+  background: rgba(0, 120, 212, 0.06);
+}
+
+:host-context([data-theme="light"]) .btn-clear-multi:hover {
+  background: rgba(0, 120, 212, 0.14);
+  color: #005A9E;
+  border-color: #005A9E;
 }
 

@@ -334,6 +334,12 @@
   color: var(--text-primary);
 }
 
+.faq-clear-btn .clear-search-svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+}
+
 /* Category Filter Pills */
 .faq-filter-pills {
   display: flex;
@@ -519,6 +525,25 @@
   color: var(--accent-400);
   border-radius: var(--radius-sm);
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-clear-filters:hover {
+  background: rgba(102, 192, 244, 0.15);
+  border-color: var(--accent-400);
+  color: #FFFFFF;
+}
+
+:host-context([data-theme="light"]) .btn-clear-filters {
+  background: #FFFFFF;
+  border-color: #D2DBE3;
+  color: #0078D4;
+}
+
+:host-context([data-theme="light"]) .btn-clear-filters:hover {
+  background: #EFF6FF;
+  border-color: #0078D4;
+  color: #005A9E;
 }
 
 /* ==========================================================================
@@ -670,7 +695,7 @@
 
 .category-icon-box.amber {
   background: rgba(245, 158, 11, 0.15);
-  color: #F59E0B;
+  color: var(--amber-400);
   border: 1px solid rgba(245, 158, 11, 0.25);
 }
 
@@ -702,7 +727,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  animation: dropdownFade 0.15s ease-out;
+  animation: dropdownFade 0.15s ease;
 }
 
 :host-context([data-theme="light"]) .custom-dropdown-menu {
@@ -1102,7 +1127,7 @@
   align-items: center;
   gap: 8px;
   background: rgba(239, 68, 68, 0.1);
-  color: #EF4444;
+  color: var(--rose-500);
   border: 1px solid rgba(239, 68, 68, 0.3);
   padding: 8px 16px;
   border-radius: var(--radius);
@@ -1115,7 +1140,7 @@
 
 .reset-db-btn:hover {
   background: rgba(239, 68, 68, 0.2);
-  border-color: #EF4444;
+  border-color: var(--rose-500);
 }
 
 .reset-db-btn:active {

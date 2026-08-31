@@ -74,13 +74,23 @@
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 0.9rem;
   padding: 4px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-clear-search:hover {
   color: var(--text-primary);
+}
+
+.clear-search-svg,
+.clear-cross-svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+  flex-shrink: 0;
 }
 
 .tag-filters-track {
@@ -173,7 +183,7 @@
 /* Light Mode Overrides */
 :host-context([data-theme="light"]) .wishlist-search-wrapper {
   background: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
 }
 
 :host-context([data-theme="light"]) .wishlist-search-input {
@@ -182,8 +192,8 @@
 
 :host-context([data-theme="light"]) .filter-tag-chip {
   background: #FFFFFF;
-  border-color: #D5DCE6;
-  color: #475569;
+  border-color: var(--border-card);
+  color: var(--text-secondary);
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
 }
 
@@ -202,12 +212,24 @@
 
 :host-context([data-theme="light"]) .filter-count-badge {
   background: rgba(15, 23, 42, 0.06);
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 :host-context([data-theme="light"]) .filter-tag-chip.active .filter-count-badge {
   background: rgba(2, 132, 199, 0.2);
   color: #0284C7;
+}
+
+:host-context([data-theme="light"]) .btn-clear-multi {
+  border-color: #0078D4;
+  color: #0078D4;
+  background: rgba(0, 120, 212, 0.06);
+}
+
+:host-context([data-theme="light"]) .btn-clear-multi:hover {
+  background: rgba(0, 120, 212, 0.14);
+  color: #005A9E;
+  border-color: #005A9E;
 }
 
 .header-left-cluster {
@@ -489,7 +511,7 @@
 /* Light Mode Overrides for High Visibility */
 :host-context([data-theme="light"]) .wishlist-card {
   background: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
   box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
 }
 
@@ -556,7 +578,7 @@
 
 :host-context([data-theme="light"]) .modal-card {
   background: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
 }
 
@@ -639,7 +661,7 @@
 }
 
 :host-context([data-theme="light"]) .info-point {
-  color: #334155;
+  color: var(--text-secondary);
 }
 
 .info-point {
@@ -684,7 +706,7 @@
 :host-context([data-theme="light"]) .btn-cancel {
   background: #FFFFFF;
   border-color: #CBD5E1;
-  color: #334155;
+  color: var(--text-secondary);
 }
 
 :host-context([data-theme="light"]) .btn-cancel:hover {

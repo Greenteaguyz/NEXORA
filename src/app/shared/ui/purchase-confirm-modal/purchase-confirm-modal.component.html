@@ -31,22 +31,34 @@
       </button>
     </div>
 
-    <!-- Body / Summary -->
+    <!-- Body: full summary view, or focused PayWay payment view -->
     <div class="modal-body">
-      <div class="game-summary-card">
-        <img [src]="game.coverImageUrl" [alt]="game.title + ' Cover'" class="game-thumb">
-        <div class="game-info">
-          <h3 class="game-title">{{ game.title }}</h3>
-          <div class="game-tags">
-            @for (tag of game.tags.slice(0, 3); track tag) {
-              <span class="tag-pill">#{{ tag }}</span>
-            }
-          </div>
-          <div class="game-price-tag">
-            ${{ game.price.toFixed(2) }}
+      @if (showPayway()) {
+        <div class="inline-payway-panel">
+          <app-aba-payway-sheet
+            [amountUsd]="game.price"
+            [orderRef]="game.id"
+            [accountHolder]="paywayHolder()"
+            [accountSeed]="paywaySeed()"
+            (completed)="onPaywayCompleted()"
+            (cancel)="closePayway()">
+          </app-aba-payway-sheet>
+        </div>
+      } @else {
+        <div class="game-summary-card">
+          <img [src]="game.coverImageUrl" [alt]="game.title + ' Cover'" class="game-thumb">
+          <div class="game-info">
+            <h3 class="game-title">{{ game.title }}</h3>
+            <div class="game-tags">
+              @for (tag of game.tags.slice(0, 3); track tag) {
+                <span class="tag-pill">#{{ tag }}</span>
+              }
+            </div>
+            <div class="game-price-tag">
+              ${{ game.price.toFixed(2) }}
+            </div>
           </div>
         </div>
-      </div>
 
       <!-- Payment Method Selector Section -->
       <div class="payment-method-section">
@@ -90,8 +102,29 @@
             </button>
           }
 
-          <!-- Saved Methods from PAYMENTS_DATA -->
-          @for (method of savedMethods(); track method.id) {
+          <!-- ABA PayWay Rail (KHQR sheet with auto-set amount) -->
+          <button
+            type="button"
+            class="card-brand-btn payway-option"
+            [class.active]="selectedOptionId() === 'payway'"
+            (click)="selectOption('payway')"
+            role="radio"
+            [attr.aria-checked]="selectedOptionId() === 'payway'">
+            <div class="brand-logo-wrap payway">
+              <app-payment-brand-mark [mark]="'aba'" [height]="18"></app-payment-brand-mark>
+            </div>
+            <div class="brand-text-wrap">
+              <div class="brand-title-row">
+                <span class="brand-name-title">ABA PayWay</span>
+                <span class="payway-tag">KHQR</span>
+              </div>
+              <span class="brand-digits">Scan to pay · amount auto-set</span>
+            </div>
+            <div class="radio-indicator"></div>
+          </button>
+
+          <!-- Saved Methods from PAYMENTS_DATA (cards only — KHQR pays via the PayWay rail) -->
+          @for (method of checkoutMethods(); track method.id) {
             <button 
               type="button" 
               class="card-brand-btn" 
@@ -100,36 +133,56 @@
               role="radio"
               [attr.aria-checked]="selectedOptionId() === method.id">
               <div class="brand-logo-wrap">
-                @if (method.type === 'card') {
-                  <app-payment-brand-mark [mark]="method.brand" [height]="18"></app-payment-brand-mark>
-                } @else {
-                  <app-payment-brand-mark [mark]="method.bank === 'ABA' ? 'aba' : 'khqr'" [height]="18"></app-payment-brand-mark>
-                }
+                <app-payment-brand-mark [mark]="method.brand" [height]="18"></app-payment-brand-mark>
               </div>
               <div class="brand-text-wrap">
                 <div class="brand-title-row">
-                  <span class="brand-name-title">
-                    {{ method.type === 'card' ? (method.brand | uppercase) : method.bank + ' KHQR' }}
-                  </span>
+                  <span class="brand-name-title">{{ method.brand | uppercase }}</span>
                   @if (method.isDefault) {
                     <span class="default-badge-pill">DEFAULT</span>
                   }
                 </div>
                 <span class="brand-digits">
-                  {{ method.type === 'card' ? '•••• ' + method.last4 + ' (Expires ' + method.expiry + ')' : method.handle }}
+                  •••• {{ method.last4 }} (Expires {{ method.expiry }})
                 </span>
               </div>
               <div class="radio-indicator"></div>
             </button>
           }
 
+          <!-- Inline Add Payment Method (shared form) -->
+          @if (!showAddMethod()) {
+            <button
+              type="button"
+              class="add-card-toggle"
+              (click)="openAddMethod()"
+              [attr.aria-expanded]="showAddMethod()"
+              [disabled]="isBusy">
+              <svg class="toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              <span>Add Payment Method</span>
+            </button>
+          }
+
+          @if (showAddMethod()) {
+            <div class="inline-add-method-panel">
+              <app-add-payment-method-form
+                [methods]="savedMethods()"
+                (added)="onMethodAdded($event)"
+                (cancel)="closeAddMethod()">
+              </app-add-payment-method-form>
+            </div>
+          }
+
           <!-- Fallback if user has no saved methods and no wallet -->
           @if (savedMethods().length === 0 && !wallet()) {
             <div class="no-methods-callout">
-              <p>No payment methods found. You can link cards and Bakong KHQR in your account.</p>
-              <a [routerLink]="'/account/payment'" (click)="onCancel()" class="btn-setup-payment">
+              <p>No payment methods found. Add a card here, or pay in one tap with ABA PayWay.</p>
+              <button type="button" class="btn-setup-payment" (click)="openAddMethod()">
                 Add Payment Method
-              </a>
+              </button>
             </div>
           }
         </div>
@@ -152,16 +205,12 @@
           </svg>
           <span>Standalone installer available right after checkout</span>
         </div>
-        <div class="perk-row">
-          <svg class="perk-icon cyan" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-          <span>90% goes directly to the creator</span>
-        </div>
       </div>
+      }
     </div>
 
-    <!-- Footer Actions -->
+    <!-- Footer Actions (hidden in focused PayWay mode — the sheet owns the flow) -->
+    @if (!showPayway()) {
     <div class="modal-footer">
       <button 
         type="button" 
@@ -180,6 +229,8 @@
         @if (isBusy) {
           <span class="spinner-inline"></span>
           <span>Processing...</span>
+        } @else if (selectedOptionId() === 'payway' && !showPayway()) {
+          <span>Pay with ABA PayWay</span>
         } @else {
           <svg class="confirm-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="20 6 9 17 4 12"/>
@@ -188,5 +239,6 @@
         }
       </button>
     </div>
+    }
   </div>
 </div>

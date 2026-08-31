@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { Order } from '../../models/order.model';
 import { OrdersDataService } from '../tokens';
 import { LocalStoreService } from '../../persistence/local-store.service';
@@ -61,6 +61,21 @@ export class MockOrdersDataService implements OrdersDataService {
 
   getAllOrders(): Observable<Order[]> {
     return of([...this.orders]);
+  }
+
+  /** Confirmed → refunded. Idempotent: terminal orders return unchanged. */
+  revertOrder(orderId: string): Observable<Order> {
+    const order = this.orders.find(o => o.id === orderId);
+    if (!order) {
+      return throwError(() => new Error(`MockOrdersDataService: unknown order ${orderId}`));
+    }
+    if (order.status !== 'confirmed') {
+      return of(order);
+    }
+    const reverted: Order = { ...order, status: 'refunded' };
+    this.orders = this.orders.map(o => (o.id === orderId ? reverted : o));
+    this.persist();
+    return of(reverted);
   }
 }
 

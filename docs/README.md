@@ -58,9 +58,9 @@ Recipe-style guides for solving specific engineering challenges.
 Unambiguous specifications, data contracts, and routing tables.
 
 * **[Data models reference](./reference-data-models.md)**  
-  TypeScript interfaces for `User`, `Game`, `LibraryEntry`, `Order`, `WishlistEntry`, `PaymentMethod`, `Wallet`, and `GiftCard`, including field constraints, validation rules, and soft-delete schemas.
+  TypeScript interfaces for `User`, `Game`, `LibraryEntry`, `Order` (including `'refunded'`), `WishlistEntry`, `PaymentMethod`, `Wallet`, `GiftCard`, and the Finance Core models (`Money`, `LedgerEntry`, `PaymentIntent`, `Tender`), including field constraints, validation rules, and soft-delete schemas.
 * **[API and data services reference](./reference-api-services.md)**  
-  Method signatures, parameter types, Observable return types, and DI token constants for all 6 core data services (`GAMES_DATA`, `LIBRARY_DATA`, `ORDERS_DATA`, `USERS_DATA`, `WISHLIST_DATA`, `PAYMENTS_DATA`) and singleton application services (`ScrollLockService`, `ToastService`, `DownloadService`).
+  Method signatures, parameter types, Observable return types, and DI token constants for all core data services (`GAMES_DATA`, `LIBRARY_DATA`, `ORDERS_DATA`, `USERS_DATA`, `WISHLIST_DATA`, `PAYMENTS_DATA`) and singleton application services (`ScrollLockService`, `ToastService`, `DownloadService`), including order reverts and finance ledger updates.
 * **[Routes and guards reference](./reference-routes-guards.md)**  
   Central route table (18 routes including `/account/payment`), functional guard definitions (`authGuard`, `roleGuard`, `ownershipGuard`, `unsavedChangesGuard`), authorization matrix, return URL sanitization, and deep-link intent handling.
 
@@ -81,10 +81,10 @@ Architectural rationale, design choices, and trade-off analysis.
 
 * **[Steam Design System (DESIGN.md)](../DESIGN.md)** — Comprehensive design specification detailing color tokens, typography scales, zero-shift media architecture, fluid `clamp()` tokens, 4/3/2/1 grid progression, and 50+ anti-slop guardrails.
 * **[Frontend architecture specification](../frontend-architecture.md)** — Architectural document covering system design, state management with Signals, DI abstraction, error handling, and design tokens.
-* **[Pages and components map](../pages_components_map.md)** — Component registry (26 components and 5 directives), layout wireframes, cross-cutting DI dependency matrix, and Mermaid component graph.
+* **[Pages and components map](../pages_components_map.md)** — Component registry (28 components and 5 directives), layout wireframes, cross-cutting DI dependency matrix, and Mermaid component graph.
 * **[Site architecture](../site_architecture.md)** — Site map, 18-route table, 5-state download machine, guard chains, data flow diagrams, and page inventory.
 * **[Solo build plan](../design_doc.md)** — Milestone triage plan, solo execution strategy, success criteria checklist, and Decision Audit Trail.
-* **[Project tracked tasks](../TODOS.md)** — Active execution tasks and backlog tracker across Phases 1 through 19.
+* **[Project tracked tasks](../TODOS.md)** — Active execution tasks and backlog tracker across all completed phases.
 
 ---
 
@@ -92,11 +92,12 @@ Architectural rationale, design choices, and trade-off analysis.
 
 Audited via Angular esbuild application builder:
 
-* **Initial Transfer Size**: `96.8 kB` (80.6% under the 500 kB budget)
-* **Main JavaScript Bundle**: `8.12 kB` transfer size
-* **Build Speed**: `2.70s` production compilation
+* **Initial Transfer Size**: `143.06 kB` (71.4% under the 500 kB budget)
+* **Main JavaScript Bundle**: `25.32 kB` transfer size
+* **Build Speed**: `~3.4s` production compilation
 * **Core Web Vitals**: FCP `~340ms`, LCP `~620ms`, CLS `0.00` (Zero Cumulative Layout Shift), INP `< 35ms`
 * **Performance Grade**: **A+ (99/100)**
+* **Automated Regression Coverage**: 851 tests (100% green across unit, integration, master, and design suites)
 
 ---
 

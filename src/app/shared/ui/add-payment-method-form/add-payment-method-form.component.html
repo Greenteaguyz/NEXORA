@@ -1,0 +1,167 @@
+<!-- Method Type Tabs -->
+<div class="method-type-tabs" role="tablist" aria-label="Payment method type">
+  <button
+    type="button"
+    role="tab"
+    [attr.aria-selected]="activeTab() === 'card'"
+    class="type-tab"
+    [class.active]="activeTab() === 'card'"
+    (click)="selectTab('card')">
+    <svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+      <line x1="1" y1="10" x2="23" y2="10"/>
+    </svg>
+    <span>Credit / Debit Card</span>
+  </button>
+
+  <button
+    type="button"
+    role="tab"
+    [attr.aria-selected]="activeTab() === 'khqr'"
+    class="type-tab"
+    [class.active]="activeTab() === 'khqr'"
+    (click)="selectTab('khqr')">
+    <span class="tab-khqr-pill">KHQR</span>
+    <span>Bakong Link</span>
+  </button>
+</div>
+
+<!-- Card Form -->
+@if (activeTab() === 'card') {
+  <form (ngSubmit)="submitCard()" class="amf-form">
+    @if (cardFormErrors().length > 0) {
+      <div class="form-error-callout" role="alert">
+        @for (err of cardFormErrors(); track err) {
+          <div>&bull; {{ err }}</div>
+        }
+      </div>
+    }
+
+    <div class="form-group">
+      <label class="form-label" for="amfCardHolderInput">Cardholder Name</label>
+      <input
+        id="amfCardHolderInput"
+        type="text"
+        class="form-input"
+        placeholder="e.g. Alice Vance"
+        [(ngModel)]="cardHolder"
+        name="cardHolder"
+        autocomplete="cc-name"
+        required>
+    </div>
+
+    <div class="form-group">
+      <div class="label-with-brand">
+        <label class="form-label" for="amfCardNumberInput">Card Number</label>
+        @if (detectedBrand) {
+          <app-payment-brand-mark [mark]="detectedBrand" [height]="16"></app-payment-brand-mark>
+        }
+      </div>
+      <input
+        id="amfCardNumberInput"
+        type="text"
+        class="form-input"
+        placeholder="4242 4242 4242 4242"
+        appCardNumber
+        [(ngModel)]="cardNumber"
+        name="cardNumber"
+        maxlength="19"
+        inputmode="numeric"
+        autocomplete="cc-number"
+        required>
+      <span class="input-hint">Visa and Mastercard accepted (Luhn verified).</span>
+    </div>
+
+    <div class="form-row-2">
+      <div class="form-group">
+        <label class="form-label" for="amfCardExpiryInput">Expiration (MM/YY)</label>
+        <input
+          id="amfCardExpiryInput"
+          type="text"
+          class="form-input"
+          placeholder="08/28"
+          appExpiryDate
+          [(ngModel)]="cardExpiry"
+          name="cardExpiry"
+          maxlength="5"
+          inputmode="numeric"
+          autocomplete="cc-exp"
+          required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="amfCardCvvInput">Security Code (CVV)</label>
+        <input
+          id="amfCardCvvInput"
+          type="password"
+          class="form-input"
+          placeholder="123"
+          appCvv
+          [(ngModel)]="cardCvv"
+          name="cardCvv"
+          maxlength="4"
+          inputmode="numeric"
+          autocomplete="cc-csc"
+          required>
+      </div>
+    </div>
+
+    <div class="amf-actions">
+      <button type="button" class="btn-amf-cancel" (click)="emitCancel()" [disabled]="savingCard()">Cancel</button>
+      <button type="submit" class="btn-amf-submit" [disabled]="savingCard()">
+        @if (savingCard()) {
+          <span class="amf-spinner"></span>
+          <span>Saving...</span>
+        } @else {
+          <span>Save Card</span>
+        }
+      </button>
+    </div>
+  </form>
+}
+
+<!-- KHQR Form -->
+@if (activeTab() === 'khqr') {
+  <form (ngSubmit)="submitKhqr()" class="amf-form">
+    @if (khqrFormErrors().length > 0) {
+      <div class="form-error-callout" role="alert">
+        @for (err of khqrFormErrors(); track err) {
+          <div>&bull; {{ err }}</div>
+        }
+      </div>
+    }
+
+    <div class="form-group">
+      <label class="form-label" for="amfBankSelect">Select Cambodian Bank</label>
+      <select id="amfBankSelect" class="form-input amf-select" [(ngModel)]="khqrBank" name="khqrBank">
+        <option value="ABA">ABA Bank (National Bank of Cambodia)</option>
+        <option value="ACLEDA">ACLEDA Bank Plc</option>
+        <option value="Wing">Wing Bank (Cambodia) Plc</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="amfKhqrHandleInput">Account ID or Phone Handle</label>
+      <input
+        id="amfKhqrHandleInput"
+        type="text"
+        class="form-input"
+        placeholder="e.g. yourname@aba or 012345678"
+        [(ngModel)]="khqrHandle"
+        name="khqrHandle"
+        required>
+      <span class="input-hint">Links your Bakong KHQR handle.</span>
+    </div>
+
+    <div class="amf-actions">
+      <button type="button" class="btn-amf-cancel" (click)="emitCancel()" [disabled]="khqrLinking()">Cancel</button>
+      <button type="submit" class="btn-amf-submit" [disabled]="khqrLinking()">
+        @if (khqrLinking()) {
+          <span>Connecting to {{ khqrBank }}...</span>
+        } @else {
+          <span>Link {{ khqrBank }} Account</span>
+        }
+      </button>
+    </div>
+  </form>
+}

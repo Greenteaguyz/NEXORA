@@ -1,0 +1,206 @@
+.method-type-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.type-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 10px;
+  background: transparent;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.type-tab:hover {
+  color: var(--text-secondary);
+  border-color: var(--text-muted);
+}
+
+.type-tab.active {
+  color: var(--accent-400);
+  border-color: var(--accent-400);
+  background: rgba(102, 192, 244, 0.08);
+}
+
+.type-tab .tab-svg {
+  width: 14px;
+  height: 14px;
+}
+
+.tab-khqr-pill {
+  font-size: 0.62rem;
+  font-weight: 800;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(225, 35, 38, 0.16);
+  color: var(--brand-khqr-red);
+  border: 1px solid rgba(225, 35, 38, 0.35);
+}
+
+.amf-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.label-with-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 10px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.amf-select {
+  font-family: var(--font-sans);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent-400);
+  box-shadow: 0 0 0 2px rgba(102, 192, 244, 0.25);
+}
+
+.input-hint {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.form-error-callout {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  border-radius: var(--radius);
+  color: var(--rose-500);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.amf-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn-amf-cancel {
+  padding: 7px 14px;
+  background: transparent;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-amf-cancel:hover:not(:disabled) {
+  border-color: var(--text-muted);
+}
+
+.btn-amf-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: var(--accent-600);
+  border: none;
+  border-radius: var(--radius);
+  color: #FFFFFF;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-amf-submit:hover:not(:disabled) {
+  background: var(--accent-700);
+}
+
+.btn-amf-submit:disabled,
+.btn-amf-cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.amf-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: amfSpin 0.8s linear infinite;
+}
+
+@keyframes amfSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Light Theme Overrides */
+:host-context([data-theme="light"]) .form-input {
+  background: #FFFFFF;
+  border-color: var(--border-card);
+}
+
+:host-context([data-theme="light"]) .form-input:focus {
+  border-color: var(--accent-400);
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+}
+
+:host-context([data-theme="light"]) .type-tab.active {
+  color: var(--accent-400);
+  background: rgba(0, 120, 212, 0.06);
+}
+
+:host-context([data-theme="light"]) .form-error-callout {
+  background: rgba(225, 29, 72, 0.06);
+  border-color: rgba(225, 29, 72, 0.35);
+}
+
+:host-context([data-theme="light"]) .btn-amf-cancel:hover:not(:disabled) {
+  background: #E2E8F0;
+}

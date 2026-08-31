@@ -227,7 +227,7 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-:host-context([data-theme="light"]) .capsule-pitch { color: #475569; }
+:host-context([data-theme="light"]) .capsule-pitch { color: var(--text-secondary); }
 
 .capsule-meta-table {
   display: flex;
@@ -252,7 +252,7 @@
 .meta-label { color: var(--text-muted); }
 .meta-val { color: var(--text-primary); font-weight: 600; }
 .meta-val.highlight-gold {
-  color: #FACC15;
+  color: var(--amber-400);
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -338,7 +338,7 @@
 :host-context([data-theme="light"]) .btn-steam-sidebar-wishlist {
   background: #F1F5F9;
   border-color: #CBD5E1;
-  color: #334155;
+  color: var(--text-secondary);
 }
 :host-context([data-theme="light"]) .btn-steam-sidebar-wishlist:hover {
   background: #E2E8F0;
@@ -465,8 +465,8 @@
 
 .dev-badge {
   background: rgba(250, 204, 21, 0.15);
-  border: 1px solid #FACC15;
-  color: #FACC15;
+  border: 1px solid var(--amber-400);
+  color: var(--amber-400);
 }
 :host-context([data-theme="light"]) .dev-badge {
   background: #FEF9C3;
@@ -585,7 +585,7 @@
 :host-context([data-theme="light"]) .btn-claim-pill {
   background: #F1F5F9;
   border-color: #CBD5E1;
-  color: #334155;
+  color: var(--text-secondary);
 }
 
 .btn-steam-studio-link {
@@ -624,7 +624,7 @@
   padding: 6px 10px;
   transition: color 0.15s ease;
 }
-.btn-subtle-remove-text:hover { color: #EF4444; }
+.btn-subtle-remove-text:hover { color: var(--rose-500); }
 
 /* --------------------------------------------------------------------------
    4. LOWER GRID: About Game & System Requirements
@@ -681,7 +681,7 @@
   margin: 0;
   white-space: pre-line;
 }
-:host-context([data-theme="light"]) .story-lead-text { color: #334155; }
+:host-context([data-theme="light"]) .story-lead-text { color: var(--text-secondary); }
 
 /* Specs Grid */
 .os-tabs-cluster {
@@ -779,7 +779,7 @@
   font-family: var(--font-mono);
 }
 :host-context([data-theme="light"]) .spec-key {
-  color: #64748B;
+  color: var(--text-muted);
 }
 
 .spec-val {
@@ -887,7 +887,7 @@
 :host-context([data-theme="light"]) .btn-cancel {
   background: #F1F5F9;
   border-color: #CBD5E1;
-  color: #334155;
+  color: var(--text-secondary);
 }
 .btn-primary {
   background: linear-gradient(135deg, #0078D4 0%, #0284C7 100%);
@@ -1007,7 +1007,7 @@
 :host-context([data-theme="light"]) .btn-secondary-cta {
   background: #F1F5F9;
   border-color: #CBD5E1;
-  color: #334155;
+  color: var(--text-secondary);
 }
 :host-context([data-theme="light"]) .btn-secondary-cta:hover {
   background: #E2E8F0;
@@ -1051,14 +1051,13 @@
   transition: background 0.15s ease;
 }
 .btn-danger-confirm:hover {
-  background: #BE123C;
+  background: var(--rose-500);
 }
 
 /* --------------------------------------------------------------------------
-/* --------------------------------------------------------------------------
-   6. RESPONSIVE MEDIA QUERIES (< 900px, < 640px)
+   6. RESPONSIVE MEDIA QUERIES (< 1024px, < 640px)
    -------------------------------------------------------------------------- */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .steam-showcase-stage {
     grid-template-columns: 1fr;
     gap: 16px;

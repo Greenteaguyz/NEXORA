@@ -1,14 +1,14 @@
 :host {
   display: block;
   min-height: 100vh;
-  background: var(--bg-void, #0A0F16);
-  color: var(--text-primary, #E2E8F0);
+  background: var(--bg-void);
+  color: var(--text-primary);
   padding: 32px 24px 64px;
 }
 
 :host-context([data-theme="light"]) {
-  background: #F8FAFC;
-  color: #0F172A;
+  background: var(--bg-void);
+  color: var(--text-primary);
 }
 
 .payment-page-container {
@@ -25,7 +25,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: var(--text-muted, #94A3B8);
+  color: var(--text-muted);
   text-decoration: none;
   font-size: 0.88rem;
   font-weight: 600;
@@ -60,7 +60,7 @@
 
 .page-subtitle {
   margin: 0;
-  color: var(--text-secondary, #94A3B8);
+  color: var(--text-secondary, var(--text-muted));
   font-size: 0.95rem;
   max-width: 700px;
   line-height: 1.5;
@@ -81,13 +81,13 @@
 .alert-banner.success {
   background: rgba(16, 185, 129, 0.12);
   border: 1px solid rgba(16, 185, 129, 0.35);
-  color: #34D399;
+  color: var(--emerald-400);
 }
 
 .alert-banner.error {
   background: rgba(239, 68, 68, 0.12);
   border: 1px solid rgba(239, 68, 68, 0.35);
-  color: #F87171;
+  color: var(--rose-500);
 }
 
 .alert-svg {
@@ -149,7 +149,7 @@
 
 .icon-wrap.emerald {
   background: rgba(16, 185, 129, 0.12);
-  color: #34D399;
+  color: var(--emerald-400);
 }
 
 .section-title {
@@ -217,7 +217,7 @@
   gap: 5px;
   font-size: 0.68rem;
   font-weight: 700;
-  color: #34D399;
+  color: var(--emerald-400);
   letter-spacing: 0.05em;
 }
 
@@ -225,8 +225,8 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #34D399;
-  box-shadow: 0 0 6px #34D399;
+  background: var(--emerald-400);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .wallet-icon-box {
@@ -269,16 +269,6 @@
   font-size: 1.1rem;
   font-weight: 700;
   color: #66C0F4;
-}
-
-.khr-display {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #94A3B8;
-}
-
-.khr-approx {
-  letter-spacing: 0.02em;
 }
 
 .wallet-actions-row {
@@ -332,7 +322,7 @@
 .section-desc {
   margin: 0;
   font-size: 0.88rem;
-  color: var(--text-secondary, #94A3B8);
+  color: var(--text-secondary, var(--text-muted));
   line-height: 1.45;
 }
 
@@ -400,7 +390,7 @@
 
 .sample-codes-tip {
   font-size: 0.78rem;
-  color: var(--text-muted, #64748B);
+  color: var(--text-muted, var(--text-muted));
 }
 
 .sample-codes-tip code {
@@ -470,12 +460,12 @@
 
 .tx-badge.credit {
   background: rgba(16, 185, 129, 0.15);
-  color: #34D399;
+  color: var(--emerald-400);
 }
 
 .tx-badge.debit {
   background: rgba(239, 68, 68, 0.15);
-  color: #F87171;
+  color: var(--rose-500);
 }
 
 .tx-badge svg {
@@ -500,7 +490,7 @@
 
 .tx-date {
   font-size: 0.75rem;
-  color: var(--text-muted, #94A3B8);
+  color: var(--text-muted);
   text-transform: capitalize;
 }
 
@@ -508,17 +498,17 @@
   font-family: 'JetBrains Mono', monospace;
   font-weight: 700;
   font-size: 0.95rem;
-  color: var(--text-muted, #94A3B8);
+  color: var(--text-muted);
 }
 
 .tx-amount.positive {
-  color: #34D399;
+  color: var(--emerald-400);
 }
 
 .empty-tx-box {
   padding: 24px;
   text-align: center;
-  color: var(--text-muted, #94A3B8);
+  color: var(--text-muted);
   font-size: 0.88rem;
 }
 
@@ -629,7 +619,7 @@
 }
 
 .masked-dots {
-  color: var(--text-muted, #64748B);
+  color: var(--text-muted, var(--text-muted));
   letter-spacing: 0.1em;
 }
 
@@ -663,7 +653,7 @@
   align-items: center;
   justify-content: space-between;
   font-size: 0.8rem;
-  color: var(--text-muted, #94A3B8);
+  color: var(--text-muted);
 }
 
 .method-card-actions {
@@ -682,7 +672,7 @@
 .btn-set-default {
   background: transparent;
   border: none;
-  color: var(--text-muted, #94A3B8);
+  color: var(--text-muted);
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -698,7 +688,7 @@
 .btn-remove-method {
   background: transparent;
   border: none;
-  color: var(--text-muted, #94A3B8);
+  color: var(--text-muted);
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -709,7 +699,7 @@
 }
 
 .btn-remove-method:hover {
-  color: #F87171;
+  color: var(--rose-500);
   background: rgba(239, 68, 68, 0.1);
 }
 
@@ -735,7 +725,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted, #64748B);
+  color: var(--text-muted, var(--text-muted));
 }
 
 .empty-icon-box svg {
@@ -751,7 +741,7 @@
 .empty-methods-card p {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--text-muted, #94A3B8);
+  color: var(--text-muted);
   max-width: 320px;
   line-height: 1.45;
 }
@@ -806,7 +796,7 @@
 .preview-badge {
   font-size: 0.68rem;
   font-weight: 700;
-  color: #34D399;
+  color: var(--emerald-400);
   background: rgba(16, 185, 129, 0.12);
   padding: 2px 7px;
   border-radius: 4px;
@@ -869,7 +859,7 @@
 .btn-modal-close {
   background: transparent;
   border: none;
-  color: var(--text-muted, #94A3B8);
+  color: var(--text-muted);
   font-size: 1.3rem;
   cursor: pointer;
   padding: 0;
@@ -895,7 +885,7 @@
   gap: 8px;
   background: var(--bg-elevated, #1A2432);
   border: 1px solid var(--border-card, rgba(255, 255, 255, 0.08));
-  color: var(--text-muted, #94A3B8);
+  color: var(--text-muted);
   padding: 10px 12px;
   border-radius: 6px;
   font-size: 0.85rem;
@@ -907,7 +897,7 @@
 :host-context([data-theme="light"]) .type-tab {
   background: #F1F5F9;
   border-color: #CBD5E1;
-  color: #64748B;
+  color: var(--text-muted);
 }
 
 .type-tab.active {
@@ -954,11 +944,11 @@
 .form-label {
   font-size: 0.82rem;
   font-weight: 700;
-  color: var(--text-secondary, #94A3B8);
+  color: var(--text-secondary, var(--text-muted));
 }
 
 :host-context([data-theme="light"]) .form-label {
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 .form-select {
@@ -984,13 +974,13 @@
 
 .input-hint {
   font-size: 0.75rem;
-  color: var(--text-muted, #64748B);
+  color: var(--text-muted, var(--text-muted));
 }
 
 .form-error-callout {
   background: rgba(239, 68, 68, 0.12);
   border: 1px solid rgba(239, 68, 68, 0.35);
-  color: #F87171;
+  color: var(--rose-500);
   padding: 10px 14px;
   border-radius: 6px;
   font-size: 0.82rem;
@@ -1042,7 +1032,7 @@
 }
 
 .summary-val {
-  color: #34D399;
+  color: var(--emerald-400);
   font-size: 1.05rem;
   font-weight: 800;
 }
@@ -1068,7 +1058,7 @@
 
 :host-context([data-theme="light"]) .btn-cancel {
   border-color: #CBD5E1;
-  color: #475569;
+  color: var(--text-secondary);
 }
 
 .btn-submit {
@@ -1100,7 +1090,7 @@
   margin: 0;
   font-size: 0.92rem;
   line-height: 1.5;
-  color: var(--text-secondary, #94A3B8);
+  color: var(--text-secondary, var(--text-muted));
 }
 
 .btn-confirm-remove {

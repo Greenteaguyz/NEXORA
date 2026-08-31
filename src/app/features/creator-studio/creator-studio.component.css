@@ -176,16 +176,16 @@
 }
 
 .metric-value.green { color: var(--emerald-400); }
-.metric-value.amber { color: #FACC15; }
+.metric-value.amber { color: var(--amber-400); }
 .metric-value.cyan { color: var(--cyan-400); }
 .metric-value.rose { color: var(--rose-500); }
 .metric-value.highlight { color: var(--emerald-400); }
 
-:host-context([data-theme="light"]) .metric-value.green { color: #059669; }
+:host-context([data-theme="light"]) .metric-value.green { color: var(--emerald-500); }
 :host-context([data-theme="light"]) .metric-value.amber { color: #D97706; }
 :host-context([data-theme="light"]) .metric-value.cyan { color: #0284C7; }
 :host-context([data-theme="light"]) .metric-value.rose { color: #E11D48; }
-:host-context([data-theme="light"]) .metric-value.highlight { color: #059669; }
+:host-context([data-theme="light"]) .metric-value.highlight { color: var(--emerald-500); }
 
 .metric-label {
   font-size: 0.78rem;
@@ -217,7 +217,7 @@
 }
 
 :host-context([data-theme="light"]) .revenue-split-badge {
-  color: #059669;
+  color: var(--emerald-500);
   background: rgba(5, 150, 105, 0.1);
   border-color: rgba(5, 150, 105, 0.25);
 }
@@ -292,9 +292,9 @@
   gap: 6px;
   padding: 6px 14px;
   border-radius: var(--radius);
-  background: rgba(244, 63, 94, 0.12);
-  border: 1px solid rgba(244, 63, 94, 0.3);
-  color: var(--rose-500);
+  background: rgba(244, 63, 94, 0.14);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  color: #FDA4AF;
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
@@ -303,9 +303,22 @@
 }
 
 .btn-empty-bin:hover {
-  background: rgba(244, 63, 94, 0.22);
-  border-color: var(--rose-500);
+  background: #DC2626;
+  border-color: #DC2626;
+  color: #FFFFFF;
   transform: none;
+}
+
+:host-context([data-theme="light"]) .btn-empty-bin {
+  background: #FFF1F2;
+  border-color: #FECDD3;
+  color: var(--rose-500);
+}
+
+:host-context([data-theme="light"]) .btn-empty-bin:hover {
+  background: #E11D48;
+  border-color: #E11D48;
+  color: #FFFFFF;
 }
 
 .empty-tab-state {
@@ -365,7 +378,18 @@
 }
 
 .unpublished-row {
-  opacity: 0.75;
+  background: rgba(244, 63, 94, 0.02);
+}
+
+.unpublished-row .showcase-thumb {
+  filter: grayscale(35%);
+  opacity: 0.88;
+  transition: filter 0.2s ease, opacity 0.2s ease;
+}
+
+.unpublished-row:hover .showcase-thumb {
+  filter: grayscale(0%);
+  opacity: 1;
 }
 
 .cell-showcase {
@@ -455,14 +479,21 @@
 
 .status-pill.draft {
   background: rgba(250, 204, 21, 0.12);
-  color: #FACC15;
+  color: var(--amber-400);
   border: 1px solid rgba(250, 204, 21, 0.35);
 }
 
 .status-pill.bin {
-  background: rgba(244, 63, 94, 0.12);
+  background: rgba(244, 63, 94, 0.14);
+  color: #FDA4AF;
+  border: 1px solid rgba(244, 63, 94, 0.38);
+  font-weight: 700;
+}
+
+:host-context([data-theme="light"]) .status-pill.bin {
+  background: #FFE4E6;
   color: var(--rose-500);
-  border: 1px solid rgba(244, 63, 94, 0.3);
+  border-color: #FDA4AF;
 }
 
 .dot {
@@ -472,7 +503,7 @@
 }
 
 .dot.green { background: var(--emerald-400); }
-.dot.amber { background: #FACC15; }
+.dot.amber { background: var(--amber-400); }
 .dot.rose { background: var(--rose-500); }
 
 .cell-date {
@@ -532,9 +563,9 @@
 }
 
 .btn-action.restore {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  color: var(--emerald-400);
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #6EE7B7;
 }
 
 .btn-action.restore:hover {
@@ -544,10 +575,22 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
+:host-context([data-theme="light"]) .btn-action.restore {
+  background: #ECFDF5;
+  border-color: #A7F3D0;
+  color: #047857;
+}
+
+:host-context([data-theme="light"]) .btn-action.restore:hover {
+  background: var(--emerald-500);
+  border-color: var(--emerald-500);
+  color: #FFFFFF;
+}
+
 .btn-action.purge-danger {
-  background: rgba(244, 63, 94, 0.1);
-  border: 1px solid rgba(244, 63, 94, 0.35);
-  color: var(--rose-500);
+  background: rgba(244, 63, 94, 0.12);
+  border: 1px solid rgba(244, 63, 94, 0.4);
+  color: #FDA4AF;
 }
 
 .btn-action.purge-danger:hover {
@@ -555,6 +598,18 @@
   color: #FFFFFF;
   border-color: #DC2626;
   box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+}
+
+:host-context([data-theme="light"]) .btn-action.purge-danger {
+  background: #FFF1F2;
+  border-color: #FECDD3;
+  color: var(--rose-500);
+}
+
+:host-context([data-theme="light"]) .btn-action.purge-danger:hover {
+  background: #E11D48;
+  border-color: #E11D48;
+  color: #FFFFFF;
 }
 
 .action-icon {
@@ -613,7 +668,7 @@
 
 :host-context([data-theme="light"]) .modal-card {
   background: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
 }
 
@@ -764,13 +819,90 @@
   font-size: 0.88rem;
   cursor: pointer;
   transition: all 0.15s ease;
-  transform: none;
 }
 
 .btn-confirm-purge:hover:not(:disabled) {
-  background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+  background: linear-gradient(135deg, var(--rose-500) 0%, #DC2626 100%);
   box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
-  transform: none;
+}
+
+.btn-confirm-purge:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(40%);
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   Countdown Safety Lock for Permanent Purge (Compact Micro-Pill)
+   ========================================================================== */
+.countdown-pill {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 136px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 12px 6px 12px;
+  border-radius: var(--radius-full, 9999px);
+  background: rgba(229, 169, 60, 0.12);
+  color: #FCD34D;
+  border: 1px solid rgba(229, 169, 60, 0.35);
+  margin-bottom: 10px;
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+:host-context([data-theme="light"]) .countdown-pill {
+  background: rgba(217, 119, 6, 0.1);
+  color: #B45309;
+  border-color: rgba(217, 119, 6, 0.3);
+}
+
+.countdown-text {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+}
+
+.countdown-progress-track {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2.5px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 0 0 var(--radius-full, 9999px) var(--radius-full, 9999px);
+  overflow: hidden;
+}
+
+:host-context([data-theme="light"]) .countdown-progress-track {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.countdown-progress-bar {
+  height: 100%;
+  background: var(--amber-400);
+  transition: width 0.25s ease;
+}
+
+.countdown-pill.unlocked {
+  background: rgba(117, 176, 34, 0.15);
+  color: #8ED629;
+  border-color: rgba(117, 176, 34, 0.45);
+}
+
+:host-context([data-theme="light"]) .countdown-pill.unlocked {
+  background: rgba(101, 163, 13, 0.12);
+  color: #4D7C0F;
+  border-color: rgba(101, 163, 13, 0.35);
+}
+
+.countdown-pill.unlocked .countdown-progress-bar {
+  background: #8ED629;
 }
 
 @keyframes scaleUp {
@@ -816,12 +948,12 @@
 :host-context([data-theme="light"]) .studio-table th {
   background: #F8FAFC;
   border-color: #E2E8F0;
-  color: #64748B;
+  color: var(--text-muted);
 }
 
 :host-context([data-theme="light"]) .studio-table td {
   border-color: #F1F5F9;
-  color: #334155;
+  color: var(--text-secondary);
 }
 
 :host-context([data-theme="light"]) .game-table-row:hover {
@@ -831,7 +963,7 @@
 :host-context([data-theme="light"]) .btn-action.edit {
   background: #F8FAFC;
   border-color: #CBD5E1;
-  color: #334155;
+  color: var(--text-secondary);
 }
 
 :host-context([data-theme="light"]) .btn-action.edit:hover {
@@ -886,6 +1018,12 @@
   border: 1px solid rgba(102, 192, 244, 0.4);
   color: var(--text-primary);
   justify-content: space-between;
+  animation: bannerFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes bannerFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 :host-context([data-theme="light"]) .alert-banner.publish-success {

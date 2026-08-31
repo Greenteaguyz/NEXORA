@@ -137,7 +137,7 @@
 
 .acc-badge.usd {
   background: rgba(16, 185, 129, 0.12);
-  color: #059669;
+  color: var(--emerald-500);
 }
 
 .acc-number {
@@ -158,4 +158,23 @@
   font-size: 0.7rem;
   color: #6B7280;
   font-weight: 500;
+}
+
+/* Compact (checkout) variant — bare centered QR; the host scan card owns identity */
+.khqr-card-shell.compact {
+  max-width: 200px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.khqr-card-shell.compact .khqr-body {
+  padding: 0;
+}
+
+.khqr-card-shell.compact .khqr-qr-stage {
+  width: 176px;
+  height: 176px;
+  padding: 0;
+  margin: 0 auto;
 }

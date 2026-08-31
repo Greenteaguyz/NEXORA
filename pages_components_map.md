@@ -44,6 +44,8 @@ Every page, every component it contains, every input/output, and every service d
 | `EmptyStateComponent`            | ✅     | Shared  | `app/shared/ui/empty-state/`             | `message: string`, `icon?: string`, `actionLabel?: string`, `actionRoute?: string` | `(action)`                                              | Catalog, Library, Studio, Wishlist, Creator   |
 | `RoleBadgeComponent`             | ✅     | Shared  | `app/shared/ui/role-badge/`              | `role: 'buyer' \| 'creator'`, `size?: 'sm' \| 'md'`                                 | —                                                       | Header, Profile, CreatorProfile               |
 | `TagChipInputComponent`          | ✅     | Shared  | `app/shared/ui/tag-chip-input/`          | `tags: string[]`, `max: number`                                                    | `(tagsChange)`                                          | GameForm                                      |
+| `AbaPaywaySheetComponent`        | ✅     | Shared  | `app/shared/ui/aba-payway-sheet/`        | `price: number`, `method: KhqrPaymentMethod \| null`                               | `(completed)`, `(cancelled)`                            | PurchaseConfirmModal                          |
+| `AddPaymentMethodFormComponent`  | ✅     | Shared  | `app/shared/ui/add-payment-method-form/`  | `userId: string`, `initialTab?: 'card' \| 'khqr'`                                  | `(methodAdded)`, `(cancel)`                             | PurchaseConfirmModal, AccountPayment          |
 
 ---
 

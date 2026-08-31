@@ -1,6 +1,6 @@
-import { Component, inject, effect, OnInit, HostListener, signal } from '@angular/core';
+import { Component, inject, effect, OnInit, OnDestroy, HostListener, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Game } from '../../core/models/game.model';
 import { GAMES_DATA, ORDERS_DATA } from '../../core/data/tokens';
 import { AuthService } from '../../core/auth/auth.service';
@@ -22,10 +22,11 @@ import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directi
   templateUrl: './creator-studio.component.html',
   styleUrls: ['./creator-studio.component.css']
 })
-export class CreatorStudioComponent implements OnInit {
+export class CreatorStudioComponent implements OnInit, OnDestroy {
   private gamesData = inject(GAMES_DATA);
   private ordersData = inject(ORDERS_DATA, { optional: true });
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   auth = inject(AuthService);
   private toast = inject(ToastService);
 
@@ -44,6 +45,13 @@ export class CreatorStudioComponent implements OnInit {
   // Stage 2: Permanent Purge Modal State
   gameToPurge: Game | null = null;
   purging = false;
+  readonly purgeCountdownTotal = 5;
+  purgeCountdownSeconds = 5;
+  private purgeCountdownTimerId: ReturnType<typeof setInterval> | null = null;
+
+  get purgeCountdownProgressPercent(): number {
+    return Math.max(0, Math.min(100, ((this.purgeCountdownTotal - this.purgeCountdownSeconds) / this.purgeCountdownTotal) * 100));
+  }
 
   // Quick Action State
   busyGameIds = new Set<string>();
@@ -53,6 +61,11 @@ export class CreatorStudioComponent implements OnInit {
   publishToastTitle = '';
   publishToastMode: 'published' | 'updated' | 'draft' = 'published';
   publishedGameId: string | null = null;
+  readonly TOAST_AUTO_DISMISS_MS = 5500;
+  private publishToastTimer: ReturnType<typeof setTimeout> | null = null;
+  private toastDismissStartTime = 0;
+  private toastRemainingMs = 5500;
+  private isToastPaused = false;
 
   constructor() {
     effect(() => {
@@ -65,24 +78,66 @@ export class CreatorStudioComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
+      let shouldShow = false;
       if (params['published'] === 'true' && params['title']) {
         this.publishToastTitle = params['title'];
         this.publishToastMode = 'published';
         this.publishedGameId = params['gameId'] || null;
-        this.showPublishToast = true;
+        shouldShow = true;
       } else if (params['updated'] === 'true' && params['title']) {
         this.publishToastTitle = params['title'];
         this.publishToastMode = 'updated';
         this.publishedGameId = params['gameId'] || null;
-        this.showPublishToast = true;
+        shouldShow = true;
       } else if (params['draftSaved'] === 'true' && params['title']) {
         this.publishToastTitle = params['title'];
         this.publishToastMode = 'draft';
         this.publishedGameId = params['gameId'] || null;
-        this.showPublishToast = true;
+        shouldShow = true;
         this.activeTab.set('drafts');
       }
+
+      if (shouldShow) {
+        this.showPublishToast = true;
+        this.startPublishToastTimer(this.TOAST_AUTO_DISMISS_MS);
+        // Clean URL query parameters to avoid resurrection on refresh
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: {},
+          replaceUrl: true
+        });
+      }
     });
+  }
+
+  startPublishToastTimer(durationMs = this.TOAST_AUTO_DISMISS_MS): void {
+    this.clearPublishToastTimer();
+    this.toastRemainingMs = durationMs;
+    this.toastDismissStartTime = Date.now();
+    this.isToastPaused = false;
+    this.publishToastTimer = setTimeout(() => {
+      this.closePublishToast();
+    }, durationMs);
+  }
+
+  pausePublishToastTimer(): void {
+    if (!this.showPublishToast || this.isToastPaused || !this.publishToastTimer) return;
+    this.clearPublishToastTimer();
+    const elapsed = Date.now() - this.toastDismissStartTime;
+    this.toastRemainingMs = Math.max(1000, this.toastRemainingMs - elapsed);
+    this.isToastPaused = true;
+  }
+
+  resumePublishToastTimer(): void {
+    if (!this.showPublishToast || !this.isToastPaused) return;
+    this.startPublishToastTimer(this.toastRemainingMs);
+  }
+
+  clearPublishToastTimer(): void {
+    if (this.publishToastTimer) {
+      clearTimeout(this.publishToastTimer);
+      this.publishToastTimer = null;
+    }
   }
 
   setTab(tab: 'all' | 'active' | 'drafts' | 'bin'): void {
@@ -90,7 +145,14 @@ export class CreatorStudioComponent implements OnInit {
   }
 
   closePublishToast(): void {
+    this.clearPublishToastTimer();
     this.showPublishToast = false;
+    this.isToastPaused = false;
+  }
+
+  ngOnDestroy(): void {
+    this.clearPublishToastTimer();
+    this.clearPurgeCountdownTimer();
   }
 
   loadStudioGames(user = this.auth.currentUser()): void {
@@ -259,21 +321,45 @@ export class CreatorStudioComponent implements OnInit {
   // ---------------------------------------------------------------------------
   openPurgeModal(game: Game, event: MouseEvent): void {
     event.stopPropagation();
+    this.clearPurgeCountdownTimer();
+    this.purgeCountdownSeconds = this.purgeCountdownTotal;
     this.gameToPurge = game;
+
+    this.purgeCountdownTimerId = setInterval(() => {
+      if (this.purgeCountdownSeconds > 0) {
+        this.purgeCountdownSeconds = Math.max(0, this.purgeCountdownSeconds - 1);
+      } else {
+        // Stop countdown at 0 — DO NOT auto-dismiss or auto-execute! Keep modal open for user confirmation.
+        this.clearPurgeCountdownTimer();
+      }
+    }, 1000);
   }
 
   closePurgeModal(): void {
     if (this.purging) return;
+    this.clearPurgeCountdownTimer();
     this.gameToPurge = null;
+  }
+
+  clearPurgeCountdownTimer(): void {
+    if (this.purgeCountdownTimerId) {
+      clearInterval(this.purgeCountdownTimerId);
+      this.purgeCountdownTimerId = null;
+    }
   }
 
   confirmPermanentDelete(): void {
     if (!this.gameToPurge) return;
+    if (this.purgeCountdownSeconds > 0) {
+      console.warn('[CreatorStudioComponent] Premature permanent purge rejected: countdown active.');
+      return;
+    }
     if (!this.gamesData.permanentlyDeleteGame) return;
 
     const gameId = this.gameToPurge.id;
     const title = this.gameToPurge.title;
     this.purging = true;
+    this.clearPurgeCountdownTimer();
 
     this.gamesData.permanentlyDeleteGame(gameId).subscribe({
       next: () => {

@@ -127,7 +127,7 @@
               <button 
                 type="button" 
                 class="btn-logout" 
-                (click)="logout()" 
+                (click)="requestLogout($event)"
                 title="Log out of account">
                 Log Out
               </button>
@@ -304,7 +304,7 @@
               <app-role-badge [role]="user.roles.includes('creator') ? 'creator' : 'buyer'" size="sm"></app-role-badge>
             </div>
           </div>
-          <button type="button" class="btn-card-logout" (click)="logout()" aria-label="Log Out" title="Log Out">
+          <button type="button" class="btn-card-logout" (click)="requestLogout($event)" aria-label="Log Out" title="Log Out">
             <svg class="logout-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
               <polyline points="16 17 21 12 16 7"/>
@@ -440,4 +440,31 @@
       <span class="mobile-tab-label">Menu</span>
     </button>
   </nav>
+}
+
+<!-- Log Out Confirmation Modal -->
+@if (logoutConfirmOpen()) {
+  <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="logoutModalTitle" appScrollLock (click)="cancelLogout()" (keydown.escape)="cancelLogout()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="logoutModalTitle" class="modal-title">Log out of NEXORA?</h3>
+        <button type="button" class="btn-close-modal" (click)="cancelLogout()" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-lead-text">
+          You will need to sign in again to access your library, wishlist and Creator Studio.
+        </p>
+        <div class="safe-data-callout">
+          <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Your data stays saved on this device.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" (click)="cancelLogout()" autofocus>Cancel</button>
+        <button type="button" class="btn-confirm-logout" (click)="confirmLogout()">Log Out</button>
+      </div>
+    </div>
+  </div>
 }

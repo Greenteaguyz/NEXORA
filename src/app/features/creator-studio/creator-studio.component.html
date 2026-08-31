@@ -45,7 +45,7 @@
 
   <!-- Publish / Update Success Alert (AC-1118) -->
   @if (showPublishToast) {
-    <div class="alert-banner publish-success" role="status">
+    <div class="alert-banner publish-success" role="status" (mouseenter)="pausePublishToastTimer()" (mouseleave)="resumePublishToastTimer()">
       <div class="publish-alert-left">
         <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"/>
@@ -56,9 +56,9 @@
       </div>
       <div class="publish-alert-right">
         @if (publishedGameId && publishToastMode !== 'draft') {
-          <a [routerLink]="['/games', publishedGameId]" class="btn-preview-store">View in Store →</a>
+          <a [routerLink]="['/games', publishedGameId]" class="btn-preview-store">View in Store &rarr;</a>
         }
-        <button type="button" class="btn-dismiss-toast" (click)="closePublishToast()" aria-label="Dismiss alert">✕</button>
+        <button type="button" class="btn-dismiss-toast" (click)="closePublishToast()" aria-label="Dismiss alert">&times;</button>
       </div>
     </div>
   }
@@ -277,12 +277,12 @@
           <h3 class="modal-title">
             {{ gameToBin.status === 'draft' ? 'Delete Draft?' : 'Move to Recycle Bin?' }}
           </h3>
-          <button type="button" class="btn-close-modal" (click)="closeDeleteModal()" aria-label="Close modal">✕</button>
+          <button type="button" class="btn-close-modal" (click)="closeDeleteModal()" aria-label="Close modal">&times;</button>
         </div>
 
         <div class="modal-body">
           <p class="modal-lead-text">
-            Are you sure you want to {{ gameToBin.status === 'draft' ? 'delete draft' : 'move' }} <strong>"{{ gameToBin.title }}"</strong> {{ gameToBin.status === 'draft' ? '' : 'to the Recycle Bin' }}?
+            {{ gameToBin.status === 'draft' ? 'Moves draft' : 'Moves' }} <strong>"{{ gameToBin.title }}"</strong> to the Recycle Bin.
           </p>
           <div class="unpublish-info-box">
             @if (gameToBin.status === 'draft') {
@@ -308,30 +308,49 @@
 
   <!-- Stage 2: Permanent Purge Modal (Danger Modal) -->
   @if (gameToPurge) {
-    <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Permanently Delete Game" appScrollLock (click)="closePurgeModal()">
+    <div 
+      class="modal-backdrop" 
+      role="dialog" 
+      aria-modal="true" 
+      aria-labelledby="purgeModalTitle" 
+      appScrollLock 
+      (click)="closePurgeModal()"
+      (keydown.escape)="closePurgeModal()">
       <div class="modal-card purge-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3 class="modal-title text-danger">Permanently Delete Game?</h3>
-          <button type="button" class="btn-close-modal" (click)="closePurgeModal()" aria-label="Close modal">✕</button>
+          <h3 id="purgeModalTitle" class="modal-title text-danger">Permanently Delete "{{ gameToPurge.title }}"?</h3>
+          <button type="button" class="btn-close-modal" (click)="closePurgeModal()" aria-label="Close modal">&times;</button>
         </div>
 
         <div class="modal-body">
-          <p class="modal-lead-text">
-            Are you sure you want to permanently erase <strong>"{{ gameToPurge.title }}"</strong>?
-          </p>
+          <div class="countdown-pill" [class.unlocked]="purgeCountdownSeconds === 0" aria-live="polite" aria-atomic="true">
+            @if (purgeCountdownSeconds > 0) {
+              <span class="countdown-text">Wait <strong>{{ purgeCountdownSeconds }}s</strong> to confirm</span>
+            } @else {
+              <span class="countdown-text">Ready to confirm</span>
+            }
+            <div class="countdown-progress-track" aria-hidden="true">
+              <div class="countdown-progress-bar" [style.width.%]="purgeCountdownProgressPercent"></div>
+            </div>
+          </div>
+
           <div class="purge-warning-box">
             <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
               <line x1="12" y1="9" x2="12" y2="13"/>
               <line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
-            <span>All media, screenshots, and metadata will be permanently wiped from storage. <strong>This action cannot be undone.</strong></span>
+            <span>Permanently wipes build files, media, and metadata. <strong>Cannot be undone.</strong></span>
           </div>
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn-cancel" (click)="closePurgeModal()" [disabled]="purging">Cancel</button>
-          <button type="button" class="btn-confirm-purge" (click)="confirmPermanentDelete()" [disabled]="purging">
+          <button type="button" class="btn-cancel" (click)="closePurgeModal()" [disabled]="purging" autofocus>Cancel</button>
+          <button 
+            type="button" 
+            class="btn-confirm-purge" 
+            [disabled]="purgeCountdownSeconds > 0 || purging"
+            (click)="confirmPermanentDelete()">
             {{ purging ? 'Erasing...' : 'Permanently Delete' }}
           </button>
         </div>

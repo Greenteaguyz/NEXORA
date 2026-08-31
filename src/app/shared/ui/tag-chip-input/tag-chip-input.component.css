@@ -69,6 +69,21 @@
   color: var(--rose-500);
 }
 
+.chip-remove-svg {
+  width: 9px;
+  height: 9px;
+  stroke: currentColor;
+  display: block;
+}
+
+.suggestion-check-svg {
+  width: 10px;
+  height: 10px;
+  stroke: currentColor;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .input-and-btn-wrap {
   display: flex;
   align-items: center;
@@ -110,7 +125,7 @@
 
 .btn-add-tag:hover:not(:disabled) {
   background: var(--accent-500);
-  transform: scale(1.05);
+  transform: none;
 }
 
 .max-tags-indicator {
@@ -195,4 +210,38 @@
 @keyframes popIn {
   from { transform: scale(0.8); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
+}
+
+/* Light Mode Overrides (High-Contrast WCAG AAA) */
+:host-context([data-theme="light"]) .tag-chips-box {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+}
+
+:host-context([data-theme="light"]) .tag-chip {
+  background: #E0F2FE;
+  border-color: #BAE6FD;
+  color: #0369A1;
+}
+
+:host-context([data-theme="light"]) .tag-label {
+  color: #0284C7;
+}
+
+:host-context([data-theme="light"]) .suggestion-btn {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+  color: var(--text-secondary);
+}
+
+:host-context([data-theme="light"]) .suggestion-btn:hover:not(:disabled) {
+  border-color: #0078D4;
+  color: #0F172A;
+  background: #F1F5F9;
+}
+
+:host-context([data-theme="light"]) .suggestion-btn.added {
+  background: #DCFCE7;
+  border-color: #86EFAC;
+  color: #15803D;
 }

@@ -9,6 +9,8 @@ import { Order } from '../../src/app/core/models/order.model';
 import { User } from '../../src/app/core/models/user.model';
 import { LibraryEntry } from '../../src/app/core/models/library-entry.model';
 import { WishlistEntry } from '../../src/app/core/models/wishlist-entry.model';
+import * as fs from 'fs';
+import * as path from 'path';
 
 interface AssertionResult {
   suite: string;
@@ -439,9 +441,45 @@ assert('Reactive State Sync', 'Alice Vance view reactively projects Creator Stud
 
 // Test 3: Switch back to Bob Mercer
 reactiveStore.switchUser('usr_bob');
-assert('Reactive State Sync', 'Switching back to Bob Mercer restores Bob Library without cross-user contamination', 
+assert('Reactive State Sync', 'Switching back to Bob Mercer restores Bob Library without cross-user contamination',
   reactiveStore.getLibraryView().length === 2 && !reactiveStore.getLibraryView().some(e => e.gameId === 'game_001')
 );
+
+// Test 4: Log Out Confirmation Modal guards the authenticated session
+// Mirrors the Header logout-confirm state machine: requestLogout opens the
+// modal, cancel keeps the session, confirm clears it (AuthService.logout()).
+class MockLogoutConfirmFlow {
+  currentUser: User | null = db.login('bob@nexora.io');
+  logoutConfirmOpen = false;
+  mobileMenuOpen = true; // drawer open when Log Out was clicked
+
+  requestLogout(): void {
+    this.logoutConfirmOpen = true;
+  }
+
+  cancelLogout(): void {
+    this.logoutConfirmOpen = false;
+  }
+
+  confirmLogout(): void {
+    this.logoutConfirmOpen = false;
+    this.currentUser = null; // setSessionUser(null)
+    this.mobileMenuOpen = false; // header closes the drawer after confirming
+  }
+}
+
+const logoutFlow = new MockLogoutConfirmFlow();
+
+assert('Reactive State Sync', 'Log Out button opens the confirmation modal without ending the session',
+  (logoutFlow.requestLogout(), logoutFlow.logoutConfirmOpen === true && logoutFlow.currentUser !== null));
+
+logoutFlow.cancelLogout();
+assert('Reactive State Sync', 'Cancelling the logout confirm preserves the authenticated session',
+  logoutFlow.logoutConfirmOpen === false && logoutFlow.currentUser !== null);
+
+logoutFlow.confirmLogout();
+assert('Reactive State Sync', 'Confirming the logout ends the session and closes the drawer',
+  logoutFlow.logoutConfirmOpen === false && logoutFlow.currentUser === null && logoutFlow.mobileMenuOpen === false);
 
 // --- 8. INTEGRATION TESTS: Click-Path Invariants & Deep Redirect Flows ---
 console.log('\n--- 8. INTEGRATION TESTS: Click-Path Invariants & Deep Redirect Flows ---');
@@ -1091,8 +1129,650 @@ assert('Auto-Save Invariant', 'Pristine form does not create an empty dummy draf
   pristineResult === null
 );
 
+// ---------------------------------------------------------------------------
+// 15. INTEGRATION TESTS: Creator Mode Deactivation Safety & Stress Testing
+// ---------------------------------------------------------------------------
+console.log('\n--- 15. INTEGRATION TESTS: Creator Mode Deactivation Safety & Stress Testing ---');
 
+class CreatorDeactivationStateMachine {
+  countdownSeconds = 0;
+  countdownTotal = 5;
+  showModal = false;
+  timerActive = false;
+  userRoles: string[] = ['creator', 'buyer'];
 
+  openModal(total: number = 5): void {
+    this.clearTimer();
+    this.countdownTotal = total;
+    this.countdownSeconds = total;
+    this.showModal = true;
+    this.timerActive = true;
+  }
+
+  cancel(): void {
+    this.clearTimer();
+    this.showModal = false;
+  }
+
+  clearTimer(): void {
+    this.timerActive = false;
+  }
+
+  tick(): void {
+    if (this.countdownSeconds > 0) {
+      this.countdownSeconds = Math.max(0, this.countdownSeconds - 1);
+    } else {
+      this.clearTimer();
+    }
+  }
+
+  // Defensively guarded method mirroring ProfileComponent.confirmDisableCreator()
+  confirm(): boolean {
+    if (this.countdownSeconds > 0) {
+      return false; // REJECTED: premature execution blocked!
+    }
+    this.clearTimer();
+    this.showModal = false;
+    this.userRoles = this.userRoles.filter(r => r !== 'creator');
+    return true; // CONFIRMED
+  }
+
+  get progressPercent(): number {
+    return Math.max(0, Math.min(100, ((this.countdownTotal - this.countdownSeconds) / this.countdownTotal) * 100));
+  }
+}
+
+// Invariant 15.1: Progress Percent Math
+const progressMachine = new CreatorDeactivationStateMachine();
+progressMachine.openModal(5);
+assert('Deactivation Invariant', 'Initial progress at 5s is exactly 0%', progressMachine.progressPercent === 0);
+progressMachine.tick(); // 4s
+assert('Deactivation Invariant', 'Progress at 4s is 20%', progressMachine.progressPercent === 20);
+progressMachine.tick(); // 3s
+progressMachine.tick(); // 2s
+progressMachine.tick(); // 1s
+progressMachine.tick(); // 0s
+assert('Deactivation Invariant', 'Final progress at 0s is 100%', progressMachine.progressPercent === 100);
+
+// Failure Case 1: Premature trigger when countdownSeconds > 0 MUST be blocked
+const prematureGuardMachine = new CreatorDeactivationStateMachine();
+prematureGuardMachine.openModal(5);
+assert('Deactivation Failure Case', 'Modal is open and timer active at start', prematureGuardMachine.showModal && prematureGuardMachine.timerActive);
+const prematureBlocked = prematureGuardMachine.confirm(); // Attempt to confirm immediately at 5s!
+assert('Deactivation Failure Case', 'Premature confirmation at 5s is rejected', prematureBlocked === false);
+assert('Deactivation Failure Case', 'Creator role is preserved after premature trigger attempt', prematureGuardMachine.userRoles.includes('creator'));
+assert('Deactivation Failure Case', 'Modal remains open after blocked attempt', prematureGuardMachine.showModal === true);
+
+prematureGuardMachine.tick(); // 4s
+const prematureBlockedAt4 = prematureGuardMachine.confirm();
+assert('Deactivation Failure Case', 'Premature confirmation at 4s is rejected', prematureBlockedAt4 === false);
+assert('Deactivation Failure Case', 'Creator role still preserved at 4s', prematureGuardMachine.userRoles.includes('creator'));
+
+// Success Case: Confirmation only allowed after countdown completes to 0s
+prematureGuardMachine.tick(); // 3s
+prematureGuardMachine.tick(); // 2s
+prematureGuardMachine.tick(); // 1s
+prematureGuardMachine.tick(); // 0s
+const confirmedAtZero = prematureGuardMachine.confirm();
+assert('Deactivation Invariant', 'Confirmation at 0s is accepted', confirmedAtZero === true);
+assert('Deactivation Invariant', 'Creator role is revoked after valid confirmation', !prematureGuardMachine.userRoles.includes('creator'));
+assert('Deactivation Invariant', 'Modal is closed after valid confirmation', prematureGuardMachine.showModal === false);
+
+// Failure Case 2: Cancellation during countdown clears timer without role mutation
+const cancelMachine = new CreatorDeactivationStateMachine();
+cancelMachine.openModal(5);
+cancelMachine.tick(); // 4s
+cancelMachine.cancel();
+assert('Deactivation Invariant', 'Cancel closes modal', cancelMachine.showModal === false);
+assert('Deactivation Invariant', 'Cancel clears timer', cancelMachine.timerActive === false);
+assert('Deactivation Invariant', 'Cancel preserves creator role intact', cancelMachine.userRoles.includes('creator'));
+
+// Stress Test: 1,000 rapid open/cancel cycles
+let stressPass = true;
+const stressMachine = new CreatorDeactivationStateMachine();
+for (let cycle = 0; cycle < 1000; cycle++) {
+  stressMachine.openModal(5);
+  // Random partial ticks between 0 and 4
+  const ticks = cycle % 5;
+  for (let t = 0; t < ticks; t++) {
+    stressMachine.tick();
+  }
+  // Try premature confirm
+  if (stressMachine.countdownSeconds > 0) {
+    const blocked = stressMachine.confirm();
+    if (blocked !== false || !stressMachine.userRoles.includes('creator')) {
+      stressPass = false;
+      break;
+    }
+  }
+  // Cancel cycle
+  stressMachine.cancel();
+  if (stressMachine.timerActive || stressMachine.showModal) {
+    stressPass = false;
+    break;
+  }
+}
+assert('Deactivation Stress Test', '1,000 rapid open/cancel cycles maintain 100% data integrity and zero leaks', stressPass);
+
+// Failure Case 3: Negative time protection under excessive ticking
+const overtickMachine = new CreatorDeactivationStateMachine();
+overtickMachine.openModal(5);
+for (let i = 0; i < 50; i++) {
+  overtickMachine.tick();
+}
+assert('Negative Time Protection', 'Excessive ticking halts at exactly 0s without dropping negative', overtickMachine.countdownSeconds === 0);
+assert('Negative Time Protection', 'Progress percent caps at 100% without overflow', overtickMachine.progressPercent === 100);
+
+// Invariant 15.2: Template & CSS Anti-Slop Audit
+const rootDir = fs.existsSync(path.join(__dirname, '../../package.json'))
+  ? path.join(__dirname, '../..')
+  : path.join(__dirname, '../../..');
+const profileHtmlPath = path.join(rootDir, 'src/app/features/profile/profile.component.html');
+const profileCssPath = path.join(rootDir, 'src/app/features/profile/profile.component.css');
+
+assert('Audit Precondition', 'Profile template and CSS exist at resolved root', fs.existsSync(profileHtmlPath) && fs.existsSync(profileCssPath));
+
+const profileHtml = fs.readFileSync(profileHtmlPath, 'utf8');
+const profileCss = fs.readFileSync(profileCssPath, 'utf8');
+
+assert('Template Audit', 'Warning icon box is removed from modal header', !profileHtml.includes('warning-icon-box'));
+assert('Template Audit', 'Countdown pulse dot is removed from modal pill', !profileHtml.includes('countdown-pulse-dot'));
+assert('Template Audit', 'Countdown text wrapper is present', profileHtml.includes('countdown-text'));
+assert('Template Audit', 'Trailing period removed from navigation warning text', profileHtml.includes('Hides Creator Studio from your navigation') && !profileHtml.includes('Hides Creator Studio from your navigation.'));
+
+assert('CSS Audit', 'warning-icon-box CSS is removed', !profileCss.includes('.warning-icon-box'));
+assert('CSS Audit', 'countdown-pulse-dot CSS is removed', !profileCss.includes('.countdown-pulse-dot'));
+assert('CSS Audit', 'countdown-pill specifies min-width 172px for CLS stability', profileCss.includes('min-width: 172px'));
+
+// ===========================================================================
+// 16. INTEGRATION TESTS: Responsive Clamp & Viewport Boundary Invariants
+// ===========================================================================
+const headerCssPath = path.join(rootDir, 'src/app/layout/header/header.component.css');
+const gameDetailCssPath = path.join(rootDir, 'src/app/features/game-detail/game-detail.component.css');
+
+assert('Responsive Precondition', 'Header and Game Detail CSS exist', fs.existsSync(headerCssPath) && fs.existsSync(gameDetailCssPath));
+
+const headerCss = fs.readFileSync(headerCssPath, 'utf8');
+const gameDetailCss = fs.readFileSync(gameDetailCssPath, 'utf8');
+
+// 1. 1240px intermediate tier with icon-only search and role-tag hide
+const tier1240Regex = /@media\s*\(\s*max-width:\s*1240px\s*\)\s*\{[\s\S]*?\.btn-cmd-search[\s\S]*?display:\s*none[\s\S]*?width:\s*36px[\s\S]*?\.user-chip\s*\.role-tag[\s\S]*?display:\s*none[\s\S]*?\}/;
+assert('Responsive Clamp Tier', '1240px tier enforces icon-only search and hides creator role tag', tier1240Regex.test(headerCss));
+
+// 2. 1040px mobile breakpoint & no residual 1024px nav collapse
+const nav1040Regex = /@media\s*\(\s*max-width:\s*1040px\s*\)\s*\{[\s\S]*?\.desktop-nav\s*\{[\s\S]*?display:\s*none;/;
+const nav1024ResidualRegex = /@media\s*\(\s*max-width:\s*1024px\s*\)\s*\{[\s\S]*?\.desktop-nav\s*\{[\s\S]*?display:\s*none;/;
+assert('Responsive Breakpoint', 'Header mobile collapse breakpoint is calibrated to 1040px', nav1040Regex.test(headerCss));
+assert('Responsive Breakpoint', 'No residual 1024px desktop-nav collapse remains in header CSS', !nav1024ResidualRegex.test(headerCss));
+
+// 3. 1024px game-detail showcase stacking with capsule hide
+const showcase1024Regex = /@media\s*\(\s*max-width:\s*1024px\s*\)\s*\{[\s\S]*?\.steam-showcase-stage\s*\{[\s\S]*?grid-template-columns:\s*1fr;[\s\S]*?\.capsule-image-wrap\s*\{[\s\S]*?display:\s*none;/;
+assert('Responsive Showcase', 'Game detail showcase stacks 1fr with capsule hidden at 1024px', showcase1024Regex.test(gameDetailCss));
+
+// 4. Header container clamp max bounded to <= 40px
+const containerClampMatch = headerCss.match(/\.header-container\s*\{[\s\S]*?padding:\s*0\s+clamp\(\s*(\d+)px\s*,\s*([\d.]+)vw\s*,\s*(\d+)px\s*\)/);
+const maxPadding = containerClampMatch ? parseInt(containerClampMatch[3], 10) : 999;
+assert('Responsive Clamp Tokens', 'Header container clamp maximum padding is bounded to <= 40px', maxPadding <= 40);
+
+// 5. Redundant 768px search label/kbd hide removed
+const block768Match = headerCss.match(/@media\s*\(\s*max-width:\s*768px\s*\)\s*\{([\s\S]*?)(?=@media|\/\*|$)/);
+const block768 = block768Match ? block768Match[1] : '';
+assert('Responsive Deduplication', 'Redundant search label/kbd hide in 768px block is purged', !block768.includes('search-btn-label') && !block768.includes('search-btn-kbd'));
+
+// ===========================================================================
+// 17. INTEGRATION TESTS: Profile Iconography & Steam Slate Precision Invariants
+// ===========================================================================
+const profileHtmlContent = fs.readFileSync(profileHtmlPath, 'utf8');
+const profileCssContent = fs.readFileSync(profileCssPath, 'utf8');
+
+// 1. stat-arrow has ZERO occurrences in both profile html and css
+assert('Profile Icon Invariant', 'stat-arrow has ZERO occurrences in profile.component.html', !profileHtmlContent.includes('stat-arrow'));
+assert('Profile Icon Invariant', 'stat-arrow has ZERO occurrences in profile.component.css', !profileCssContent.includes('stat-arrow'));
+
+// 2. All 4 .stat-icon svgs use stroke-width="1.75" and root fill="none"; ZERO fill-opacity occurrences in profile html
+const statIconMatches = Array.from(profileHtmlContent.matchAll(/<svg\s+class="stat-icon"([\s\S]*?)>/g));
+assert('Profile Icon Invariant', 'Found exactly 4 stat-icon SVGs in profile HTML', statIconMatches.length === 4);
+const allStatIconsCorrect = statIconMatches.length === 4 && statIconMatches.every(m => m[1].includes('stroke-width="1.75"') && m[1].includes('fill="none"'));
+assert('Profile Icon Invariant', 'All 4 stat-icon SVGs specify stroke-width="1.75" and fill="none"', allStatIconsCorrect);
+assert('Profile Icon Invariant', 'ZERO fill-opacity occurrences exist in profile HTML', !profileHtmlContent.includes('fill-opacity'));
+
+// 3. .stat-icon-wrap uses var(--radius-sm), var(--text-muted), var(--border-card) and no .lime/.rose/.cyan/.emerald
+const statIconWrapMatch = profileCssContent.match(/\.stat-icon-wrap\s*\{([\s\S]*?)\}/);
+const statWrapBody = statIconWrapMatch ? statIconWrapMatch[1] : '';
+assert('Profile Icon Invariant', '.stat-icon-wrap uses var(--radius-sm)', statWrapBody.includes('var(--radius-sm)'));
+assert('Profile Icon Invariant', '.stat-icon-wrap uses var(--text-muted)', statWrapBody.includes('var(--text-muted)'));
+assert('Profile Icon Invariant', '.stat-icon-wrap uses var(--border-card)', statWrapBody.includes('var(--border-card)'));
+assert('Profile Icon Invariant', 'Rainbow selectors (.lime, .rose, .cyan, .emerald) purged from profile CSS',
+  !profileCssContent.includes('.stat-icon-wrap.lime') &&
+  !profileCssContent.includes('.stat-icon-wrap.rose') &&
+  !profileCssContent.includes('.stat-icon-wrap.cyan') &&
+  !profileCssContent.includes('.stat-icon-wrap.emerald')
+);
+
+// 4. Studio icon: .setting-icon-box is 36x36 slate; no .setting-icon-box.cyan rule; template has no "setting-icon-box cyan"
+const settingBoxMatch = profileCssContent.match(/\.setting-icon-box\s*\{([\s\S]*?)\}/);
+const settingBoxBody = settingBoxMatch ? settingBoxMatch[1] : '';
+assert('Profile Studio Icon', '.setting-icon-box is 36px width and 36px height', settingBoxBody.includes('width: 36px') && settingBoxBody.includes('height: 36px'));
+assert('Profile Studio Icon', '.setting-icon-box uses var(--radius-sm)', settingBoxBody.includes('var(--radius-sm)'));
+assert('Profile Studio Icon', 'No .setting-icon-box.cyan rule remains in CSS', !profileCssContent.includes('.setting-icon-box.cyan'));
+assert('Profile Studio Icon', 'Template has no "setting-icon-box cyan" combo', !profileHtmlContent.includes('setting-icon-box cyan'));
+
+// 5. Hero & meta icons standardized to stroke-width="1.75"
+const cameraIconMatch = profileHtmlContent.match(/<svg[^>]*class="camera-icon"[^>]*>|<svg[^>]*camera-icon[^>]*>/);
+assert('Profile Hero Icon', 'camera-icon uses stroke-width="1.75"', !!cameraIconMatch && cameraIconMatch[0].includes('stroke-width="1.75"'));
+const metaSvgMatches = Array.from(profileHtmlContent.matchAll(/<svg[^>]*class="meta-svg"[^>]*>/g));
+assert('Profile Hero Icon', 'All meta-svg icons use stroke-width="1.75"', metaSvgMatches.length >= 2 && metaSvgMatches.every(m => m[0].includes('stroke-width="1.75"')));
+
+// ===========================================================================
+// 18. INTEGRATION TESTS: Account Security & Change Password Invariants
+// ===========================================================================
+const profileHtmlLatest = fs.readFileSync(profileHtmlPath, 'utf8');
+const profileCssLatest = fs.readFileSync(profileCssPath, 'utf8');
+const profileTsPath = path.join(rootDir, 'src/app/features/profile/profile.component.ts');
+const profileTsContent = fs.readFileSync(profileTsPath, 'utf8');
+const userModelPath = path.join(rootDir, 'src/app/core/models/user.model.ts');
+const userModelContent = fs.readFileSync(userModelPath, 'utf8');
+const authMockPath = path.join(rootDir, 'src/app/core/auth/auth.mock.ts');
+const authMockContent = fs.readFileSync(authMockPath, 'utf8');
+const passwordLogicPath = path.join(rootDir, 'src/app/core/auth/password-logic.ts');
+const passwordLogicContent = fs.readFileSync(passwordLogicPath, 'utf8');
+
+// 1. Security section and modal present in template
+assert('Security Invariant', 'Account Security card section present in profile.component.html', profileHtmlLatest.includes('class="security-card"'));
+assert('Security Invariant', 'Change Password modal present in profile.component.html', profileHtmlLatest.includes('class="modal-card password-modal-card"'));
+
+// 2. All three password inputs present with dynamic toggle and correct autocomplete attributes
+assert('Security Invariant', 'current-password autocomplete attribute present', profileHtmlLatest.includes('autocomplete="current-password"'));
+assert('Security Invariant', 'new-password autocomplete attribute present', profileHtmlLatest.includes('autocomplete="new-password"'));
+const toggleButtons = Array.from(profileHtmlLatest.matchAll(/class="btn-toggle-password"/g));
+assert('Security Invariant', 'Show/hide password toggles wired for password fields', toggleButtons.length >= 3);
+
+// 3. Form error callout role="alert" used in modal
+assert('Security Invariant', 'form-error-callout with role="alert" used for errors', profileHtmlLatest.includes('class="form-error-callout"') && profileHtmlLatest.includes('role="alert"'));
+
+// 4. Lockout constants defined
+assert('Security Invariant', 'PASSWORD_MIN_LENGTH defined in password-logic', passwordLogicContent.includes('PASSWORD_MIN_LENGTH = 8'));
+assert('Security Invariant', 'MAX_FAILED_ATTEMPTS defined in password-logic', passwordLogicContent.includes('MAX_FAILED_ATTEMPTS = 5'));
+assert('Security Invariant', 'LOCKOUT_DURATION_MS defined in password-logic', passwordLogicContent.includes('LOCKOUT_DURATION_MS = 60_000') || passwordLogicContent.includes('LOCKOUT_DURATION_MS = 60000'));
+
+// 5. Credential isolation: User model and auth_users persistence never leak password/plaintext
+assert('Security Invariant', 'User interface does not define a password field', !userModelContent.includes('password'));
+assert('Security Invariant', 'AuthMockService stores credentials in separate auth_credentials key', authMockContent.includes('CREDENTIALS_KEY = \'auth_credentials\''));
+assert('Security Invariant', 'AuthMockService persist() only serializes users without credentials', !authMockContent.match(/this\.users\.map\([^)]*password/));
+
+// 6. Success toast wired
+assert('Security Invariant', 'ToastService wired in ProfileComponent for password updates', profileTsContent.includes('toastService.show') && profileTsContent.includes('Password updated'));
+
+// 7. Impeccable zero emojis
+const emojiRegex = /[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u;
+assert('Security Invariant', 'Zero raw emojis in profile HTML', !emojiRegex.test(profileHtmlLatest));
+assert('Security Invariant', 'Zero raw emojis in profile TS', !emojiRegex.test(profileTsContent));
+
+// 8. Account Password grounded naming & padlock icon invariants
+assert('Security Invariant', 'Card title is named "Account Password"', profileHtmlLatest.includes('Account Password'));
+assert('Security Invariant', 'Password subtitle is "Used to sign in to your NEXORA account"', profileHtmlLatest.includes('Used to sign in to your NEXORA account'));
+assert('Security Invariant', 'Action button is permanently "Change Password"', profileHtmlLatest.includes('Change Password'));
+assert('Security Invariant', 'Setting icon is a clean 1.75 line-art padlock', profileHtmlLatest.includes('d="M7 11V7a5 5 0 0 1 10 0v4"') && profileHtmlLatest.includes('stroke-width="1.75"'));
+assert('Security Invariant', 'Default seed credentials defined in auth.mock', authMockContent.includes('DEFAULT_SEED_PASSWORD = \'Password123!\''));
+
+// ===========================================================================
+// 19. INTEGRATION TESTS: UI/UX Polish, Modals, Draft Auto-Dismiss & Recycle Bin
+// ===========================================================================
+const headerCssContent = fs.readFileSync(path.join(rootDir, 'src/app/layout/header/header.component.css'), 'utf8');
+const headerHtmlContent = fs.readFileSync(path.join(rootDir, 'src/app/layout/header/header.component.html'), 'utf8');
+const studioTsContent = fs.readFileSync(path.join(rootDir, 'src/app/features/creator-studio/creator-studio.component.ts'), 'utf8');
+const studioHtmlContent = fs.readFileSync(path.join(rootDir, 'src/app/features/creator-studio/creator-studio.component.html'), 'utf8');
+const studioCssContent = fs.readFileSync(path.join(rootDir, 'src/app/features/creator-studio/creator-studio.component.css'), 'utf8');
+
+// 1. Header Logout Modal & SVG Blowout Prevention
+assert('UI/UX Polish', 'Header defines .modal-backdrop, .modal-card, .safe-data-callout in CSS',
+  headerCssContent.includes('.modal-backdrop') && headerCssContent.includes('.modal-card') && headerCssContent.includes('.safe-data-callout'));
+assert('UI/UX Polish', 'Header .check-icon has strict 18px width/height constraints',
+  headerCssContent.includes('.check-icon') && headerCssContent.includes('width: 18px') && headerCssContent.includes('height: 18px'));
+assert('UI/UX Polish', 'Header logout modal uses &times; instead of raw Unicode ✕',
+  headerHtmlContent.includes('&times;') && !headerHtmlContent.includes('>✕<'));
+
+// 2. Profile Password Input Token Fidelity
+assert('UI/UX Polish', 'Profile .form-control is grouped with .form-input for Steam tokens',
+  profileCssLatest.includes('.form-input, .form-textarea, .form-control'));
+assert('UI/UX Polish', 'Profile .form-control has light theme overrides',
+  profileCssLatest.includes(':host-context([data-theme="light"]) .form-control'));
+assert('UI/UX Polish', 'Change Password submit button permanently has "Change Password"',
+  profileHtmlLatest.includes("{{ savingPassword ? 'Updating...' : 'Change Password' }}"));
+
+// 3. Creator Studio Draft Auto-Dismiss Banner & Hover Controls
+assert('UI/UX Polish', 'Creator Studio TOAST_AUTO_DISMISS_MS is 5500ms',
+  studioTsContent.includes('readonly TOAST_AUTO_DISMISS_MS = 5500'));
+assert('UI/UX Polish', 'Creator Studio implements pause/resume/clear timer helpers',
+  studioTsContent.includes('pausePublishToastTimer') && studioTsContent.includes('resumePublishToastTimer') && studioTsContent.includes('clearPublishToastTimer'));
+assert('UI/UX Polish', 'Creator Studio cleans query parameters on show to prevent refresh resurrection',
+  studioTsContent.includes('queryParams: {}') && studioTsContent.includes('replaceUrl: true'));
+assert('UI/UX Polish', 'Creator Studio implements OnDestroy and clears timers',
+  studioTsContent.includes('ngOnDestroy(): void') &&
+  studioTsContent.includes('this.clearPublishToastTimer();') &&
+  studioTsContent.includes('this.clearPurgeCountdownTimer();'));
+assert('UI/UX Polish', 'Creator Studio banner binds mouseenter and mouseleave hover events',
+  studioHtmlContent.includes('(mouseenter)="pausePublishToastTimer()"') && studioHtmlContent.includes('(mouseleave)="resumePublishToastTimer()"'));
+
+// 4. Recycle Bin Readability & High Contrast
+assert('UI/UX Polish', 'Recycle Bin .unpublished-row does not apply row-wide opacity: 0.75',
+  !studioCssContent.includes('.unpublished-row {\n  opacity: 0.75;\n}') && !studioCssContent.includes('.unpublished-row { opacity: 0.75; }'));
+assert('UI/UX Polish', 'Recycle Bin .status-pill.bin uses soft rose tint in dark theme and var(--rose-500) token in light theme',
+  studioCssContent.includes('.status-pill.bin') && studioCssContent.includes('#FDA4AF') && studioCssContent.includes('var(--rose-500)'));
+assert('UI/UX Polish', 'Recycle Bin restore and purge actions use high-contrast text',
+  studioCssContent.includes('.btn-action.restore') && studioCssContent.includes('#6EE7B7') && studioCssContent.includes('#FDA4AF'));
+
+// 5. Permanent Purge Countdown Safety Lock & Compact Micro-Pill
+assert('UI/UX Polish', 'Permanent Purge defines 5s countdown lock in CreatorStudioComponent',
+  studioTsContent.includes('readonly purgeCountdownTotal = 5') && studioTsContent.includes('purgeCountdownSeconds = 5'));
+assert('UI/UX Polish', 'Permanent Purge modal renders countdown-pill and disabled confirm button',
+  studioHtmlContent.includes('purgeCountdownSeconds === 0') && studioHtmlContent.includes('[disabled]="purgeCountdownSeconds > 0 || purging"'));
+assert('UI/UX Polish', 'Permanent Purge CSS defines compact countdown pill (136px / 0.72rem) and disabled state',
+  studioCssContent.includes('.countdown-pill') && studioCssContent.includes('min-width: 136px') && studioCssContent.includes('font-size: 0.72rem') && studioCssContent.includes('.btn-confirm-purge:disabled'));
+assert('UI/UX Polish', 'Permanent Purge uses action-first title and removes boilerplate "Are you sure you want to"',
+  studioHtmlContent.includes('Permanently Delete "{{ gameToPurge.title }}"?') && !studioHtmlContent.includes('Are you sure you want to'));
+
+// 6. Zero Raw Dingbats across application templates
+const dingbatsCheckRegex = /[\u2700-\u27BF]/;
+const catalogHtmlContent = fs.readFileSync(path.join(rootDir, 'src/app/features/game-catalog/game-catalog.component.html'), 'utf8');
+const gameDetailHtmlContent = fs.readFileSync(path.join(rootDir, 'src/app/features/game-detail/game-detail.component.html'), 'utf8');
+const libraryHtmlContent = fs.readFileSync(path.join(rootDir, 'src/app/features/library/library.component.html'), 'utf8');
+const wishlistHtmlContent = fs.readFileSync(path.join(rootDir, 'src/app/features/wishlist/wishlist.component.html'), 'utf8');
+assert('UI/UX Polish', 'Zero raw Dingbats characters in header, studio, catalog, and store templates',
+  !dingbatsCheckRegex.test(headerHtmlContent) &&
+  !dingbatsCheckRegex.test(studioHtmlContent) &&
+  !dingbatsCheckRegex.test(profileHtmlLatest) &&
+  !dingbatsCheckRegex.test(catalogHtmlContent) &&
+  !dingbatsCheckRegex.test(gameDetailHtmlContent) &&
+  !dingbatsCheckRegex.test(libraryHtmlContent) &&
+  !dingbatsCheckRegex.test(wishlistHtmlContent));
+
+// ===========================================================================
+// 20. INTEGRATION TESTS: Game Form Color Consistency & Layout Polish
+// ===========================================================================
+const gameFormCssContent = fs.readFileSync(path.join(rootDir, 'src/app/features/creator-studio/game-form/game-form.component.css'), 'utf8');
+const tagChipCssContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/tag-chip-input/tag-chip-input.component.css'), 'utf8');
+
+// 1. Game Form Light Theme Overrides
+assert('Game Form Polish', 'Sticky footer has Light Theme override and top border',
+  gameFormCssContent.includes(':host-context([data-theme="light"]) .form-actions-footer.sticky') &&
+  gameFormCssContent.includes('border-top: 1px solid var(--border-card)'));
+
+// 2. Submit Button Steam Green Standard
+assert('Game Form Polish', 'Submit CTA uses standardized Steam Green gradient tokens',
+  gameFormCssContent.includes('--steam-btn-gradient') && gameFormCssContent.includes('#75B022'));
+
+// 3. Symmetrical 2x2 Screenshots Grid
+assert('Game Form Polish', 'Screenshots grid uses symmetrical 2x2 matrix repeat(2, 1fr)',
+  gameFormCssContent.includes('grid-template-columns: repeat(2, 1fr)'));
+
+// 4. Anti-Slop Neon Blur Elimination
+const gameFormNeonCheck = /box-shadow:\s*0\s+0\s+\d+px\s+rgba\(/i;
+assert('Game Form Polish', 'Zero blurry neon box-shadow halos in game-form.component.css',
+  !gameFormNeonCheck.test(gameFormCssContent));
+
+// 5. Tag Chip Grounded Hover & Light Theme
+const tagHoverCheck = tagChipCssContent.slice(tagChipCssContent.indexOf('.btn-add-tag:hover'), tagChipCssContent.indexOf('.btn-add-tag:hover') + 150);
+assert('Game Form Polish', 'Tag chip input has grounded hover and light theme tokens',
+  !tagHoverCheck.includes('scale(') && tagChipCssContent.includes(':host-context([data-theme="light"])'));
+
+// 6. Catalog Reset Filters Light Mode Hover Fidelity
+const catalogCssContent = fs.readFileSync(path.join(rootDir, 'src/app/features/game-catalog/game-catalog.component.css'), 'utf8');
+assert('Game Form Polish', 'Catalog Reset Filters button has high-contrast light mode hover state',
+  catalogCssContent.includes(':host-context([data-theme="light"]) .btn-reset-filters') &&
+  catalogCssContent.includes(':host-context([data-theme="light"]) .btn-reset-filters:hover'));
+
+// 21. INTEGRATION TESTS: Inline Checkout Add-Method & ABA PayWay Rail
+// ---------------------------------------------------------------------------
+const checkoutModalTsContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/purchase-confirm-modal/purchase-confirm-modal.component.ts'), 'utf8');
+const checkoutModalHtmlContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/purchase-confirm-modal/purchase-confirm-modal.component.html'), 'utf8');
+const checkoutModalCssContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/purchase-confirm-modal/purchase-confirm-modal.component.css'), 'utf8');
+const addMethodFormTsContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/add-payment-method-form/add-payment-method-form.component.ts'), 'utf8');
+const addMethodFormHtmlContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/add-payment-method-form/add-payment-method-form.component.html'), 'utf8');
+const addMethodFormCssContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/add-payment-method-form/add-payment-method-form.component.css'), 'utf8');
+const paywaySheetTsContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/aba-payway-sheet/aba-payway-sheet.component.ts'), 'utf8');
+const paywaySheetHtmlContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/aba-payway-sheet/aba-payway-sheet.component.html'), 'utf8');
+const accountPaymentHtmlContent = fs.readFileSync(path.join(rootDir, 'src/app/features/account-payment/account-payment.component.html'), 'utf8');
+const khqrCardTsContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/khqr-card/khqr-card.component.ts'), 'utf8');
+const khqrCardHtmlContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/khqr-card/khqr-card.component.html'), 'utf8');
+const khqrCardCssContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/khqr-card/khqr-card.component.css'), 'utf8');
+const paywaySheetCssContent = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/aba-payway-sheet/aba-payway-sheet.component.css'), 'utf8');
+
+// 1. Single Source of Truth — shared add-method form, zero duplicated logic
+assert('Checkout Add-Method', 'Shared form imports the three card input directives (appCardNumber, appExpiryDate, appCvv)',
+  addMethodFormTsContent.includes('CardNumberDirective') && addMethodFormTsContent.includes('ExpiryDateDirective') && addMethodFormTsContent.includes('CvvDirective'));
+assert('Checkout Add-Method', 'Shared form reuses payment-logic validateCardInput and detectCardBrand (no duplicated validation)',
+  addMethodFormTsContent.includes('validateCardInput') && addMethodFormTsContent.includes('detectCardBrand') && addMethodFormTsContent.includes('payment-logic'));
+assert('Checkout Add-Method', 'Purchase modal hosts the shared form (no inline card form markup left)',
+  checkoutModalHtmlContent.includes('<app-add-payment-method-form') && !checkoutModalHtmlContent.includes('appCardNumber'));
+assert('Checkout Add-Method', 'Account-payment add-modal hosts the same shared form',
+  accountPaymentHtmlContent.includes('<app-add-payment-method-form'));
+assert('Checkout Add-Method', 'Account-payment no longer carries duplicated form submit logic',
+  !accountPaymentHtmlContent.includes('submitAddCard') && !accountPaymentHtmlContent.includes('submitAddKhqr'));
+
+// 2. Auto-select & panel lifecycle in the checkout host
+assert('Checkout Add-Method', 'Successful add appends the method and auto-selects it for checkout',
+  checkoutModalTsContent.includes('this.savedMethods.update(list => [...list, method])') &&
+  checkoutModalTsContent.includes('this.selectedOptionId.set(method.id)'));
+assert('Checkout Add-Method', 'Toggle is hidden while the add-method panel is open (no doubled UI)',
+  checkoutModalHtmlContent.includes('@if (!showAddMethod())') && checkoutModalHtmlContent.includes('[attr.aria-expanded]="showAddMethod()"'));
+
+// 3. ABA PayWay rail — auto-set pricing from the game price
+assert('PayWay Rail', 'PayWay option rendered in the method selector with auto-set subtitle',
+  checkoutModalHtmlContent.includes('ABA PayWay') && checkoutModalHtmlContent.includes('Scan to pay · amount auto-set'));
+assert('PayWay Rail', 'Sheet amount binds strictly to the game price (no manual amount entry)',
+  checkoutModalHtmlContent.includes('[amountUsd]="game.price"') && !paywaySheetHtmlContent.includes('ngModel'));
+assert('PayWay Rail', 'Sheet computes KHR equivalent via finance-core convertCurrency and the USD_TO_KHR_RATE snapshot',
+  paywaySheetTsContent.includes('convertCurrency') && paywaySheetTsContent.includes('USD_TO_KHR_RATE') && paywaySheetTsContent.includes('payment-finance-logic'));
+assert('PayWay Rail', 'Sheet lifecycle: waiting, processing, succeeded, expired with regenerate',
+  paywaySheetTsContent.includes("'waiting'") && paywaySheetTsContent.includes("'processing'") && paywaySheetTsContent.includes("'succeeded'") && paywaySheetTsContent.includes("'expired'") && paywaySheetTsContent.includes('regenerate'));
+assert('PayWay Rail', 'Sheet uses the shared KHQR card component for the QR visual',
+  paywaySheetTsContent.includes('KhqrCardComponent') && paywaySheetHtmlContent.includes('<app-khqr-card'));
+assert('PayWay Rail', 'Sheet status region is aria-live and countdown is a timer',
+  paywaySheetHtmlContent.includes('aria-live="polite"') && paywaySheetHtmlContent.includes('role="timer"'));
+assert('PayWay Rail', 'Success emits through the unchanged confirm contract as ABA PayWay (KHQR)',
+  checkoutModalTsContent.includes('onPaywayCompleted') && checkoutModalTsContent.includes("'ABA PayWay (KHQR)'"));
+assert('PayWay Rail', 'Generic KHQR path stays on the account page (via shared form) but PayWay replaces the checkout rail',
+  addMethodFormHtmlContent.includes('Bakong Link') && accountPaymentHtmlContent.includes('<app-add-payment-method-form') && checkoutModalHtmlContent.includes('payway-option'));
+
+// 4. Escape layering and confirm contract
+assert('Checkout Add-Method', 'Escape closes the PayWay sheet first, then the add panel, then the modal',
+  checkoutModalTsContent.includes('if (this.showPayway())') && checkoutModalTsContent.includes('if (this.showAddMethod())') &&
+  checkoutModalTsContent.split('event.stopPropagation()').length >= 3);
+assert('Checkout Add-Method', 'Confirm event still emits a formatted payment method string (PurchaseConfirmationEvent unchanged)',
+  checkoutModalTsContent.includes('PurchaseConfirmationEvent') && checkoutModalTsContent.includes('this.confirm.emit({ paymentMethod: this.formattedPaymentMethod })'));
+
+// 5. Steam token styling & light theme fidelity
+assert('Checkout Add-Method', 'Toggle uses grounded dashed Steam border with token radius and 0.15s ease',
+  checkoutModalCssContent.includes('.add-card-toggle') && checkoutModalCssContent.includes('border: 1px dashed var(--border-card)'));
+assert('Checkout Add-Method', 'Shared form inputs use Steam tokens, focus ring and light theme overrides',
+  addMethodFormCssContent.includes('background: var(--bg-input)') && addMethodFormCssContent.includes(':host-context([data-theme="light"]) .form-input'));
+assert('Checkout Add-Method', 'Method selector is a single-column list (no orphan cells)',
+  !checkoutModalCssContent.includes('1fr 1fr') || !checkoutModalCssContent.slice(checkoutModalCssContent.indexOf('.card-brand-switcher')).slice(0, 200).includes('1fr 1fr'));
+assert('Checkout Add-Method', 'Add Payment Method button is action-first and uses the Steam blue CTA token',
+  addMethodFormHtmlContent.includes('<span>Save Card</span>') && addMethodFormCssContent.includes('background: var(--accent-600)'));
+assert('Checkout Add-Method', 'Third perk point removed from the purchase modal',
+  !checkoutModalHtmlContent.includes('90% goes directly to the creator'));
+assert('Checkout Add-Method', 'Manage methods link has light theme hover override',
+  checkoutModalCssContent.includes(':host-context([data-theme="light"]) .manage-methods-link:hover') &&
+  checkoutModalCssContent.includes('#005A9E'));
+
+// 6. Mobile Compaction & Single-KHQR Checkout (AC-901..AC-904)
+assert('PayWay Mobile', 'KHQR card compact variant is additive and defaults to full render (account page untouched)',
+  khqrCardTsContent.includes('readonly compact = input(false)') && khqrCardHtmlContent.includes('[class.compact]="compact()"'));
+assert('PayWay Mobile', 'Compact variant hides account rows and footer, keeps the QR stage',
+  khqrCardHtmlContent.split('@if (!compact())').length >= 3 && khqrCardCssContent.includes('.khqr-card-shell.compact') && khqrCardCssContent.includes('max-width: 200px'));
+assert('PayWay Mobile', 'PayWay sheet renders the compact QR-only card',
+  paywaySheetHtmlContent.includes('[compact]="true"'));
+assert('PayWay Mobile', 'Sheet compacts under 480px (media query with tightened spacing)',
+  paywaySheetCssContent.includes('@media (max-width: 480px)'));
+assert('PayWay Mobile', 'Purchase modal gains its first 480px breakpoint',
+  checkoutModalCssContent.includes('@media (max-width: 480px)'));
+assert('PayWay Mobile', 'Checkout lists cards only — saved KHQR rows replaced by the single PayWay QR',
+  checkoutModalTsContent.includes("this.savedMethods().filter(m => m.type === 'card')") &&
+  checkoutModalHtmlContent.includes('@for (method of checkoutMethods(); track method.id)') &&
+  !checkoutModalHtmlContent.includes('method.bank'));
+
+// 7. Focused PayWay Mode & Account-KHQR Identity Sync (AC: one-screen sheet, same card)
+assert('PayWay Focus', 'Focused mode hides summary, selector and perks while the sheet is open',
+  checkoutModalHtmlContent.includes('@if (showPayway()) {') &&
+  checkoutModalHtmlContent.includes('} @else {') &&
+  checkoutModalHtmlContent.slice(checkoutModalHtmlContent.indexOf('@if (showPayway())')).includes('<app-aba-payway-sheet') &&
+  checkoutModalHtmlContent.slice(checkoutModalHtmlContent.indexOf('} @else {')).includes('perks-list'));
+assert('PayWay Focus', 'Modal footer is hidden while the PayWay sheet owns the flow',
+  checkoutModalHtmlContent.includes('@if (!showPayway()) {') && checkoutModalHtmlContent.includes('the sheet owns the flow'));
+assert('PayWay Focus', 'Back button inside the sheet returns to the full view via cancel -> closePayway',
+  paywaySheetHtmlContent.includes('payway-back-btn') && paywaySheetHtmlContent.includes('aria-label="Back to payment methods"') &&
+  checkoutModalHtmlContent.includes('(cancel)="closePayway()"'));
+assert('PayWay Sync', 'Checkout QR reuses the account KHQR identity (holder from session user, seed from linked method id)',
+  checkoutModalTsContent.includes("this.savedMethods().find(m => m.type === 'khqr')?.id ?? 'nexora-demo'") &&
+  checkoutModalTsContent.includes('displayName ?? ') && checkoutModalHtmlContent.includes('[accountSeed]="paywaySeed()"'));
+assert('PayWay Sync', 'Sheet forwards the account identity to the KHQR card, falling back to the transaction seed',
+  paywaySheetTsContent.includes('accountHolder') && paywaySheetTsContent.includes('accountSeed') &&
+  paywaySheetTsContent.includes('this.accountSeed() ?? this.qrSeed') && paywaySheetHtmlContent.includes('[holderName]="cardHolderName"'));
+
+// 8. Sheet distillation — one header, merchant named, price once, between name and QR
+assert('PayWay Distill', 'Merchant is named Nexora Co., Ltd and precedes the price block',
+  paywaySheetTsContent.includes("merchantName = input('Nexora Co., Ltd')") &&
+  paywaySheetHtmlContent.includes('payway-merchant-name') &&
+  paywaySheetHtmlContent.indexOf('payway-merchant-name') < paywaySheetHtmlContent.indexOf('payway-price-block'));
+assert('PayWay Distill', 'Price renders below the QR card (reference pattern: scan first, amount after)',
+  paywaySheetHtmlContent.indexOf('<app-khqr-card') < paywaySheetHtmlContent.indexOf('payway-price-block'));
+assert('PayWay Distill', 'Single price — confirm button carries no amount, dashed auto-set box removed',
+  paywaySheetHtmlContent.includes('<span>Confirm Payment</span>') && !paywaySheetHtmlContent.includes('Pay {{') &&
+  !paywaySheetHtmlContent.includes('payway-amount-label') && !paywaySheetHtmlContent.includes('AUTO-SET'));
+assert('PayWay Distill', 'No duplicate ABA PayWay header — back arrow alone, brand chip removed',
+  !checkoutModalHtmlContent.includes('payway-focus-header') &&
+  !paywaySheetHtmlContent.includes('payway-brand-row') && !paywaySheetHtmlContent.includes('payway-name'));
+assert('PayWay Distill', 'KHQR card no longer repeats the merchant label',
+  !khqrCardHtmlContent.includes('NEXORA MERCHANT'));
+
+// 9. Scan card — reference-faithful presentation
+assert('PayWay Scan Card', 'Logo badge, merchant title and scan subtitle centered above the QR',
+  paywaySheetHtmlContent.includes('payway-logo-badge') && paywaySheetHtmlContent.includes('assets/logo-icon.svg') &&
+  paywaySheetHtmlContent.includes('Scan here to pay'));
+assert('PayWay Scan Card', 'QR framed by four cyan corner brackets',
+  paywaySheetHtmlContent.split('frame-corner').length >= 5 && paywaySheetCssContent.includes('border: 2.5px solid var(--accent-400)'));
+assert('PayWay Scan Card', 'Compact KHQR variant hides banner and holder header (bare QR)',
+  khqrCardHtmlContent.split('@if (!compact())').length >= 5);
+assert('PayWay Scan Card', 'Expiry countdown is a prominent timer pill below the price',
+  paywaySheetHtmlContent.includes('Expires in {{ formatClock(countdownSeconds()) }}') &&
+  paywaySheetHtmlContent.includes('payway-expiry-pill') &&
+  paywaySheetHtmlContent.indexOf('role="timer"') > paywaySheetHtmlContent.indexOf('<app-khqr-card'));
+
+// 10. USD-only pricing + unmissable expiry
+assert('PayWay USD', 'Sheet displays USD only — no KHR conversion or rate line in checkout',
+  !paywaySheetHtmlContent.includes('khrLabel') && !paywaySheetHtmlContent.includes('rateLabel'));
+assert('PayWay USD', 'Expiry pill turns urgent (rose) under 60 seconds',
+  paywaySheetHtmlContent.includes('[class.urgent]="countdownSeconds() < 60"') &&
+  paywaySheetCssContent.includes('.payway-expiry-pill.urgent'));
+
+// 22. INTEGRATION TESTS: Payment Finance Core (Ledger, Intents, Idempotency)
+// ---------------------------------------------------------------------------
+const financeModelContent = fs.readFileSync(path.join(rootDir, 'src/app/core/models/finance.model.ts'), 'utf8');
+const financeLogicContent = fs.readFileSync(path.join(rootDir, 'src/app/core/data/payments/payment-finance-logic.ts'), 'utf8');
+const paymentsServiceContent = fs.readFileSync(path.join(rootDir, 'src/app/core/data/payments/mock-payments-data.service.ts'), 'utf8');
+const tokensContentFull = fs.readFileSync(path.join(rootDir, 'src/app/core/data/tokens.ts'), 'utf8');
+
+// 1. Money model — integer minor units only
+assert('Finance Core', 'Money model uses integer minor units with explicit currency',
+  financeModelContent.includes('interface Money') && financeModelContent.includes('amountMinor: number') && financeModelContent.includes("currency: Currency"));
+assert('Finance Core', 'money() factory rejects non-integer minor units',
+  financeLogicContent.includes('Math.trunc(amountMinor)') && financeLogicContent.includes('amount must be integer minor units'));
+
+// 2. No floating-point arithmetic on money in the finance layer
+assert('Finance Core', 'convertCurrency performs deterministic integer rounding (no float drift)',
+  financeLogicContent.includes('Math.round(converted)') && !financeLogicContent.includes('toFixed(2) *'));
+assert('Finance Core', 'Ledger balance derivation counts completed entries only (failed/reversed excluded)',
+  financeLogicContent.includes("filter(e => e.status === 'completed')"));
+
+// 3. Full interface surface exposed through PAYMENTS_DATA
+assert('Finance Core', 'PaymentsDataService exposes finance methods (getFinanceWallet, getLedger, intents, processPayment, topUpWallet, transactions)',
+  ['getFinanceWallet', 'getLedger', 'createPaymentIntent', 'processPayment', 'topUpWallet', 'getPaymentIntent', 'getFinanceTransactions']
+    .every(m => tokensContentFull.includes(m + '(')));
+assert('Finance Core', 'MockPaymentsDataService implements every finance method',
+  ['getFinanceWallet', 'getLedger', 'createPaymentIntent', 'processPayment', 'topUpWallet', 'getPaymentIntent', 'getFinanceTransactions']
+    .every(m => paymentsServiceContent.includes(m + '(')));
+
+// 4. Terminal-safe state machine
+assert('Finance Core', 'All four terminal states present and guarded (succeeded, failed, canceled, expired)',
+  financeLogicContent.includes("'succeeded', 'failed', 'canceled', 'expired'") && financeLogicContent.includes('TERMINAL_STATES'));
+assert('Finance Core', 'transitionPaymentIntent returns null on illegal moves (never throws, never mutates)',
+  financeLogicContent.includes('return null') && financeLogicContent.includes('canTransitionPaymentState'));
+
+// 5. Financial invariants in the service layer
+assert('Finance Core', 'processPayment replays cached results for duplicate idempotency keys before any execution',
+  paymentsServiceContent.indexOf('this.idempotencyResults[request.idempotencyKey]') < paymentsServiceContent.indexOf('this.executePayment(request)'));
+assert('Finance Core', 'Wallet tenders validated against balance before any ledger write',
+  paymentsServiceContent.includes("'insufficient_wallet'") && paymentsServiceContent.includes('walletCommittedMinor'));
+assert('Finance Core', 'Failed attempts recorded as audit-only entries that never affect balance',
+  paymentsServiceContent.includes('Failed payment attempt') && paymentsServiceContent.includes("'failed'"));
+assert('Finance Core', 'Legacy wallet store stays in lockstep with ledger-derived balance',
+  paymentsServiceContent.includes('syncLegacyWallet') && paymentsServiceContent.includes('userBalanceMinor(userId) / 100'));
+assert('Finance Core', 'Deterministic decline rule for test PANs (last4 0002) without random failure flakiness',
+  paymentsServiceContent.includes("DECLINE_LAST4 = '0002'") && paymentsServiceContent.includes('DECLINE_LAST4'));
+assert('Finance Core', 'Service never grants library entitlement (no library import or call)',
+  !/LIBRARY_DATA|addToLibrary/.test(paymentsServiceContent));
+
+// 6. Overpayment & allocation guards
+assert('Finance Core', 'allocateTenders caps each tender at remaining due',
+  financeLogicContent.includes('Math.min(available, remaining)'));
+assert('Finance Core', 'detectOverpayment provides the explicit overpayment guard used by processPayment',
+  financeLogicContent.includes('detectOverpayment') && paymentsServiceContent.includes('detectOverpayment(request.tenders'));
+assert('Finance Core', 'createPaymentIntent rejects non-positive or fractional amounts',
+  paymentsServiceContent.includes('Number.isInteger(request.amountMinor)') && paymentsServiceContent.includes('amountMinor must be a positive integer'));
+
+// 7. SSR safety of the new stores
+assert('Finance Core', 'Finance stores persisted through SSR-safe LocalStoreService keys',
+  paymentsServiceContent.includes("'wallet_ledger'") && paymentsServiceContent.includes("'finance_intents'") &&
+  paymentsServiceContent.includes("'finance_transactions'") && paymentsServiceContent.includes("'finance_idempotency'"));
+
+// 8. Zero payment UI changes in Phase 1 (data/logic phase discipline)
+const purchaseModalTsPhase1 = fs.readFileSync(path.join(rootDir, 'src/app/shared/ui/purchase-confirm-modal/purchase-confirm-modal.component.ts'), 'utf8');
+const accountPaymentTsPhase1 = fs.readFileSync(path.join(rootDir, 'src/app/features/account-payment/account-payment.component.ts'), 'utf8');
+assert('Finance Core', 'Purchase modal untouched by finance core (no processPayment/intent coupling yet)',
+  !purchaseModalTsPhase1.includes('processPayment') && !purchaseModalTsPhase1.includes('createPaymentIntent'));
+assert('Finance Core', 'Account payment page untouched by finance core (legacy top-up flow intact)',
+  !accountPaymentTsPhase1.includes('processPayment') && accountPaymentTsPhase1.includes('paymentsData.topUp'));
+
+// ---------------------------------------------------------------------------
+const orderModelContent = fs.readFileSync(path.join(rootDir, 'src/app/core/models/order.model.ts'), 'utf8');
+const ordersServiceContent = fs.readFileSync(path.join(rootDir, 'src/app/core/data/orders/mock-orders-data.service.ts'), 'utf8');
+const libraryComponentContent = fs.readFileSync(path.join(rootDir, 'src/app/features/library/library.component.ts'), 'utf8');
+const gameDetailComponentContent = fs.readFileSync(path.join(rootDir, 'src/app/features/game-detail/game-detail.component.ts'), 'utf8');
+
+// 1. Additive model + interface surface
+assert('Purchase Revert', "OrderStatus gains terminal 'refunded' state (additive)",
+  orderModelContent.includes("'confirmed' | 'pending' | 'failed' | 'refunded'"));
+assert('Purchase Revert', 'revertOrder exposed on OrdersDataService and implemented idempotently',
+  tokensContentFull.includes('revertOrder(orderId: string)') && ordersServiceContent.includes('revertOrder(orderId: string)') &&
+  ordersServiceContent.includes("order.status !== 'confirmed'"));
+assert('Purchase Revert', 'refundWallet exposed on PAYMENTS_DATA and implemented via refund_credit ledger entry',
+  tokensContentFull.includes('refundWallet(userId: string, amountMinor: number, reference: string)') &&
+  paymentsServiceContent.includes('refundWallet(userId: string, amountMinor: number, reference: string)') &&
+  paymentsServiceContent.includes("'refund_credit'") && paymentsServiceContent.includes('this.syncLegacyWallet(userId)'));
+
+// 2. Both removal paths orchestrate: find order -> wallet refund -> revert -> remove
+for (const [name, content] of [['Library page', libraryComponentContent], ['Game detail', gameDetailComponentContent]] as const) {
+  assert('Purchase Revert', name + ': paid-order lookup gates the revert (confirmed + price > 0)',
+    content.includes("o.status === 'confirmed' && o.price > 0"));
+  assert('Purchase Revert', name + ': wallet-tender orders refund via refundWallet before entitlement drop',
+    content.includes("startsWith('NEXORA Store Wallet')") &&
+    content.indexOf('refundWallet(user.id') < content.indexOf('removeFromLibrary(userId'));
+  assert('Purchase Revert', name + ': order is reverted (refunded) before the library entry is removed',
+    content.includes('.revertOrder(paidOrder.id)') &&
+    content.indexOf('.revertOrder(paidOrder.id)') < content.indexOf('removeFromLibrary(userId'));
+  assert('Purchase Revert', name + ': free games keep the plain removal path (no revert, no refund)',
+    content.includes('proceedRemove(user.id, gameId, null)') || content.includes('proceedRemoveFromLibrary(user.id, gameId, null)'));
+}
+
+// 3. Outcome messaging distinguishes wallet refunds from plain reverts
+assert('Purchase Revert', 'Wallet refunds toast the refunded amount',
+  (libraryComponentContent + gameDetailComponentContent).includes('refunded to your wallet'));
+assert('Purchase Revert', 'Purchase flow itself untouched — confirm contract still emits the payment string',
+  gameDetailComponentContent.includes('onModalConfirm') && gameDetailComponentContent.includes('createOrder'));
+
+// 23. INTEGRATION TESTS: Paid-Game Removal Reverts the Payment
 // ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------

@@ -1,0 +1,433 @@
+.payway-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius);
+}
+
+.payway-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 0;
+}
+
+
+
+.payway-back-btn:hover {
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+}
+
+
+
+
+
+.payway-name {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.payway-amount-usd {
+  font-family: var(--font-mono);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.payway-amount-khr {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--emerald-400);
+}
+
+.payway-qr-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.payway-qr-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(14, 20, 27, 0.82);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+
+
+.payway-hint {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.payway-success {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 12px;
+  background: rgba(164, 208, 7, 0.1);
+  border: 1px solid rgba(164, 208, 7, 0.4);
+  border-radius: var(--radius-sm);
+  color: var(--emerald-400);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.payway-success .success-svg {
+  width: 18px;
+  height: 18px;
+}
+
+.payway-expired {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(244, 63, 94, 0.08);
+  border: 1px solid rgba(244, 63, 94, 0.35);
+  border-radius: var(--radius-sm);
+  color: var(--rose-500);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.payway-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn-payway-cancel {
+  padding: 7px 14px;
+  background: transparent;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-payway-cancel:hover:not(:disabled) {
+  border-color: var(--text-muted);
+}
+
+.btn-payway-cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-payway-confirm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 16px;
+  background: #E12326;
+  border: none;
+  border-radius: var(--radius);
+  color: #FFFFFF;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-payway-confirm:hover:not(:disabled) {
+  background: #C01E21;
+}
+
+.btn-payway-confirm:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.btn-payway-confirm.full {
+  width: 100%;
+}
+
+.payway-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: paywaySpin 0.8s linear infinite;
+}
+
+.payway-spinner.dark {
+  border-color: rgba(255, 255, 255, 0.35);
+  border-top-color: #FFFFFF;
+}
+
+@keyframes paywaySpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Light Theme Overrides */
+:host-context([data-theme="light"]) .payway-sheet {
+  background: #F8FAFC;
+  border-color: #D2DBE3;
+}
+
+:host-context([data-theme="light"]) .payway-qr-overlay {
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--text-secondary);
+}
+
+:host-context([data-theme="light"]) .btn-payway-cancel:hover:not(:disabled) {
+  background: #E2E8F0;
+}
+
+/* Mobile compacting — sheet fits small screens without long scrolls */
+@media (max-width: 480px) {
+  .payway-sheet {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .payway-header {
+    padding: 8px 10px;
+  }
+
+  .payway-amount-usd {
+    font-size: 1.15rem;
+  }
+
+  .payway-amount-khr {
+    font-size: 0.78rem;
+  }
+
+  .payway-qr-wrap {
+    padding: 2px 0;
+  }
+
+  .payway-actions {
+    gap: 6px;
+  }
+
+  .btn-payway-cancel,
+  .btn-payway-confirm {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+  }
+}
+
+/* ==========================================================================
+   Scan card — reference-faithful: identity, bracketed QR, price below
+   ========================================================================== */
+.payway-header {
+  display: flex;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.payway-back-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.payway-back-btn:hover {
+  border-color: var(--text-muted);
+  color: var(--text-primary);
+}
+
+.payway-back-btn .back-svg {
+  width: 14px;
+  height: 14px;
+}
+
+.payway-scan-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 14px 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+}
+
+.payway-logo-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-top: -40px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-card);
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.payway-logo-img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.payway-merchant-name {
+  font-size: 1.02rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.payway-scan-subtitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.payway-qr-frame {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 14px;
+  margin-top: 4px;
+}
+
+.frame-corner {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid var(--accent-400);
+}
+
+.frame-corner.tl { top: 0; left: 0; border-right: none; border-bottom: none; border-top-left-radius: 4px; }
+.frame-corner.tr { top: 0; right: 0; border-left: none; border-bottom: none; border-top-right-radius: 4px; }
+.frame-corner.bl { bottom: 0; left: 0; border-right: none; border-top: none; border-bottom-left-radius: 4px; }
+.frame-corner.br { bottom: 0; right: 0; border-left: none; border-top: none; border-bottom-right-radius: 4px; }
+
+.payway-price-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding-top: 4px;
+}
+
+.payway-amount-usd {
+  font-family: var(--font-mono);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.payway-price-meta {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.payway-hint {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* Mobile compacting */
+@media (max-width: 480px) {
+  .payway-sheet {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .payway-scan-card {
+    padding: 16px 10px 12px;
+  }
+
+  .payway-logo-badge {
+    width: 48px;
+    height: 48px;
+    margin-top: -34px;
+  }
+
+  .payway-amount-usd {
+    font-size: 1.3rem;
+  }
+
+  .payway-actions {
+    gap: 6px;
+  }
+
+  .btn-payway-cancel,
+  .btn-payway-confirm {
+    padding: 8px 12px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Prominent expiry timer — hard to miss, urgent under 60s */
+.payway-expiry-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 5px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--amber-400);
+  background: rgba(229, 169, 60, 0.14);
+  border: 1.5px solid rgba(229, 169, 60, 0.5);
+  border-radius: 999px;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.payway-expiry-pill .expiry-svg {
+  width: 14px;
+  height: 14px;
+}
+
+.payway-expiry-pill.urgent {
+  color: var(--rose-500);
+  background: rgba(244, 63, 94, 0.12);
+  border-color: rgba(244, 63, 94, 0.55);
+}
+
+:host-context([data-theme="light"]) .payway-expiry-pill {
+  color: var(--amber-400);
+  background: rgba(217, 119, 6, 0.08);
+  border-color: rgba(217, 119, 6, 0.4);
+}
+
+:host-context([data-theme="light"]) .payway-expiry-pill.urgent {
+  color: var(--rose-500);
+  background: rgba(225, 29, 72, 0.06);
+  border-color: rgba(225, 29, 72, 0.45);
+}

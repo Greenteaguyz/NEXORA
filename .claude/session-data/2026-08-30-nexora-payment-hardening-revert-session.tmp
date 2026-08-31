@@ -1,0 +1,105 @@
+# Session: 2026-08-30 (afternoon)
+
+**Started:** ~1:00 PM (local)
+**Last Updated:** ~3:30 PM (local)
+**Project:** Greenteaguyz/NEXORA (c:\Users\User\Downloads\AngularProject)
+**Topic:** Inline payment methods at checkout (shared AddPaymentMethodForm + ABA PayWay KHQR rail, focused purchase mode, USD-only scan card), Phase 1 of the 8-phase master prompt (finance core hardening), and paid-game removal reverting the payment (wallet refund via ledger + order 'refunded')
+
+---
+
+## What We Are Building
+
+NEXORA is a desktop-grade, Steam-inspired gaming storefront and creator platform built with Angular 18, fine-grained Signals, and Steam DesignMD specifications. In this session, we accomplished:
+1. **Inline Payment Methods at Checkout** (replacing the old "card only" quick-add):
+   - Shared `AddPaymentMethodFormComponent` (`src/app/shared/ui/add-payment-method-form/`) with Card + KHQR tabs; hosted by BOTH the purchase-confirm modal and the account-payment add-modal (single source of truth).
+   - `AbaPaywaySheetComponent` (`src/app/shared/ui/aba-payway-sheet/`): reference-faithful scan card — lone back-arrow header, logo badge (`assets/logo-icon.svg`), merchant `Nexora Co., Ltd`, "Scan here to pay", cyan corner brackets on the QR frame, USD hero price between merchant name and QR, compact `khqr-card` (compact input hides banner/holder/footer), amber `payway-expiry-pill` (rose urgent under 60s, role="timer"), 5-min countdown + 3s poll + regenerate.
+   - **Focused payment mode**: purchase-confirm modal collapses to back-header + sheet only (`showPayway()`); Escape layers sheet -> panel -> modal; KHQR rows filtered from checkout method rail (`checkoutMethods` computed, card-only); QR identity synced with the account KHQR method (`paywayHolder` = displayName, `paywaySeed` = khqr method id ?? 'nexora-demo').
+   - **USD-only**: zero KHR rendered in the PayWay sheet template (verified by grep; TS keeps internal `khrMinor` for future use but nothing displays it).
+2. **Phase 1 of the 8-Phase Master Prompt — Payment Finance Core** (data layer only, no UI):
+   - `src/app/core/models/finance.model.ts`: `Money` (integer minor units), `LedgerEntry`, `PaymentIntent` (8-state machine, terminal-safe), `Tender`, `PaymentAttempt`, `FinanceTransaction`, `CURRENCY_MINOR_UNITS`.
+   - `src/app/core/data/payments/payment-finance-logic.ts`: pure functions — `money`, `convertCurrency` (rate-factor round-trip safe, 4100 KHR/USD snapshot), `formatMoney`, `allocateTenders`, `detectOverpayment`, `validateWalletBalance`, `transitionPaymentIntent`/`assertPayableIntent`, `deriveLedgerBalance`, `generateIdempotencyKey`, `makeReceiptId`, card format validators.
+   - `MockPaymentsDataService` hardened: ledger-backed wallet (`wallet_ledger`, completed-only balance derivation), PaymentIntents + idempotency-key replay, tenders with caps, `DECLINE_LAST4='0002'` decline rule, legacy wallet synced through the ledger.
+3. **Paid-Game Removal Reverts the Payment** (approved plan, fully implemented and verified):
+   - Removing a PAID game from the library now actually reverts the payment BEFORE the entitlement drops, so the resulting price/not-owned state is legitimate.
+   - Wallet-tender orders (`paymentMethod` starts with `'NEXORA Store Wallet'`) -> `refundWallet()` writes a completed `refund_credit` ledger entry (correct `balanceAfterMinor`) + syncs legacy wallet; external rails (card/KHQR) -> order revert is the record (no mock money movement).
+   - Order status -> new additive `'refunded'` on `OrderStatus`.
+   - Both removal paths orchestrate: `library.component.ts` `confirmRemove` -> `proceedRemove`/`failRemove`, and `game-detail.component.ts` `confirmRemoveFromLibrary` -> `proceedRemoveFromLibrary`/`failRemoveFromLibrary` (lookup confirmed order with `price > 0` -> optional wallet refund -> `revertOrder` -> `removeFromLibrary` -> toast: "$X refunded to your wallet" or "purchase reverted").
+   - Free games keep the plain removal path (`proceedRemove(user.id, gameId, null)`) — unchanged behavior.
+
+---
+
+## What WORKED (with evidence)
+
+- **Full Quality Gate**: `npm run verify` 100% GREEN — build clean, unit 520/520, integration 300/300, master 23/23, impeccable 7/7.
+- **finance-core-stress** (`tests/stress/finance-core-stress.ts`): 57 passed / 0 failed across 11 suites, including new **S11 Purchase Revert** (top-up 5000 -> purchase 2599 -> refund -> ledger `refund_credit` balanceAfter 5000 -> order 'refunded' -> double-revert idempotent no-op -> non-wallet order reverts with zero wallet movement -> fractional refund rejected).
+- **checkout-add-card-stress** (`tests/stress/checkout-add-card-stress.ts`): 31 passed / 0 failed (bare component instantiation + input shadowing; fuzz oracle dedupes on (brand, last4) to mirror service dedupe).
+- **responsive-boundary-stress** 30/30 and **ui-ux-polish-stress** 37/37 green earlier this session.
+- **Integration Suites 22 & 23** (`tests/integration/integration-tests.spec.ts`): 22 = finance core (ledger/intents/idempotency audits); 23 = paid-game revert (additive 'refunded', `revertOrder(orderId: string)`/`refundWallet(...)` in interface + mock, both removal flows orchestrate with `refundWallet`/`revertOrder` ordered before `removeFromLibrary`, free path intact, wallet-refund toast text).
+- **Round-trip currency test caught a real bug**: `convertCurrency` originally multiplied KHR->USD instead of dividing; fixed with a `rateFactor` and now round-trip verified.
+
+---
+
+## What Did NOT Work (and why)
+
+- **TestBed/JIT component rendering in Node harnesses**: initTestEnvironment + `ɵresolveComponentResources` + `--experimentalDecorators` fights were abandoned; bare instantiation (`new Component()` + `Injector.create`/`runInInjectionContext` + `Object.defineProperty` getters to shadow `input()` signals) is the reliable pattern for stress harnesses.
+- **Compile flags matter**: repo test scripts compile WITHOUT `--strict`, which breaks discriminated-union narrowing — use typed locals (`const result: TopUpWalletResult = {...}`) or `.some((m: any) => ...)`. Component-importing harnesses need `--strict --experimentalDecorators`.
+- **Observable union TS2349**: type the intermediate (`const refund$: Observable<FinanceWallet | null>`) instead of subscribing to `A | B` directly; import `FinanceWallet` from `core/data/tokens`, not finance.model.
+- **Bash heredoc/sed insertion of template literals**: mangled `refundWallet` once (unterminated backtick + lost `appendLedgerEntry`); repaired via Read + Edit tool. Lesson: multi-line TS with backticks must go through Write/Edit, never shell interpolation.
+- **Suite 23 placement**: inserting before the finance-core suite's variable declarations caused ReferenceError at assert time — suites must be appended after their dependencies.
+
+---
+
+## What Has NOT Been Tried Yet (PARKED 3-part fix — user scoped via /intent-layer, not yet executed)
+
+1. **Manage-methods-link hover invisible in light theme**: `.manage-methods-link:hover { color: #FFFFFF }` at `purchase-confirm-modal.component.css:509` has NO light-theme override (confirmed on disk today). Fix: add `:host-context([data-theme="light"]) .manage-methods-link:hover { color: #005A9E; }` (Steam blue hover family, per the earlier session's pattern) + a stress/integration audit so it can't regress. NOTE: the prior session file (2026-08-30 impeccable-craft) claims this was fixed, but that fix was lost during a CSS reconstruction (sed redirect wiped ~77 lines of uncommitted work); current disk has no override.
+2. **Payment & Wallet page not showing a saved Visa** (user screenshot): static wiring verified correct (single root `PAYMENTS_DATA` via `useClass` in app.config.ts:25, effect -> loadData). Suspected stale localStorage (screenshot showed NEXO-CYBER-2026 voucher not in current seeds). Repro harness first, then fix per findings.
+3. **Remove KHR fully from UI**: last remnant is the account-payment wallet card — `account-payment.component.html:69` `<span class="khr-approx">≈ {{ khrBalance() }} KHR</span>` + `khrBalance` computed at `account-payment.component.ts:61` (`approxKhr`). PayWay sheet template is already KHR-free. Keep finance-core `Currency`/`convertCurrency` as data layer; Bakong KHQR method naming stays.
+
+---
+
+## Current State of Files (this session's key changes, all UNCOMMITTED by design)
+
+| File | Status | Notes |
+|---|---|---|
+| `src/app/core/models/order.model.ts` | Complete | Additive `'refunded'` on `OrderStatus`. |
+| `src/app/core/models/finance.model.ts` | New | Phase 1 finance domain models (integer minor units). |
+| `src/app/core/data/tokens.ts` | Complete | `revertOrder(orderId: string)` on OrdersDataService; `refundWallet(userId, amountMinor, reference)` + finance contracts on PaymentsDataService. |
+| `src/app/core/data/orders/mock-orders-data.service.ts` | Complete | `revertOrder` (confirmed -> refunded, persist, idempotent no-op). |
+| `src/app/core/data/payments/mock-payments-data.service.ts` | Complete | Phase 1 ledger/intents/idempotency + `refundWallet` (refund_credit entry + legacy sync + FinanceTransaction 'refund'). |
+| `src/app/core/data/payments/payment-finance-logic.ts` | New | Pure finance functions incl. rate-factor `convertCurrency`. |
+| `src/app/features/library/library.component.ts` | Complete | `confirmRemove` orchestrates lookup -> wallet refund -> revert -> remove -> toast; `proceedRemove`/`failRemove`; injects ORDERS_DATA + PAYMENTS_DATA. |
+| `src/app/features/game-detail/game-detail.component.ts` | Complete | Same orchestration for `confirmRemoveFromLibrary`; sets `isOwned = false`. |
+| `src/app/shared/ui/add-payment-method-form/` | New | Shared card+KHQR add form (checkout + account). |
+| `src/app/shared/ui/aba-payway-sheet/` | New | PayWay scan card: merchant name, USD price, QR with brackets, expiry pill, countdown/poll. |
+| `src/app/shared/ui/purchase-confirm-modal/*` | Complete | Focused PayWay mode, card-only checkout rail, synced KHQR identity, Escape layering. |
+| `src/app/shared/ui/khqr-card/*` | Complete | `compact` input (bare <=200px QR for the scan card). |
+| `src/app/features/account-payment/*` | Complete (minus parked KHR line) | Uses shared add-form; khr-approx line still present (parked item 3). |
+| `tests/stress/finance-core-stress.ts` | Complete | 11 suites / 57 tests incl. S11 Purchase Revert. |
+| `tests/stress/checkout-add-card-stress.ts` | New | 10 suites / 31 tests for AddPaymentMethodForm + PayWay sheet. |
+| `tests/integration/integration-tests.spec.ts` | Complete | Suites 21 (checkout UX), 22 (finance core), 23 (purchase revert). |
+| `.zcode/plans/plan-sess_b629f28c-*.md` | Reference | Approved plan for the paid-game revert (executed in full). |
+
+---
+
+## Decisions Made
+
+- **Ownership follows payment truth**: `isOwned` semantics unchanged; instead, removal makes not-owned legitimate by actually reverting the payment first. Wallet refunds go through the finance ledger (single source of balance), external rails are record-only.
+- **Additive-only model change**: `'refunded'` appended to the `OrderStatus` union — no existing status renamed or removed.
+- **Shared form over duplicated modals**: one `AddPaymentMethodForm` used by checkout and account prevents the "card popup doesn't sync with the full one" class of bug.
+- **USD-only at the point of sale**: no KHR conversion shown anywhere in the PayWay flow; merchant fixed to "Nexora Co., Ltd"; price sits between merchant name and QR (reference-faithful layout).
+- **Ledger is the wallet source of truth**: legacy wallet balance is derived/synced from completed ledger entries; `refund_credit` mirrors `top_up` mechanics.
+
+---
+
+## Blockers & Open Questions
+
+- No active blockers. All work remains UNCOMMITTED per standing rule (never commit without explicit user request).
+- Suggested commit message for the session's work: `feat(payments): finance core, inline checkout payment methods, PayWay scan card, and paid-game removal payment revert`
+
+---
+
+## Exact Next Step
+
+- On resume, ask the user whether to execute the PARKED 3-part fix (light-theme hover override -> Payment & Wallet sync repro -> remove account-page KHR line). All three are scoped and verified against current disk state; item 1 is a one-block CSS addition + audit.
+- After that, master prompt Phases 2-8 remain (performance/@defer, EN/KH i18n, checkout orchestration Phase 4, full translation, state management, security/PWA/SSR, a11y/QA).
+- Verification commands: `npm run verify` (build + unit 520 + integration 300 + master 23 + impeccable 7); stress: `npx tsc tests/stress/finance-core-stress.ts --rootDir . --outDir dist --module commonjs --target es2022 --skipLibCheck && node dist/tests/stress/finance-core-stress.js` (and same for checkout-add-card-stress with `--strict --experimentalDecorators`).

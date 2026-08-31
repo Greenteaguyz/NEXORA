@@ -745,7 +745,7 @@
   }
 
   .store-entity-tag {
-    color: #64748B !important;
+    color: var(--text-muted) !important;
     font-size: 0.8rem !important;
     font-weight: 600 !important;
   }
@@ -769,7 +769,7 @@
   }
 
   .meta-title {
-    color: #64748B !important;
+    color: var(--text-muted) !important;
     font-size: 0.72rem !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
@@ -790,7 +790,7 @@
   }
 
   .meta-content.highlight-emerald {
-    color: #059669 !important;
+    color: var(--emerald-500) !important;
   }
 
   /* Items Table on Print */
@@ -806,7 +806,7 @@
 
   .receipt-items-table th {
     background: #F1F5F9 !important;
-    color: #334155 !important;
+    color: var(--text-secondary) !important;
     font-size: 0.75rem !important;
     font-weight: 800 !important;
     padding: 10px 14px !important;
@@ -826,7 +826,7 @@
   }
 
   .item-desc {
-    color: #475569 !important;
+    color: var(--text-secondary) !important;
     font-size: 0.85rem !important;
     display: block !important;
     margin-top: 3px !important;
@@ -861,7 +861,7 @@
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    color: #475569 !important;
+    color: var(--text-secondary) !important;
     font-size: 0.92rem !important;
   }
 
@@ -878,7 +878,7 @@
   }
 
   .total-amount {
-    color: #059669 !important;
+    color: var(--emerald-500) !important;
     font-size: 1.35rem !important;
     font-weight: 900 !important;
   }
@@ -904,11 +904,11 @@
   .shield-icon {
     width: 18px !important;
     height: 18px !important;
-    color: #059669 !important;
+    color: var(--emerald-500) !important;
   }
 
   .security-legal-text {
-    color: #64748B !important;
+    color: var(--text-muted) !important;
     font-size: 0.78rem !important;
     line-height: 1.5 !important;
   }
@@ -917,18 +917,18 @@
 /* Light Mode Overrides for High Visibility */
 :host-context([data-theme="light"]) .orders-table-wrapper {
   background: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
   box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
 }
 
 :host-context([data-theme="light"]) .orders-stats-pill {
   background: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
 }
 
 :host-context([data-theme="light"]) .orders-table th {
   background: #F8FAFC;
-  color: #334155;
+  color: var(--text-secondary);
   border-color: #E2E8F0;
 }
 
@@ -938,7 +938,33 @@
 
 :host-context([data-theme="light"]) .btn-view-receipt {
   background: #F1F5F9;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
   color: #090D16;
+}
+
+:host-context([data-theme="light"]) .receipt-modal-card {
+  background: #FFFFFF;
+  border-color: var(--border-card);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+}
+
+:host-context([data-theme="light"]) .receipt-modal-footer {
+  background: #F8FAFC;
+  border-color: #E2E8F0;
+}
+
+:host-context([data-theme="light"]) .btn-print {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+  color: #0F172A;
+}
+
+:host-context([data-theme="light"]) .btn-print:hover {
+  background: #F1F5F9;
+}
+
+:host-context([data-theme="light"]) .btn-receipt-close:hover {
+  background: rgba(15, 23, 42, 0.06);
+  color: #0F172A;
 }
 

@@ -234,18 +234,18 @@ input:checked + .slider:before {
 /* Light Mode Overrides for High Visibility */
 :host-context([data-theme="light"]) .auth-card {
   background-color: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
 :host-context([data-theme="light"]) .form-input {
   background-color: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
   color: #090D16;
 }
 
 :host-context([data-theme="light"]) .toggle-box {
   background-color: #F8FAFC;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
 }
 

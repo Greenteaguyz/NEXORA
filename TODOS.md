@@ -16,13 +16,17 @@ This document tracks all engineering milestones and implementation tasks for the
 | **Phase 11** (Task 16) | Speedtest Dual-Segment Switcher, Unified Steam Deck Hub Mobile Navigation & Crawler | ✅ Complete | 223/223 tests passing, 24/24 crawler links valid, 5/5 Playwright E2E passed |
 | **Phase 12** (Task 17) | Hero Carousel Touch Drag-to-Swipe, Hardware-Accelerated Motion & Clean Pagination | ✅ Complete | 234/234 tests passing, 142 unit tests across 27 sections, 100% green |
 | **Phase 13** (Task 18) | Smart Scroll-Aware Header, Mobile Viewport Clearance & Bottom Bar UX | ✅ Complete | 243/243 tests passing, 151 unit tests across 28 sections, 100% green |
-| **Phase 14** (Task 19) | Payment & Wallet Architecture, Cambodian KHQR Bakong, Card DTOs & Checkout Modal | ✅ Complete | Full mock ledger, 4 KHQR banks, credit card validation, 550 total tests |
+| **Phase 14** (Task 19) | Payment & Wallet Architecture, Cambodian KHQR Bakong, Card DTOs & Checkout Modal | ✅ Complete | Full mock ledger, 4 KHQR banks, credit card validation |
 | **Phase 15** (Task 20) | Ref-Counted Scroll Lock Engine & Directive for 15 Fullscreen Overlays | ✅ Complete | Multi-overlay ref-count, iOS fixed-body compensation, scrollbar width balancing |
 | **Phase 16** (Task 21) | Resilient Toast Notification Queue, Severity Tiers, Exit Transitions & Hover-Pause | ✅ Complete | 4 severity tiers, 180ms CSS exit transition, deduplication, stack cap 3, undo payload |
 | **Phase 17** (Task 22) | Deep Link Intent Engine, Return URL Sanitization & Dynamic Route Titles | ✅ Complete | `?intent=purchase|download`, `sanitizeReturnUrl` against open redirects, `?reason=` alerts |
 | **Phase 18** (Task 23) | Creator Studio Unsaved Changes CanDeactivate Guard & Dirty Detection | ✅ Complete | Safe form navigation guard, `justSaved` bypass, buyer-impact unpublish dialog |
 | **Phase 19** (Task 24) | Storefront Card UX, Owned Badges, Formatting Directives & Profile Cleanup | ✅ Complete | `Owned` badge on catalog cards, `appCardNumber` / `appCvv` / `appExpiryDate`, live wallet stat |
-| **Deployment and Ops** | Cloud hosting, tunnels, caching headers & performance budgets | ✅ Ready | `vercel.json` caching headers (1y immutable assets), 550 tests passing (100% green) |
+| **Phase 20** (Task 25) | Payment Finance Core, Integer Minor Units, 8-State Payment Intent Machine & Ledgers | ✅ Complete | Zero floating-point drift, idempotency caching, overpayment rejection, 851 total tests |
+| **Phase 21** (Task 26) | Paid-Game Removal Purchase Reversion & Automatic Ledger Wallet Refund | ✅ Complete | Order status `'refunded'`, `revertOrder` on `OrdersDataService`, `refundWallet` balance restore |
+| **Phase 22** (Task 27) | Checkout Modal Inline Add-Method & ABA PayWay KHQR Rail | ✅ Complete | `AddPaymentMethodFormComponent`, `AbaPaywaySheetComponent`, USD-only scan card, 5m timer |
+| **Phase 23** (Task 28) | Universal Password Security, Brute-Force Lockout & Creator Studio Safety Lock | ✅ Complete | Hardened password checks, 5-attempt/60s lockout, 5s purge lock, 5.5s draft banner dismiss |
+| **Deployment and Ops** | Cloud hosting, tunnels, caching headers & performance budgets | ✅ Ready | `vercel.json` caching headers (1y immutable assets), 851 tests passing (100% green) |
 
 ---
 

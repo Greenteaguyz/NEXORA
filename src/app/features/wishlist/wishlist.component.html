@@ -24,7 +24,12 @@
             (keydown.escape)="searchQuery = ''"
             aria-label="Filter wishlist by title or tag">
           @if (searchQuery) {
-            <button type="button" class="btn-clear-search" (click)="searchQuery = ''" aria-label="Clear search">✕</button>
+            <button type="button" class="btn-clear-search" (click)="searchQuery = ''" aria-label="Clear search">
+              <svg class="clear-search-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
           }
         </div>
 
@@ -55,7 +60,10 @@
                   (click)="clearTags()"
                   title="Clear active filters">
                   <span>Clear ({{ selectedTags.size }})</span>
-                  <span class="clear-cross">✕</span>
+                  <svg class="clear-cross-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
                 </button>
               }
             </div>
@@ -161,7 +169,7 @@
       <div class="modal-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3 id="wishlistModalTitle" class="modal-title">Remove from Wishlist?</h3>
-          <button type="button" class="btn-close-modal" (click)="closeRemoveModal()" aria-label="Close modal">✕</button>
+          <button type="button" class="btn-close-modal" (click)="closeRemoveModal()" aria-label="Close modal">&times;</button>
         </div>
 
         <div class="modal-body">

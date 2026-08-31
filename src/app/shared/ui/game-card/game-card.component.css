@@ -43,7 +43,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   transform: translate3d(0, 0, 0);
   will-change: transform;
   backface-visibility: hidden;
@@ -262,7 +262,7 @@
 /* Light Mode Overrides for High Visibility */
 :host-context([data-theme="light"]) .game-card {
   background-color: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
   box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
 }
 
@@ -274,7 +274,7 @@
 :host-context([data-theme="light"]) .btn-wishlist:not(.wishlisted) {
   background-color: rgba(255, 255, 255, 0.92);
   border-color: #CBD5E1;
-  color: #64748B;
+  color: var(--text-muted);
 }
 
 :host-context([data-theme="light"]) .btn-wishlist:not(.wishlisted):hover {
@@ -291,7 +291,7 @@
 
 .price-badge.owned {
   background-color: rgba(5, 150, 105, 0.15);
-  color: var(--emerald-400, #34D399);
+  color: var(--emerald-400, var(--emerald-400));
   border-color: rgba(5, 150, 105, 0.35);
   font-weight: 800;
 }
@@ -338,7 +338,7 @@
 
 :host-context([data-theme="light"]) .modal-card {
   background: #FFFFFF;
-  border-color: #D5DCE6;
+  border-color: var(--border-card);
   box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
 }
 
@@ -421,7 +421,7 @@
 :host-context([data-theme="light"]) .btn-cancel {
   background: #FFFFFF;
   border-color: #CBD5E1;
-  color: #334155;
+  color: var(--text-secondary);
 }
 
 :host-context([data-theme="light"]) .btn-cancel:hover {
@@ -455,4 +455,22 @@
 .btn-confirm-delete:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Light Mode Overrides */
+:host-context([data-theme="light"]) .game-card:hover {
+  border-color: var(--accent-400);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 10px 24px rgba(15, 23, 42, 0.12);
+}
+
+:host-context([data-theme="light"]) .btn-wishlist {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: var(--text-secondary);
+}
+
+:host-context([data-theme="light"]) .btn-wishlist:hover {
+  background-color: #FFE4E6;
+  border-color: #FDA4AF;
+  color: #E11D48;
 }

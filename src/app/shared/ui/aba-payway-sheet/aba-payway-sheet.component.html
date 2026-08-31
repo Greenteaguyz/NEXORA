@@ -1,0 +1,110 @@
+<div class="payway-sheet" role="region" aria-label="ABA PayWay payment">
+  <!-- Header: lone back arrow (rail identity lives in the aria-label) -->
+  <div class="payway-header">
+    <button
+      type="button"
+      class="payway-back-btn"
+      (click)="emitCancel()"
+      aria-label="Back to payment methods">
+      <svg class="back-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Scan card: who → scan → how much -->
+  @if (status() === 'waiting' || status() === 'processing') {
+    <div class="payway-scan-card">
+      <div class="payway-logo-badge" aria-hidden="true">
+        <img src="assets/logo-icon.svg" alt="" class="payway-logo-img">
+      </div>
+      <h4 class="payway-merchant-name">{{ merchantName() }}</h4>
+      <span class="payway-scan-subtitle">Scan here to pay</span>
+
+      <div class="payway-qr-frame">
+        <span class="frame-corner tl" aria-hidden="true"></span>
+        <span class="frame-corner tr" aria-hidden="true"></span>
+        <span class="frame-corner bl" aria-hidden="true"></span>
+        <span class="frame-corner br" aria-hidden="true"></span>
+        <app-khqr-card
+          [holderName]="cardHolderName"
+          [seed]="cardSeed"
+          [compact]="true">
+        </app-khqr-card>
+        @if (status() === 'processing') {
+          <div class="payway-qr-overlay">
+            <span class="payway-spinner"></span>
+            <span>Waiting for confirmation...</span>
+          </div>
+        }
+      </div>
+
+      <div class="payway-price-block" aria-live="polite">
+        <span class="payway-amount-usd">{{ usdLabel }}</span>
+        @if (status() === 'waiting') {
+          <span
+            class="payway-expiry-pill"
+            role="timer"
+            aria-label="QR expiry countdown"
+            [class.urgent]="countdownSeconds() < 60">
+            <svg class="expiry-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Expires in {{ formatClock(countdownSeconds()) }}
+          </span>
+        } @else {
+          <span class="payway-price-meta">Confirm on your device — checking every 3 seconds</span>
+        }
+      </div>
+    </div>
+
+    <p class="payway-hint">Scan with the ABA Mobile app or any Bakong KHQR wallet.</p>
+  }
+
+  @if (status() === 'succeeded') {
+    <div class="payway-success" role="status">
+      <svg class="success-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      <span>Payment approved via ABA PayWay</span>
+    </div>
+  }
+
+  @if (status() === 'expired') {
+    <div class="payway-expired" role="alert">
+      <span>This KHQR code has expired.</span>
+    </div>
+  }
+
+  <!-- Sheet Actions -->
+  <div class="payway-actions">
+    @switch (status()) {
+      @case ('waiting') {
+        <button type="button" class="btn-payway-cancel" (click)="emitCancel()">Cancel</button>
+        <button type="button" class="btn-payway-confirm" (click)="confirmPayment()">
+          <span>Confirm Payment</span>
+        </button>
+      }
+      @case ('processing') {
+        <button type="button" class="btn-payway-cancel" (click)="emitCancel()" disabled>Cancel</button>
+        <button type="button" class="btn-payway-confirm" disabled>
+          <span class="payway-spinner dark"></span>
+          <span>Processing...</span>
+        </button>
+      }
+      @case ('expired') {
+        <button type="button" class="btn-payway-cancel" (click)="emitCancel()">Cancel</button>
+        <button type="button" class="btn-payway-confirm" (click)="regenerate()">
+          <span>Regenerate QR</span>
+        </button>
+      }
+      @case ('succeeded') {
+        <button type="button" class="btn-payway-confirm full" disabled>
+          <span>Payment Complete</span>
+        </button>
+      }
+    }
+  </div>
+</div>

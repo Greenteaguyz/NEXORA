@@ -50,17 +50,19 @@ export interface LibraryDataService {
 
 ### OrdersDataService
 
-Handles purchase transaction records for paid game acquisitions.
+Handles purchase transaction records and order fulfillment for paid game acquisitions.
 
 ```typescript
 export interface OrdersDataService {
-  createOrder(userId: string, gameId: string): Observable<Order>;
+  createOrder(userId: string, gameId: string, price?: number, paymentMethod?: string): Observable<Order>;
   getOrders(userId: string): Observable<Order[]>;
+  revertOrder(orderId: string): Observable<Order>;
 }
 ```
 
-* **`createOrder(userId, gameId)`**: Captures a snapshot of the current game price, assigns status `'confirmed'`, and returns the completed `Order`.
+* **`createOrder(userId, gameId, price?, paymentMethod?)`**: Captures a snapshot of the current game price, assigns status `'confirmed'`, records the tender method, and returns the completed `Order`.
 * **`getOrders(userId)`**: Returns the purchase history for a given user.
+* **`revertOrder(orderId)`**: Transitions an existing confirmed order to `'refunded'` state idempotently.
 
 ---
 
@@ -100,7 +102,7 @@ export interface WishlistDataService {
 
 ### PaymentsDataService
 
-Manages stored payment methods (Credit Cards and Cambodian KHQR Bakong), prepaid gift card redemptions, and wallet transactions.
+Manages stored payment methods (Credit Cards and Cambodian KHQR Bakong), prepaid gift card redemptions, wallet transactions, finance ledger, and payment intents.
 
 ```typescript
 export interface PaymentsDataService {
@@ -112,6 +114,15 @@ export interface PaymentsDataService {
   topUp(userId: string, amount: number, methodId: string): Observable<TopUpResult>;
   getGiftCards(): Observable<GiftCard[]>;
   redeemGiftCode(userId: string, code: string): Observable<RedeemCodeResult>;
+  // Finance Core methods
+  getFinanceWallet(userId: string): Observable<FinanceWallet>;
+  getLedger(userId: string): Observable<LedgerEntry[]>;
+  createPaymentIntent(request: CreatePaymentIntentRequest): Observable<PaymentIntent>;
+  getPaymentIntent(intentId: string): Observable<PaymentIntent | null>;
+  processPayment(request: ProcessPaymentRequest): Observable<PaymentResult>;
+  topUpWallet(request: TopUpWalletRequest): Observable<TopUpWalletResult>;
+  getFinanceTransactions(userId: string): Observable<FinanceTransaction[]>;
+  refundWallet(userId: string, amountMinor: number, orderId: string): Observable<FinanceWallet>;
 }
 ```
 
@@ -123,6 +134,8 @@ export interface PaymentsDataService {
 * **`topUp(userId, amount, methodId)`**: Credits funds to the wallet from a chosen payment method.
 * **`getGiftCards()`**: Returns available prepaid codes.
 * **`redeemGiftCode(userId, code)`**: Validates gift code, credits balance, and records transaction.
+* **`refundWallet(userId, amountMinor, orderId)`**: Appends a completed `refund_credit` ledger entry, updates the wallet balance in integer minor units, and syncs the legacy float wallet.
+* **`processPayment(request)`**: Validates tenders against payment intent, enforces overpayment rules, performs idempotent replays, and writes ledger entries.
 
 ---
 

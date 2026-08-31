@@ -6,6 +6,21 @@
 import { SEED_GAMES, SEED_USERS, SEED_ORDERS, SEED_LIBRARY_ENTRIES, SEED_WISHLIST_ENTRIES, daysAgo } from '../../src/app/core/data/seed-data';
 import { luhnCheck, detectCardBrand, isCardExpired, validateCardInput, isDuplicateCard, applyRemoveAndReassignDefault, ensureSingleDefault, redeemGiftCard, makeTransaction, formatUsd, approxKhr, toCardMethod, toKhqrMethod } from '../../src/app/core/data/payments/payment-logic';
 import { SEED_GIFT_CARDS, SEED_PAYMENT_METHODS } from '../../src/app/core/data/payments/payments.seed';
+import {
+  PASSWORD_MIN_LENGTH,
+  MAX_FAILED_ATTEMPTS,
+  LOCKOUT_DURATION_MS,
+  ERR_INCORRECT_PASSWORD,
+  ERR_LOCKED_OUT,
+  validatePasswordStrength,
+  passwordStrengthScore,
+  generateSalt,
+  hashPassword,
+  verifyPassword,
+  getLockoutRemainingMs
+} from '../../src/app/core/auth/password-logic';
+import { DEFAULT_SEED_PASSWORD } from '../../src/app/core/auth/auth.mock';
+import { firstValueFrom } from 'rxjs';
 
 interface AssertionResult {
   suite: string;
@@ -4438,17 +4453,345 @@ console.log('\n--- N. UNIT TESTS: Payment & Wallet Logic ---');
 
 
 // ---------------------------------------------------------------------------
-// Summary
+// SECTION 90: Log Out Confirmation Modal State Machine (Header)
 // ---------------------------------------------------------------------------
-const passed = results.filter(r => r.passed).length;
-const total = results.length;
-console.log('\n======================================================================');
-console.log(`📊 UNIT TEST SUMMARY: ${passed} / ${total} PASSED (${Math.round((passed / total) * 100)}%)`);
-console.log('======================================================================\n');
+console.log('\n--- SECTION 90: UNIT TESTS: Log Out Confirmation Modal State Machine ---');
 
-if (passed !== total) {
-  process.exit(1);
+// JIT fallback: load the compiler before any partially-compiled Angular lib is imported.
+import '@angular/compiler';
+import { Injector, ElementRef, PLATFORM_ID, runInInjectionContext, ɵINJECTOR_SCOPE } from '@angular/core';
+import { Router } from '@angular/router';
+import { Subject, of } from 'rxjs';
+import { AuthService } from '../../src/app/core/auth/auth.service';
+import { LocalStoreService } from '../../src/app/core/persistence/local-store.service';
+import { AuthMockService } from '../../src/app/core/auth/auth.mock';
+import { ThemeService } from '../../src/app/core/theme/theme.service';
+import { CommandPaletteService } from '../../src/app/core/services/command-palette.service';
+import { ScrollLockService } from '../../src/app/core/services/scroll-lock.service';
+import { ToastService } from '../../src/app/core/services/toast.service';
+import { WISHLIST_DATA } from '../../src/app/core/data/tokens';
+
+// RoleBadgeComponent declares @Input() field decorators, which Angular cannot
+// JIT-load under the plain tsc runner (standard-emitted decorators). The header
+// state-machine test never renders it, so stub its module before requiring the
+// header component (lazily, after the patch, since static imports hoist).
+const nodeModule = require('module') as { _extensions: Record<string, (m: unknown, f: string) => void> };
+const originalJsHandler = nodeModule._extensions['.js'];
+nodeModule._extensions['.js'] = function (modInstance: { _compile: (code: string, f: string) => void }, filename: string) {
+  if (filename.endsWith('role-badge.component.js')) {
+    modInstance._compile('class RoleBadgeStub {}\nmodule.exports = { RoleBadgeComponent: RoleBadgeStub };', filename);
+    return;
+  }
+  originalJsHandler(modInstance, filename);
+};
+
+const headerModule = require('../../src/app/layout/header/header.component') as { HeaderComponent: any };
+const HeaderComponent = headerModule.HeaderComponent;
+
+// Navigation log for the stubbed Router — lets Section 90 assert logout runs exactly once.
+const section90NavLog: string[] = [];
+
+function createHeaderComponent(): any {
+  const routerEvents = new Subject<any>();
+  const injector = Injector.create({
+    providers: [
+      // Root scope so providedIn:'root' tokens (effect scheduler, PendingTasks, ...) resolve.
+      { provide: ɵINJECTOR_SCOPE, useValue: 'root' },
+      { provide: PLATFORM_ID, useValue: 'server' },
+      { provide: Router, useValue: { events: routerEvents, url: '/', navigate: () => { section90NavLog.push('/catalog'); return Promise.resolve(true); } } },
+      { provide: ElementRef, useValue: { nativeElement: { querySelector: () => null } } },
+      {
+        provide: WISHLIST_DATA,
+        useValue: {
+          getWishlist: () => of([]),
+          addToWishlist: () => of(),
+          removeFromWishlist: () => of(),
+          isWishlisted: () => of(false)
+        }
+      },
+      LocalStoreService,
+      AuthMockService,
+      AuthService,
+      ThemeService,
+      CommandPaletteService,
+      ScrollLockService,
+      ToastService
+    ]
+  });
+  return runInInjectionContext(injector, () => new HeaderComponent());
 }
+
+// Test 1: requestLogout opens the confirmation modal without touching the session
+{
+  const header = createHeaderComponent();
+  const user = SEED_USERS[0];
+  header.authService.currentUser.set(user);
+  header.requestLogout();
+  assert('Log Out Confirm Modal', 'requestLogout() opens the confirmation modal (logoutConfirmOpen === true)',
+    header.logoutConfirmOpen() === true);
+  assert('Log Out Confirm Modal', 'requestLogout() preserves the authenticated session',
+    header.authService.currentUser() === user);
+
+  // Test 2: cancelLogout closes the modal and keeps the user signed in
+  header.cancelLogout();
+  assert('Log Out Confirm Modal', 'cancelLogout() closes the confirmation modal (logoutConfirmOpen === false)',
+    header.logoutConfirmOpen() === false);
+  assert('Log Out Confirm Modal', 'cancelLogout() keeps authService.currentUser() signed in',
+    header.authService.currentUser() !== null);
+
+  // Test 3: Escape while the modal is open cancels the confirm, drawer stays open
+  header.mobileMenuOpen.set(true);
+  header.requestLogout();
+  header.handleKeydown({ key: 'Escape' } as KeyboardEvent);
+  assert('Log Out Confirm Modal', 'Escape with modal open cancels the logout confirmation',
+    header.logoutConfirmOpen() === false);
+  assert('Log Out Confirm Modal', 'Escape with modal open does NOT close the mobile drawer',
+    header.mobileMenuOpen() === true);
+
+  // Test 4: Tab while the modal is open skips the drawer focus trap (no crash on bare stub)
+  header.requestLogout();
+  let tabThrew = false;
+  try {
+    header.handleKeydown({ key: 'Tab' } as KeyboardEvent);
+  } catch {
+    tabThrew = true;
+  }
+  assert('Log Out Confirm Modal', 'Tab with modal open skips the drawer focus trap',
+    tabThrew === false);
+  header.cancelLogout();
+
+  // Test 5: confirmLogout closes the modal, clears the session, closes the drawer
+  header.requestLogout();
+  header.confirmLogout();
+  assert('Log Out Confirm Modal', 'confirmLogout() closes the confirmation modal',
+    header.logoutConfirmOpen() === false);
+  assert('Log Out Confirm Modal', 'confirmLogout() clears the session (currentUser() === null)',
+    header.authService.currentUser() === null);
+  assert('Log Out Confirm Modal', 'confirmLogout() closes the mobile drawer (mobileMenuOpen() === false)',
+    header.mobileMenuOpen() === false);
+}
+
+// Test 6: blind confirmLogout with the modal closed is a guarded no-op
+{
+  const header = createHeaderComponent();
+  section90NavLog.length = 0;
+  const user = SEED_USERS[0];
+  header.authService.currentUser.set(user);
+  header.confirmLogout();
+  assert('Log Out Confirm Modal', 'blind confirmLogout() with modal closed preserves the session',
+    header.logoutConfirmOpen() === false && header.authService.currentUser() === user);
+  assert('Log Out Confirm Modal', 'blind confirmLogout() neither navigates nor toasts',
+    section90NavLog.length === 0 && header.toastService.toasts().length === 0);
+}
+
+// Test 7: double confirm (rapid duplicate click / double Enter) runs logout exactly once
+{
+  const header = createHeaderComponent();
+  section90NavLog.length = 0;
+  header.authService.currentUser.set(SEED_USERS[0]);
+  header.requestLogout();
+  header.confirmLogout();
+  header.confirmLogout();
+  assert('Log Out Confirm Modal', 'double confirmLogout() navigates exactly once',
+    section90NavLog.length === 1, `navCalls=${section90NavLog.length}`);
+  assert('Log Out Confirm Modal', 'double confirmLogout() yields a single visible toast',
+    header.toastService.toasts().length === 1);
+}
+
+// Test 8: cancel restores keyboard focus to the Log Out trigger element
+{
+  const header = createHeaderComponent();
+  header.authService.currentUser.set(SEED_USERS[0]);
+  let focusCalls = 0;
+  const trigger = { focus: () => { focusCalls++; } };
+  header.requestLogout({ currentTarget: trigger } as unknown as MouseEvent);
+  header.cancelLogout();
+  assert('Log Out Confirm Modal', 'cancelLogout() restores focus to the logout trigger',
+    focusCalls === 1);
+  header.requestLogout({ currentTarget: trigger } as unknown as MouseEvent);
+  header.handleKeydown({ key: 'Escape' } as KeyboardEvent);
+  assert('Log Out Confirm Modal', 'Escape dismissal restores focus to the logout trigger',
+    focusCalls === 2);
+}
+
+
+// ---------------------------------------------------------------------------
+// 91. UNIT TESTS: Password Logic, Crypto Primitives & Credential Store
+// ---------------------------------------------------------------------------
+async function runPasswordSecurityUnitTests() {
+  console.log('\n--- 91. UNIT TESTS: Password Security & Credential Store ---');
+
+  // 1. Password strength validation table
+  const validResult = validatePasswordStrength('SecurePass1');
+  assert('Password Strength', 'Valid password (8+ chars, letter, digit) passes', validResult.valid && validResult.errors.length === 0);
+
+  const shortResult = validatePasswordStrength('Ab1');
+  assert('Password Strength', 'Short password (<8 chars) fails', !shortResult.valid && shortResult.errors.some(e => e.includes('at least 8')));
+
+  const noLetterResult = validatePasswordStrength('12345678');
+  assert('Password Strength', 'Password without letter fails', !noLetterResult.valid && noLetterResult.errors.some(e => e.includes('at least one letter')));
+
+  const noDigitResult = validatePasswordStrength('PasswordOnly');
+  assert('Password Strength', 'Password without digit fails', !noDigitResult.valid && noDigitResult.errors.some(e => e.includes('at least one number')));
+
+  // 2. Score monotonicity
+  assert('Password Score', 'Empty string score is 0', passwordStrengthScore('') === 0);
+  assert('Password Score', 'Invalid password score is 0', passwordStrengthScore('short1') === 0);
+  assert('Password Score', 'Basic valid password score is 1', passwordStrengthScore('password123') === 1);
+  const goodScore = passwordStrengthScore('Password123!');
+  assert('Password Score', 'Good password score is >= 2', goodScore >= 2);
+  const strongScore = passwordStrengthScore('Password123!@#$');
+  assert('Password Score', 'Strong password score is 3', strongScore === 3);
+  assert('Password Score', 'Score is monotonic non-decreasing with complexity',
+    passwordStrengthScore('pass') <= passwordStrengthScore('password123') &&
+    passwordStrengthScore('password123') <= passwordStrengthScore('Password123!') &&
+    passwordStrengthScore('Password123!') <= passwordStrengthScore('Password123!@#$')
+  );
+
+  // 3. Salt uniqueness
+  const salts = new Set<string>();
+  for (let i = 0; i < 100; i++) {
+    salts.add(generateSalt());
+  }
+  assert('Password Salt', '100 generated salts are 100% unique', salts.size === 100);
+  assert('Password Salt', 'Generated salt has 32 hex characters (16 bytes)', Array.from(salts).every(s => s.length === 32 && /^[0-9a-f]+$/.test(s)));
+
+  // 4. Hash roundtrip verify
+  const salt = generateSalt();
+  const hash = await hashPassword('Secret123', salt);
+  const verifyValid = await verifyPassword('Secret123', salt, hash);
+  const verifyInvalid = await verifyPassword('WrongPassword123', salt, hash);
+  assert('Password Crypto', 'verifyPassword matches valid password against salted hash', verifyValid === true);
+  assert('Password Crypto', 'verifyPassword rejects incorrect password', verifyInvalid === false);
+
+  const salt2 = generateSalt();
+  const hash2 = await hashPassword('Secret123', salt2);
+  assert('Password Crypto', 'Different salts produce different hashes for identical password', hash !== hash2);
+
+  // 5. Lockout remaining helper
+  assert('Lockout Helper', 'getLockoutRemainingMs returns 0 for null/undefined', getLockoutRemainingMs(null) === 0 && getLockoutRemainingMs(undefined) === 0);
+  const now = Date.now();
+  assert('Lockout Helper', 'getLockoutRemainingMs returns delta for active lockout', getLockoutRemainingMs({ failedAttempts: 5, lockedUntil: now + 30000 }, now) === 30000);
+  assert('Lockout Helper', 'getLockoutRemainingMs returns 0 for expired lockout', getLockoutRemainingMs({ failedAttempts: 5, lockedUntil: now - 5000 }, now) === 0);
+
+  // 6. AuthMockService Credential Store & Universal Seed Credentials
+  const store = new LocalStoreService();
+  const authMock: any = Object.create(AuthMockService.prototype);
+  authMock.localStore = store;
+  authMock.STORAGE_KEY = 'auth_users_test';
+  authMock.CREDENTIALS_KEY = 'auth_credentials_test';
+  authMock.users = JSON.parse(JSON.stringify(SEED_USERS));
+  authMock.credentials = {};
+  authMock.lockoutStates = new Map();
+  authMock.initCredentials();
+
+  const testUser = authMock.users[0]; // Alice
+  assert('Auth Mock Credential', 'Seed user is pre-seeded with password credential', authMock.hasPassword(testUser.id) === true);
+
+  // Passwordless login is strictly rejected
+  let noPwFailed = false;
+  try {
+    await firstValueFrom(authMock.authenticate({ email: testUser.email }));
+  } catch {
+    noPwFailed = true;
+  }
+  assert('Auth Mock Credential', 'Passwordless sign in is rejected for seed persona', noPwFailed);
+
+  // Login with seed default password succeeds
+  const seedAuth: any = await firstValueFrom(authMock.authenticate({ email: testUser.email, password: DEFAULT_SEED_PASSWORD }));
+  assert('Auth Mock Credential', 'Sign in with DEFAULT_SEED_PASSWORD succeeds', seedAuth.id === testUser.id);
+
+  // Set new password requires current password
+  let noCurrentPwFailed = false;
+  try {
+    await firstValueFrom(authMock.changePassword(testUser.id, '', 'NewPassword123'));
+  } catch {
+    noCurrentPwFailed = true;
+  }
+  assert('Auth Mock Credential', 'Changing password without current password is rejected', noCurrentPwFailed);
+
+  // Set new password with same password rejected
+  let samePwFailed = false;
+  try {
+    await firstValueFrom(authMock.changePassword(testUser.id, DEFAULT_SEED_PASSWORD, DEFAULT_SEED_PASSWORD));
+  } catch {
+    samePwFailed = true;
+  }
+  assert('Auth Mock Credential', 'Changing password to identical current password is rejected', samePwFailed);
+
+  // Set password for user with valid current password
+  const updatedUser: any = await firstValueFrom(authMock.changePassword(testUser.id, DEFAULT_SEED_PASSWORD, 'NewPassword123'));
+  assert('Auth Mock Credential', 'changePassword sets new password credential', updatedUser.id === testUser.id);
+
+  // User object does NOT contain password
+  assert('Auth Mock Credential', 'User object never contains password or hash', !('password' in (updatedUser as object)) && !('hash' in (updatedUser as object)));
+
+  let wrongPwFailed = false;
+  try {
+    await firstValueFrom(authMock.authenticate({ email: testUser.email, password: 'wrong' }));
+  } catch {
+    wrongPwFailed = true;
+  }
+  assert('Auth Mock Credential', 'Login with wrong password fails', wrongPwFailed);
+
+  const authWithPw: any = await firstValueFrom(authMock.authenticate({ email: testUser.email, password: 'NewPassword123' }));
+  assert('Auth Mock Credential', 'Login with new password succeeds', authWithPw.id === testUser.id);
+
+  // 7. Lockout Engagement on 5 failed attempts
+  for (let i = 1; i <= 4; i++) {
+    try {
+      await firstValueFrom(authMock.changePassword(testUser.id, 'WrongCurrentPw', 'NextPassword123'));
+      assert('Lockout Flow', `Attempt ${i} should have failed`, false);
+    } catch (e: any) {
+      assert('Lockout Flow', `Failed attempt ${i} throws ERR_INCORRECT_PASSWORD with correct attemptsRemaining`,
+        e.code === ERR_INCORRECT_PASSWORD && e.attemptsRemaining === (5 - i));
+    }
+  }
+
+  // 5th attempt engages lockout
+  try {
+    await firstValueFrom(authMock.changePassword(testUser.id, 'WrongCurrentPw', 'NextPassword123'));
+    assert('Lockout Flow', 'Attempt 5 should have engaged lockout', false);
+  } catch (e: any) {
+    assert('Lockout Flow', '5th failed attempt throws ERR_LOCKED_OUT with 60s remainingMs',
+      e.code === ERR_LOCKED_OUT && e.remainingMs === LOCKOUT_DURATION_MS);
+  }
+
+  // 6th attempt (even with valid password) blocked by lockout
+  try {
+    await firstValueFrom(authMock.changePassword(testUser.id, 'NewPassword123', 'NextPassword123'));
+    assert('Lockout Flow', 'Attempt during lockout should be rejected immediately', false);
+  } catch (e: any) {
+    assert('Lockout Flow', 'Subsequent attempt during lockout is immediately rejected with ERR_LOCKED_OUT',
+      e.code === ERR_LOCKED_OUT && e.remainingMs > 0);
+  }
+
+  // Lock expiry restores ability to change password
+  const lockState = authMock.getLockoutState(testUser.id);
+  if (lockState) {
+    lockState.lockedUntil = Date.now() - 1000; // Fast-forward expiry
+  }
+  const restoredUser: any = await firstValueFrom(authMock.changePassword(testUser.id, 'NewPassword123', 'NextPassword123'));
+  assert('Lockout Flow', 'Expired lock allows password change with correct current password', restoredUser.id === testUser.id);
+  assert('Lockout Flow', 'Successful password change resets lockout state', authMock.getLockoutState(testUser.id) === undefined);
+}
+
+// ---------------------------------------------------------------------------
+// Summary Runner
+// ---------------------------------------------------------------------------
+(async () => {
+  await runPasswordSecurityUnitTests();
+
+  const passed = results.filter(r => r.passed).length;
+  const total = results.length;
+  console.log('\n======================================================================');
+  console.log(`📊 UNIT TEST SUMMARY: ${passed} / ${total} PASSED (${Math.round((passed / total) * 100)}%)`);
+  console.log('======================================================================\n');
+
+  if (passed !== total) {
+    process.exit(1);
+  }
+})();
 
 
 

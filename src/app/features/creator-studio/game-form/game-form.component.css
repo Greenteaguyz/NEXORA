@@ -404,7 +404,7 @@
 
 .bento-screenshots-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(clamp(240px, 20vw, 360px), 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: clamp(12px, 1.4vw, 18px);
   width: 100%;
 }
@@ -469,7 +469,8 @@
 }
 
 .bento-media-frame.hero-frame {
-  max-height: clamp(200px, 22vw, 300px);
+  /* Enforce true 16:9 widescreen contract without vertical clipping (DESIGN.md Sec. 5) */
+  width: 100%;
 }
 
 .bento-media-frame:hover {
@@ -837,7 +838,7 @@
   padding: 3px 8px;
   border-radius: var(--radius-xs);
   background: rgba(234, 179, 8, 0.15);
-  color: #FACC15;
+  color: var(--amber-400);
   border: 1px solid rgba(234, 179, 8, 0.3);
 }
 
@@ -857,7 +858,7 @@
 
 .readiness-progress-fill {
   height: 100%;
-  background: #FACC15;
+  background: var(--amber-400);
   transition: width 0.3s ease;
 }
 
@@ -938,7 +939,7 @@
    Sticky Actions Footer
    ========================================================================== */
 .game-editor-form {
-  padding-bottom: 90px; /* Offset for sticky bar */
+  padding-bottom: 110px; /* Offset for docked sticky action bar */
 }
 
 .form-actions-footer.sticky {
@@ -946,10 +947,11 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(14, 20, 27, 0.92);
+  background: rgba(14, 20, 27, 0.94);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-top: none; /* Seamless floating action surface */
+  border-top: 1px solid var(--border-card);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   padding: var(--space-4) var(--space-5);
   display: flex;
   align-items: center;
@@ -968,7 +970,7 @@
 }
 
 .footer-status-pill.dirty {
-  color: #FACC15;
+  color: var(--amber-400);
 }
 
 .status-pulse-dot {
@@ -979,8 +981,8 @@
 }
 
 .status-pulse-dot.active {
-  background: #FACC15;
-  box-shadow: 0 0 6px rgba(250, 204, 21, 0.6);
+  background: var(--amber-400);
+  border: 1px solid rgba(250, 204, 21, 0.6);
 }
 
 .footer-btn-group {
@@ -1011,7 +1013,7 @@
   border-radius: var(--radius);
   background: rgba(250, 204, 21, 0.12);
   border: 1px solid rgba(250, 204, 21, 0.35);
-  color: #FACC15;
+  color: var(--amber-400);
   font-weight: 700;
   font-size: 0.9rem;
   transition: all 0.15s ease;
@@ -1021,7 +1023,7 @@
 
 .btn-save-draft:hover:not(:disabled) {
   background: rgba(250, 204, 21, 0.22);
-  border-color: #FACC15;
+  border-color: var(--amber-400);
   box-shadow: 0 2px 10px rgba(250, 204, 21, 0.25);
   transform: none;
 }
@@ -1044,19 +1046,20 @@
   gap: 8px;
   padding: 11px 26px;
   border-radius: var(--radius);
-  background: linear-gradient(135deg, var(--accent-600) 0%, var(--accent-700) 100%);
+  background: var(--steam-btn-gradient, linear-gradient(90deg, #75B022 0%, #588A1B 100%));
   color: #FFFFFF;
   font-weight: 800;
   font-size: 0.95rem;
-  box-shadow: 0 4px 14px rgba(102, 192, 244, 0.4);
+  border: 1px solid rgba(164, 208, 7, 0.45);
+  box-shadow: 0 4px 14px rgba(88, 138, 27, 0.35);
   transition: all 0.2s ease;
   cursor: pointer;
   transform: none;
 }
 
 .btn-submit:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--accent-500) 0%, var(--accent-600) 100%);
-  box-shadow: 0 0 16px rgba(102, 192, 244, 0.55), 0 4px 14px rgba(0, 0, 0, 0.4);
+  background: var(--steam-btn-hover, linear-gradient(90deg, #8ED629 0%, #6AA621 100%));
+  box-shadow: 0 4px 14px rgba(88, 138, 27, 0.45);
   transform: none;
 }
 
@@ -1085,12 +1088,6 @@
 }
 
 /* Responsive Breakpoints */
-@media (max-width: 1100px) {
-  .bento-media-hub {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 900px) {
   .form-layout-grid {
     grid-template-columns: 1fr;
@@ -1100,12 +1097,15 @@
   }
 }
 
+@media (max-width: 540px) {
+  .bento-screenshots-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 480px) {
   .game-form-page-container {
     padding: var(--space-4) var(--space-3);
-  }
-  .bento-screenshots-grid {
-    grid-template-columns: 1fr;
   }
   .form-actions-footer.sticky {
     flex-direction: column;
@@ -1115,4 +1115,148 @@
   .footer-btn-group {
     justify-content: flex-end;
   }
+}
+
+/* ==========================================================================
+   Light Mode Theme Overrides (High-Contrast WCAG AAA Standards)
+   ========================================================================== */
+:host-context([data-theme="light"]) .form-actions-footer.sticky {
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid var(--border-card);
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
+}
+
+:host-context([data-theme="light"]) .btn-cancel {
+  color: var(--text-secondary);
+}
+
+:host-context([data-theme="light"]) .btn-cancel:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
+}
+
+:host-context([data-theme="light"]) .bento-card {
+  background: #FFFFFF;
+  border-color: rgba(226, 232, 240, 0.9);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+}
+
+:host-context([data-theme="light"]) .bento-media-frame {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+}
+
+:host-context([data-theme="light"]) .preset-pills-bar {
+  background: #F8FAFC;
+  border-color: #E2E8F0;
+}
+
+:host-context([data-theme="light"]) .btn-theme-pill {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+  color: var(--text-secondary);
+}
+
+:host-context([data-theme="light"]) .btn-theme-pill:hover {
+  border-color: #0078D4;
+  color: #0F172A;
+  background: #F1F5F9;
+}
+
+:host-context([data-theme="light"]) .btn-theme-pill.selected {
+  background: #E0F2FE;
+  border-color: #0078D4;
+  color: #0284C7;
+}
+
+:host-context([data-theme="light"]) .btn-price-tier {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+  color: var(--text-secondary);
+}
+
+:host-context([data-theme="light"]) .btn-price-tier:hover {
+  border-color: #0078D4;
+  color: #0F172A;
+  background: #F1F5F9;
+}
+
+:host-context([data-theme="light"]) .btn-price-tier.active {
+  background: #E0F2FE;
+  border-color: #0078D4;
+  color: #0284C7;
+}
+
+:host-context([data-theme="light"]) .preview-sticky-wrap {
+  background: #FFFFFF;
+  border-color: rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+}
+
+:host-context([data-theme="light"]) .preview-game-card {
+  background: #FFFFFF;
+  border-color: #E2E8F0;
+}
+
+:host-context([data-theme="light"]) .preview-price-badge {
+  background: rgba(255, 255, 255, 0.94);
+  color: #15803D;
+  border-color: rgba(34, 197, 94, 0.4);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+:host-context([data-theme="light"]) .preview-price-badge.free {
+  color: #0078D4;
+  border-color: rgba(0, 120, 212, 0.4);
+}
+
+:host-context([data-theme="light"]) .readiness-inspector-card {
+  background: #FFFFFF;
+  border-color: #E2E8F0;
+}
+
+:host-context([data-theme="light"]) .readiness-progress-track {
+  background: #E2E8F0;
+  border-color: #CBD5E1;
+}
+
+:host-context([data-theme="light"]) .readiness-item {
+  background: #F8FAFC;
+  border: 1px solid #F1F5F9;
+}
+
+:host-context([data-theme="light"]) .readiness-item.complete {
+  background: rgba(52, 211, 153, 0.08);
+  border-color: rgba(52, 211, 153, 0.25);
+}
+
+:host-context([data-theme="light"]) .readiness-badge {
+  background: #FEF3C7;
+  color: #B45309;
+  border-color: #FDE68A;
+}
+
+:host-context([data-theme="light"]) .readiness-badge.ready {
+  background: #DCFCE7;
+  color: #15803D;
+  border-color: #BBF7D0;
+}
+
+:host-context([data-theme="light"]) .drop-hint-pill {
+  background: rgba(255, 255, 255, 0.95);
+  color: #0078D4;
+  border-color: #CBD5E1;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+}
+
+:host-context([data-theme="light"]) .btn-overlay-pill {
+  background: rgba(255, 255, 255, 0.92);
+  color: #0F172A;
+  border-color: #CBD5E1;
+}
+
+:host-context([data-theme="light"]) .btn-clear-slot {
+  background: rgba(255, 255, 255, 0.92);
+  color: #0F172A;
+  border-color: #CBD5E1;
 }

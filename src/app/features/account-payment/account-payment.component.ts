@@ -4,14 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
 import { PAYMENTS_DATA } from '../../core/data/tokens';
-import { AddCardMethodDto, AddKhqrMethodDto, PaymentMethod, Wallet, WalletTransaction } from '../../core/models/payment.model';
-import { approxKhr, detectCardBrand, formatUsd, validateCardInput } from '../../core/data/payments/payment-logic';
+import { PaymentMethod, Wallet, WalletTransaction } from '../../core/models/payment.model';
+import { formatUsd } from '../../core/data/payments/payment-logic';
 import { PaymentBrandMarkComponent } from '../../shared/ui/payment-brand-mark/payment-brand-mark.component';
 import { KhqrCardComponent } from '../../shared/ui/khqr-card/khqr-card.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
-import { ExpiryDateDirective } from '../../shared/directives/expiry-date.directive';
-import { CardNumberDirective } from '../../shared/directives/card-number.directive';
-import { CvvDirective } from '../../shared/directives/cvv.directive';
+import { AddPaymentMethodFormComponent } from '../../shared/ui/add-payment-method-form/add-payment-method-form.component';
 
 @Component({
   selector: 'app-account-payment',
@@ -24,9 +22,7 @@ import { CvvDirective } from '../../shared/directives/cvv.directive';
     PaymentBrandMarkComponent,
     KhqrCardComponent,
     ScrollLockDirective,
-    ExpiryDateDirective,
-    CardNumberDirective,
-    CvvDirective
+    AddPaymentMethodFormComponent
   ],
   templateUrl: './account-payment.component.html',
   styleUrl: './account-payment.component.css'
@@ -47,22 +43,8 @@ export class AccountPaymentComponent {
 
   // Modals state
   readonly showAddModal = signal<boolean>(false);
-  readonly addMethodType = signal<'card' | 'khqr'>('card');
   readonly methodToRemove = signal<PaymentMethod | null>(null);
   readonly showTopUpModal = signal<boolean>(false);
-
-  // Add Card form
-  cardHolder = '';
-  cardNumber = '';
-  cardExpiry = '';
-  cardCvv = '';
-  cardFormErrors = signal<string[]>([]);
-
-  // Add KHQR form
-  khqrBank: 'ABA' | 'ACLEDA' | 'Wing' = 'ABA';
-  khqrHandle = '';
-  khqrLinking = signal<boolean>(false);
-  khqrFormErrors = signal<string[]>([]);
 
   // Top Up form
   topUpAmount = 25;
@@ -76,8 +58,6 @@ export class AccountPaymentComponent {
 
   // Computed Values
   readonly usdBalance = computed(() => formatUsd(this.wallet()?.balance ?? 0));
-  readonly khrBalance = computed(() => approxKhr(this.wallet()?.balance ?? 0));
-  readonly detectedBrand = computed(() => detectCardBrand(this.cardNumber));
   readonly defaultMethod = computed(() => this.methods().find(m => m.isDefault) ?? null);
   readonly khqrMethod = computed(() => this.methods().find(m => m.type === 'khqr') ?? null);
 
@@ -155,17 +135,6 @@ export class AccountPaymentComponent {
 
   // Add Method Modal
   openAddModal(): void {
-    this.cardHolder = this.auth.currentUser()?.displayName ?? '';
-    this.cardNumber = '';
-    this.cardExpiry = '';
-    this.cardCvv = '';
-    this.cardFormErrors.set([]);
-
-    this.khqrBank = 'ABA';
-    this.khqrHandle = (this.auth.currentUser()?.displayName?.toLowerCase().replace(/\s+/g, '') ?? 'user') + '@aba';
-    this.khqrLinking.set(false);
-    this.khqrFormErrors.set([]);
-
     this.showAddModal.set(true);
   }
 
@@ -173,75 +142,16 @@ export class AccountPaymentComponent {
     this.showAddModal.set(false);
   }
 
-  submitAddCard(): void {
+  onMethodAdded(method: PaymentMethod): void {
     const user = this.auth.currentUser();
     if (!user) return;
-
-    const brand = this.detectedBrand();
-    const dto: AddCardMethodDto = {
-      type: 'card',
-      brand: brand ?? 'visa',
-      holder: this.cardHolder.trim(),
-      number: this.cardNumber.replace(/\s+/g, ''),
-      expiry: this.cardExpiry.trim()
-    };
-
-    const validation = validateCardInput(dto, this.methods());
-    if (!validation.valid) {
-      this.cardFormErrors.set(validation.errors);
-      return;
+    this.paymentsData.getMethods(user.id).subscribe(m => this.methods.set(m));
+    this.closeAddModal();
+    if (method.type === 'card') {
+      this.showToast('Credit card added securely.');
+    } else {
+      this.showToast(`${method.bank} KHQR linked successfully.`);
     }
-
-    this.paymentsData.addMethod(user.id, dto).subscribe({
-      next: result => {
-        if (result.ok) {
-          this.paymentsData.getMethods(user.id).subscribe(m => this.methods.set(m));
-          this.closeAddModal();
-          this.showToast('Credit card added securely.');
-        } else {
-          this.cardFormErrors.set(result.errors);
-        }
-      }
-    });
-  }
-
-  submitAddKhqr(): void {
-    const user = this.auth.currentUser();
-    if (!user) return;
-
-    const handle = this.khqrHandle.trim();
-    if (handle.length < 3) {
-      this.khqrFormErrors.set(['Please enter a valid bank account handle.']);
-      return;
-    }
-
-    const dto: AddKhqrMethodDto = {
-      type: 'khqr',
-      bank: this.khqrBank,
-      handle
-    };
-
-    this.khqrLinking.set(true);
-
-    // Simulate authentic Bakong handshake (1.2s)
-    setTimeout(() => {
-      this.paymentsData.addMethod(user.id, dto).subscribe({
-        next: result => {
-          this.khqrLinking.set(false);
-          if (result.ok) {
-            this.paymentsData.getMethods(user.id).subscribe(m => this.methods.set(m));
-            this.closeAddModal();
-            this.showToast(`${this.khqrBank} KHQR linked successfully.`);
-          } else {
-            this.khqrFormErrors.set(result.errors);
-          }
-        },
-        error: () => {
-          this.khqrLinking.set(false);
-          this.khqrFormErrors.set(['Failed to link bank account. Please try again.']);
-        }
-      });
-    }, 1200);
   }
 
   // Top Up Modal

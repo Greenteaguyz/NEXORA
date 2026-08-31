@@ -38,6 +38,8 @@ export class KhqrCardComponent {
   readonly khrAccount = input('008 278 632');
   readonly usdAccount = input('008 278 629');
   readonly seed = input('nexora-khqr');
+  /** Checkout variant: QR-only — hides account rows and footer, shrinks the stage. */
+  readonly compact = input(false);
 
   readonly gridSize = 21;
   readonly cells = computed(() => qrModules(this.seed() + this.holderName(), this.gridSize));

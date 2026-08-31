@@ -7,8 +7,10 @@ import { AuthService } from '../../core/auth/auth.service';
 import { ThemeService } from '../../core/theme/theme.service';
 import { CommandPaletteService } from '../../core/services/command-palette.service';
 import { ScrollLockService } from '../../core/services/scroll-lock.service';
+import { ToastService } from '../../core/services/toast.service';
 import { WISHLIST_DATA } from '../../core/data/tokens';
 import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.component';
+import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 import {
   staggerDelay,
   computeIndicatorGeometry,
@@ -18,7 +20,7 @@ import {
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, RoleBadgeComponent],
+  imports: [CommonModule, RouterLink, RouterLinkActive, RoleBadgeComponent, ScrollLockDirective],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
@@ -26,6 +28,7 @@ export class HeaderComponent implements OnDestroy {
   authService = inject(AuthService);
   themeService = inject(ThemeService);
   commandPaletteService = inject(CommandPaletteService);
+  private toastService = inject(ToastService);
   private router = inject(Router);
   private wishlistData = inject(WISHLIST_DATA);
   private platformId = inject(PLATFORM_ID);
@@ -37,6 +40,8 @@ export class HeaderComponent implements OnDestroy {
   private lastWishlistUserId: string | null = null;
   mobileMenuOpen = signal(false);
   drawerMounted = signal(false);
+  public readonly logoutConfirmOpen = signal<boolean>(false);
+  private logoutReturnFocus: HTMLElement | null = null;
   headerHidden = signal(false);
   private lastScrollY = 0;
   private drawerReturnFocus: HTMLElement | null = null;
@@ -159,8 +164,21 @@ export class HeaderComponent implements OnDestroy {
   @HostListener('window:keydown', ['$event'])
   handleKeydown(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
+      // Log Out confirm modal owns Escape while open; the drawer must stay mounted.
+      if (this.logoutConfirmOpen()) {
+        this.cancelLogout();
+        return;
+      }
       if (this.mobileMenuOpen()) {
         this.closeMobileMenu();
+      }
+      return;
+    }
+
+    // The modal owns Tab while open: contain focus inside the dialog.
+    if (this.logoutConfirmOpen()) {
+      if (event.key === 'Tab') {
+        this.trapModalFocus(event);
       }
       return;
     }
@@ -189,6 +207,33 @@ export class HeaderComponent implements OnDestroy {
       }
     } else {
       if (document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+  }
+
+  private trapModalFocus(event: KeyboardEvent): void {
+    const modal = this.host.nativeElement.querySelector<HTMLElement>('.modal-card');
+    if (!modal) return;
+
+    const focusable = modal.querySelectorAll<HTMLElement>(
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    );
+    if (focusable.length === 0) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    // Focus that drifted outside the overlay (e.g. body) is pulled back inside.
+    const inside = modal.contains(document.activeElement);
+
+    if (event.shiftKey) {
+      if (!inside || document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (!inside || document.activeElement === last) {
         event.preventDefault();
         first.focus();
       }
@@ -247,9 +292,37 @@ export class HeaderComponent implements OnDestroy {
     this.scheduleIndicatorMeasure();
   }
 
-  logout(): void {
+  public requestLogout(event?: Event): void {
+    // Duck-typed on purpose: instanceof HTMLElement breaks under SSR/test runtimes.
+    const target = event?.currentTarget as HTMLElement | null;
+    if (target && typeof target.focus === 'function') {
+      this.logoutReturnFocus = target;
+    }
+    this.logoutConfirmOpen.set(true);
+  }
+
+  public cancelLogout(): void {
+    if (!this.logoutConfirmOpen()) return;
+    this.logoutConfirmOpen.set(false);
+    this.logoutReturnFocus?.focus();
+    this.logoutReturnFocus = null;
+  }
+
+  public confirmLogout(): void {
+    if (!this.logoutConfirmOpen()) return;
+    this.logoutConfirmOpen.set(false);
+    this.logoutReturnFocus = null;
     this.authService.logout();
     this.closeMobileMenu();
+    this.toastService.show({
+      type: 'info',
+      title: 'Signed Out',
+      message: 'You have been logged out.'
+    });
+  }
+
+  public logout(): void {
+    this.confirmLogout();
   }
 
   toggleTheme(): void {

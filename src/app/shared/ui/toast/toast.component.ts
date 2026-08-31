@@ -49,7 +49,7 @@ import { ToastService, ToastMessage } from '../../../core/services/toast.service
           @if (toast.action) {
             <button type="button" class="btn-toast-action" (click)="runAction(toast)">{{ toast.action.label }}</button>
           }
-          <button type="button" class="btn-toast-close" (click)="requestDismiss(toast)" aria-label="Close notification">✕</button>
+          <button type="button" class="btn-toast-close" (click)="requestDismiss(toast)" aria-label="Close notification">&times;</button>
         </div>
       }
     </div>

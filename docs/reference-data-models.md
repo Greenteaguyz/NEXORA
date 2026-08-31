@@ -115,11 +115,11 @@ The `Order` model records transaction history for paid title acquisitions.
 * **`gameId`** (`string`): Foreign key referencing `Game.id`.
 * **`price`** (`number`): Price snapshot at the time of purchase.
 * **`paymentMethod`** (`string`, optional): Identifier or description of payment method used.
-* **`status`** (`'confirmed' | 'pending' | 'failed'`): Transaction processing status.
+* **`status`** (`'confirmed' | 'pending' | 'failed' | 'refunded'`): Transaction processing status. When a paid game is removed from the user's library, the associated order transitions to `'refunded'`.
 * **`createdAt`** (`string`): ISO timestamp of the transaction.
 
 ```typescript
-export type OrderStatus = 'confirmed' | 'pending' | 'failed';
+export type OrderStatus = 'confirmed' | 'pending' | 'failed' | 'refunded';
 
 export interface Order {
   id: string;
@@ -211,6 +211,76 @@ export interface AddKhqrMethodDto {
 }
 
 export type AddPaymentMethodDto = AddCardMethodDto | AddKhqrMethodDto;
+```
+
+---
+
+### Finance Core Models (`src/app/core/models/finance.model.ts`)
+
+The financial engine operates with strict integer minor units (cents / sen) to avoid floating-point drift:
+
+```typescript
+export type Currency = 'USD' | 'KHR';
+
+export interface Money {
+  amountMinor: number;
+  currency: Currency;
+}
+
+export type LedgerEntryType =
+  | 'top_up'
+  | 'purchase_debit'
+  | 'refund_credit'
+  | 'gift_card_redemption'
+  | 'hold'
+  | 'release'
+  | 'fee';
+
+export type LedgerEntryStatus = 'pending' | 'completed' | 'failed' | 'reversed';
+
+export interface LedgerEntry {
+  id: string;
+  userId: string;
+  type: LedgerEntryType;
+  amountMinor: number;
+  currency: Currency;
+  status: LedgerEntryStatus;
+  balanceAfterMinor: number;
+  reference: string;
+  label: string;
+  createdAt: string;
+}
+
+export type PaymentIntentStatus =
+  | 'draft'
+  | 'requires_payment_method'
+  | 'requires_confirmation'
+  | 'processing'
+  | 'succeeded'
+  | 'failed'
+  | 'canceled'
+  | 'expired';
+
+export interface PaymentIntent {
+  id: string;
+  orderId: string;
+  userId: string;
+  amountDueMinor: number;
+  amountPaidMinor: number;
+  currency: Currency;
+  status: PaymentIntentStatus;
+  createdAt: string;
+  expiresAt: string;
+  idempotencyKey?: string;
+}
+
+export interface Tender {
+  type: 'card' | 'wallet' | 'khqr' | 'gift_card';
+  amountMinor: number;
+  currency: Currency;
+  paymentMethodId?: string;
+  giftCardCode?: string;
+}
 ```
 
 ---

@@ -1,9 +1,9 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, throwError } from 'rxjs';
 import { User } from '../models/user.model';
 import { LocalStoreService } from '../persistence/local-store.service';
-import { AuthMockService, LoginCredentials, RegisterDto } from './auth.mock';
+import { AuthMockService, LoginCredentials, RegisterDto, DEFAULT_SEED_PASSWORD } from './auth.mock';
 
 @Injectable({
   providedIn: 'root'
@@ -83,7 +83,19 @@ export class AuthService {
     );
   }
 
+  hasPassword(): boolean {
+    return true;
+  }
+
+  changePassword(current: string, next: string): Observable<User> {
+    const user = this.currentUser();
+    if (!user) {
+      return throwError(() => new Error('No active user to change password'));
+    }
+    return this.authMock.changePassword(user.id, current, next);
+  }
+
   switchDemoUser(email: string): Observable<User> {
-    return this.login({ email });
+    return this.login({ email, password: DEFAULT_SEED_PASSWORD });
   }
 }

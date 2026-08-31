@@ -148,7 +148,7 @@
 :host-context([data-theme="light"]) .btn-share-profile {
   background: #F1F5F9;
   border-color: #CBD5E1;
-  color: #334155;
+  color: var(--text-secondary);
 }
 
 .btn-share-profile:hover {

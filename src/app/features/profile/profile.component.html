@@ -12,7 +12,7 @@
         aria-label="Change Profile Avatar">
         <img [src]="user.avatarUrl || 'assets/logo-icon.svg'" [alt]="user.displayName + ' avatar'" class="profile-avatar-img">
         <div class="avatar-edit-badge" title="Change Avatar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="camera-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" class="camera-icon" aria-hidden="true">
             <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
             <circle cx="12" cy="13" r="4"/>
           </svg>
@@ -27,14 +27,14 @@
 
         <div class="user-meta-row">
           <span class="meta-item">
-            <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
               <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
               <polyline points="22,6 12,13 2,6"/>
             </svg>
             <span>{{ user.email }}</span>
           </span>
           <span class="meta-item">
-            <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12 6 12 12 16 14"/>
             </svg>
@@ -53,7 +53,7 @@
           class="btn-edit-profile" 
           (click)="startEditing()"
           aria-label="Edit Profile Information">
-          <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg class="btn-svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
           </svg>
@@ -75,9 +75,9 @@
     <!-- Quick Stats Triad -->
     <section class="stats-overview-grid" aria-label="Account Overview Statistics">
       <a routerLink="/library" class="stat-card" aria-label="View your game library">
-        <div class="stat-icon-wrap lime">
-          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <rect x="2" y="6" width="20" height="12" rx="6" fill="currentColor" fill-opacity="0.15"/>
+        <div class="stat-icon-wrap">
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="6" width="20" height="12" rx="6"/>
             <line x1="6" y1="12" x2="10" y2="12"/>
             <line x1="8" y1="10" x2="8" y2="14"/>
             <circle cx="15.5" cy="10.5" r="1" fill="currentColor"/>
@@ -88,14 +88,11 @@
           <span class="stat-value">{{ ownedCount }}</span>
           <span class="stat-title">Owned Games</span>
         </div>
-        <svg class="stat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="9 18 15 12 9 6"/>
-        </svg>
       </a>
 
       <a routerLink="/wishlist" class="stat-card" aria-label="View your wishlisted games">
-        <div class="stat-icon-wrap rose">
-          <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <div class="stat-icon-wrap">
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
         </div>
@@ -103,15 +100,12 @@
           <span class="stat-value">{{ wishlistCount }}</span>
           <span class="stat-title">Wishlisted</span>
         </div>
-        <svg class="stat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="9 18 15 12 9 6"/>
-        </svg>
       </a>
 
       <a routerLink="/orders" class="stat-card" aria-label="View your purchase history">
-        <div class="stat-icon-wrap cyan">
-          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M4 2v20l3-1.5 3 1.5 3-1.5 3 1.5 3-1.5 3 1.5V2l-3 1.5-3-1.5-3 1.5-3-1.5-3 1.5z" fill="currentColor" fill-opacity="0.15"/>
+        <div class="stat-icon-wrap">
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 2v20l3-1.5 3 1.5 3-1.5 3 1.5 3-1.5 3 1.5V2l-3 1.5-3-1.5-3 1.5-3-1.5-3 1.5z"/>
             <line x1="8" y1="9" x2="16" y2="9"/>
             <line x1="8" y1="13" x2="16" y2="13"/>
             <line x1="8" y1="17" x2="13" y2="17"/>
@@ -121,14 +115,11 @@
           <span class="stat-value">{{ ordersCount }}</span>
           <span class="stat-title">Orders</span>
         </div>
-        <svg class="stat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="9 18 15 12 9 6"/>
-        </svg>
       </a>
 
       <a routerLink="/account/payment" class="stat-card" aria-label="Manage payment methods and store wallet">
-        <div class="stat-icon-wrap emerald">
-          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <div class="stat-icon-wrap">
+          <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="2" y="5" width="20" height="14" rx="2"/>
             <line x1="2" y1="10" x2="22" y2="10"/>
           </svg>
@@ -137,20 +128,18 @@
           <span class="stat-value">{{ walletBalance }}</span>
           <span class="stat-title">Wallet Balance</span>
         </div>
-        <svg class="stat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="9 18 15 12 9 6"/>
-        </svg>
       </a>
     </section>
 
     <!-- Minimal Creator Studio Row -->
     <section class="creator-studio-bar" aria-label="Creator Studio and Publishing">
       <div class="creator-bar-left">
-        <div class="setting-icon-box cyan" aria-hidden="true">
-          <svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 2 7 12 12 22 7 12 2" fill="currentColor" fill-opacity="0.2"/>
-            <polyline points="2 17 12 22 22 17"/>
-            <polyline points="2 12 12 17 22 12"/>
+        <div class="setting-icon-box" aria-hidden="true">
+          <svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+            <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+            <rect x="14" y="14" width="7" height="7" rx="1.5"/>
           </svg>
         </div>
         <div class="creator-bar-info">
@@ -191,6 +180,218 @@
       </div>
     </section>
 
+    <!-- Account Password Card -->
+    <section class="security-card" aria-label="Account password management">
+      <div class="security-card-left">
+        <div class="setting-icon-box" aria-hidden="true">
+          <svg class="setting-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+        </div>
+        <div class="security-card-info">
+          <div class="security-title-row">
+            <strong class="security-card-title">Account Password</strong>
+          </div>
+          <span class="security-card-desc">
+            Used to sign in to your NEXORA account
+          </span>
+        </div>
+      </div>
+
+      <div class="security-card-actions">
+        <button 
+          type="button" 
+          class="btn-security-action"
+          (click)="openChangePasswordModal($event)"
+          aria-label="Change account password">
+          <span>Change Password</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Change Password Modal -->
+    @if (showChangePasswordModal) {
+      <div 
+        class="modal-backdrop" 
+        role="dialog" 
+        aria-modal="true" 
+        aria-labelledby="change-password-title"
+        appScrollLock
+        (click)="closeChangePasswordModal()"
+        (keydown.escape)="closeChangePasswordModal()">
+        <div class="modal-card password-modal-card" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3 id="change-password-title" class="modal-title">Change Password</h3>
+            <button type="button" class="btn-modal-close" (click)="closeChangePasswordModal()" aria-label="Close dialog">&times;</button>
+          </div>
+
+          <form class="modal-body-password" (ngSubmit)="submitChangePassword()">
+            @if (passwordError) {
+              <div class="form-error-callout" role="alert">
+                <svg class="error-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="12" y1="8" x2="12" y2="12"/>
+                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span>{{ passwordError }}</span>
+              </div>
+            }
+
+            <div class="form-group">
+              <label for="current-password-input" class="form-label">Current Password</label>
+              <div class="password-input-wrap">
+                <input 
+                  id="current-password-input"
+                  name="currentPassword"
+                  [type]="showCurrentPassword ? 'text' : 'password'"
+                  autocomplete="current-password"
+                  [(ngModel)]="currentPassword"
+                  placeholder="Enter current password"
+                  class="form-control"
+                  [disabled]="savingPassword || lockoutRemainingSeconds > 0"
+                  required>
+                <button 
+                  type="button" 
+                  class="btn-toggle-password" 
+                  (click)="showCurrentPassword = !showCurrentPassword"
+                  [attr.aria-label]="showCurrentPassword ? 'Hide current password' : 'Show current password'">
+                  @if (showCurrentPassword) {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                      <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                  } @else {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  }
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="new-password-input" class="form-label">New Password</label>
+              <div class="password-input-wrap">
+                <input
+                  id="new-password-input"
+                  name="newPassword"
+                  [type]="showNewPassword ? 'text' : 'password'"
+                  autocomplete="new-password"
+                  [(ngModel)]="newPassword"
+                  placeholder="At least 8 characters, letter & digit"
+                  class="form-control"
+                  [disabled]="savingPassword || lockoutRemainingSeconds > 0"
+                  required>
+                <button 
+                  type="button" 
+                  class="btn-toggle-password" 
+                  (click)="showNewPassword = !showNewPassword"
+                  [attr.aria-label]="showNewPassword ? 'Hide new password' : 'Show new password'">
+                  @if (showNewPassword) {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                      <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                  } @else {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  }
+                </button>
+              </div>
+
+              <!-- Password Strength Meter -->
+              @if (newPassword.length > 0) {
+                <div class="strength-meter" aria-live="polite">
+                  <div class="strength-bars">
+                    <div class="strength-bar-segment" [class.filled]="newPasswordScore >= 1" [class.active-weak]="newPasswordScore === 1" [class.active-good]="newPasswordScore === 2" [class.active-strong]="newPasswordScore === 3"></div>
+                    <div class="strength-bar-segment" [class.filled]="newPasswordScore >= 2" [class.active-good]="newPasswordScore === 2" [class.active-strong]="newPasswordScore === 3"></div>
+                    <div class="strength-bar-segment" [class.filled]="newPasswordScore >= 3" [class.active-strong]="newPasswordScore === 3"></div>
+                  </div>
+                  <span class="strength-text">
+                    @if (newPasswordScore === 0) {
+                      Too Weak
+                    } @else if (newPasswordScore === 1) {
+                      Fair
+                    } @else if (newPasswordScore === 2) {
+                      Good
+                    } @else {
+                      Strong
+                    }
+                  </span>
+                </div>
+              }
+
+              <!-- Inline rule hints -->
+              @if (newPassword.length > 0 && !newPasswordValidation.valid) {
+                <ul class="password-rule-hints">
+                  @for (err of newPasswordValidation.errors; track err) {
+                    <li>{{ err }}</li>
+                  }
+                </ul>
+              }
+            </div>
+
+            <div class="form-group">
+              <label for="confirm-password-input" class="form-label">Confirm New Password</label>
+              <div class="password-input-wrap">
+                <input
+                  id="confirm-password-input"
+                  name="confirmPassword"
+                  [type]="showConfirmPassword ? 'text' : 'password'"
+                  autocomplete="new-password"
+                  [(ngModel)]="confirmPassword"
+                  placeholder="Repeat new password"
+                  class="form-control"
+                  [disabled]="savingPassword || lockoutRemainingSeconds > 0"
+                  required>
+                <button 
+                  type="button" 
+                  class="btn-toggle-password" 
+                  (click)="showConfirmPassword = !showConfirmPassword"
+                  [attr.aria-label]="showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'">
+                  @if (showConfirmPassword) {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                      <line x1="1" y1="1" x2="23" y2="23"/>
+                    </svg>
+                  } @else {
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  }
+                </button>
+              </div>
+
+              @if (confirmPassword.length > 0 && newPassword !== confirmPassword) {
+                <span class="field-error-text">Passwords do not match</span>
+              }
+            </div>
+
+            <div class="modal-footer-password">
+              <button 
+                type="button" 
+                class="btn-cancel btn-keep-creator" 
+                (click)="closeChangePasswordModal()"
+                [disabled]="savingPassword">
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                class="btn-submit-password" 
+                [disabled]="!isChangePasswordFormValid || savingPassword || lockoutRemainingSeconds > 0">
+                <span>{{ savingPassword ? 'Updating...' : 'Change Password' }}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
+
     <!-- Creator Mode Deactivation Reminder Modal (10s Countdown) -->
     @if (showDisableCreatorModal) {
       <div 
@@ -204,38 +405,31 @@
         (keydown.escape)="cancelDisableCreator()">
         <div class="modal-card deactivation-card" (click)="$event.stopPropagation()">
           <div class="modal-header">
-            <div class="modal-header-badge">
-              <div class="warning-icon-box" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                  <line x1="12" y1="9" x2="12" y2="13"/>
-                  <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-              </div>
-              <h3 id="disable-creator-title" class="modal-title">Turn Off Creator Mode?</h3>
-            </div>
-            <button type="button" class="btn-modal-close" (click)="cancelDisableCreator()" aria-label="Close dialog">✕</button>
+            <h3 id="disable-creator-title" class="modal-title">Turn Off Creator Mode?</h3>
+            <button type="button" class="btn-modal-close" (click)="cancelDisableCreator()" aria-label="Close dialog">&times;</button>
           </div>
 
           <div class="modal-body-reset">
-            <div class="countdown-pill" [class.unlocked]="countdownSeconds === 0" aria-live="polite">
-              <span class="countdown-pulse-dot" [class.unlocked]="countdownSeconds === 0" aria-hidden="true"></span>
+            <div class="countdown-pill" [class.unlocked]="countdownSeconds === 0" aria-live="polite" aria-atomic="true">
               @if (countdownSeconds > 0) {
-                <span>Wait <strong>{{ countdownSeconds }}s</strong> to confirm</span>
+                <span class="countdown-text">Wait <strong>{{ countdownSeconds }}s</strong> to confirm</span>
               } @else {
-                <span>Ready to confirm</span>
+                <span class="countdown-text">Ready to confirm</span>
               }
+              <div class="countdown-progress-track" aria-hidden="true">
+                <div class="countdown-progress-bar" [style.width.%]="countdownProgressPercent"></div>
+              </div>
             </div>
 
             <p id="disable-creator-desc" class="reset-warning-text">
-              Disabling creator mode will hide Creator Studio from your navigation.
+              Hides Creator Studio from your navigation
             </p>
 
             <div class="safe-data-callout">
               <svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
-              <span>Your published games and sales data will stay saved. You can turn Creator mode back on anytime.</span>
+              <span>Your published games and sales data remain safe. Re-enable anytime.</span>
             </div>
           </div>
 
@@ -263,7 +457,7 @@
         <div class="modal-card edit-profile-modal" (click)="$event.stopPropagation()">
           <div class="modal-header">
             <h3 class="modal-title">Edit Profile Information</h3>
-            <button type="button" class="btn-modal-close" (click)="cancelEditing()" aria-label="Close">✕</button>
+            <button type="button" class="btn-modal-close" (click)="cancelEditing()" aria-label="Close">&times;</button>
           </div>
 
           <form (ngSubmit)="saveProfile()" class="modal-form">
@@ -282,7 +476,7 @@
                       (click)="removeAvatar()" 
                       title="Reset avatar to default"
                       aria-label="Remove custom avatar">
-                      ✕
+                      &times;
                     </button>
                   }
                 </div>

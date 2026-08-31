@@ -192,8 +192,8 @@
 
 .card-brand-switcher {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-3);
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
 }
 
 .card-brand-btn {
@@ -525,7 +525,7 @@
   font-size: 0.68rem;
   font-weight: 800;
   background: rgba(16, 185, 129, 0.18);
-  color: #34D399;
+  color: var(--emerald-400);
   border: 1px solid rgba(16, 185, 129, 0.35);
   padding: 1px 5px;
   border-radius: 3px;
@@ -579,3 +579,146 @@
   text-decoration: none;
 }
 
+
+/* ==========================================================================
+   Inline Panels — Add Payment Method & ABA PayWay Rail
+   ========================================================================== */
+.add-card-toggle {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  background: transparent;
+  border: 1px dashed var(--border-card);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.add-card-toggle:hover:not(:disabled) {
+  color: var(--accent-400);
+  border-color: var(--accent-400);
+  background: rgba(102, 192, 244, 0.06);
+}
+
+.add-card-toggle:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.add-card-toggle .toggle-icon {
+  width: 13px;
+  height: 13px;
+}
+
+.inline-add-method-panel {
+  grid-column: 1 / -1;
+  padding: 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius);
+}
+
+.inline-payway-panel {
+  grid-column: 1 / -1;
+}
+
+.payway-option .brand-logo-wrap.payway {
+  background: rgba(226, 35, 38, 0.12);
+  color: #E12326;
+  border: 1px solid rgba(226, 35, 38, 0.35);
+}
+
+.payway-tag {
+  font-size: 0.62rem;
+  font-weight: 800;
+  background: rgba(226, 35, 38, 0.14);
+  color: #E12326;
+  border: 1px solid rgba(226, 35, 38, 0.35);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.card-brand-btn.payway-option.active {
+  border-color: #E12326;
+  background: rgba(226, 35, 38, 0.05);
+}
+
+/* Light Theme Overrides — Inline Panels */
+:host-context([data-theme="light"]) .add-card-toggle {
+  color: var(--text-muted);
+}
+
+:host-context([data-theme="light"]) .add-card-toggle:hover:not(:disabled) {
+  color: var(--accent-400);
+  border-color: var(--accent-400);
+  background: rgba(0, 120, 212, 0.05);
+}
+
+:host-context([data-theme="light"]) .inline-add-method-panel {
+  background: #F8FAFC;
+  border-color: #D2DBE3;
+}
+
+:host-context([data-theme="light"]) .payway-option .brand-logo-wrap.payway {
+  background: rgba(226, 35, 38, 0.08);
+}
+
+:host-context([data-theme="light"]) .card-brand-btn.payway-option.active {
+  background: rgba(226, 35, 38, 0.04);
+}
+
+:host-context([data-theme="light"]) .manage-methods-link:hover {
+  color: #005A9E;
+}
+
+/* ==========================================================================
+   Mobile — first breakpoint for small screens
+   ========================================================================== */
+@media (max-width: 480px) {
+  .modal-card {
+    max-width: 100%;
+  }
+
+  .modal-body {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .modal-header {
+    padding: 10px 12px;
+  }
+
+  .game-summary-card {
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .game-thumb {
+    width: 64px;
+    height: 64px;
+  }
+
+  .payment-method-section {
+    padding: 10px;
+  }
+
+  .perks-list {
+    padding: 10px 12px;
+  }
+
+  .modal-footer {
+    padding: 10px 12px;
+  }
+
+  .btn-confirm,
+  .btn-cancel {
+    padding: 9px 14px;
+    font-size: 0.82rem;
+  }
+}

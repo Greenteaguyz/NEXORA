@@ -1,8 +1,16 @@
-import { Component, inject, effect, OnDestroy } from '@angular/core';
+import { Component, inject, effect, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { ToastService } from '../../core/services/toast.service';
+import {
+  validatePasswordStrength,
+  passwordStrengthScore,
+  PasswordValidationResult,
+  ERR_LOCKED_OUT,
+  ERR_INCORRECT_PASSWORD
+} from '../../core/auth/password-logic';
 import { PAYMENTS_DATA } from '../../core/data/tokens';
 import { formatUsd } from '../../core/data/payments/payment-logic';
 import { USERS_DATA, LIBRARY_DATA, WISHLIST_DATA, ORDERS_DATA, GAMES_DATA } from '../../core/data/tokens';
@@ -24,6 +32,7 @@ import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directi
 })
 export class ProfileComponent implements OnDestroy {
   auth = inject(AuthService);
+  toastService = inject(ToastService);
   private paymentsData = inject(PAYMENTS_DATA);
   private usersData = inject(USERS_DATA);
   private libraryData = inject(LIBRARY_DATA);
@@ -59,10 +68,27 @@ export class ProfileComponent implements OnDestroy {
 
   // Disable Creator Confirmation Modal State
   showDisableCreatorModal = false;
+  readonly countdownTotal = 5;
   countdownSeconds = 5;
   private countdownTimerId: ReturnType<typeof setInterval> | null = null;
 
-  // Reset DB State
+  get countdownProgressPercent(): number {
+    return Math.max(0, Math.min(100, ((this.countdownTotal - this.countdownSeconds) / this.countdownTotal) * 100));
+  }
+
+  // Change Password State
+  showChangePasswordModal = false;
+  currentPassword = '';
+  newPassword = '';
+  confirmPassword = '';
+  showCurrentPassword = false;
+  showNewPassword = false;
+  showConfirmPassword = false;
+  passwordError = '';
+  savingPassword = false;
+  lockoutRemainingSeconds = 0;
+  private lockoutTimerId: ReturnType<typeof setInterval> | null = null;
+  private changePasswordOpener: HTMLElement | null = null;
 
   constructor() {
     effect(() => {
@@ -70,6 +96,8 @@ export class ProfileComponent implements OnDestroy {
       this.isEditing = false;
       this.showDisableCreatorModal = false;
       this.clearCountdownTimer();
+      this.closeChangePasswordModal();
+      this.clearLockoutTimer();
       this.loadStats(user);
       this.initEditForm(user);
     });
@@ -267,12 +295,12 @@ export class ProfileComponent implements OnDestroy {
 
   openDisableCreatorModal(): void {
     this.clearCountdownTimer();
-    this.countdownSeconds = 5;
+    this.countdownSeconds = this.countdownTotal;
     this.showDisableCreatorModal = true;
 
     this.countdownTimerId = setInterval(() => {
       if (this.countdownSeconds > 0) {
-        this.countdownSeconds--;
+        this.countdownSeconds = Math.max(0, this.countdownSeconds - 1);
       } else {
         // Stop countdown at 0 — DO NOT auto-dismiss! Keep modal open for user confirmation.
         this.clearCountdownTimer();
@@ -286,6 +314,10 @@ export class ProfileComponent implements OnDestroy {
   }
 
   confirmDisableCreator(): void {
+    if (this.countdownSeconds > 0) {
+      console.warn('[ProfileComponent] Premature deactivation rejected: countdown active.');
+      return;
+    }
     this.clearCountdownTimer();
     this.showDisableCreatorModal = false;
     this.auth.toggleCreatorRole().subscribe();
@@ -293,6 +325,128 @@ export class ProfileComponent implements OnDestroy {
 
   toggleCreatorRole(): void {
     this.initiateToggleCreatorRole();
+  }
+
+  // --- Account Security & Password Management ---
+  hasPassword(): boolean {
+    return this.auth.hasPassword();
+  }
+
+  get newPasswordScore(): 0 | 1 | 2 | 3 {
+    return passwordStrengthScore(this.newPassword);
+  }
+
+  get newPasswordValidation(): PasswordValidationResult {
+    return validatePasswordStrength(this.newPassword);
+  }
+
+  get isChangePasswordFormValid(): boolean {
+    if (this.lockoutRemainingSeconds > 0 || this.savingPassword) {
+      return false;
+    }
+    if (this.currentPassword.trim().length === 0) {
+      return false;
+    }
+    if (this.currentPassword.trim() === this.newPassword.trim()) {
+      return false;
+    }
+    return this.newPasswordValidation.valid && this.newPassword === this.confirmPassword;
+  }
+
+  openChangePasswordModal(event?: MouseEvent): void {
+    this.changePasswordOpener = (event?.currentTarget as HTMLElement) || null;
+    this.currentPassword = '';
+    this.newPassword = '';
+    this.confirmPassword = '';
+    this.showCurrentPassword = false;
+    this.showNewPassword = false;
+    this.showConfirmPassword = false;
+    this.passwordError = '';
+    this.savingPassword = false;
+    this.showChangePasswordModal = true;
+  }
+
+  closeChangePasswordModal(): void {
+    this.showChangePasswordModal = false;
+    this.currentPassword = '';
+    this.newPassword = '';
+    this.confirmPassword = '';
+    this.showCurrentPassword = false;
+    this.showNewPassword = false;
+    this.showConfirmPassword = false;
+    this.passwordError = '';
+    this.savingPassword = false;
+    if (this.changePasswordOpener) {
+      this.changePasswordOpener.focus();
+      this.changePasswordOpener = null;
+    }
+  }
+
+  submitChangePassword(): void {
+    if (!this.isChangePasswordFormValid || this.savingPassword) {
+      return;
+    }
+
+    if (this.currentPassword.trim() === this.newPassword.trim()) {
+      this.passwordError = 'New password cannot be the same as your current password';
+      return;
+    }
+
+    this.savingPassword = true;
+    this.passwordError = '';
+
+    this.auth.changePassword(this.currentPassword, this.newPassword).subscribe({
+      next: () => {
+        this.savingPassword = false;
+        this.toastService.show({
+          type: 'success',
+          title: 'Password updated',
+          message: 'Your password has been changed successfully.'
+        });
+        this.closeChangePasswordModal();
+      },
+      error: (err: any) => {
+        this.savingPassword = false;
+        if (err?.code === ERR_LOCKED_OUT) {
+          const remainingMs = err.remainingMs || 60000;
+          this.startLockoutCountdown(Math.ceil(remainingMs / 1000));
+          this.passwordError = `Account locked. Try again in ${this.lockoutRemainingSeconds}s.`;
+        } else if (err?.code === ERR_INCORRECT_PASSWORD) {
+          this.passwordError = err.message || 'Incorrect current password.';
+        } else {
+          this.passwordError = err?.message || 'Failed to update password. Please try again.';
+        }
+      }
+    });
+  }
+
+  private startLockoutCountdown(seconds: number): void {
+    this.clearLockoutTimer();
+    this.lockoutRemainingSeconds = seconds;
+    this.lockoutTimerId = setInterval(() => {
+      if (this.lockoutRemainingSeconds > 1) {
+        this.lockoutRemainingSeconds--;
+        this.passwordError = `Account locked. Try again in ${this.lockoutRemainingSeconds}s.`;
+      } else {
+        this.clearLockoutTimer();
+        this.lockoutRemainingSeconds = 0;
+        this.passwordError = '';
+      }
+    }, 1000);
+  }
+
+  private clearLockoutTimer(): void {
+    if (this.lockoutTimerId) {
+      clearInterval(this.lockoutTimerId);
+      this.lockoutTimerId = null;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeKey(): void {
+    if (this.showChangePasswordModal) {
+      this.closeChangePasswordModal();
+    }
   }
 
   private clearCountdownTimer(): void {
@@ -304,6 +458,7 @@ export class ProfileComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.clearCountdownTimer();
+    this.clearLockoutTimer();
   }
 
   switchPersona(email: string): void {

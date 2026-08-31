@@ -91,7 +91,10 @@ import { DownloadService, DownloadItem } from '../../../core/services/download.s
                       class="btn-dismiss-item" 
                       (click)="downloadService.cancelDownload(item.id)"
                       [attr.aria-label]="'Dismiss ' + item.gameTitle">
-                      ✕
+                      <svg class="dismiss-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                      </svg>
                     </button>
                   </div>
                 </div>
@@ -152,7 +155,10 @@ import { DownloadService, DownloadItem } from '../../../core/services/download.s
             (click)="downloadService.closeTray()" 
             title="Minimize download tray"
             aria-label="Close download bar">
-            ✕
+            <svg class="close-tray-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
           </button>
         </div>
 
@@ -174,7 +180,7 @@ import { DownloadService, DownloadItem } from '../../../core/services/download.s
       -webkit-backdrop-filter: blur(16px);
       border: 1px solid rgba(102, 192, 244, 0.28);
       border-radius: var(--radius-sm, 6px);
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65), 0 0 16px rgba(102, 192, 244, 0.12);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       overflow: hidden;
       box-sizing: border-box;
@@ -184,7 +190,7 @@ import { DownloadService, DownloadItem } from '../../../core/services/download.s
     :host-context([data-theme="light"]) .download-tray-container {
       background: #fffffffa;
       border-color: rgba(2, 132, 199, 0.3);
-      box-shadow: 0 12px 36px rgba(15, 23, 42, 0.2), 0 0 16px rgba(2, 132, 199, 0.1);
+      box-shadow: 0 12px 36px rgba(15, 23, 42, 0.18);
     }
 
     /* Summary Docked Bar */
@@ -337,11 +343,21 @@ import { DownloadService, DownloadItem } from '../../../core/services/download.s
       background: none;
       border: none;
       color: #64748b;
-      font-size: 0.85rem;
       padding: 4px 6px;
       cursor: pointer;
       border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: all 0.15s ease;
+    }
+
+    .dismiss-svg,
+    .close-tray-svg {
+      width: 12px;
+      height: 12px;
+      stroke: currentColor;
+      display: block;
     }
 
     .btn-close-tray:hover {

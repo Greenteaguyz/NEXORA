@@ -49,7 +49,8 @@ src/app/
 │   │   ├── auth.mock.ts             (fake login/roles, no real server)
 │   │   ├── auth.guard.ts
 │   │   ├── role.guard.ts
-│   │   └── ownership.guard.ts
+│   │   ├── ownership.guard.ts
+│   │   └── password-logic.ts        (hardened password policy & lockout engine)
 │   │
 │   ├── services/                    (singleton reactive services)
 │   │   ├── scroll-lock.service.ts   (ref-counted overlay scroll lock with iOS compensation)
@@ -63,17 +64,17 @@ src/app/
 │   │   ├── games/
 │   │   ├── users/
 │   │   ├── library/
-│   │   ├── orders/
+│   │   ├── orders/                    (order creation, history, and purchase revert)
 │   │   ├── wishlist/
-│   │   └── payments/                  (implemented — mock payment methods, KHQR Bakong, wallet ledger)
+│   │   └── payments/                  (implemented — mock payment methods, KHQR Bakong, wallet ledger, finance logic)
 │   │
 │   ├── persistence/
 │   │   └── local-store.service.ts    (IndexedDB/localStorage — reactive "database")
 │   │
-│   └── models/                        (shared interfaces/types — the "contract")
+│   └── models/                        (shared interfaces/types — the "contract", including finance.model.ts)
 │
 ├── shared/
-│   ├── ui/                            (game-card, download-button, khqr-card, payment-brand-mark, toast…)
+│   ├── ui/                            (game-card, download-button, khqr-card, payment-brand-mark, aba-payway-sheet, add-payment-method-form, toast…)
 │   ├── directives/                    (card-number, cvv, expiry-date, scroll-lock, spatial-nav)
 │   ├── pipes/
 │   └── utils/
@@ -81,13 +82,13 @@ src/app/
 ├── features/
 │   ├── game-catalog/                  (public discovery, search, tags, URL sync)
 │   ├── genres/                        (genre directory & tag aggregation)
-│   ├── game-detail/                   (game details, 5-state download action, intent deep links)
+│   ├── game-detail/                   (game details, 5-state download action, intent deep links, purchase revert)
 │   ├── creator-profile/               (public creator storefront & game listings)
-│   ├── creator-studio/                (CRUD listings, TagChipInput, unsavedChangesGuard)
-│   ├── library/                       (ownership checks, sample downloads)
+│   ├── creator-studio/                (CRUD listings, TagChipInput, unsavedChangesGuard, draft banner, 5s purge lock)
+│   ├── library/                       (ownership checks, sample downloads, paid-game removal refund flow)
 │   ├── wishlist/                      (buyer bookmarks & saved games)
-│   ├── orders/                        (order receipts & printable A4 invoicing)
-│   ├── profile/                       (account settings, wallet stat card)
+│   ├── orders/                        (order receipts & printable A4 invoicing, refunded status)
+│   ├── profile/                       (account settings, wallet stat card, change password)
 │   ├── account-payment/               (credit cards, KHQR Bakong, gift cards, wallet balance ledger)
 │   ├── support/                       (FAQ accordion, contact form & privacy notice)
 │   ├── not-found/                     (404 error fallback)
@@ -100,7 +101,7 @@ src/app/
 └── app.routes.ts                      (18-route central table with functional guards)
 ```
 
-Community and live multiplayer features are deliberately absent (out of scope for this architecture). Commerce and payment workflows are fully supported via an interface-driven mock payments and wallet architecture (`PAYMENTS_DATA` injection token, `/account/payment` management hub, Cambodian KHQR Bakong mobile payments, credit card validation directives, prepaid gift card voucher redemption, and checkout modal integration).
+Community and live multiplayer features are deliberately absent (out of scope for this architecture). Commerce and payment workflows are fully supported via an interface-driven mock payments and wallet architecture (`PAYMENTS_DATA` injection token, `/account/payment` management hub, Cambodian KHQR Bakong mobile payments, credit card validation directives, prepaid gift card voucher redemption, checkout modal integration with ABA PayWay rail, and ledger-backed finance core).
 
 ---
 

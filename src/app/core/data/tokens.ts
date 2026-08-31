@@ -6,6 +6,14 @@ import { Order } from '../models/order.model';
 import { User } from '../models/user.model';
 import { WishlistEntry } from '../models/wishlist-entry.model';
 import { AddPaymentMethodDto, GiftCard, PaymentMethod, Wallet, WalletTransaction } from '../models/payment.model';
+import {
+  Currency,
+  FinanceTransaction,
+  LedgerEntry,
+  PaymentIntent,
+  PaymentResult,
+  Tender
+} from '../models/finance.model';
 
 /* ==========================================================================
    1. Games Data Service & Injection Token
@@ -49,6 +57,8 @@ export interface OrdersDataService {
   createOrder(userId: string, gameId: string, price: number, paymentMethod?: string): Observable<Order>;
   getOrders(userId: string): Observable<Order[]>;
   getAllOrders?(): Observable<Order[]>;
+  /** Confirmed → refunded (idempotent; terminal orders are returned unchanged). */
+  revertOrder(orderId: string): Observable<Order>;
 }
 
 export const ORDERS_DATA = new InjectionToken<OrdersDataService>('ORDERS_DATA');
@@ -106,6 +116,57 @@ export interface PaymentsDataService {
   topUp(userId: string, amount: number, methodId: string): Observable<TopUpResult>;
   getGiftCards(): Observable<GiftCard[]>;
   redeemGiftCode(userId: string, code: string): Observable<RedeemCodeResult>;
+
+  /* --- Finance layer (Phase 1): ledger-backed wallet, intents, tenders --- */
+  getFinanceWallet(userId: string): Observable<FinanceWallet>;
+  getLedger(userId: string): Observable<LedgerEntry[]>;
+  createPaymentIntent(request: CreatePaymentIntentRequest): Observable<PaymentIntent>;
+  processPayment(request: ProcessPaymentRequest): Observable<PaymentResult>;
+  topUpWallet(request: TopUpWalletRequest): Observable<TopUpWalletResult>;
+  getPaymentIntent(intentId: string): Observable<PaymentIntent | null>;
+  getFinanceTransactions(userId: string): Observable<FinanceTransaction[]>;
+  /** Purchase revert: credits the wallet via a completed refund_credit ledger entry. */
+  refundWallet(userId: string, amountMinor: number, reference: string): Observable<FinanceWallet>;
 }
 
 export const PAYMENTS_DATA = new InjectionToken<PaymentsDataService>('PAYMENTS_DATA');
+
+/* ==========================================================================
+   6b. Finance Layer Contracts (ledger-backed, integer minor units)
+   ========================================================================== */
+
+export interface FinanceWallet {
+  userId: string;
+  /** Derived from completed ledger entries — the ledger is the source of truth. */
+  balanceMinor: number;
+  currency: Currency;
+  status: 'active' | 'locked';
+}
+
+export interface CreatePaymentIntentRequest {
+  userId: string;
+  orderId: string;
+  amountMinor: number;
+  currency: Currency;
+  idempotencyKey?: string;
+  /** Defaults to 15 minutes when omitted. */
+  ttlMs?: number;
+}
+
+export interface ProcessPaymentRequest {
+  intentId: string;
+  userId: string;
+  /** Caller-decided tender amounts in minor units; the service re-validates every rule. */
+  tenders: Tender[];
+  idempotencyKey: string;
+}
+
+export interface TopUpWalletRequest {
+  userId: string;
+  amountMinor: number;
+  methodId: string;
+}
+
+export type TopUpWalletResult =
+  | { ok: true; wallet: FinanceWallet; entry: LedgerEntry; transaction: FinanceTransaction }
+  | { ok: false; reason: 'invalid_amount' | 'method_not_found' };

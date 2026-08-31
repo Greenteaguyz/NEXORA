@@ -65,9 +65,6 @@
             <span class="balance-number">{{ usdBalance() }}</span>
             <span class="currency-code">USD</span>
           </div>
-          <div class="khr-display" title="Approximate Cambodian Riel equivalent at 4,100 rate">
-            <span class="khr-approx">≈ {{ khrBalance() }} KHR</span>
-          </div>
         </div>
 
         <div class="wallet-actions-row">
@@ -301,165 +298,11 @@
           <button type="button" class="btn-modal-close" (click)="closeAddModal()" aria-label="Close modal">&times;</button>
         </div>
 
-        <!-- Method Type Tabs -->
-        <div class="method-type-tabs" role="tablist">
-          <button 
-            type="button" 
-            role="tab" 
-            [attr.aria-selected]="addMethodType() === 'card'"
-            class="type-tab" 
-            [class.active]="addMethodType() === 'card'"
-            (click)="addMethodType.set('card')">
-            <svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-              <line x1="1" y1="10" x2="23" y2="10"/>
-            </svg>
-            <span>Credit / Debit Card</span>
-          </button>
-
-          <button 
-            type="button" 
-            role="tab" 
-            [attr.aria-selected]="addMethodType() === 'khqr'"
-            class="type-tab" 
-            [class.active]="addMethodType() === 'khqr'"
-            (click)="addMethodType.set('khqr')">
-            <span class="tab-khqr-pill">KHQR</span>
-            <span>Bakong Link</span>
-          </button>
-        </div>
-
-        <!-- Card Form -->
-        @if (addMethodType() === 'card') {
-          <form (ngSubmit)="submitAddCard()" class="modal-form">
-            @if (cardFormErrors().length > 0) {
-              <div class="form-error-callout" role="alert">
-                @for (err of cardFormErrors(); track err) {
-                  <div>&bull; {{ err }}</div>
-                }
-              </div>
-            }
-
-            <div class="form-group">
-              <label class="form-label" for="cardHolderInput">Cardholder Name</label>
-              <input 
-                id="cardHolderInput"
-                type="text" 
-                class="form-input" 
-                placeholder="e.g. Alice Vance" 
-                [(ngModel)]="cardHolder" 
-                name="cardHolder"
-                required>
-            </div>
-
-            <div class="form-group">
-              <div class="label-with-brand">
-                <label class="form-label" for="cardNumberInput">Card Number</label>
-                @if (detectedBrand()) {
-                  <app-payment-brand-mark [mark]="detectedBrand()!" [height]="16"></app-payment-brand-mark>
-                }
-              </div>
-              <input 
-                id="cardNumberInput"
-                type="text" 
-                class="form-input" 
-                placeholder="4242 4242 4242 4242" 
-                appCardNumber
-                [(ngModel)]="cardNumber" 
-                name="cardNumber"
-                maxlength="19"
-                inputmode="numeric"
-                autocomplete="cc-number"
-                required>
-              <span class="input-hint">Visa and Mastercard accepted (Luhn verified).</span>
-            </div>
-
-            <div class="form-row-2">
-              <div class="form-group">
-                <label class="form-label" for="cardExpiryInput">Expiration (MM/YY)</label>
-                <input 
-                  id="cardExpiryInput"
-                  type="text" 
-                  class="form-input" 
-                  placeholder="08/28" 
-                  appExpiryDate
-                  [(ngModel)]="cardExpiry" 
-                  name="cardExpiry"
-                  maxlength="5"
-                  inputmode="numeric"
-                  autocomplete="cc-exp"
-                  required>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="cardCvvInput">Security Code (CVV)</label>
-                <input 
-                  id="cardCvvInput"
-                  type="password" 
-                  class="form-input" 
-                  placeholder="123" 
-                  appCvv
-                  [(ngModel)]="cardCvv" 
-                  name="cardCvv"
-                  maxlength="4"
-                  inputmode="numeric"
-                  autocomplete="cc-csc"
-                  required>
-              </div>
-            </div>
-
-            <div class="modal-actions">
-              <button type="button" class="btn-cancel" (click)="closeAddModal()">Cancel</button>
-              <button type="submit" class="btn-submit">Save Card</button>
-            </div>
-          </form>
-        }
-
-        <!-- KHQR Form -->
-        @if (addMethodType() === 'khqr') {
-          <form (ngSubmit)="submitAddKhqr()" class="modal-form">
-            @if (khqrFormErrors().length > 0) {
-              <div class="form-error-callout" role="alert">
-                @for (err of khqrFormErrors(); track err) {
-                  <div>&bull; {{ err }}</div>
-                }
-              </div>
-            }
-
-            <div class="form-group">
-              <label class="form-label" for="bankSelect">Select Cambodian Bank</label>
-              <select id="bankSelect" class="form-select" [(ngModel)]="khqrBank" name="khqrBank">
-                <option value="ABA">ABA Bank (National Bank of Cambodia)</option>
-                <option value="ACLEDA">ACLEDA Bank Plc</option>
-                <option value="Wing">Wing Bank (Cambodia) Plc</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="khqrHandleInput">Account ID or Phone Handle</label>
-              <input 
-                id="khqrHandleInput"
-                type="text" 
-                class="form-input" 
-                placeholder="e.g. yourname@aba or 012345678" 
-                [(ngModel)]="khqrHandle" 
-                name="khqrHandle"
-                required>
-              <span class="input-hint">Links your Bakong KHQR handle.</span>
-            </div>
-
-            <div class="modal-actions">
-              <button type="button" class="btn-cancel" (click)="closeAddModal()" [disabled]="khqrLinking()">Cancel</button>
-              <button type="submit" class="btn-submit" [disabled]="khqrLinking()">
-                @if (khqrLinking()) {
-                  <span>Connecting to {{ khqrBank }}...</span>
-                } @else {
-                  <span>Link {{ khqrBank }} Account</span>
-                }
-              </button>
-            </div>
-          </form>
-        }
+        <app-add-payment-method-form
+          [methods]="methods()"
+          (added)="onMethodAdded($event)"
+          (cancel)="closeAddModal()">
+        </app-add-payment-method-form>
       </div>
     </div>
   }

@@ -5,7 +5,10 @@ import { Meta, Title } from '@angular/platform-browser';
 import { Game } from '../../core/models/game.model';
 import { User } from '../../core/models/user.model';
 import { Order } from '../../core/models/order.model';
-import { GAMES_DATA, USERS_DATA, WISHLIST_DATA, LIBRARY_DATA, ORDERS_DATA } from '../../core/data/tokens';
+import { GAMES_DATA, USERS_DATA, WISHLIST_DATA, LIBRARY_DATA, ORDERS_DATA, PAYMENTS_DATA, FinanceWallet } from '../../core/data/tokens';
+import { of } from 'rxjs';
+import { formatUsd } from '../../core/data/payments/payment-logic';
+import { Observable } from 'rxjs';
 import { AuthService } from '../../core/auth/auth.service';
 import { DownloadService } from '../../core/services/download.service';
 import { ToastService } from '../../core/services/toast.service';
@@ -53,6 +56,7 @@ export class GameDetailComponent implements OnInit, OnDestroy {
   private wishlistData = inject(WISHLIST_DATA);
   private libraryData = inject(LIBRARY_DATA);
   private ordersData = inject(ORDERS_DATA);
+  private paymentsData = inject(PAYMENTS_DATA);
   private downloadService = inject(DownloadService);
   authService = inject(AuthService);
 
@@ -591,19 +595,58 @@ export class GameDetailComponent implements OnInit, OnDestroy {
     if (!user) return;
 
     this.claiming = true;
-    this.libraryData.removeFromLibrary(user.id, this.game.id).subscribe({
+    const gameId = this.game.id;
+
+    // Paid purchase? Revert the payment before dropping the entitlement.
+    this.ordersData.getOrders(user.id).subscribe(orders => {
+      const paidOrder = orders.find(o => o.gameId === gameId && o.status === 'confirmed' && o.price > 0);
+      if (!paidOrder) {
+        this.proceedRemoveFromLibrary(user.id, gameId, null);
+        return;
+      }
+      const walletTender = paidOrder.paymentMethod?.startsWith('NEXORA Store Wallet') ?? false;
+      const refund$: Observable<FinanceWallet | null> = walletTender
+        ? this.paymentsData.refundWallet(user.id, Math.round(paidOrder.price * 100), paidOrder.id)
+        : of(null);
+      refund$.subscribe({
+        next: () => {
+          this.ordersData.revertOrder(paidOrder.id).subscribe({
+            next: () => this.proceedRemoveFromLibrary(user.id, gameId, paidOrder),
+            error: () => this.failRemoveFromLibrary()
+          });
+        },
+        error: () => this.failRemoveFromLibrary()
+      });
+    }, () => this.failRemoveFromLibrary());
+  }
+
+  private proceedRemoveFromLibrary(userId: string, gameId: string, refundedOrder: Order | null): void {
+    this.libraryData.removeFromLibrary(userId, gameId).subscribe({
       next: () => {
         this.claiming = false;
         this.isOwned = false;
         this.showLibraryRemoveModal = false;
-        this.toastService.show({ type: 'success', title: 'Removed from Library', message: `${this.game!.title} was removed from your library.` });
+        if (refundedOrder) {
+          const walletRefund = refundedOrder.paymentMethod?.startsWith('NEXORA Store Wallet') ?? false;
+          this.toastService.show({
+            type: 'success',
+            title: 'Purchase Reverted',
+            message: walletRefund
+              ? `${formatUsd(refundedOrder.price)} was refunded to your wallet.`
+              : 'The purchase was reverted and the game is no longer owned.'
+          });
+        } else {
+          this.toastService.show({ type: 'success', title: 'Removed from Library', message: `${this.game!.title} was removed from your library.` });
+        }
       },
-      error: () => {
-        this.claiming = false;
-        this.showLibraryRemoveModal = false;
-        this.toastService.show({ type: 'error', title: 'Removal Failed', message: 'Could not remove this game from your library. Please try again.' });
-      }
+      error: () => this.failRemoveFromLibrary()
     });
+  }
+
+  private failRemoveFromLibrary(): void {
+    this.claiming = false;
+    this.showLibraryRemoveModal = false;
+    this.toastService.show({ type: 'error', title: 'Removal Failed', message: 'Could not remove this game from your library. Please try again.' });
   }
 
   cancelRemoveFromLibrary(): void {

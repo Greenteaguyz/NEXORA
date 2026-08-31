@@ -12,7 +12,7 @@
   font-family: var(--font-sans);
   font-weight: 700;
   border-radius: var(--radius);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
   user-select: none;
   cursor: pointer;
@@ -43,7 +43,7 @@
 }
 
 .phase-completed .progress-bar-fill {
-  background: linear-gradient(90deg, #059669 0%, #10B981 100%);
+  background: linear-gradient(90deg, var(--emerald-500) 0%, #10B981 100%);
 }
 
 .btn-label, .btn-icon {

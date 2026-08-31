@@ -1,4 +1,5 @@
-<div class="khqr-card-shell" role="region" aria-label="KHQR Payment Card">
+<div class="khqr-card-shell" [class.compact]="compact()" role="region" aria-label="KHQR Payment Card">
+  @if (!compact()) {
   <div class="khqr-banner">
     <div class="khqr-brand-row">
       <div class="khqr-logo-wrap">
@@ -7,12 +8,14 @@
       <span class="khqr-network-tag">BAKONG</span>
     </div>
   </div>
+  }
 
   <div class="khqr-body">
+    @if (!compact()) {
     <div class="khqr-holder-header">
-      <span class="khqr-merchant-label">NEXORA MERCHANT</span>
       <h4 class="khqr-holder-title">{{ holderName() }}</h4>
     </div>
+    }
 
     <!-- QR Code Stage -->
     <div class="khqr-qr-stage">
@@ -53,6 +56,7 @@
     </div>
 
     <!-- Account Details Table -->
+    @if (!compact()) {
     <div class="khqr-account-rows">
       <div class="khqr-acc-row">
         <span class="acc-badge khr">KHR</span>
@@ -63,9 +67,12 @@
         <span class="acc-number">{{ usdAccount() }}</span>
       </div>
     </div>
+    }
   </div>
 
+  @if (!compact()) {
   <div class="khqr-footer">
     <span class="khqr-footnote">Scan with ABA Mobile or any Bakong App</span>
   </div>
+  }
 </div>
