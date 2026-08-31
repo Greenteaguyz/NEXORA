@@ -1774,6 +1774,19 @@ assert('Purchase Revert', 'Purchase flow itself untouched — confirm contract s
 
 // 23. INTEGRATION TESTS: Paid-Game Removal Reverts the Payment
 // ---------------------------------------------------------------------------
+// 24. INTEGRATION TESTS: Game Detail Wishlist Popups & Undo Action
+// ---------------------------------------------------------------------------
+assert('Wishlist Feedback', 'Game detail page displays toast popup on add to wishlist',
+  gameDetailComponentContent.includes("title: 'Added to Wishlist'") &&
+  gameDetailComponentContent.includes("type: 'success'"));
+assert('Wishlist Feedback', 'Game detail page displays warning toast with Undo action on wishlist removal',
+  gameDetailComponentContent.includes("title: 'Removed from Wishlist'") &&
+  gameDetailComponentContent.includes("type: 'warning'") &&
+  gameDetailComponentContent.includes("label: 'Undo'") &&
+  gameDetailComponentContent.includes('undoRemoveWishlist'));
+assert('Wishlist Feedback', 'Undo restores game to wishlist and confirms with restored toast',
+  gameDetailComponentContent.includes("title: 'Restored to Wishlist'"));
+// ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
 const passed = results.filter(r => r.passed).length;

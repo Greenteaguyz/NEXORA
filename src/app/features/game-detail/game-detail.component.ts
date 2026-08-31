@@ -489,8 +489,22 @@ export class GameDetailComponent implements OnInit, OnDestroy {
     if (this.isWishlisted) {
       this.showWishlistRemoveModal = true;
     } else {
-      this.wishlistData.addToWishlist(user.id, this.game.id).subscribe(() => {
-        this.isWishlisted = true;
+      this.wishlistData.addToWishlist(user.id, this.game.id).subscribe({
+        next: () => {
+          this.isWishlisted = true;
+          this.toastService.show({
+            type: 'success',
+            title: 'Added to Wishlist',
+            message: `"${this.game?.title}" was added to your wishlist.`
+          });
+        },
+        error: () => {
+          this.toastService.show({
+            type: 'error',
+            title: 'Wishlist Update Failed',
+            message: 'Could not update your wishlist. Please try again.'
+          });
+        }
       });
     }
   }
@@ -500,9 +514,44 @@ export class GameDetailComponent implements OnInit, OnDestroy {
     const user = this.authService.currentUser();
     if (!user) return;
 
-    this.wishlistData.removeFromWishlist(user.id, this.game.id).subscribe(() => {
-      this.isWishlisted = false;
-      this.showWishlistRemoveModal = false;
+    const gameRef = this.game;
+    this.wishlistData.removeFromWishlist(user.id, gameRef.id).subscribe({
+      next: () => {
+        this.isWishlisted = false;
+        this.showWishlistRemoveModal = false;
+        this.toastService.show({
+          type: 'warning',
+          title: 'Removed from Wishlist',
+          message: `"${gameRef.title}" was removed from your wishlist.`,
+          action: {
+            label: 'Undo',
+            run: () => this.undoRemoveWishlist(user.id, gameRef.id, gameRef.title)
+          }
+        });
+      },
+      error: () => {
+        this.showWishlistRemoveModal = false;
+        this.toastService.show({
+          type: 'error',
+          title: 'Wishlist Update Failed',
+          message: 'Could not update your wishlist. Please try again.'
+        });
+      }
+    });
+  }
+
+  undoRemoveWishlist(userId: string, gameId: string, gameTitle: string): void {
+    this.wishlistData.addToWishlist(userId, gameId).subscribe({
+      next: () => {
+        if (this.game?.id === gameId) {
+          this.isWishlisted = true;
+        }
+        this.toastService.show({
+          type: 'success',
+          title: 'Restored to Wishlist',
+          message: `"${gameTitle}" was restored to your wishlist.`
+        });
+      }
     });
   }
 
