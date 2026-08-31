@@ -296,6 +296,18 @@
   color: var(--text-muted);
 }
 
+.brand-subtitle {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.payway-subtitle {
+  letter-spacing: -0.01em;
+}
+
 .radio-indicator {
   width: 14px;
   height: 14px;

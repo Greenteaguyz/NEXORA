@@ -1558,8 +1558,8 @@ assert('Checkout Add-Method', 'Toggle is hidden while the add-method panel is op
   checkoutModalHtmlContent.includes('@if (!showAddMethod())') && checkoutModalHtmlContent.includes('[attr.aria-expanded]="showAddMethod()"'));
 
 // 3. ABA PayWay rail — auto-set pricing from the game price
-assert('PayWay Rail', 'PayWay option rendered in the method selector with auto-set subtitle',
-  checkoutModalHtmlContent.includes('ABA PayWay') && checkoutModalHtmlContent.includes('Scan to pay · amount auto-set'));
+assert('PayWay Rail', 'PayWay option rendered in the method selector with consumer scan subtitle',
+  checkoutModalHtmlContent.includes('ABA PayWay') && checkoutModalHtmlContent.includes('Scan with ABA Mobile or any KHQR app'));
 assert('PayWay Rail', 'Sheet amount binds strictly to the game price (no manual amount entry)',
   checkoutModalHtmlContent.includes('[amountUsd]="game.price"') && !paywaySheetHtmlContent.includes('ngModel'));
 assert('PayWay Rail', 'Sheet computes KHR equivalent via finance-core convertCurrency and the USD_TO_KHR_RATE snapshot',

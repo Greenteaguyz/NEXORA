@@ -96,7 +96,7 @@ export class AddPaymentMethodFormComponent {
       if (result.ok) {
         this.added.emit(result.method);
       } else {
-        this.cardFormErrors.set(result.errors);
+        this.cardFormErrors.set((result as { errors?: string[] }).errors ?? ['Failed to save card.']);
       }
     });
   }
@@ -128,7 +128,7 @@ export class AddPaymentMethodFormComponent {
           if (result.ok) {
             this.added.emit(result.method);
           } else {
-            this.khqrFormErrors.set(result.errors);
+            this.khqrFormErrors.set((result as { errors?: string[] }).errors ?? ['Failed to link bank account.']);
           }
         },
         error: () => {
