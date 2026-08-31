@@ -225,10 +225,12 @@
         type="button" 
         class="btn-confirm" 
         (click)="onConfirm()" 
-        [disabled]="isBusy || (selectedOptionId() === 'wallet' && !hasEnoughWallet())">
+        [disabled]="isBusy || !selectedOptionId() || (selectedOptionId() === 'wallet' && !hasEnoughWallet())">
         @if (isBusy) {
           <span class="spinner-inline"></span>
           <span>Processing...</span>
+        } @else if (!selectedOptionId()) {
+          <span>Select a Payment Method</span>
         } @else if (selectedOptionId() === 'payway' && !showPayway()) {
           <span>Pay with ABA PayWay</span>
         } @else {
@@ -238,6 +240,7 @@
           <span>Buy for ${{ game.price.toFixed(2) }}</span>
         }
       </button>
+
     </div>
     }
   </div>

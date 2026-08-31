@@ -67,7 +67,7 @@ export class AccountPaymentComponent {
       if (user) {
         this.loadData(user.id);
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   loadData(userId: string): void {

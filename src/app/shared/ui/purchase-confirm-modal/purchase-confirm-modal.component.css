@@ -479,6 +479,15 @@
   transform: scale(0.98);
 }
 
+.btn-confirm:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background: var(--bg-surface);
+  border-color: var(--border-card);
+  box-shadow: none;
+  color: var(--text-muted);
+}
+
 .confirm-icon {
   width: 18px;
   height: 18px;

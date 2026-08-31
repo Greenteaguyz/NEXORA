@@ -83,12 +83,6 @@ export class PurchaseConfirmModalComponent implements OnInit {
     if (user) {
       this.paymentsData.getMethods(user.id).subscribe(methods => {
         this.savedMethods.set(methods);
-        const def = methods.find(m => m.isDefault);
-        if (def && !this.selectedOptionId()) {
-          this.selectedOptionId.set(def.id);
-        } else if (methods.length > 0 && !this.selectedOptionId()) {
-          this.selectedOptionId.set(methods[0].id);
-        }
       });
 
       this.paymentsData.getWalletSnapshot(user.id).subscribe(snap => {

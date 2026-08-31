@@ -1786,6 +1786,23 @@ assert('Wishlist Feedback', 'Game detail page displays warning toast with Undo a
   gameDetailComponentContent.includes('undoRemoveWishlist'));
 assert('Wishlist Feedback', 'Undo restores game to wishlist and confirms with restored toast',
   gameDetailComponentContent.includes("title: 'Restored to Wishlist'"));
+
+// ---------------------------------------------------------------------------
+// 25. INTEGRATION TESTS: Payment Sync & Neutral Checkout Selection (Default None)
+// ---------------------------------------------------------------------------
+const accountPaymentTsContent = fs.readFileSync(path.join(rootDir, 'src/app/features/account-payment/account-payment.component.ts'), 'utf8');
+
+assert('Payment Sync', 'AccountPaymentComponent constructor effect permits signal writes to prevent NG0600 crash',
+  accountPaymentTsContent.includes('allowSignalWrites: true'));
+
+assert('Neutral Checkout', 'Purchase confirm modal defaults selection to None with zero auto-selected cards or wallet in ngOnInit',
+  !checkoutModalTsContent.includes('this.selectedOptionId.set(def.id)') &&
+  !checkoutModalTsContent.includes('this.selectedOptionId.set(methods[0].id)'));
+
+assert('Neutral Checkout', 'Purchase CTA button is disabled and displays "Select a Payment Method" until a selection is made',
+  checkoutModalHtmlContent.includes('!selectedOptionId()') &&
+  checkoutModalHtmlContent.includes('Select a Payment Method'));
+
 // ---------------------------------------------------------------------------
 // Summary
 // ---------------------------------------------------------------------------
@@ -1798,3 +1815,4 @@ console.log('===================================================================
 if (passed !== total) {
   process.exit(1);
 }
+
