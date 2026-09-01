@@ -1,0 +1,72 @@
+# Session: 2026-09-01
+
+**Started:** 08:30
+**Last Updated:** 16:28
+**Project:** Greenteaguyz/NEXORA (Angular 18 Desktop Storefront)
+**Topic:** Impeccable Theme Contrast & Light/Dark Mode Visibility Hardening
+
+---
+
+## What We Are Building
+
+A comprehensive UI craft and theme contrast hardening pass across NEXORA.
+The goal was eliminating invisible white-on-white text, dark navy flashes on hover over light cards, and un-themed dark elevation blocks in Light Mode while verifying Dark Mode stability and anti-slop design constraints (grounded hovers, zero raw emojis, and strict radii tokens).
+
+---
+
+## What WORKED (with evidence)
+
+- **`impeccable-theme-contrast.spec.ts`** — confirmed by: 7/7 PASSED (100% automated test pass on all contrast and light-mode hover rules).
+- **`impeccable-anti-slop.spec.ts`** — confirmed by: 7/7 PASSED (100% pass on anti-slop constraints, zero emojis, grounded hovers).
+- **TypeScript Typecheck** — confirmed by: `tsc --noEmit --skipLibCheck` exited with code 0 (zero compilation errors).
+- **Return URL Sanitization** — confirmed by: `return-url.util.ts` & `register.component.ts` correctly block open redirect loops and circular auth redirects.
+- **Santa Loop Dual Review** — confirmed by: Both independent reviewers returned PASS (NICE).
+
+---
+
+## What Did NOT Work (and why)
+
+- **CommonJS execution of `@angular/compiler` in raw Node** — failed because: Angular 18 ships ESM-only bundles (`.mjs`). Solved by using standalone Node test runners (`impeccable-theme-contrast.spec.ts` and `impeccable-anti-slop.spec.ts`) that read and validate source AST/tokens without importing angular runtime via CJS `require()`.
+
+---
+
+## What Has NOT Been Tried Yet
+
+- Playwright visual snapshot regression tests in headed browser mode (`npm run test:e2e`).
+
+---
+
+## Current State of Files
+
+| File | Status | Notes |
+|---|---|---|
+| `src/app/features/wishlist/wishlist.component.css` | PASS: Complete | Fixed `.card-price-badge` white text & `.wishlist-card:hover` background in light mode |
+| `src/app/features/library/library.component.css` | PASS: Complete | Added light-mode hover background `#FFFFFF` for `.library-card:hover` |
+| `src/app/features/genres/genres.component.css` | PASS: Complete | Fixed `.core-genre-card:hover .genre-desc` text contrast & `.clear-search-btn` |
+| `src/app/shared/ui/purchase-confirm-modal/purchase-confirm-modal.component.css` | PASS: Complete | Added light mode surface tokens for `.modal-card`, `.game-summary-card`, `.modal-footer` |
+| `src/app/features/game-detail/game-detail.component.css` | PASS: Complete | Added `.steam-tag-pill:hover` high-contrast styling |
+| `src/app/features/profile/profile.component.css` | PASS: Complete | Added `.btn-cancel-password:hover` light-mode styling |
+| `src/app/shared/ui/game-card/game-card.component.css` | PASS: Complete | Added `.price-badge.owned` emerald token styling |
+| `src/app/core/auth/return-url.util.ts` | PASS: Complete | Hardened against recursive auth loops |
+| `src/app/features/auth/register/register.component.ts` | PASS: Complete | Sanitized post-registration redirect URL |
+| `src/app/core/tests/impeccable-theme-contrast.spec.ts` | PASS: Complete | Automated TDD contrast test suite |
+| `docs/testing/impeccable-theme-contrast.tdd.md` | PASS: Complete | TDD Evidence Report |
+
+---
+
+## Decisions Made
+
+- **Theme Override Strategy**: Used `:host-context([data-theme="light"])` directly in component stylesheets to guarantee fine-grained selector specificity without polluting global styles.
+- **Hover Invariance**: Enforced that hovering cards in light mode always maintains a light elevated background (`#FFFFFF` / `#F8FAFC`) with accent borders instead of inverting to dark navy.
+
+---
+
+## Blockers & Open Questions
+
+- No active blockers. All tests passing and build checks verified.
+
+---
+
+## Exact Next Step
+
+Ready to push to remote repository.

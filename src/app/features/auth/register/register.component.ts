@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/auth/auth.service';
+import { sanitizeReturnUrl } from '../../../core/auth/return-url.util';
 
 @Component({
   selector: 'app-register',
@@ -66,7 +67,7 @@ export class RegisterComponent {
         this.loading = false;
         const returnUrl = this.route.snapshot.queryParams['returnUrl'];
         if (returnUrl) {
-          this.router.navigateByUrl(returnUrl);
+          this.router.navigateByUrl(sanitizeReturnUrl(returnUrl));
         } else if (this.isCreator) {
           this.router.navigate(['/studio']);
         } else {

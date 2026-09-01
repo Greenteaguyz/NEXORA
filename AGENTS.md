@@ -15,7 +15,7 @@ Desktop-grade Steam-inspired storefront and creator platform built with Angular 
 ## 4. Rules w/ Verifiable Instructions
 - **Angular 18**: Standalone components, `OnPush`, Signals (`signal()`, `computed()`), `@if`/`@for`.
 - **Skill Lifecycle**:
-  - *During task*: Use `intent-layer` (scope/AC), `ponytail` (minimalist reuse), `code-review-graph` (blast radius), `caveman` (terse brevity).
+  - *During task*: Use `intent-layer` (scope/AC), `ponytail` (minimalist reuse), `code-review-graph` (blast radius), `caveman` (terse brevity), `teamwork-preview` (multi-agent orchestration).
   - *After task*: Use `rtk-repo` (filter test noise), `impeccable` (UI), `click-path-audit` (state).
 - **Quality Gate**: Run `npm run verify`; zero failures allowed.
 - **Surgical scope**: Modify only task-relevant files.

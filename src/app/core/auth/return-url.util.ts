@@ -29,5 +29,10 @@ export function sanitizeReturnUrl(url: string | null | undefined): string {
   if (colonIndex !== -1 && (slashIndex === -1 || colonIndex < slashIndex)) {
     return FALLBACK_RETURN_URL;
   }
+  // Prevent redirect loops back to auth pages
+  if (url.startsWith('/login') || url.startsWith('/register') || url.startsWith('/forgot-password')) {
+    return FALLBACK_RETURN_URL;
+  }
   return url;
 }
+

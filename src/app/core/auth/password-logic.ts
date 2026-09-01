@@ -74,11 +74,18 @@ export function passwordStrengthScore(pw: string): 0 | 1 | 2 | 3 {
  * Safe accessor for Web Crypto in browser or Node.js runtimes.
  */
 function getWebCrypto(): Crypto | null {
-  if (typeof globalThis !== 'undefined' && globalThis.crypto) {
+  if (typeof globalThis !== 'undefined' && globalThis.crypto && globalThis.crypto.subtle) {
     return globalThis.crypto;
   }
-  return null;
+  try {
+    // Isomorphic fallback for Node.js test runners
+    const nodeCrypto = typeof require === 'function' ? require('crypto') : null;
+    return nodeCrypto?.webcrypto || globalThis.crypto || null;
+  } catch {
+    return null;
+  }
 }
+
 
 /**
  * Generates a 16-byte cryptographically secure random salt as a 32-character hex string.

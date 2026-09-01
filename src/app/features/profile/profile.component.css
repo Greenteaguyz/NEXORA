@@ -1430,6 +1430,13 @@
   color: var(--text-secondary);
 }
 
+:host-context([data-theme="light"]) .btn-cancel-password:hover {
+  background: #E2E8F0;
+  border-color: var(--accent-500);
+  color: #0F172A;
+}
+
+
 .btn-submit-password {
   background: var(--steam-btn-gradient);
   border: 1px solid rgba(117, 176, 34, 0.5);

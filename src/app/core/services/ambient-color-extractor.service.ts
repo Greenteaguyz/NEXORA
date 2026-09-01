@@ -136,6 +136,8 @@ export class AmbientColorExtractorService {
             secondary: `rgba(${secondaryRgb.r}, ${secondaryRgb.g}, ${secondaryRgb.b}, 0.20)`
           };
 
+          canvas.width = 0;
+          canvas.height = 0;
           resolve(palette);
         } catch (e) {
           reject(e);

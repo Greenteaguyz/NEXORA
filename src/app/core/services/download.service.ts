@@ -162,20 +162,24 @@ export class DownloadService {
       readme: `Thank you for downloading ${game.title} via NEXORA.\n\nThis release is 100% DRM-free with zero telemetry, zero mandatory launchers, and full offline execution.\n\nRun 'launch.exe' (Windows) or './launch.sh' (Linux) to start playing immediately.`
     }, null, 2);
 
-    const blob = new Blob([manifestContent], { type: 'application/octet-stream' });
-    const url = URL.createObjectURL(blob);
+    if (typeof window !== 'undefined' && typeof document !== 'undefined' && typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function') {
+      const blob = new Blob([manifestContent], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
 
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = filename;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
 
-    setTimeout(() => {
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }, 1000);
+      setTimeout(() => {
+        if (link.parentNode) {
+          link.parentNode.removeChild(link);
+        }
+        URL.revokeObjectURL(url);
+      }, 1000);
+    }
   }
 
   private updateItemProgress(id: string, progress: number, speed: string, downloadedSize: string): void {

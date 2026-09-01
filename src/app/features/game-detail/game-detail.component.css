@@ -298,6 +298,12 @@
   border-color: #BAE6FD;
   color: #0369A1;
 }
+:host-context([data-theme="light"]) .steam-tag-pill:hover {
+  background: #0078D4;
+  border-color: #0078D4;
+  color: #FFFFFF;
+}
+
 
 /* Sidebar Wishlist Button (Authentic Steam Style) */
 .capsule-wishlist-wrap {

@@ -66,4 +66,12 @@ export class LocalStoreService {
       console.error('LocalStoreService: Failed to clear all items', e);
     }
   }
+
+  clear(): void {
+    this.clearAll();
+  }
+
+  hasItem(key: string): boolean {
+    return this.getItem(key) !== null;
+  }
 }

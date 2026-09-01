@@ -302,6 +302,13 @@
   border-color: rgba(5, 150, 105, 0.3);
 }
 
+:host-context([data-theme="light"]) .price-badge.owned {
+  background-color: rgba(5, 150, 105, 0.12);
+  color: #047857;
+  border-color: rgba(5, 150, 105, 0.3);
+}
+
+
 :host-context([data-theme="light"]) .price-badge.paid {
   background-color: #F1F5F9;
   color: #0F172A;

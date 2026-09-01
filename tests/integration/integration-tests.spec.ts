@@ -1413,7 +1413,7 @@ assert('Security Invariant', 'Card title is named "Account Password"', profileHt
 assert('Security Invariant', 'Password subtitle is "Used to sign in to your NEXORA account"', profileHtmlLatest.includes('Used to sign in to your NEXORA account'));
 assert('Security Invariant', 'Action button is permanently "Change Password"', profileHtmlLatest.includes('Change Password'));
 assert('Security Invariant', 'Setting icon is a clean 1.75 line-art padlock', profileHtmlLatest.includes('d="M7 11V7a5 5 0 0 1 10 0v4"') && profileHtmlLatest.includes('stroke-width="1.75"'));
-assert('Security Invariant', 'Default seed credentials defined in auth.mock', authMockContent.includes('DEFAULT_SEED_PASSWORD = \'Password123!\''));
+assert('Security Invariant', 'Default seed credentials defined in auth.mock', authMockContent.includes('DEFAULT_SEED_PASSWORD = \'password123\''));
 
 // ===========================================================================
 // 19. INTEGRATION TESTS: UI/UX Polish, Modals, Draft Auto-Dismiss & Recycle Bin

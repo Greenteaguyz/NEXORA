@@ -620,6 +620,23 @@
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
 }
 
+:host-context([data-theme="light"]) .core-genre-card:hover .genre-desc {
+  color: var(--text-secondary);
+}
+
+:host-context([data-theme="light"]) .clear-search-btn {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+  color: var(--text-muted);
+}
+
+:host-context([data-theme="light"]) .clear-search-btn:hover {
+  background: #E2E8F0;
+  border-color: #0078D4;
+  color: #0F172A;
+}
+
+
 :host-context([data-theme="light"]) .subgenre-pill {
   background: #FFFFFF;
   border-color: var(--border-card);

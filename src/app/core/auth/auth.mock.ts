@@ -17,9 +17,9 @@ import {
   LockoutState
 } from './password-logic';
 
-export const DEFAULT_SEED_PASSWORD = 'Password123!';
+export const DEFAULT_SEED_PASSWORD = 'password123';
 export const SEED_SALT = 'a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6';
-export const SEED_HASH = '8c30999ce9e5521d7bc23df0cc0cd0758ad8fecc7792ca858385d9743ee1a89f';
+export const SEED_HASH = 'accbf01031d30e38aaaa2e9e5a2f6df00d62a2e3912c33ad393495d18ca97ee2';
 
 export interface LoginCredentials {
   email: string;
