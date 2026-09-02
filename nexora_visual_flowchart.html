@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEXORA — Neatly Arranged Architecture Flowchart</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #0c1015;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* Grid background */
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      background-color: #0b0f14;
+      background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 32px 32px;
+      cursor: grab;
+      position: relative;
+      overflow: hidden;
+    }
+    #canvas-container.grabbing {
+      cursor: grabbing;
+    }
+
+    /* Floating Header & Controls */
+    .toolbar {
+      position: fixed;
+      top: 16px;
+      left: 20px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: #141b24;
+      border: 1px solid #233040;
+      border-radius: 8px;
+      padding: 10px 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+    .brand-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #e2e8f0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #38bdf8;
+      box-shadow: 0 0 8px #38bdf8;
+    }
+    .divider {
+      width: 1px;
+      height: 20px;
+      background: #233040;
+    }
+    .tool-btn {
+      background: #1c2633;
+      border: 1px solid #2f4055;
+      color: #cbd5e1;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .tool-btn:hover {
+      background: #273547;
+      color: #ffffff;
+      border-color: #486180;
+    }
+    .legend {
+      display: flex;
+      gap: 12px;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+    }
+
+    /* Transformable SVG canvas */
+    #svg-viewport {
+      transform-origin: 0 0;
+      width: 1460px;
+      height: 1180px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    /* SVG Flowchart Elements */
+    .flow-line {
+      fill: none;
+      stroke: #334458;
+      stroke-width: 2px;
+      transition: stroke 0.2s, stroke-width 0.2s;
+    }
+    .flow-line.dashed {
+      stroke-dasharray: 6, 6;
+    }
+    .flow-line.active {
+      stroke: #f59e0b;
+      stroke-width: 3.5px;
+      filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.7));
+    }
+
+    .line-label {
+      font-size: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-weight: 700;
+      fill: #64748b;
+      transition: fill 0.2s;
+    }
+    .line-label.active {
+      fill: #f59e0b;
+      font-weight: 900;
+    }
+
+    .node-group {
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+    .node-group:hover {
+      filter: drop-shadow(0 6px 16px rgba(0,0,0,0.7));
+    }
+    .node-rect {
+      transition: stroke 0.2s, stroke-width 0.2s;
+    }
+    .node-group:hover .node-rect {
+      stroke-width: 2.5px;
+    }
+    .node-group.active .node-rect {
+      stroke: #f59e0b !important;
+      stroke-width: 3px !important;
+      filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.4));
+    }
+
+    /* Node Category Styles */
+    .node-public .node-rect { fill: #0f2742; stroke: #38bdf8; }
+    .node-public .node-badge { fill: #38bdf8; }
+    
+    .node-auth .node-rect { fill: #331317; stroke: #f87171; }
+    .node-auth .node-badge { fill: #f87171; }
+    
+    .node-guard .node-rect { fill: #38240d; stroke: #fbbf24; }
+    .node-guard .node-badge { fill: #fbbf24; }
+
+    .node-commerce .node-rect { fill: #0d3326; stroke: #34d399; }
+    .node-commerce .node-badge { fill: #34d399; }
+
+    .node-studio .node-rect { fill: #28143d; stroke: #c084fc; }
+    .node-studio .node-badge { fill: #c084fc; }
+
+    .node-store .node-rect { fill: #0a2d2a; stroke: #14b8a6; }
+    .node-store .node-badge { fill: #14b8a6; }
+
+    .node-title {
+      font-size: 12px;
+      font-weight: 700;
+      fill: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .node-subtitle {
+      font-size: 10px;
+      fill: #94a3b8;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+
+    /* Column Swimlane Dividers */
+    .column-guide {
+      stroke: rgba(255,255,255,0.04);
+      stroke-width: 1px;
+      stroke-dasharray: 4, 8;
+    }
+    .column-header {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      fill: #475569;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Controls Header -->
+  <div class="toolbar">
+    <div class="brand-title">
+      <span class="status-dot"></span>
+      NEXORA Flowchart Architecture
+    </div>
+    <div class="divider"></div>
+    <div class="toolbar-tools">
+      <button class="tool-btn" onclick="zoomIn()">+ Zoom In</button>
+      <button class="tool-btn" onclick="zoomOut()">- Zoom Out</button>
+      <button class="tool-btn" onclick="resetView()">Reset Fit</button>
+    </div>
+    <div class="divider"></div>
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background:#38bdf8"></span> Discovery</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#fbbf24"></span> Guards</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#f87171"></span> Auth</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#34d399"></span> Commerce</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#c084fc"></span> Studio</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#14b8a6"></span> Store</div>
+    </div>
+  </div>
+
+  <div id="canvas-container">
+    <svg id="svg-viewport" viewBox="0 0 1460 1180" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- Arrowhead Markers -->
+        <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#334458" id="arrow-default"/>
+        </marker>
+        <marker id="arrow-active" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#f59e0b" />
+        </marker>
+      </defs>
+
+      <!-- ============================================================ -->
+      <!-- 4 NEAT COLUMN SWIMLANES -->
+      <!-- ============================================================ -->
+      <!-- Lane 1: Public Discovery -->
+      <line class="column-guide" x1="360" y1="50" x2="360" y2="1140" />
+      <text class="column-header" x="190" y="55" text-anchor="middle">1. Public Discovery</text>
+
+      <!-- Lane 2: Security & Auth -->
+      <line class="column-guide" x1="720" y1="50" x2="720" y2="1140" />
+      <text class="column-header" x="540" y="55" text-anchor="middle">2. Security &amp; Auth</text>
+
+      <!-- Lane 3: Buyer Commerce -->
+      <line class="column-guide" x1="1080" y1="50" x2="1080" y2="1140" />
+      <text class="column-header" x="900" y="55" text-anchor="middle">3. Buyer &amp; Commerce</text>
+
+      <!-- Lane 4: Creator & Reactive Store -->
+      <text class="column-header" x="1270" y="55" text-anchor="middle">4. Creator Studio &amp; Store</text>
+
+      <!-- ============================================================ -->
+      <!-- EVEN, ORTHOGONAL CONNECTING LINES -->
+      <!-- ============================================================ -->
+      <g id="connections-group">
+        <!-- 1. Start -> Catalog (Straight Vertical) -->
+        <path id="line-start-catalog" class="flow-line" d="M 190 120 L 190 160" marker-end="url(#arrow)" />
+
+        <!-- 2. Catalog -> Details (Straight Vertical) -->
+        <path id="line-catalog-detail" class="flow-line" d="M 190 216 L 190 264" marker-end="url(#arrow)" />
+
+        <!-- 3. Catalog -> Aux Routes (Dashed Straight Vertical) -->
+        <path id="line-catalog-aux" class="flow-line dashed" d="M 190 320 L 190 370" marker-end="url(#arrow)" />
+
+        <!-- 4. Game Detail -> Action CTA (Straight Horizontal) -->
+        <path id="line-detail-action" class="flow-line" d="M 290 292 L 440 292" marker-end="url(#arrow)" />
+        <text class="line-label" x="365" y="284" text-anchor="middle">Click CTA</text>
+
+        <!-- 5. Action CTA -> authGuard (Straight Vertical) -->
+        <path id="line-action-auth" class="flow-line" d="M 540 320 L 540 370" marker-end="url(#arrow)" />
+
+        <!-- 6. authGuard -> /login [NO] (Straight Vertical) -->
+        <path id="line-auth-login" class="flow-line" d="M 540 426 L 540 480" marker-end="url(#arrow)" />
+        <text class="line-label" x="552" y="454">NO (Guest)</text>
+
+        <!-- 7. /login -> /register (Straight Vertical) -->
+        <path id="line-login-register" class="flow-line" d="M 540 536 L 540 584" marker-end="url(#arrow)" />
+
+        <!-- 8. /login -> Resume to Game Detail (Orthogonal Loop Back) -->
+        <path id="line-login-resume" class="flow-line dashed" d="M 440 508 L 320 508 Q 310 508 310 498 L 310 300 Q 310 292 300 292 L 290 292" marker-end="url(#arrow)" />
+        <text class="line-label" x="315" y="440" text-anchor="end">On Success (?returnUrl)</text>
+
+        <!-- 9. authGuard -> Is Owned? [YES] (Straight Horizontal) -->
+        <path id="line-auth-owned" class="flow-line" d="M 640 398 L 800 398" marker-end="url(#arrow)" />
+        <text class="line-label" x="720" y="390" text-anchor="middle">YES (Authenticated)</text>
+
+        <!-- 10. Is Owned? -> Instant Download [YES] (Straight Vertical) -->
+        <path id="line-owned-download" class="flow-line" d="M 900 426 L 900 480" marker-end="url(#arrow)" />
+        <text class="line-label" x="912" y="454">YES (Owned)</text>
+
+        <!-- 11. Instant Download -> /library (Straight Vertical) -->
+        <path id="line-download-library" class="flow-line" d="M 900 536 L 900 584" marker-end="url(#arrow)" />
+
+        <!-- 12. Is Owned? -> Is Free? [NO] (Orthogonal Right Channel) -->
+        <path id="line-owned-free" class="flow-line" d="M 1000 398 L 1030 398 Q 1040 398 1040 408 L 1040 670 Q 1040 680 1030 680 L 1000 680" marker-end="url(#arrow)" />
+        <text class="line-label" x="1046" y="540">NO (Unowned)</text>
+
+        <!-- 13. Is Free? -> 1-Click Claim [YES] (Symmetrical Left Branch) -->
+        <path id="line-free-claim" class="flow-line" d="M 800 680 L 780 680 Q 770 680 770 690 L 770 760" marker-end="url(#arrow)" />
+        <text class="line-label" x="760" y="720" text-anchor="end">YES (Free)</text>
+
+        <!-- 14. Is Free? -> Purchase Modal [NO] (Symmetrical Right Branch) -->
+        <path id="line-free-purchase" class="flow-line" d="M 900 708 L 900 720 Q 900 730 910 730 L 980 730 Q 990 730 990 740 L 990 760" marker-end="url(#arrow)" />
+        <text class="line-label" x="1000" y="738">NO (Paid)</text>
+
+        <!-- 15. Claim -> Execute Transaction (Symmetrical Convergence) -->
+        <path id="line-claim-exec" class="flow-line" d="M 770 816 L 770 840 Q 770 850 780 850 L 830 850 Q 840 850 840 860 L 840 870" marker-end="url(#arrow)" />
+
+        <!-- 16. Purchase -> Execute Transaction (Symmetrical Convergence) -->
+        <path id="line-purchase-exec" class="flow-line" d="M 990 816 L 990 840 Q 990 850 980 850 L 930 850 Q 920 850 920 860 L 920 870" marker-end="url(#arrow)" />
+
+        <!-- 17. Execute -> 90/10 Split (Straight Vertical) -->
+        <path id="line-exec-split" class="flow-line" d="M 900 926 L 900 970" marker-end="url(#arrow)" />
+
+        <!-- 18. Split -> Orders Invoice (Straight Vertical) -->
+        <path id="line-split-orders" class="flow-line" d="M 900 1026 L 900 1070" marker-end="url(#arrow)" />
+
+        <!-- 19. Orders -> /library Fulfillment (Orthogonal Return Bus) -->
+        <path id="line-orders-library" class="flow-line dashed" d="M 800 1098 L 740 1098 Q 730 1098 730 1088 L 730 620 Q 730 612 740 612 L 800 612" marker-end="url(#arrow)" />
+        <text class="line-label" x="720" y="850" text-anchor="end">Fulfill &amp; Receipt</text>
+
+        <!-- 20. authGuard -> roleGuard('creator') (Clean Overhead Channel) -->
+        <path id="line-auth-role" class="flow-line" d="M 540 370 L 540 220 Q 540 210 550 210 L 1260 210 Q 1270 210 1270 220 L 1270 264" marker-end="url(#arrow)" />
+        <text class="line-label" x="880" y="202" text-anchor="middle">Creator Profile Navigation</text>
+
+        <!-- 21. roleGuard -> Studio Dashboard [YES] (Straight Vertical) -->
+        <path id="line-role-studio" class="flow-line" d="M 1270 320 L 1270 370" marker-end="url(#arrow)" />
+        <text class="line-label" x="1282" y="348">YES (Role Valid)</text>
+
+        <!-- 22. roleGuard -> Bounce to Catalog [NO] (Top Loop Back) -->
+        <path id="line-role-bounce" class="flow-line" d="M 1370 292 L 1420 292 Q 1430 292 1430 150 Q 1430 140 1420 140 L 300 140 Q 290 140 290 150 L 290 160" marker-end="url(#arrow)" />
+        <text class="line-label" x="1360" y="132">NO (Unauthorized Bounce)</text>
+
+        <!-- 23. Studio -> New Game (Symmetrical Left Branch) -->
+        <path id="line-studio-new" class="flow-line" d="M 1220 426 L 1220 450 Q 1220 460 1210 460 L 1180 460 Q 1170 460 1170 470 L 1170 480" marker-end="url(#arrow)" />
+
+        <!-- 24. Studio -> Edit Game (Symmetrical Right Branch via ownershipGuard) -->
+        <path id="line-studio-owner" class="flow-line" d="M 1320 426 L 1320 450 Q 1320 460 1330 460 L 1360 460 Q 1370 460 1370 470 L 1370 480" marker-end="url(#arrow)" />
+
+        <!-- 25. ownershipGuard -> Edit Game [YES] (Straight Vertical) -->
+        <path id="line-owner-edit" class="flow-line" d="M 1370 536 L 1370 584" marker-end="url(#arrow)" />
+
+        <!-- 26. New & Edit -> Form Engine (Symmetrical Convergence) -->
+        <path id="line-new-form" class="flow-line" d="M 1170 640 L 1170 660 Q 1170 670 1180 670 L 1210 670 Q 1220 670 1220 680 L 1220 690" marker-end="url(#arrow)" />
+        <path id="line-edit-form" class="flow-line" d="M 1370 640 L 1370 660 Q 1370 670 1360 670 L 1330 670 Q 1320 670 1320 680 L 1320 690" marker-end="url(#arrow)" />
+
+        <!-- 27. Form Engine -> unsavedChangesGuard (Straight Vertical) -->
+        <path id="line-form-unsaved" class="flow-line" d="M 1270 746 L 1270 790" marker-end="url(#arrow)" />
+
+        <!-- 28. unsavedChangesGuard -> Save & Publish (Straight Vertical) -->
+        <path id="line-unsaved-save" class="flow-line" d="M 1270 846 L 1270 890" marker-end="url(#arrow)" />
+
+        <!-- 29. Save & Publish -> GAMES_DATA Signals (Straight Vertical) -->
+        <path id="line-save-signals" class="flow-line" d="M 1270 946 L 1270 990" marker-end="url(#arrow)" />
+
+        <!-- 30. Signals -> SSR-Safe LocalStore (Straight Vertical) -->
+        <path id="line-signals-store" class="flow-line" d="M 1270 1046 L 1270 1084" marker-end="url(#arrow)" />
+
+        <!-- 31. LocalStore -> Catalog Storefront (Bottom Cross-System Bus) -->
+        <path id="line-store-catalog" class="flow-line dashed" d="M 1170 1112 L 100 1112 Q 90 1112 90 1102 L 90 190 Q 90 180 100 180 L 110 180" marker-end="url(#arrow)" />
+        <text class="line-label" x="650" y="1126" text-anchor="middle">Reactive Store Hydration (Signals State Auto-Sync)</text>
+      </g>
+
+      <!-- ============================================================ -->
+      <!-- NEATLY ARRANGED NODES WITH UNIFORM GEOMETRY -->
+      <!-- ============================================================ -->
+
+      <!-- COLUMN 1: PUBLIC DISCOVERY -->
+      <!-- Visitor Entry (Pill) -->
+      <g class="node-group node-public" id="node-start" data-lines="line-start-catalog">
+        <rect class="node-rect" x="100" y="80" width="180" height="40" rx="20" />
+        <text class="node-title" x="190" y="105" text-anchor="middle">Visitor Entry /</text>
+      </g>
+
+      <!-- /catalog Storefront (Box) -->
+      <g class="node-group node-public" id="node-catalog" data-lines="line-start-catalog,line-catalog-detail,line-catalog-aux,line-store-catalog,line-role-bounce">
+        <rect class="node-rect" x="90" y="160" width="200" height="56" rx="8" />
+        <text class="node-title" x="190" y="186" text-anchor="middle">/catalog (Storefront)</text>
+        <text class="node-subtitle" x="190" y="202" text-anchor="middle">Hero Showcase &amp; Grid</text>
+      </g>
+
+      <!-- /games/:id Details (Box) -->
+      <g class="node-group node-public" id="node-detail" data-lines="line-catalog-detail,line-detail-action,line-login-resume">
+        <rect class="node-rect" x="90" y="264" width="200" height="56" rx="8" />
+        <text class="node-title" x="190" y="290" text-anchor="middle">/games/:id (Game Details)</text>
+        <text class="node-subtitle" x="190" y="306" text-anchor="middle">Gallery, Specs &amp; CTA</text>
+      </g>
+
+      <!-- Auxiliary Routes (Box) -->
+      <g class="node-group node-public" id="node-aux" data-lines="line-catalog-aux">
+        <rect class="node-rect" x="100" y="370" width="180" height="48" rx="8" stroke-dasharray="4,4" />
+        <text class="node-title" x="190" y="394" text-anchor="middle">/genres &amp; /support</text>
+        <text class="node-subtitle" x="190" y="408" text-anchor="middle">Static &amp; Error Pages</text>
+      </g>
+
+      <!-- COLUMN 2: SECURITY & AUTH -->
+      <!-- Action CTA (Hexagon / Decision) -->
+      <g class="node-group node-guard" id="node-action" data-lines="line-detail-action,line-action-auth">
+        <rect class="node-rect" x="440" y="264" width="200" height="56" rx="10" />
+        <text class="node-title" x="540" y="290" text-anchor="middle">User Clicks Action</text>
+        <text class="node-subtitle" x="540" y="306" text-anchor="middle">Evaluate Download CTA</text>
+      </g>
+
+      <!-- authGuard (Decision) -->
+      <g class="node-group node-guard" id="node-authguard" data-lines="line-action-auth,line-auth-login,line-auth-owned,line-auth-role">
+        <rect class="node-rect" x="440" y="370" width="200" height="56" rx="10" />
+        <text class="node-title" x="540" y="396" text-anchor="middle">authGuard 🔒</text>
+        <text class="node-subtitle" x="540" y="412" text-anchor="middle">Check Active Session</text>
+      </g>
+
+      <!-- /login (Box) -->
+      <g class="node-group node-auth" id="node-login" data-lines="line-auth-login,line-login-register,line-login-resume">
+        <rect class="node-rect" x="440" y="480" width="200" height="56" rx="8" />
+        <text class="node-title" x="540" y="506" text-anchor="middle">/login (?returnUrl)</text>
+        <text class="node-subtitle" x="540" y="522" text-anchor="middle">Multi-Persona (Alice/Bob)</text>
+      </g>
+
+      <!-- /register (Box) -->
+      <g class="node-group node-auth" id="node-register" data-lines="line-login-register">
+        <rect class="node-rect" x="450" y="584" width="180" height="48" rx="8" />
+        <text class="node-title" x="540" y="608" text-anchor="middle">/register &amp; Reset</text>
+        <text class="node-subtitle" x="540" y="622" text-anchor="middle">Account Provisioning</text>
+      </g>
+
+      <!-- COLUMN 3: BUYER & COMMERCE -->
+      <!-- Is Owned? (Decision) -->
+      <g class="node-group node-guard" id="node-isowned" data-lines="line-auth-owned,line-owned-download,line-owned-free">
+        <rect class="node-rect" x="800" y="370" width="200" height="56" rx="10" />
+        <text class="node-title" x="900" y="396" text-anchor="middle">Is Game Owned?</text>
+        <text class="node-subtitle" x="900" y="412" text-anchor="middle">Inventory Ownership Scan</text>
+      </g>
+
+      <!-- Instant ZIP Download (Box) -->
+      <g class="node-group node-commerce" id="node-download" data-lines="line-owned-download,line-download-library">
+        <rect class="node-rect" x="800" y="480" width="200" height="56" rx="8" />
+        <text class="node-title" x="900" y="506" text-anchor="middle">Instant Download</text>
+        <text class="node-subtitle" x="900" y="522" text-anchor="middle">Direct ZIP Payload</text>
+      </g>
+
+      <!-- /library Vault (Box) -->
+      <g class="node-group node-commerce" id="node-library" data-lines="line-download-library,line-orders-library">
+        <rect class="node-rect" x="800" y="584" width="200" height="56" rx="8" />
+        <text class="node-title" x="900" y="610" text-anchor="middle">/library (Owned Vault)</text>
+        <text class="node-subtitle" x="900" y="626" text-anchor="middle">Games Collection</text>
+      </g>
+
+      <!-- Is Free? (Decision) -->
+      <g class="node-group node-guard" id="node-isfree" data-lines="line-owned-free,line-free-claim,line-free-purchase">
+        <rect class="node-rect" x="800" y="652" width="200" height="56" rx="10" />
+        <text class="node-title" x="900" y="678" text-anchor="middle">Is Game Free?</text>
+        <text class="node-subtitle" x="900" y="694" text-anchor="middle">Zero-Cost Evaluation</text>
+      </g>
+
+      <!-- 1-Click Claim (Box) -->
+      <g class="node-group node-commerce" id="node-claim" data-lines="line-free-claim,line-claim-exec">
+        <rect class="node-rect" x="690" y="760" width="160" height="56" rx="8" />
+        <text class="node-title" x="770" y="786" text-anchor="middle">1-Click Claim</text>
+        <text class="node-subtitle" x="770" y="802" text-anchor="middle">Instant Entitlement</text>
+      </g>
+
+      <!-- Purchase Modal (Box) -->
+      <g class="node-group node-commerce" id="node-purchase" data-lines="line-free-purchase,line-purchase-exec">
+        <rect class="node-rect" x="910" y="760" width="160" height="56" rx="8" />
+        <text class="node-title" x="990" y="786" text-anchor="middle">Purchase Modal</text>
+        <text class="node-subtitle" x="990" y="802" text-anchor="middle">Wallet / CC / KHQR</text>
+      </g>
+
+      <!-- Execute Transaction (Box) -->
+      <g class="node-group node-commerce" id="node-exec" data-lines="line-claim-exec,line-purchase-exec,line-exec-split">
+        <rect class="node-rect" x="800" y="870" width="200" height="56" rx="8" />
+        <text class="node-title" x="900" y="896" text-anchor="middle">Execute Transaction</text>
+        <text class="node-subtitle" x="900" y="912" text-anchor="middle">Atomic State Update</text>
+      </g>
+
+      <!-- 90% Creator | 10% Treasury Split (Box) -->
+      <g class="node-group node-commerce" id="node-split" data-lines="line-exec-split,line-split-orders">
+        <rect class="node-rect" x="790" y="970" width="220" height="56" rx="8" />
+        <text class="node-title" x="900" y="996" text-anchor="middle">90% Creator | 10% Treasury</text>
+        <text class="node-subtitle" x="900" y="1012" text-anchor="middle">Automated Revenue Split</text>
+      </g>
+
+      <!-- /orders (Invoice) -->
+      <g class="node-group node-commerce" id="node-orders" data-lines="line-split-orders,line-orders-library">
+        <rect class="node-rect" x="800" y="1070" width="200" height="56" rx="8" />
+        <text class="node-title" x="900" y="1096" text-anchor="middle">/orders (Receipts)</text>
+        <text class="node-subtitle" x="900" y="1112" text-anchor="middle">Official A4 PDF Invoices</text>
+      </g>
+
+      <!-- COLUMN 4: CREATOR STUDIO & PERSISTENCE -->
+      <!-- roleGuard('creator') (Decision) -->
+      <g class="node-group node-guard" id="node-roleguard" data-lines="line-auth-role,line-role-studio,line-role-bounce">
+        <rect class="node-rect" x="1170" y="264" width="200" height="56" rx="10" />
+        <text class="node-title" x="1270" y="290" text-anchor="middle">roleGuard('creator') 🔒</text>
+        <text class="node-subtitle" x="1270" y="306" text-anchor="middle">Role Verification</text>
+      </g>
+
+      <!-- /studio Dashboard (Box) -->
+      <g class="node-group node-studio" id="node-studio" data-lines="line-role-studio,line-studio-new,line-studio-owner">
+        <rect class="node-rect" x="1170" y="370" width="200" height="56" rx="8" />
+        <text class="node-title" x="1270" y="396" text-anchor="middle">/studio (Dashboard)</text>
+        <text class="node-subtitle" x="1270" y="412" text-anchor="middle">Metrics &amp; Published Games</text>
+      </g>
+
+      <!-- /studio/games/new (Box) -->
+      <g class="node-group node-studio" id="node-newgame" data-lines="line-studio-new,line-new-form">
+        <rect class="node-rect" x="1090" y="480" width="160" height="56" rx="8" />
+        <text class="node-title" x="1170" y="506" text-anchor="middle">/games/new</text>
+        <text class="node-subtitle" x="1170" y="522" text-anchor="middle">Blank Creator Form</text>
+      </g>
+
+      <!-- ownershipGuard (Decision) -->
+      <g class="node-group node-guard" id="node-ownership" data-lines="line-studio-owner,line-owner-edit">
+        <rect class="node-rect" x="1290" y="480" width="160" height="56" rx="10" />
+        <text class="node-title" x="1370" y="506" text-anchor="middle">ownershipGuard 🔒</text>
+        <text class="node-subtitle" x="1370" y="522" text-anchor="middle">Verify Creator ID</text>
+      </g>
+
+      <!-- /studio/games/:id/edit (Box) -->
+      <g class="node-group node-studio" id="node-editgame" data-lines="line-owner-edit,line-edit-form">
+        <rect class="node-rect" x="1290" y="584" width="160" height="56" rx="8" />
+        <text class="node-title" x="1370" y="610" text-anchor="middle">/games/:id/edit</text>
+        <text class="node-subtitle" x="1370" y="626" text-anchor="middle">Prefilled Game Data</text>
+      </g>
+
+      <!-- Reactive Form Engine (Box) -->
+      <g class="node-group node-studio" id="node-formengine" data-lines="line-new-form,line-edit-form,line-form-unsaved">
+        <rect class="node-rect" x="1170" y="690" width="200" height="56" rx="8" />
+        <text class="node-title" x="1270" y="716" text-anchor="middle">Reactive Form Engine</text>
+        <text class="node-subtitle" x="1270" y="732" text-anchor="middle">Validators &amp; Media Upload</text>
+      </g>
+
+      <!-- unsavedChangesGuard (Decision) -->
+      <g class="node-group node-guard" id="node-unsaved" data-lines="line-form-unsaved,line-unsaved-save">
+        <rect class="node-rect" x="1170" y="790" width="200" height="56" rx="10" />
+        <text class="node-title" x="1270" y="816" text-anchor="middle">unsavedChangesGuard</text>
+        <text class="node-subtitle" x="1270" y="832" text-anchor="middle">Dirty Form Protection</text>
+      </g>
+
+      <!-- Save & Publish (Box) -->
+      <g class="node-group node-studio" id="node-save" data-lines="line-unsaved-save,line-save-signals">
+        <rect class="node-rect" x="1170" y="890" width="200" height="56" rx="8" />
+        <text class="node-title" x="1270" y="916" text-anchor="middle">Save &amp; Publish</text>
+        <text class="node-subtitle" x="1270" y="932" text-anchor="middle">Trigger Signal Mutation</text>
+      </g>
+
+      <!-- Core Signals Store (Cylinder/Box) -->
+      <g class="node-group node-store" id="node-signals" data-lines="line-save-signals,line-signals-store">
+        <rect class="node-rect" x="1160" y="990" width="220" height="56" rx="12" />
+        <text class="node-title" x="1270" y="1016" text-anchor="middle">GAMES_DATA Signals</text>
+        <text class="node-subtitle" x="1270" y="1032" text-anchor="middle">Angular 18 Reactive Store</text>
+      </g>
+
+      <!-- LocalStoreService (Cylinder/Box) -->
+      <g class="node-group node-store" id="node-localstore" data-lines="line-signals-store,line-store-catalog">
+        <rect class="node-rect" x="1160" y="1084" width="220" height="56" rx="12" />
+        <text class="node-title" x="1270" y="1110" text-anchor="middle">SSR-Safe LocalStoreService</text>
+        <text class="node-subtitle" x="1270" y="1126" text-anchor="middle">Encrypted Storage Adapter</text>
+      </g>
+    </svg>
+  </div>
+
+  <script>
+    // Zoom and Pan Engine
+    let zoom = 0.85;
+    let panX = 40;
+    let panY = 60;
+    let isDragging = false;
+    let startX = 0, startY = 0;
+
+    const viewport = document.getElementById('svg-viewport');
+    const container = document.getElementById('canvas-container');
+
+    function updateTransform() {
+      viewport.style.transform = `translate(${panX}px, ${panY}px) scale(${zoom})`;
+    }
+    updateTransform();
+
+    container.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
+      const newZoom = Math.min(Math.max(0.35, zoom * zoomFactor), 2.5);
+
+      const rect = container.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      panX = mouseX - (mouseX - panX) * (newZoom / zoom);
+      panY = mouseY - (mouseY - panY) * (newZoom / zoom);
+      zoom = newZoom;
+      updateTransform();
+    }, { passive: false });
+
+    container.addEventListener('pointerdown', (e) => {
+      if (e.target.tagName === 'svg' || e.target.id === 'canvas-container') {
+        isDragging = true;
+        startX = e.clientX - panX;
+        startY = e.clientY - panY;
+        container.classList.add('grabbing');
+        container.setPointerCapture(e.pointerId);
+      }
+    });
+
+    container.addEventListener('pointermove', (e) => {
+      if (isDragging) {
+        panX = e.clientX - startX;
+        panY = e.clientY - startY;
+        updateTransform();
+      }
+    });
+
+    container.addEventListener('pointerup', (e) => {
+      if (isDragging) {
+        isDragging = false;
+        container.classList.remove('grabbing');
+      }
+    });
+
+    function zoomIn() { zoom = Math.min(2.5, zoom * 1.2); updateTransform(); }
+    function zoomOut() { zoom = Math.max(0.35, zoom * 0.8); updateTransform(); }
+    function resetView() { zoom = 0.85; panX = 40; panY = 60; updateTransform(); }
+
+    // Hover Highlight System: illuminates connected lines & labels
+    const nodes = document.querySelectorAll('.node-group');
+    nodes.forEach(node => {
+      node.addEventListener('mouseenter', () => {
+        node.classList.add('active');
+        const lineIds = node.dataset.lines ? node.dataset.lines.split(',') : [];
+        lineIds.forEach(id => {
+          const line = document.getElementById(id);
+          if (line) {
+            line.classList.add('active');
+            line.setAttribute('marker-end', 'url(#arrow-active)');
+          }
+        });
+      });
+
+      node.addEventListener('mouseleave', () => {
+        node.classList.remove('active');
+        const lineIds = node.dataset.lines ? node.dataset.lines.split(',') : [];
+        lineIds.forEach(id => {
+          const line = document.getElementById(id);
+          if (line) {
+            line.classList.remove('active');
+            line.setAttribute('marker-end', 'url(#arrow)');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,261 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.steam-carousel-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  outline: none;
+}
+
+.carousel-stage-container {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  background-color: var(--bg-surface, #1B2838);
+  border: 1px solid var(--border-card, #2A475E);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.carousel-stage-container.transitioning {
+  opacity: 0.85;
+}
+
+/* Left: 16:9 Cinema Viewport */
+.carousel-main-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: var(--bg-void, #0E141B);
+  overflow: hidden;
+}
+
+.stage-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.15s ease;
+}
+
+/* Right: Steam Info Capsule */
+.carousel-info-capsule {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(27, 40, 56, 0.95) 0%, rgba(18, 26, 36, 0.98) 100%);
+  border-left: 1px solid var(--border-card, #2A475E);
+  gap: 14px;
+}
+
+.capsule-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.capsule-eyebrow {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent-400, #66C0F4);
+  text-transform: uppercase;
+}
+
+.capsule-title {
+  margin: 0;
+  font-family: var(--font-display, 'Motiva Sans', system-ui, sans-serif);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary, #F8FAFC);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+/* 4 Interactive Thumbnails (2x2 Grid) */
+.capsule-thumbnails-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.thumb-item {
+  aspect-ratio: 16 / 9;
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--border-card, #2A475E);
+  cursor: pointer;
+  background-color: var(--bg-void, #0E141B);
+  transition: border-color 0.15s ease, opacity 0.15s ease;
+  opacity: 0.65;
+}
+
+.thumb-item:hover,
+.thumb-item.active {
+  border-color: var(--accent-400, #66C0F4);
+  opacity: 1;
+}
+
+.thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Meta & Sentiment */
+.capsule-meta-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.review-sentiment-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+}
+
+.sentiment-label {
+  color: var(--text-muted, #8F98A0);
+}
+
+.sentiment-val {
+  color: var(--accent-400, #66C0F4);
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+}
+
+.tags-cluster {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.tag-chip {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-secondary, #C7D5E0);
+  background: rgba(102, 192, 244, 0.08);
+  border: 1px solid rgba(102, 192, 244, 0.18);
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+
+/* Bottom Action Bar */
+.capsule-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid rgba(42, 71, 94, 0.5);
+}
+
+.price-pill {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary, #F8FAFC);
+}
+
+.price-pill.free {
+  color: var(--emerald-400, #A4D007);
+}
+
+.btn-carousel-action {
+  padding: 8px 16px;
+  background-color: var(--emerald-500, #75B022);
+  border: 1px solid var(--emerald-400, #A4D007);
+  border-radius: 4px;
+  color: #FFFFFF;
+  font-family: var(--font-sans, system-ui, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  transform: translateY(0);
+}
+
+.btn-carousel-action:hover {
+  background-color: #85C428;
+}
+
+/* Bottom Navigation Controls */
+.carousel-navigation-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.btn-nav {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  background-color: var(--bg-surface, #1B2838);
+  border: 1px solid var(--border-card, #2A475E);
+  color: var(--text-muted, #8F98A0);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  transform: translateY(0);
+}
+
+.btn-nav svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btn-nav:hover {
+  border-color: var(--accent-400, #66C0F4);
+  color: var(--accent-400, #66C0F4);
+  background-color: rgba(102, 192, 244, 0.1);
+}
+
+.pagination-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pagination-dot {
+  width: 14px;
+  height: 6px;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.15s ease;
+}
+
+.pagination-dot.active {
+  width: 28px;
+  background-color: var(--accent-400, #66C0F4);
+}
+
+/* Responsive breakpoint */
+@media (max-width: 960px) {
+  .carousel-stage-container {
+    grid-template-columns: 1fr;
+  }
+  .carousel-info-capsule {
+    border-left: none;
+    border-top: 1px solid var(--border-card, #2A475E);
+  }
+}

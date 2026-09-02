@@ -1,0 +1,24 @@
+<div
+  class="context-menu-wrapper"
+  [style.top.px]="position.top"
+  [style.left.px]="position.left"
+  role="menu"
+  [attr.aria-label]="ariaLabel"
+  tabindex="-1">
+  <div class="context-menu-surface">
+    @for (item of items; track item.id; let idx = $index) {
+      <button
+        #menuItemBtn
+        type="button"
+        class="context-menu-item"
+        [class.item-danger]="item.danger"
+        [class.item-disabled]="item.disabled"
+        [disabled]="item.disabled"
+        role="menuitem"
+        [attr.tabindex]="focusedIndex === idx ? '0' : '-1'"
+        (click)="onSelect(item, $event)">
+        <span class="item-label">{{ item.label }}</span>
+      </button>
+    }
+  </div>
+</div>

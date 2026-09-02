@@ -56,7 +56,11 @@ Navigate to [`http://localhost:4200`](http://localhost:4200) in your web browser
 
 ## Overview & Key Features
 
-* **Store Catalog & Genres Directory**: Real-time substring search, live tag filtering, quick-search genre catalog, and responsive auto-fill category grids with game counts.
+* **Store Catalog & Showcase Carousel**: Featured & Recommended 16:9 cinema stage with synchronized 4-thumbnail filmstrip previewing on hover, 5-second autoplay with pause-on-hover, spatial keyboard arrows (<kbd>←</kbd> / <kbd>→</kbd>), and dynamic ambient color backlighting.
+* **Game Hover Card Preview Popover**: Fast `300ms` debounce popover with 16:9 screenshot auto-cycling (2.5s), review sentiment score (*Very Positive — 89%*), developer credit, and collision-free viewport flip positioning.
+* **Store Context Menu System**: Custom right-click overlay (`[appContextMenu]`) with rapid game actions (*Play / Download*, *Wishlist*, *Copy Store Link*, *View Details*) and full keyboard arrow/Escape navigation.
+* **Creator Studio Data Table (`DataTable`)**: Generic standalone data table component with multi-field search filtering, column sort indicators (asc/desc), and pagination controls.
+* **Smooth Fluid Clamping & Dynamic Geometry**: Mathematical linear-slope interpolation (`clamp(MIN, calc(MIN_REM + SLOPE_VW), MAX)`) eliminating mobile dead zones across 360px mobile handhelds to 3840px 4K / Ultrawide displays.
 * **Account Payment & Wallet Architecture**: Dedicated `/account/payment` hub with credit card management, Cambodian National Bank KHQR Bakong mobile payment integration (exclusive to creator payout profiles), prepaid gift card redemption with 4-letter auto-dashing, real-time wallet balances, clickable transaction history with audit details modal, and compact tactile modal action buttons.
 * **Inline Checkout & ABA PayWay KHQR Rail**: Shared `AddPaymentMethodFormComponent` for seamless inline card/KHQR addition, plus focused `AbaPaywaySheetComponent` scan card with dynamic 5-minute countdown and instant status polling.
 * **Automated 90/10 Creator Settlement**: Instant automated revenue split executed on order confirmation: 90% credited to creator wallet and royalty ledger, 10% platform commission retained in `platform_treasury`.
@@ -97,7 +101,7 @@ Use the following preconfigured accounts to test role-based access control and u
 
 NEXORA provides a comprehensive automated testing battery covering unit logic, domain integration, master architectural invariants, Playwright E2E journeys, and the Impeccable Anti-Slop / Steam DesignMD compliance suite.
 
-### 1. Run all regression suites (874 Tests — 100% Pass Rate)
+### 1. Run all regression suites (904 Tests — 100% Pass Rate)
 
 Execute all automated test tiers:
 
@@ -108,7 +112,7 @@ npm run test:regression
 ```
 
 This command orchestrates:
-* **Unit Tests** (`npm run test:unit`): 520 assertions across 92 sections verifying email/password validations, 90/10 creator revenue splits, data transforms, `nexora_*` storage prefix isolation, fluid clamp bounds, 4-slide hero geometry parity, Speedtest theme switcher geometry, Unified Steam Deck Hub mobile drawer dimensions, carousel touch swipe gestures / keyboard navigation, smart scroll-aware header / mobile footer clearance, Steam bottom download tray signals, iOS 120Hz ProMotion scroll kinetic physics, header navigation animations, card number grouping / CVV directives, universal account password security logic, lockout backoff, and toast queue eviction/pause mechanics.
+* **Unit Tests** (`npm run test:unit`): 550 assertions across 94 sections verifying email/password validations, 90/10 creator revenue splits, data transforms, context menu positioning, hover card debouncing/flipping, data table sorting/filtering/pagination, showcase carousel slide index navigation/active media resolution, `nexora_*` storage prefix isolation, fluid clamp bounds, 4-slide hero geometry parity, Speedtest theme switcher geometry, Unified Steam Deck Hub mobile drawer dimensions, carousel touch swipe gestures / keyboard navigation, smart scroll-aware header / mobile footer clearance, Steam bottom download tray signals, iOS 120Hz ProMotion scroll kinetic physics, header navigation animations, card number grouping / CVV directives, universal account password security logic, lockout backoff, and toast queue eviction/pause mechanics.
 * **Integration Tests** (`npm run test:integration`): 324 assertions across 28 sections verifying Alice/Bob persona lifecycles, query engine, commerce checkout with Mastercard/KHQR, wishlist-to-library fulfillment, route guards, `/studio/games/new` permissions, unsaved changes guards, multi-persona state synchronization, inline checkout payment methods, ABA PayWay modal flows, finance ledger integrity, paid-game removal purchase reversions, buyer card-only isolation, gift voucher auto-dashing, and detailed transaction modal controls.
 * **Master Battery** (`npm run test:master`): 23 tests verifying dataset invariants, ownership verification, ref-counted scroll lock state transitions, toast queue dedupe/expiration, URL sanitization against open redirects, card number grouping, and expiry formatting.
 * **Impeccable Anti-Slop Suite** (`npm run test:impeccable`): 7 tests asserting absence of neon glow halos, strict radii hierarchy (`2px/4px/6px/8px/16px`), snappy `0.15s` transitions, and WCAG AAA contrast ratios.

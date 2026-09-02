@@ -1,0 +1,143 @@
+:host {
+  display: block;
+}
+
+.hover-card-popover {
+  position: fixed;
+  z-index: 1040;
+  width: 320px;
+  pointer-events: none;
+  animation: hoverCardFadeIn 0.12s ease-out;
+}
+
+@keyframes hoverCardFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.hover-card-surface {
+  background-color: var(--bg-elevated, #1B2838);
+  border: 1px solid var(--border-card, #2A475E);
+  border-radius: 4px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.75);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.hover-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hover-game-title {
+  margin: 0;
+  font-family: var(--font-display, 'Motiva Sans', system-ui, sans-serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary, #F8FAFC);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hover-meta-eyebrow {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted, #8F98A0);
+}
+
+/* 16:9 Media Preview */
+.hover-media-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 3px;
+  overflow: hidden;
+  background-color: var(--bg-void, #0E141B);
+}
+
+.hover-screenshot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity 0.2s ease;
+}
+
+.screenshot-indicators {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  background: rgba(10, 14, 19, 0.75);
+  border-radius: 9999px;
+  backdrop-filter: blur(4px);
+}
+
+.indicator-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.35);
+  transition: all 0.15s ease;
+}
+
+.indicator-dot.active {
+  width: 12px;
+  border-radius: 9999px;
+  background-color: var(--accent-400, #66C0F4);
+}
+
+/* Review Sentiment */
+.hover-review-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+}
+
+.review-label {
+  color: var(--text-muted, #8F98A0);
+  font-family: var(--font-sans, system-ui, sans-serif);
+}
+
+.review-sentiment-tag {
+  color: var(--accent-400, #66C0F4);
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Tags */
+.hover-tags-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.hover-tag-chip {
+  font-size: 0.7rem;
+  font-family: var(--font-mono, monospace);
+  font-weight: 600;
+  color: var(--text-secondary, #C7D5E0);
+  background: rgba(102, 192, 244, 0.08);
+  border: 1px solid rgba(102, 192, 244, 0.18);
+  padding: 1px 6px;
+  border-radius: 2px;
+}

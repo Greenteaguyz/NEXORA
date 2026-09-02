@@ -79,7 +79,8 @@ function getWebCrypto(): Crypto | null {
   }
   try {
     // Isomorphic fallback for Node.js test runners
-    const nodeCrypto = typeof require === 'function' ? require('crypto') : null;
+    const g = globalThis as { require?: (module: string) => { webcrypto?: Crypto } };
+    const nodeCrypto = typeof g.require === 'function' ? g.require('crypto') : null;
     return nodeCrypto?.webcrypto || globalThis.crypto || null;
   } catch {
     return null;

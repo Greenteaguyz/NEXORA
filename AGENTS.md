@@ -14,9 +14,11 @@ Desktop-grade Steam-inspired storefront and creator platform built with Angular 
 
 ## 4. Rules w/ Verifiable Instructions
 - **Angular 18**: Standalone components, `OnPush`, Signals (`signal()`, `computed()`), `@if`/`@for`.
-- **Skill Lifecycle**:
-  - *During task*: Use `intent-layer` (scope/AC), `ponytail` (minimalist reuse), `code-review-graph` (blast radius), `caveman` (terse brevity), `teamwork-preview` (multi-agent orchestration).
-  - *After task*: Use `rtk-repo` (filter test noise), `impeccable` (UI), `click-path-audit` (state).
+- **Skill Lifecycle & Workflow Enforcements**:
+  - *Primary Agent (Pro)*: Act as Architect Lead. Synthesize, run gates, and plan.
+  - *Worker Subagents (Flash)*: Use `invoke_subagent` (`Model: "flash"`) for codebase audits, targeted code generation, and iterative fixes.
+  - *Before/During task*: **Always auto-apply `ponytail`** (YAGNI, strict code reuse, zero new NPM packages) before writing any code. Keep responses terse (`caveman`), define scope (`intent-layer`), and orchestrate teams (`teamwork-preview`).
+  - *After task*: **Do not run `ponytail` here**. Instead, run `click-path-audit` to trace state logic, `impeccable` for UI polish, and filter test noise (`rtk-repo`).
 - **Quality Gate**: Run `npm run verify`; zero failures allowed.
 - **Surgical scope**: Modify only task-relevant files.
 

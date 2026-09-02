@@ -195,3 +195,53 @@ NEXORA adheres to the **Impeccable Standard**: high-utility, media-first desktop
   * **Luminous Active Indicator**: Active tab features a centered Electric Cyan (`#66C0F4`) glowing pill indicator (`width: 32px; height: 3px; box-shadow: 0 0 8px rgba(102, 192, 244, 0.6)`).
   * **Tactile Feedback**: Immediate `scale(0.95)` press feedback with zero tap delay (`touch-action: manipulation`).
 
+---
+
+## 13. Store Context Menu Specification (`appContextMenu`)
+
+* **Aesthetic**: Matte dark slate surface (`#16202D`), 1px steel border (`#2A475E`), and crisp drop shadow.
+* **Viewport Clamping**: `calculateContextMenuPosition()` dynamically flips the menu leftwards/upwards when clicked within 200px of viewport boundaries with a 12px safety padding.
+* **Accessibility**: `role="menu"`, `role="menuitem"`, arrow key navigation (<kbd>↑</kbd>/<kbd>↓</kbd>), <kbd>Escape</kbd> dismissal, and backdrop click outside closing.
+* **Actions**: Unowned game cards display *View Store Page*, *Wishlist*, and *Copy Store Link*; owned games prefix *Play / Download Game*.
+
+---
+
+## 14. Game Hover Card Popover Specification (`appHoverCard`)
+
+* **Fast Debounce**: `300ms` hover entrance delay with instant cancellation on pointer exit.
+* **16:9 Media Cycling**: Auto-cycles gameplay screenshots every 2.5 seconds with Steam Cyan indicator dots.
+* **Content Hierarchy**: Game title, developer name, Steam review sentiment (*Very Positive — 89%*), and `#tag` chips.
+* **SSR Safety**: All coordinate measurements are guarded with `isPlatformBrowser(platformId)`.
+
+---
+
+## 15. Creator Studio Data Table (`DataTableComponent`)
+
+* **DesignMD Matte Surface**: `#16202D` surface with `#2A475E` steel borders and high contrast typography.
+* **Search & Sort**: Case-insensitive substring filtering across title/tags, sortable column headers with active directional SVG arrows, and tabular numeral cell formatting.
+* **Responsive Pagination**: Steam-styled pagination bar with records range indicator (`Showing 1 - 10 of 24`) and Prev / Next controls.
+
+---
+
+## 16. Store Showcase Carousel (`CarouselComponent`)
+
+* **16:9 Cinema Stage**: High-resolution gameplay backdrop with zero layout shift.
+* **4-Thumbnail Filmstrip**: Hovering any of the 4 thumbnails previews the screenshot on the main stage in real time.
+* **Autoplay & Navigation**: 5-second interval timer with pause-on-hover and pause-on-focus, plus keyboard arrow navigation (<kbd>←</kbd> / <kbd>→</kbd>).
+
+---
+
+## 17. Smooth Fluid Clamping Scales
+
+* **Linear-Slope Interpolation Formula**:
+  `clamp(MIN_PX, calc(MIN_REM + SLOPE_VW), MAX_PX)`
+* **Standardized Tokens**:
+  * `--fluid-text-hero`: `clamp(2rem, 1.4rem + 2.5vw, 3.5rem)`
+  * `--fluid-text-h1`: `clamp(1.75rem, 1.25rem + 2vw, 2.75rem)`
+  * `--fluid-text-h2`: `clamp(1.35rem, 1.05rem + 1.4vw, 2.1rem)`
+  * `--fluid-text-h3`: `clamp(1.1rem, 0.95rem + 0.8vw, 1.55rem)`
+  * `--fluid-page-pad-x`: `clamp(16px, 0.75rem + 1.8vw, 48px)`
+  * `--fluid-page-pad-y`: `clamp(16px, 0.75rem + 1.5vw, 40px)`
+  * `--fluid-grid-gap`: `clamp(14px, 0.7rem + 1vw, 28px)`
+
+

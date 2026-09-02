@@ -4,16 +4,29 @@ import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ToastService } from './core/services/toast.service';
+import { ContextMenuService } from './core/services/context-menu.service';
+import { HoverCardService } from './core/services/hover-card.service';
 import { HeaderComponent } from './layout/header/header.component';
 import { FooterComponent } from './layout/footer/footer.component';
 import { ToastComponent } from './shared/ui/toast/toast.component';
 import { CommandPaletteComponent } from './shared/ui/command-palette/command-palette.component';
 import { DownloadTrayComponent } from './shared/ui/download-tray/download-tray.component';
+import { ContextMenuComponent } from './shared/ui/context-menu/context-menu.component';
+import { HoverCardComponent } from './shared/ui/hover-card/hover-card.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, FooterComponent, ToastComponent, CommandPaletteComponent, DownloadTrayComponent],
+  imports: [
+    RouterOutlet,
+    HeaderComponent,
+    FooterComponent,
+    ToastComponent,
+    CommandPaletteComponent,
+    DownloadTrayComponent,
+    ContextMenuComponent,
+    HoverCardComponent
+  ],
   styles: [`
     /* Back-to-top: sits above the download tray footprint (tray top edge ~64px)
        so the two never overlap; right offset clears the virtual scroll thumb (right: 4px). */
@@ -30,31 +43,44 @@ import { DownloadTrayComponent } from './shared/ui/download-tray/download-tray.c
       align-items: center;
       justify-content: center;
       padding: 0;
-      background: rgba(27, 40, 56, 0.6);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(102, 192, 244, 0.2);
-      border-radius: var(--radius-lg);
-      color: var(--text-primary);
+      background: var(--bg-surface, #1B2838);
+      border: 1.5px solid var(--accent-400, #66C0F4);
+      border-radius: var(--radius-lg, 8px);
+      color: var(--accent-400, #66C0F4);
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-      transition: border-color 0.2s ease, background-color 0.2s ease;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(0);
+    }
+
+    :host-context([data-theme="light"]) .btn-back-to-top {
+      background: #FFFFFF;
+      border: 1.5px solid #0078D4;
+      color: #0078D4;
+      box-shadow: 0 8px 24px rgba(0, 120, 212, 0.22);
     }
 
     .btn-back-to-top:hover {
-      border-color: var(--accent-500);
-      background-color: rgba(102, 192, 244, 0.25);
-      color: var(--accent-400);
+      background: var(--accent-600, #0078D4);
+      border-color: var(--accent-400, #66C0F4);
+      color: #FFFFFF;
+      box-shadow: 0 8px 28px rgba(0, 120, 212, 0.6);
+    }
+
+    :host-context([data-theme="light"]) .btn-back-to-top:hover {
+      background: #0078D4;
+      border-color: #005A9E;
+      color: #FFFFFF;
     }
 
     .btn-back-to-top:focus-visible {
-      outline: 2px solid var(--text-primary);
+      outline: 2px solid var(--accent-400, #66C0F4);
       outline-offset: 2px;
     }
 
     .btn-back-to-top svg {
-      width: 22px;
-      height: 22px;
+      width: 20px;
+      height: 20px;
       display: block;
     }
 
@@ -74,6 +100,19 @@ import { DownloadTrayComponent } from './shared/ui/download-tray/download-tray.c
     <app-toast></app-toast>
     <app-download-tray></app-download-tray>
     <app-command-palette></app-command-palette>
+    @if (contextMenuService.isOpen()) {
+      <app-context-menu
+        [items]="contextMenuService.items()"
+        [position]="contextMenuService.position()"
+        (closed)="contextMenuService.close()">
+      </app-context-menu>
+    }
+    @if (hoverCardService.isOpen() && hoverCardService.activeGame(); as activeGame) {
+      <app-hover-card
+        [game]="activeGame"
+        [position]="hoverCardService.position()">
+      </app-hover-card>
+    }
 
     <!-- Pure Virtual Floating Overlay Scroll Indicator (0px Layout Displacement & 2s Auto-Hide) -->
     <div
@@ -93,7 +132,7 @@ import { DownloadTrayComponent } from './shared/ui/download-tray/download-tray.c
         class="btn-back-to-top"
         aria-label="Back to top"
         (click)="scrollToTop()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <line x1="12" y1="19" x2="12" y2="5"/>
           <polyline points="5 12 12 5 19 12"/>
         </svg>
@@ -105,6 +144,8 @@ export class AppComponent implements OnDestroy {
   private platformId = inject(PLATFORM_ID);
   private router = inject(Router);
   private toastService = inject(ToastService);
+  contextMenuService = inject(ContextMenuService);
+  hoverCardService = inject(HoverCardService);
   private destroyRef = inject(DestroyRef);
   scrollThumbTop = signal<number>(0);
   isScrollable = signal<boolean>(false);

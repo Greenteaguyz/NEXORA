@@ -3,7 +3,7 @@
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  padding: clamp(16px, 2.5vw, 36px) clamp(14px, 2vw, 28px) calc(76px + env(safe-area-inset-bottom, 0px));
+  padding: var(--fluid-page-pad-y, clamp(16px, 0.75rem + 1.5vw, 40px)) var(--fluid-page-pad-x, clamp(16px, 0.75rem + 1.8vw, 48px)) calc(76px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 
@@ -134,7 +134,7 @@
 
 /* Right: Steam Info Capsule */
 .carousel-info-capsule {
-  padding: clamp(10px, 1.4vw, 14px) clamp(12px, 1.8vw, 18px);
+  padding: clamp(10px, 0.6rem + 0.6vw, 16px) clamp(12px, 0.75rem + 0.8vw, 20px);
   background: #0E141B;
   display: flex;
   flex-direction: column;
@@ -177,7 +177,7 @@
 
 .info-game-title {
   font-family: var(--font-display);
-  font-size: clamp(1.15rem, 1.6vw, 1.45rem);
+  font-size: var(--fluid-text-h3, clamp(1.1rem, 0.95rem + 0.8vw, 1.55rem));
   font-weight: 800;
   color: var(--text-primary);
   line-height: 1.2;

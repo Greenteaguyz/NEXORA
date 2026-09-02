@@ -66,6 +66,17 @@
   --radius-xl: 12px;  /* dialogs & containers */
   --radius-2xl: 16px; /* modal shells */
   --radius-full: 9999px;
+
+  /* Fluid Typography & Responsive Geometry (Continuous Linear Slope Scales) */
+  --fluid-text-hero:   clamp(2rem, 1.4rem + 2.5vw, 3.5rem);
+  --fluid-text-h1:     clamp(1.75rem, 1.25rem + 2vw, 2.75rem);
+  --fluid-text-h2:     clamp(1.35rem, 1.05rem + 1.4vw, 2.1rem);
+  --fluid-text-h3:     clamp(1.1rem, 0.95rem + 0.8vw, 1.55rem);
+  --fluid-text-body:   clamp(0.95rem, 0.9rem + 0.25vw, 1.05rem);
+  --fluid-page-pad-x:  clamp(16px, 0.75rem + 1.8vw, 48px);
+  --fluid-page-pad-y:  clamp(16px, 0.75rem + 1.5vw, 40px);
+  --fluid-grid-gap:    clamp(14px, 0.7rem + 1vw, 28px);
+  --fluid-card-min:    clamp(260px, 14rem + 8vw, 340px);
 }
 
 /* ==========================================================================
@@ -128,7 +139,8 @@ html, body {
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
+  letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -138,12 +150,38 @@ html, body {
 /* Headings Typography Stack */
 h1, h2, h3, h4, h5, h6, .hero-title, .game-title, .steam-game-title, .dialog-title {
   font-family: var(--font-display);
+  font-weight: 700;
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
 p, .brand-desc, .capsule-pitch {
   text-wrap: pretty;
+}
+
+/* Tabular Numerals & Monospace Metadata */
+.price-badge,
+.price-value,
+.price-tag,
+.stat-metric,
+.stat-value,
+.download-speed,
+.timer-count,
+.tabular-nums {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+.eyebrow-text,
+.meta-eyebrow,
+.card-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-400);
 }
 
 app-root {

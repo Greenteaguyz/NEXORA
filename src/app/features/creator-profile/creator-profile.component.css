@@ -2,7 +2,7 @@
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-  padding: clamp(16px, 2.5vw, 36px) clamp(14px, 2vw, 28px) calc(76px + env(safe-area-inset-bottom, 0px));
+  padding: var(--fluid-page-pad-y, clamp(16px, 0.75rem + 1.5vw, 40px)) var(--fluid-page-pad-x, clamp(16px, 0.75rem + 1.8vw, 48px)) calc(76px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 

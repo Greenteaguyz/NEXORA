@@ -230,7 +230,7 @@
                     @if (method.type === 'card') {
                       <app-payment-brand-mark [mark]="method.brand" [height]="20"></app-payment-brand-mark>
                     } @else {
-                      <app-payment-brand-mark [mark]="method.bank === 'ABA' ? 'aba' : 'khqr'" [height]="20"></app-payment-brand-mark>
+                      <app-payment-brand-mark [mark]="'khqr'" [height]="20"></app-payment-brand-mark>
                     }
                   </div>
 
@@ -251,11 +251,11 @@
                     </div>
                   } @else {
                     <div class="method-account-number">
-                      <span class="bank-tag">{{ method.bank }} KHQR</span>
+                      <span class="bank-tag">Bakong KHQR</span>
                       <strong class="khqr-handle">{{ method.handle }}</strong>
                     </div>
                     <div class="method-meta-row">
-                      <span class="meta-holder">Bakong account</span>
+                      <span class="meta-holder">National Bank of Cambodia</span>
                       <span class="meta-expiry">Active</span>
                     </div>
                   }
@@ -314,6 +314,7 @@
 
         <app-add-payment-method-form
           [methods]="methods()"
+          [allowKhqr]="auth.isCreator()"
           (added)="onMethodAdded($event)"
           (cancel)="closeAddModal()">
         </app-add-payment-method-form>

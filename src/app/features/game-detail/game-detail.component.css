@@ -11,7 +11,7 @@
 .steam-game-detail-page {
   max-width: 1200px;
   margin: 0 auto;
-  padding: clamp(16px, 2.5vw, 28px) clamp(16px, 3vw, 32px) clamp(40px, 6vw, 64px);
+  padding: var(--fluid-page-pad-y, clamp(16px, 0.75rem + 1.5vw, 40px)) var(--fluid-page-pad-x, clamp(16px, 0.75rem + 1.8vw, 48px)) clamp(40px, 2rem + 3vw, 64px);
   color: var(--text-primary);
   font-family: var(--font-sans);
 }
@@ -20,7 +20,7 @@
    1. BREADCRUMBS & TOP TITLE
    -------------------------------------------------------------------------- */
 .steam-top-header {
-  margin-bottom: clamp(14px, 2vw, 20px);
+  margin-bottom: var(--fluid-grid-gap, clamp(14px, 0.7rem + 1vw, 28px));
 }
 
 .steam-breadcrumbs {
@@ -68,7 +68,7 @@
 }
 
 .steam-game-title {
-  font-size: clamp(1.6rem, 1.3rem + 1.5vw, 2.25rem);
+  font-size: var(--fluid-text-h1, clamp(1.75rem, 1.25rem + 2vw, 2.75rem));
   font-weight: 900;
   letter-spacing: -0.02em;
   color: #FFFFFF;

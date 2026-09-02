@@ -1,0 +1,142 @@
+<div class="data-table-wrapper">
+  <!-- Table Controls Bar -->
+  @if (searchable()) {
+    <div class="data-table-toolbar">
+      <div class="search-field-container">
+        <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="text"
+          class="table-search-input"
+          [placeholder]="searchPlaceholder()"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="onSearchChange($event)"
+          aria-label="Filter table records">
+        @if (searchQuery()) {
+          <button
+            type="button"
+            class="btn-clear-search"
+            (click)="onSearchChange('')"
+            aria-label="Clear search input">
+            &times;
+          </button>
+        }
+      </div>
+
+      <div class="table-record-count">
+        <span class="count-badge">{{ sortedData().length }} {{ sortedData().length === 1 ? 'record' : 'records' }}</span>
+      </div>
+    </div>
+  }
+
+  <!-- Responsive Table Container -->
+  <div class="table-responsive-container">
+    <table class="steam-data-table" role="table" aria-label="Data Table">
+      <thead>
+        <tr>
+          @for (col of columns(); track col.key) {
+            <th
+              [style.width]="col.width || 'auto'"
+              [class.sortable]="col.sortable"
+              [class.align-center]="col.align === 'center'"
+              [class.align-right]="col.align === 'right'"
+              [attr.aria-sort]="sortState().column === col.key ? (sortState().direction === 'asc' ? 'ascending' : 'descending') : 'none'"
+              (click)="onSort(col)">
+              <div class="th-content" [class.justify-end]="col.align === 'right'" [class.justify-center]="col.align === 'center'">
+                <span>{{ col.label }}</span>
+                @if (col.sortable) {
+                  <span class="sort-indicator" aria-hidden="true">
+                    @if (sortState().column === col.key && sortState().direction === 'asc') {
+                      <svg class="sort-icon-svg active" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="18 15 12 9 6 15"/>
+                      </svg>
+                    } @else if (sortState().column === col.key && sortState().direction === 'desc') {
+                      <svg class="sort-icon-svg active" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="6 9 12 15 18 9"/>
+                      </svg>
+                    } @else {
+                      <svg class="sort-icon-svg inactive" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M7 15l5 5 5-5M7 9l5-5 5 5"/>
+                      </svg>
+                    }
+                  </span>
+                }
+              </div>
+            </th>
+          }
+          @if (rowActionsTemplate) {
+            <th class="align-right" style="width: 100px;">Actions</th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of paginatedData(); track row['id'] || $index) {
+          <tr class="table-row" (click)="rowClick.emit(row)">
+            @for (col of columns(); track col.key) {
+              <td
+                [class.align-center]="col.align === 'center'"
+                [class.align-right]="col.align === 'right'">
+                {{ formatCell(row, col) }}
+              </td>
+            }
+            @if (rowActionsTemplate) {
+              <td class="align-right actions-cell" (click)="$event.stopPropagation()">
+                <ng-container *ngTemplateOutlet="rowActionsTemplate; context: { $implicit: row }"></ng-container>
+              </td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td [attr.colspan]="columns().length + (rowActionsTemplate ? 1 : 0)" class="empty-state-cell">
+              <div class="table-empty-wrap">
+                <svg class="empty-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <p class="empty-text">{{ emptyMessage() }}</p>
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Bar -->
+  @if (totalPages() > 1) {
+    <div class="data-table-pagination" aria-label="Table pagination">
+      <div class="pagination-info">
+        Showing <strong>{{ startIndex() }}</strong> – <strong>{{ endIndex() }}</strong> of <strong>{{ sortedData().length }}</strong>
+      </div>
+      <div class="pagination-controls">
+        <button
+          type="button"
+          class="btn-page-nav"
+          [disabled]="currentPage() <= 1"
+          (click)="prevPage()"
+          aria-label="Previous page">
+          <svg class="page-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          <span>Prev</span>
+        </button>
+        <span class="page-current-indicator">
+          Page {{ currentPage() }} of {{ totalPages() }}
+        </span>
+        <button
+          type="button"
+          class="btn-page-nav"
+          [disabled]="currentPage() >= totalPages()"
+          (click)="nextPage()"
+          aria-label="Next page">
+          <span>Next</span>
+          <svg class="page-nav-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  }
+</div>

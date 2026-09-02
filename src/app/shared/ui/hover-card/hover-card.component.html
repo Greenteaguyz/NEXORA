@@ -1,0 +1,54 @@
+<div
+  class="hover-card-popover"
+  [class.placement-left]="position.placement === 'left'"
+  [class.placement-right]="position.placement === 'right'"
+  [style.top.px]="position.top"
+  [style.left.px]="position.left"
+  role="tooltip"
+  aria-live="polite">
+  
+  <div class="hover-card-surface">
+    <!-- Header: Title & Developer -->
+    <div class="hover-card-header">
+      <h4 class="hover-game-title">{{ game.title }}</h4>
+      <span class="hover-meta-eyebrow">
+        by {{ game.ownerId === 'usr_alice' ? 'Alice Vance' : (game.ownerId === 'usr_carol' ? 'Carol PixelForge' : 'Indie Studio') }}
+      </span>
+    </div>
+
+    <!-- 16:9 Gameplay Preview Reel -->
+    <div class="hover-media-wrapper">
+      <img
+        [src]="currentScreenshot"
+        [alt]="game.title + ' Screenshot'"
+        class="hover-screenshot-img"
+        loading="eager"
+        decoding="async"
+        (error)="$any($event.target).src = 'assets/logo-icon.svg'">
+      
+      @if (game.screenshotUrls.length > 1) {
+        <div class="screenshot-indicators" aria-hidden="true">
+          @for (shot of game.screenshotUrls; track shot; let i = $index) {
+            <span
+              class="indicator-dot"
+              [class.active]="activeScreenshotIndex() === i">
+            </span>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Overall Review Sentiment -->
+    <div class="hover-review-row">
+      <span class="review-label">Overall Reviews:</span>
+      <span class="review-sentiment-tag">VERY POSITIVE (89%)</span>
+    </div>
+
+    <!-- User Tags -->
+    <div class="hover-tags-row">
+      @for (tag of game.tags.slice(0, 3); track tag) {
+        <span class="hover-tag-chip">#{{ tag }}</span>
+      }
+    </div>
+  </div>
+</div>

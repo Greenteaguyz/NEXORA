@@ -7,11 +7,14 @@ import { WISHLIST_DATA } from '../../../core/data/tokens';
 import { LIBRARY_DATA } from '../../../core/data/tokens';
 import { ToastService } from '../../../core/services/toast.service';
 import { ScrollLockDirective } from '../../directives/scroll-lock.directive';
+import { ContextMenuDirective } from '../context-menu/context-menu.directive';
+import { ContextMenuItem } from '../context-menu/context-menu.model';
+import { HoverCardDirective } from '../hover-card/hover-card.directive';
 
 @Component({
   selector: 'app-game-card',
   standalone: true,
-  imports: [CommonModule, RouterLink, ScrollLockDirective],
+  imports: [CommonModule, RouterLink, ScrollLockDirective, ContextMenuDirective, HoverCardDirective],
   templateUrl: './game-card.component.html',
   styleUrls: ['./game-card.component.css']
 })
@@ -158,6 +161,81 @@ export class GameCardComponent implements OnInit, OnChanges {
         this.toastService.show({ type: 'error', title: 'Wishlist Update Failed', message: 'Could not restore this game. Please try again.' });
       }
     });
+  }
+
+  get contextMenuItems(): ContextMenuItem[] {
+    if (!this.game) return [];
+
+    const items: ContextMenuItem[] = [
+      {
+        id: 'view-store',
+        label: 'View Store Page',
+        action: () => this.router.navigate(['/games', this.game.id])
+      },
+      {
+        id: 'wishlist-toggle',
+        label: this.isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist',
+        danger: this.isWishlisted,
+        action: () => this.toggleWishlistDirect()
+      },
+      {
+        id: 'copy-link',
+        label: 'Copy Store Link',
+        action: () => this.copyStoreLink()
+      }
+    ];
+
+    if (this.isOwned) {
+      items.unshift({
+        id: 'play-game',
+        label: 'Play Game',
+        action: () => this.router.navigate(['/library'])
+      });
+    }
+
+    return items;
+  }
+
+  copyStoreLink(): void {
+    if (!this.game) return;
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      const url = `${window.location.origin}/games/${this.game.id}`;
+      navigator.clipboard.writeText(url).then(() => {
+        this.toastService.show({
+          type: 'info',
+          title: 'Link Copied',
+          message: `Store link for "${this.game.title}" copied to clipboard.`
+        });
+      }).catch(() => {
+        this.toastService.show({
+          type: 'info',
+          title: 'Store Link',
+          message: `/games/${this.game.id}`
+        });
+      });
+    }
+  }
+
+  toggleWishlistDirect(): void {
+    const user = this.authService.currentUser();
+    if (!user) {
+      this.router.navigate(['/login'], { queryParams: { returnUrl: `/games/${this.game.id}` } });
+      return;
+    }
+    if (this.isWishlisted) {
+      this.confirmRemove();
+    } else {
+      this.wishlistData.addToWishlist(user.id, this.game.id).subscribe({
+        next: () => {
+          this.isWishlisted = true;
+          this.toastService.show({
+            type: 'success',
+            title: 'Added to Wishlist',
+            message: `${this.game.title} was added to your wishlist.`
+          });
+        }
+      });
+    }
   }
 
   private restoreFocus(): void {

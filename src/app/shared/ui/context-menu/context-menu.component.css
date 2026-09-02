@@ -1,0 +1,84 @@
+:host {
+  display: block;
+}
+
+.context-menu-wrapper {
+  position: fixed;
+  z-index: 1050;
+  min-width: 180px;
+  max-width: 260px;
+  outline: none;
+  animation: contextMenuFadeIn 0.12s ease-out;
+}
+
+@keyframes contextMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.context-menu-surface {
+  background-color: var(--bg-elevated, #1B2838);
+  border: 1px solid var(--border-card, #2A475E);
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.context-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 2px;
+  color: var(--text-primary, #F8FAFC);
+  font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transform: translateY(0);
+  transition: background-color 0.12s ease, color 0.12s ease;
+  outline: none;
+}
+
+.context-menu-item:hover,
+.context-menu-item:focus-visible {
+  background-color: rgba(102, 192, 244, 0.15);
+  color: var(--accent-400, #66C0F4);
+  transform: translateY(0);
+}
+
+.context-menu-item.item-danger {
+  color: var(--rose-500, #F43F5E);
+}
+
+.context-menu-item.item-danger:hover,
+.context-menu-item.item-danger:focus-visible {
+  background-color: rgba(244, 63, 94, 0.15);
+  color: #FB7185;
+}
+
+.context-menu-item.item-disabled,
+.context-menu-item:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.item-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

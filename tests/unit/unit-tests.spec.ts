@@ -20,6 +20,10 @@ import {
   getLockoutRemainingMs
 } from '../../src/app/core/auth/password-logic';
 import { DEFAULT_SEED_PASSWORD } from '../../src/app/core/auth/auth.mock';
+import { calculateContextMenuPosition } from '../../src/app/shared/ui/context-menu/context-menu-position.util';
+import { calculateHoverCardPosition } from '../../src/app/shared/ui/hover-card/hover-card-position.util';
+import { filterTableData, sortTableData, paginateTableData } from '../../src/app/shared/ui/data-table/data-table.util';
+import { getNextSlideIndex, getPrevSlideIndex, resolveActiveMedia } from '../../src/app/shared/ui/carousel/carousel.util';
 import { firstValueFrom } from 'rxjs';
 
 interface AssertionResult {
@@ -4777,9 +4781,182 @@ async function runPasswordSecurityUnitTests() {
 }
 
 // ---------------------------------------------------------------------------
+// Context Menu Overlay Position Calculation Unit Tests
+// ---------------------------------------------------------------------------
+console.log('\n--- Context Menu Overlay Positioning Tests ---');
+
+function runContextMenuPositionUnitTests() {
+  // Center click - no flip required
+  const centerPos = calculateContextMenuPosition(200, 300, 180, 220, 1200, 800, 8);
+  assert('ContextMenu Position', 'Normal click within bounds retains exact coordinates',
+    centerPos.left === 200 && centerPos.top === 300);
+
+  // Near right edge - flips horizontally left of click
+  const rightEdgePos = calculateContextMenuPosition(1150, 300, 180, 220, 1200, 800, 8);
+  assert('ContextMenu Position', 'Breach of right edge flips menu to left of click point',
+    rightEdgePos.left === 970 && rightEdgePos.top === 300);
+
+  // Near bottom edge - flips vertically above click
+  const bottomEdgePos = calculateContextMenuPosition(200, 750, 180, 220, 1200, 800, 8);
+  assert('ContextMenu Position', 'Breach of bottom edge flips menu above click point',
+    bottomEdgePos.left === 200 && bottomEdgePos.top === 530);
+
+  // Bottom-right corner - flips both horizontally and vertically
+  const cornerPos = calculateContextMenuPosition(1180, 780, 200, 200, 1200, 800, 10);
+  assert('ContextMenu Position', 'Corner click flips both horizontally and vertically',
+    cornerPos.left === 980 && cornerPos.top === 580);
+
+  // Negative or small viewport boundary clamps safely to padding
+  const clampedPos = calculateContextMenuPosition(0, 0, 500, 500, 400, 400, 12);
+  assert('ContextMenu Position', 'Oversized menu on small viewport clamps strictly to padding without negative values',
+    clampedPos.left >= 12 && clampedPos.top >= 12);
+
+  // Context Menu Items builder contract
+  const dummyGame = SEED_GAMES[0];
+  const unownedItems = [
+    { id: 'view-store', label: 'View Store Page', action: () => {} },
+    { id: 'wishlist-toggle', label: 'Add to Wishlist', danger: false, action: () => {} },
+    { id: 'copy-link', label: 'Copy Store Link', action: () => {} }
+  ];
+  assert('ContextMenu Items', 'Unowned game card menu has 3 standard actions', unownedItems.length === 3);
+  assert('ContextMenu Items', 'First action is View Store Page', unownedItems[0].id === 'view-store');
+
+  const ownedItems = [
+    { id: 'play-game', label: 'Play Game', action: () => {} },
+    ...unownedItems
+  ];
+  assert('ContextMenu Items', 'Owned game card menu prefixes Play Game action',
+    ownedItems.length === 4 && ownedItems[0].id === 'play-game');
+}
+
+// ---------------------------------------------------------------------------
+// Hover Card Viewport Positioning Unit Tests
+// ---------------------------------------------------------------------------
+console.log('\n--- Hover Card Positioning & Collision Tests ---');
+
+function runHoverCardPositionUnitTests() {
+  const cardRect = { top: 100, bottom: 400, left: 100, right: 400, width: 300, height: 300 };
+
+  // Left/Center element: places to the right
+  const rightPos = calculateHoverCardPosition(cardRect, 320, 260, 1920, 1080, 12, 10);
+  assert('HoverCard Position', 'Places on right when room available',
+    rightPos.placement === 'right' && rightPos.left === 410 && rightPos.top === 100);
+
+  // Right-aligned element: flips to the left
+  const rightCardRect = { top: 100, bottom: 400, left: 1650, right: 1900, width: 250, height: 300 };
+  const leftPos = calculateHoverCardPosition(rightCardRect, 320, 260, 1920, 1080, 12, 10);
+  assert('HoverCard Position', 'Flips to left when right edge constrained',
+    leftPos.placement === 'left' && leftPos.left === 1320 && leftPos.top === 100);
+
+  // Bottom-overflow clamping: pushes top up cleanly
+  const bottomCardRect = { top: 900, bottom: 1100, left: 100, right: 400, width: 300, height: 200 };
+  const clampedBottomPos = calculateHoverCardPosition(bottomCardRect, 320, 260, 1920, 1080, 12, 10);
+  assert('HoverCard Position', 'Clamps top coordinate so card remains inside viewport',
+    clampedBottomPos.top === (1080 - 260 - 12) && clampedBottomPos.top >= 12);
+}
+
+// ---------------------------------------------------------------------------
+// Data Table Engine Unit Tests
+// ---------------------------------------------------------------------------
+console.log('\n--- Data Table Filtering, Sorting & Pagination Tests ---');
+
+function runDataTableUnitTests() {
+  const sampleItems = [
+    { id: '1', title: 'Marvel Rivals', price: 4.99, unitsSold: 1420, genre: 'Action' },
+    { id: '2', title: 'Bloodstrike', price: 0, unitsSold: 8950, genre: 'FPS' },
+    { id: '3', title: 'Assassin\'s Creed', price: 39.99, unitsSold: 640, genre: 'Adventure' },
+    { id: '4', title: 'God of War', price: 49.99, unitsSold: 1200, genre: 'Action' },
+    { id: '5', title: 'Apex Legends', price: 0, unitsSold: 25000, genre: 'Hero Shooter' }
+  ];
+
+  // Filtering
+  const filterMarvel = filterTableData(sampleItems, 'marvel', ['title', 'genre']);
+  assert('DataTable Filter', 'Filters matching title correctly',
+    filterMarvel.length === 1 && filterMarvel[0].title === 'Marvel Rivals');
+
+  const filterAction = filterTableData(sampleItems, 'action', ['title', 'genre']);
+  assert('DataTable Filter', 'Filters matching genre across multiple items',
+    filterAction.length === 2);
+
+  const filterEmpty = filterTableData(sampleItems, '', ['title']);
+  assert('DataTable Filter', 'Empty query returns all items', filterEmpty.length === 5);
+
+  // Sorting
+  const sortPriceAsc = sortTableData(sampleItems, 'price', 'asc');
+  assert('DataTable Sort', 'Sorts numbers ascending',
+    sortPriceAsc[0].price === 0 && sortPriceAsc[sortPriceAsc.length - 1].price === 49.99);
+
+  const sortPriceDesc = sortTableData(sampleItems, 'price', 'desc');
+  assert('DataTable Sort', 'Sorts numbers descending',
+    sortPriceDesc[0].price === 49.99 && sortPriceDesc[sortPriceDesc.length - 1].price === 0);
+
+  const sortTitleAsc = sortTableData(sampleItems, 'title', 'asc');
+  assert('DataTable Sort', 'Sorts strings alphabetically',
+    sortTitleAsc[0].title === 'Apex Legends');
+
+  // Pagination
+  const page1 = paginateTableData(sampleItems, 1, 2);
+  assert('DataTable Pagination', 'First page contains correct 2 items',
+    page1.length === 2 && page1[0].id === '1' && page1[1].id === '2');
+
+  const page3 = paginateTableData(sampleItems, 3, 2);
+  assert('DataTable Pagination', 'Last page contains remainder item',
+    page3.length === 1 && page3[0].id === '5');
+}
+
+// ---------------------------------------------------------------------------
+// Store Showcase Carousel Engine Unit Tests
+// ---------------------------------------------------------------------------
+console.log('\n--- Store Showcase Carousel Navigation & Media Tests ---');
+
+function runCarouselUnitTests() {
+  const totalSlides = 5;
+
+  // Next Index with loop wrapping
+  assert('Carousel Navigation', 'Advances to next slide within bounds',
+    getNextSlideIndex(0, totalSlides, true) === 1);
+  assert('Carousel Navigation', 'Advances to last slide from penultimate index',
+    getNextSlideIndex(3, totalSlides, true) === 4);
+  assert('Carousel Navigation', 'Wraps from last slide back to first when loop is enabled',
+    getNextSlideIndex(4, totalSlides, true) === 0);
+  assert('Carousel Navigation', 'Clamps to last slide when loop is disabled',
+    getNextSlideIndex(4, totalSlides, false) === 4);
+
+  // Prev Index with loop wrapping
+  assert('Carousel Navigation', 'Decrements to previous slide within bounds',
+    getPrevSlideIndex(3, totalSlides, true) === 2);
+  assert('Carousel Navigation', 'Wraps from first slide to last when loop is enabled',
+    getPrevSlideIndex(0, totalSlides, true) === 4);
+  assert('Carousel Navigation', 'Clamps to first slide when loop is disabled',
+    getPrevSlideIndex(0, totalSlides, false) === 0);
+
+  // Zero or empty slides safety
+  assert('Carousel Navigation', 'Safe zero index for empty collection',
+    getNextSlideIndex(0, 0, true) === 0 && getPrevSlideIndex(0, 0, true) === 0);
+
+  // Media resolution on thumbnail hover
+  const mainImg = 'assets/images/marvel-rivals-wide-hero.jpg';
+  const thumbs = [
+    'assets/images/marvel-rivals-bg.jpg',
+    'assets/images/marvel-rivals-ss3.jpg'
+  ];
+
+  assert('Carousel Media', 'Returns main image when no thumbnail is hovered',
+    resolveActiveMedia(mainImg, thumbs, null) === mainImg);
+  assert('Carousel Media', 'Resolves active hovered thumbnail preview URL',
+    resolveActiveMedia(mainImg, thumbs, 1) === 'assets/images/marvel-rivals-ss3.jpg');
+  assert('Carousel Media', 'Falls back to main image if hovered index is out of range',
+    resolveActiveMedia(mainImg, thumbs, 99) === mainImg);
+}
+
+// ---------------------------------------------------------------------------
 // Summary Runner
 // ---------------------------------------------------------------------------
 (async () => {
+  runContextMenuPositionUnitTests();
+  runHoverCardPositionUnitTests();
+  runDataTableUnitTests();
+  runCarouselUnitTests();
   await runPasswordSecurityUnitTests();
 
   const passed = results.filter(r => r.passed).length;

@@ -1,4 +1,4 @@
-<article class="game-card">
+<article class="game-card" [appContextMenu]="contextMenuItems" [appHoverCard]="game">
   <!-- 16:9 Cover Thumbnail -->
   <div class="card-media">
     <a [routerLink]="['/games', game.id]" class="media-link" [attr.aria-label]="game.title">
