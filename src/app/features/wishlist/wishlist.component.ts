@@ -12,6 +12,8 @@ import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.com
 import { SpatialNavDirective } from '../../shared/directives/spatial-nav.directive';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 
+import { TranslationService } from '../../core/services/translation.service';
+
 export interface WishlistDisplayItem {
   entry: WishlistEntry;
   game: Game;
@@ -35,6 +37,8 @@ export class WishlistComponent {
   private wishlistData = inject(WISHLIST_DATA);
   private gamesData = inject(GAMES_DATA);
   private auth = inject(AuthService);
+  private translationService = inject(TranslationService);
+  t = this.translationService.t;
 
   items: WishlistDisplayItem[] = [];
   loading = true;

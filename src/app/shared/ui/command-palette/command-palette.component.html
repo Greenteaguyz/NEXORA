@@ -12,7 +12,7 @@
           #searchInput
           type="text"
           class="cmd-search-input"
-          placeholder="Search games, genres, creators..."
+          [placeholder]="t()('cmd.search_placeholder')"
           [value]="searchQuery()"
           (input)="onSearchInput($event)"
           aria-label="Command search query"

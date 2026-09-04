@@ -11,6 +11,8 @@ import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 
+import { TranslationService } from '../../core/services/translation.service';
+
 export interface OrderDisplayItem {
   order: Order;
   game?: Game;
@@ -33,6 +35,8 @@ export class OrdersComponent {
   private ordersData = inject(ORDERS_DATA);
   private gamesData = inject(GAMES_DATA);
   private auth = inject(AuthService);
+  private translationService = inject(TranslationService);
+  t = this.translationService.t;
 
   items: OrderDisplayItem[] = [];
   loading = true;

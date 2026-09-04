@@ -108,6 +108,7 @@ export class DownloadButtonComponent {
   private startInteractiveDownload(): void {
     this.downloadPhase.set('downloading');
     this.progressPercent.set(12);
+    this.download.emit(); // Immediately emit to sync global tray
 
     const step1 = setTimeout(() => {
       this.progressPercent.set(45);
@@ -127,7 +128,6 @@ export class DownloadButtonComponent {
     const step4 = setTimeout(() => {
       this.downloadPhase.set('completed');
       this.progressPercent.set(100);
-      this.download.emit();
     }, 950);
 
     // Auto-reset back to idle after 3.5 seconds

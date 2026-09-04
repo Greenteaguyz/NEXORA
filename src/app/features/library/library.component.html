@@ -3,9 +3,9 @@
   <header class="library-header">
     <div class="library-header-main">
       <div class="header-left-cluster">
-        <span class="header-eyebrow">COLLECTION</span>
-        <h1 class="library-title">Library</h1>
-        <p class="library-subtitle">Your collection of games and offline installers.</p>
+        <span class="header-eyebrow">{{ t()('library.eyebrow') }}</span>
+        <h1 class="library-title">{{ t()('library.title') }}</h1>
+        <p class="library-subtitle">{{ t()('library.subtitle') }}</p>
       </div>
     </div>
 
@@ -20,7 +20,7 @@
           <input 
             type="text" 
             [(ngModel)]="searchQuery" 
-            placeholder="Search your games..." 
+            [placeholder]="t()('library.search_placeholder')" 
             class="library-search-input"
             (keydown.escape)="searchQuery = ''"
             aria-label="Filter games by title or tag">
@@ -42,7 +42,7 @@
                 class="filter-tag-chip" 
                 [class.active]="selectedTags.size === 0" 
                 (click)="clearTags()">
-                <span>All Games</span>
+                <span>{{ t()('library.all_games') }}</span>
                 <span class="filter-count-badge">{{ items.length }}</span>
               </button>
               @for (tag of availableTags; track tag) {

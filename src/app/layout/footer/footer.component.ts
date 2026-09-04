@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth/auth.service';
+import { TranslationService } from '../../core/services/translation.service';
 
 @Component({
   selector: 'app-footer',
@@ -11,4 +12,6 @@ import { AuthService } from '../../core/auth/auth.service';
 })
 export class FooterComponent {
   authService = inject(AuthService);
+  private translationService = inject(TranslationService);
+  t = this.translationService.t;
 }

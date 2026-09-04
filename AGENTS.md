@@ -15,8 +15,11 @@ Desktop-grade Steam-inspired storefront and creator platform built with Angular 
 ## 4. Rules w/ Verifiable Instructions
 - **Angular 18**: Standalone components, `OnPush`, Signals (`signal()`, `computed()`), `@if`/`@for`.
 - **Skill Lifecycle & Workflow Enforcements**:
-  - *Primary Agent (Pro)*: Act as Architect Lead. Synthesize, run gates, and plan.
-  - *Worker Subagents (Flash)*: Use `invoke_subagent` (`Model: "flash"`) for codebase audits, targeted code generation, and iterative fixes.
+  - *Primary Agent (Pro)*: Act as Architect Lead. Synthesize, orchestrate, run quality gates, and maintain high-level plan.
+  - *Mandatory Subagent Delegation (`invoke_subagent`)*:
+    - **During Planning**: MUST invoke subagents (`research`, `architect`, `planner`) via `invoke_subagent` to audit codebase touchpoints, check dependencies, and map blast radius before writing or finalizing `implementation_plan.md`. Never plan monolithically.
+    - **While Implementing Plan**: MUST invoke worker subagents (`invoke_subagent` with `Model: "flash"` or specialized roles like `code-reviewer`, `typescript-reviewer`, `a11y-architect`, `build-error-resolver`, `e2e-runner`) for implementation chunks. Primary agent delegates code drafting, audits, and verification to subagents, then integrates findings.
+    - **Post-Change Verification**: Proactively invoke `code-reviewer` or `typescript-reviewer` subagent on modified code before running the final test suite.
   - *Before/During task*: **Always auto-apply `ponytail`** (YAGNI, strict code reuse, zero new NPM packages) before writing any code. Keep responses terse (`caveman`), define scope (`intent-layer`), and orchestrate teams (`teamwork-preview`).
   - *After task*: **Do not run `ponytail` here**. Instead, run `click-path-audit` to trace state logic, `impeccable` for UI polish, and filter test noise (`rtk-repo`).
 - **Quality Gate**: Run `npm run verify`; zero failures allowed.
@@ -38,3 +41,5 @@ Desktop-grade Steam-inspired storefront and creator platform built with Angular 
 - **Multi-Persona State**: `local-store.service.ts` reactively isolates creator (Alice) vs buyer (Bob) state.
 - **Subscriptions**: Bound observables using `takeUntilDestroyed()`.
 - **O(1) Lookups**: Use `Map` indexed by id for hot paths instead of `Array.find`.
+- **Font Stack Ordering**: Primary Latin fonts (`Plus Jakarta Sans`) must precede localized non-Latin script fonts (`Suwannaphum`, Khmer) in font stacks to prevent Latin glyph hijacking.
+- **Dropdown/Outside-Click Listeners**: Stop propagation (`event.stopPropagation()`) on toggle buttons to prevent `@HostListener('document:click')` from immediately undoing open states.

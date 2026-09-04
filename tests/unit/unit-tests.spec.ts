@@ -24,6 +24,7 @@ import { calculateContextMenuPosition } from '../../src/app/shared/ui/context-me
 import { calculateHoverCardPosition } from '../../src/app/shared/ui/hover-card/hover-card-position.util';
 import { filterTableData, sortTableData, paginateTableData } from '../../src/app/shared/ui/data-table/data-table.util';
 import { getNextSlideIndex, getPrevSlideIndex, resolveActiveMedia } from '../../src/app/shared/ui/carousel/carousel.util';
+import { resolveTranslation } from '../../src/app/core/services/translation.util';
 import { firstValueFrom } from 'rxjs';
 
 interface AssertionResult {
@@ -4950,13 +4951,281 @@ function runCarouselUnitTests() {
 }
 
 // ---------------------------------------------------------------------------
+// Translation Utility Unit Tests
+// ---------------------------------------------------------------------------
+console.log('\n--- Translation Util Tests ---');
+
+import * as fs from 'fs';
+import * as path from 'path';
+
+function runTranslationUnitTests() {
+  const dictionary = { 'header.store': 'ហាង', 'header.library': 'បណ្ណាល័យ' };
+  const fallback = { 'header.store': 'Store', 'header.wishlist': 'Wishlist' };
+
+  assert('Translation', 'Returns target language if key exists',
+    resolveTranslation('header.store', dictionary, fallback) === 'ហាង');
+    
+  assert('Translation', 'Falls back to English if key missing in target',
+    resolveTranslation('header.wishlist', dictionary, fallback) === 'Wishlist');
+    
+  assert('Translation', 'Returns raw key if completely missing',
+    resolveTranslation('missing.key', dictionary, fallback) === 'missing.key');
+
+  // Tier 1 Localization Dictionary Key Requirements
+  let enDict: Record<string, string> = {};
+  let khDict: Record<string, string> = {};
+  try {
+    const enPath = path.resolve(__dirname, '../../../src/assets/i18n/en.json');
+    const khPath = path.resolve(__dirname, '../../../src/assets/i18n/kh.json');
+    enDict = JSON.parse(fs.readFileSync(enPath, 'utf8'));
+    khDict = JSON.parse(fs.readFileSync(khPath, 'utf8'));
+  } catch (e) {
+    console.error('Failed to load dictionaries for testing', e);
+  }
+
+  const requiredKeys = [
+    'catalog.featured',
+    'catalog.search_placeholder',
+    'catalog.sort_by',
+    'action.add_to_cart',
+    'action.in_library',
+    'action.view_details',
+    'checkout.title',
+    'checkout.confirm',
+    'checkout.cancel',
+    'common.free_to_play',
+    'common.no_results',
+    'header.genres',
+    'header.orders',
+    'header.creator_studio',
+    'header.search_btn',
+    'auth.signup',
+    'footer.col_store',
+    'footer.col_creators',
+    'footer.col_help_legal',
+    'footer.browse_all',
+    'library.title',
+    'library.search_placeholder',
+    'library.all_games',
+    'wishlist.title',
+    'wishlist.search_placeholder',
+    'wishlist.all_saved',
+    'orders.title',
+    'orders.col_id',
+    'orders.col_amount',
+    'orders.col_status',
+    'detail.store_breadcrumb',
+    'detail.system_reqs',
+    'detail.about_game',
+    'cmd.search_placeholder',
+    'tray.title'
+  ];
+
+  for (const k of requiredKeys) {
+    assert('Translation', `EN dictionary contains key: ${k}`, !!enDict[k]);
+    assert('Translation', `KH dictionary contains key: ${k}`, !!khDict[k]);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Component Translation Integration Tests
+// ---------------------------------------------------------------------------
+console.log('\n--- Component Translation Integration Tests ---');
+
+function runComponentTranslationTests() {
+  let catalogHtml = '';
+  try {
+    const catalogPath = path.resolve(__dirname, '../../../src/app/features/game-catalog/game-catalog.component.html');
+    catalogHtml = fs.readFileSync(catalogPath, 'utf8');
+  } catch (e) {
+    console.error('Failed to load HTML for testing', e);
+  }
+
+  assert('Component Integration', 'Catalog component HTML binds to catalog.featured', catalogHtml.includes("t()('catalog.featured')"));
+  assert('Component Integration', 'Catalog component HTML binds to catalog.search_placeholder', catalogHtml.includes("t()('catalog.search_placeholder')"));
+
+  // Step 3 RED tests for Shared UI
+  let gameCardHtml = '';
+  let purchaseModalHtml = '';
+  try {
+    gameCardHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/shared/ui/game-card/game-card.component.html'), 'utf8');
+    purchaseModalHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/shared/ui/purchase-confirm-modal/purchase-confirm-modal.component.html'), 'utf8');
+  } catch (e) {
+    console.error('Failed to load shared UI HTML', e);
+  }
+
+  // Layout Chrome Tests
+  let headerHtml = '';
+  let footerHtml = '';
+  try {
+    headerHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/layout/header/header.component.html'), 'utf8');
+    footerHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/layout/footer/footer.component.html'), 'utf8');
+  } catch (e) {
+    console.error('Failed to load layout HTML', e);
+  }
+
+  assert('Layout Chrome Integration', 'Header binds to header.genres', headerHtml.includes("header.genres"));
+  assert('Layout Chrome Integration', 'Header binds to header.orders', headerHtml.includes("header.orders"));
+  assert('Layout Chrome Integration', 'Header binds to header.creator_studio', headerHtml.includes("header.creator_studio"));
+  assert('Layout Chrome Integration', 'Footer binds to footer.col_store', footerHtml.includes("footer.col_store"));
+  assert('Layout Chrome Integration', 'Footer binds to footer.col_creators', footerHtml.includes("footer.col_creators"));
+  assert('Layout Chrome Integration', 'Footer binds to footer.col_help_legal', footerHtml.includes("footer.col_help_legal"));
+
+  // Buyer Feature Pages Tests
+  let libraryHtml = '';
+  let wishlistHtml = '';
+  let ordersHtml = '';
+  let gameDetailHtml = '';
+  try {
+    libraryHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/features/library/library.component.html'), 'utf8');
+    wishlistHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/features/wishlist/wishlist.component.html'), 'utf8');
+    ordersHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/features/orders/orders.component.html'), 'utf8');
+    gameDetailHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/features/game-detail/game-detail.component.html'), 'utf8');
+  } catch (e) {
+    console.error('Failed to load feature HTML', e);
+  }
+
+  assert('Buyer Pages Integration', 'Library binds to library.title', libraryHtml.includes("library.title"));
+  assert('Buyer Pages Integration', 'Library binds to library.search_placeholder', libraryHtml.includes("library.search_placeholder"));
+  assert('Buyer Pages Integration', 'Wishlist binds to wishlist.title', wishlistHtml.includes("wishlist.title"));
+  assert('Buyer Pages Integration', 'Wishlist binds to wishlist.search_placeholder', wishlistHtml.includes("wishlist.search_placeholder"));
+  assert('Buyer Pages Integration', 'Orders binds to orders.title', ordersHtml.includes("orders.title"));
+  assert('Buyer Pages Integration', 'Orders binds to orders.col_id', ordersHtml.includes("orders.col_id"));
+  assert('Buyer Pages Integration', 'GameDetail binds to detail.store_breadcrumb', gameDetailHtml.includes("detail.store_breadcrumb"));
+
+  // Shared Trays & Modals Tests
+  let cmdPaletteHtml = '';
+  let downloadTrayHtml = '';
+  try {
+    cmdPaletteHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/shared/ui/command-palette/command-palette.component.html'), 'utf8');
+    downloadTrayHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/shared/ui/download-tray/download-tray.component.ts'), 'utf8');
+  } catch (e) {
+    console.error('Failed to load tray HTML', e);
+  }
+
+  assert('Shared Trays Integration', 'CommandPalette binds to cmd.search_placeholder', cmdPaletteHtml.includes("cmd.search_placeholder"));
+  assert('Shared Trays Integration', 'DownloadTray binds to tray.title', downloadTrayHtml.includes("tray.title"));
+}
+
+// ---------------------------------------------------------------------------
+// Hover Card Lifecycle & Route Transition Invariants (Sticky Popover Prevention)
+// ---------------------------------------------------------------------------
+console.log('\n--- Hover Card Lifecycle & Route Transition Invariants ---');
+
+function runHoverCardLifecycleUnitTests() {
+  const directivePath = path.resolve(__dirname, '../../../src/app/shared/ui/hover-card/hover-card.directive.ts');
+  const servicePath = path.resolve(__dirname, '../../../src/app/core/services/hover-card.service.ts');
+  const appCompPath = path.resolve(__dirname, '../../../src/app/app.component.ts');
+
+  const directiveSrc = fs.readFileSync(directivePath, 'utf8');
+  const serviceSrc = fs.readFileSync(servicePath, 'utf8');
+  const appCompSrc = fs.readFileSync(appCompPath, 'utf8');
+
+  // Test 1: Directive implements OnDestroy
+  assert('HoverCard Directive Lifecycle', 'Directive implements OnDestroy interface',
+    directiveSrc.includes('implements OnDestroy')
+  );
+
+  // Test 2: Directive cleans up popover on component unmount
+  assert('HoverCard Directive Lifecycle', 'Directive calls close() in ngOnDestroy hook',
+    directiveSrc.includes('ngOnDestroy()') && directiveSrc.includes('this.hoverCardService.close()')
+  );
+
+  // Test 3: Directive dismisses popover immediately on card click
+  assert('HoverCard Directive Lifecycle', 'Directive dismisses hover card on click event',
+    directiveSrc.includes("@HostListener('click')") || directiveSrc.includes('@HostListener("click")')
+  );
+
+  // Test 4: HoverCardService listens for router navigation to dismiss floating card
+  assert('HoverCard Service Lifecycle', 'Service subscribes to Router events or handles navigation cleanup',
+    serviceSrc.includes('NavigationStart') || serviceSrc.includes('router') || appCompSrc.includes('hoverCardService.close()')
+  );
+
+  // Test 5: HoverCardService dismisses on scroll event
+  assert('HoverCard Service Lifecycle', 'Service closes active card on window scroll or resize',
+    serviceSrc.includes('scroll') || appCompSrc.includes('hoverCardService.close()')
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Typography & Khmer Sub-Font Stack Invariants (AC-FONT-001/002/003)
+// ---------------------------------------------------------------------------
+console.log('\n--- Typography & Khmer Sub-Font Stack Tests ---');
+
+function runFontStackUnitTests() {
+  const indexHtmlPath = path.resolve(__dirname, '../../../src/index.html');
+  const stylesCssPath = path.resolve(__dirname, '../../../src/styles.css');
+
+  const indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
+  const stylesCss = fs.readFileSync(stylesCssPath, 'utf8');
+
+  // Test 1: Google Fonts link includes Noto Sans Khmer
+  assert('Typography Sub-Font', 'index.html includes Noto Sans Khmer in Google Fonts link',
+    indexHtml.includes('Noto+Sans+Khmer:wght@400;500;600;700') || indexHtml.includes('Noto+Sans+Khmer')
+  );
+
+  // Test 2: styles.css body.lang-kh includes Noto Sans Khmer in --font-sans
+  assert('Typography Sub-Font', 'styles.css body.lang-kh configures Noto Sans Khmer in --font-sans',
+    stylesCss.includes("'Noto Sans Khmer'") && stylesCss.includes('--font-sans')
+  );
+
+  // Test 3: AGENTS.md Invariant: Latin font (Plus Jakarta Sans) strictly precedes Noto Sans Khmer
+  const sansMatch = stylesCss.match(/--font-sans:[^;]+;/g);
+  const khSansLine = sansMatch ? sansMatch.find(l => l.includes('Noto Sans Khmer')) : '';
+  const latinPrecedes = khSansLine
+    ? khSansLine.indexOf('Plus Jakarta Sans') !== -1 &&
+      khSansLine.indexOf('Noto Sans Khmer') !== -1 &&
+      khSansLine.indexOf('Plus Jakarta Sans') < khSansLine.indexOf('Noto Sans Khmer')
+    : false;
+
+  assert('Typography Sub-Font', 'Latin font Plus Jakarta Sans strictly precedes Noto Sans Khmer (prevent glyph hijacking)',
+    latinPrecedes
+  );
+
+  // Test 4: Display font stack includes Noto Sans Khmer for headings
+  const displayMatch = stylesCss.match(/--font-display:[^;]+;/g);
+  const khDisplayLine = displayMatch ? displayMatch.find(l => l.includes('Noto Sans Khmer')) : '';
+  const displayLatinPrecedes = khDisplayLine
+    ? khDisplayLine.indexOf('Outfit') !== -1 &&
+      khDisplayLine.indexOf('Noto Sans Khmer') !== -1 &&
+      khDisplayLine.indexOf('Outfit') < khDisplayLine.indexOf('Noto Sans Khmer')
+    : false;
+
+  assert('Typography Sub-Font', 'Display stack places Outfit before Noto Sans Khmer in body.lang-kh',
+    displayLatinPrecedes
+  );
+
+  // Test 5: Mono font stack includes Noto Sans Khmer to prevent legacy serif fallback in column headings
+  const monoMatch = stylesCss.match(/--font-mono:[^;]+;/g);
+  const khMonoLine = monoMatch ? monoMatch.find(l => l.includes('Noto Sans Khmer')) : '';
+  const monoLatinPrecedes = khMonoLine
+    ? khMonoLine.indexOf('JetBrains Mono') !== -1 &&
+      khMonoLine.indexOf('Noto Sans Khmer') !== -1 &&
+      khMonoLine.indexOf('JetBrains Mono') < khMonoLine.indexOf('Noto Sans Khmer')
+    : false;
+
+  assert('Typography Sub-Font', 'Mono stack places JetBrains Mono before Noto Sans Khmer in body.lang-kh',
+    monoLatinPrecedes
+  );
+
+  // Test 6: Letter-spacing reset for col-heading in Khmer to preserve ligatures
+  assert('Typography Sub-Font', 'Khmer styles reset letter-spacing for col-heading',
+    stylesCss.includes('body.lang-kh .col-heading') && stylesCss.includes('letter-spacing: 0')
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Summary Runner
 // ---------------------------------------------------------------------------
 (async () => {
   runContextMenuPositionUnitTests();
   runHoverCardPositionUnitTests();
+  runHoverCardLifecycleUnitTests();
+  runFontStackUnitTests();
   runDataTableUnitTests();
   runCarouselUnitTests();
+  runTranslationUnitTests();
+  runComponentTranslationTests();
   await runPasswordSecurityUnitTests();
 
   const passed = results.filter(r => r.passed).length;

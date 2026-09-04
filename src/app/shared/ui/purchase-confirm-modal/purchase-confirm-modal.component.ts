@@ -10,6 +10,7 @@ import { ScrollLockDirective } from '../../directives/scroll-lock.directive';
 import { AddPaymentMethodFormComponent } from '../add-payment-method-form/add-payment-method-form.component';
 import { AbaPaywaySheetComponent } from '../aba-payway-sheet/aba-payway-sheet.component';
 import { formatUsd } from '../../../core/data/payments/payment-logic';
+import { TranslationService } from '../../../core/services/translation.service';
 
 export interface PurchaseConfirmationEvent {
   paymentMethod: string;
@@ -45,6 +46,8 @@ export class PurchaseConfirmModalComponent implements OnInit {
 
   private readonly auth = inject(AuthService);
   private readonly paymentsData = inject(PAYMENTS_DATA);
+  private readonly translationService = inject(TranslationService);
+  t = this.translationService.t;
   private previouslyFocused: HTMLElement | null = null;
 
   // Saved Payment Methods and Wallet

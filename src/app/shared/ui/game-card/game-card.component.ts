@@ -10,6 +10,7 @@ import { ScrollLockDirective } from '../../directives/scroll-lock.directive';
 import { ContextMenuDirective } from '../context-menu/context-menu.directive';
 import { ContextMenuItem } from '../context-menu/context-menu.model';
 import { HoverCardDirective } from '../hover-card/hover-card.directive';
+import { TranslationService } from '../../../core/services/translation.service';
 
 @Component({
   selector: 'app-game-card',
@@ -27,6 +28,8 @@ export class GameCardComponent implements OnInit, OnChanges {
   private libraryData = inject(LIBRARY_DATA);
   private router = inject(Router);
   private readonly toastService = inject(ToastService);
+  private translationService = inject(TranslationService);
+  t = this.translationService.t;
 
   isWishlisted = false;
   isOwned = false;

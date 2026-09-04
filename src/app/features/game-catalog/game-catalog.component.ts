@@ -11,6 +11,7 @@ import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.com
 import { SpatialNavDirective } from '../../shared/directives/spatial-nav.directive';
 import { AmbientSpotlightComponent } from '../../shared/ui/ambient-spotlight/ambient-spotlight.component';
 import { AmbientColorExtractorService } from '../../core/services/ambient-color-extractor.service';
+import { TranslationService } from '../../core/services/translation.service';
 
 @Component({
   selector: 'app-game-catalog',
@@ -32,6 +33,8 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private ambientExtractor = inject(AmbientColorExtractorService);
+  private translationService = inject(TranslationService);
+  t = this.translationService.t;
 
   allGames: Game[] = [];
   filteredGames: Game[] = [];

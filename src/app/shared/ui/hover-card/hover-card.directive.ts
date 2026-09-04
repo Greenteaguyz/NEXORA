@@ -1,4 +1,4 @@
-import { Directive, Input, HostListener, ElementRef, inject } from '@angular/core';
+import { Directive, Input, HostListener, ElementRef, inject, OnDestroy } from '@angular/core';
 import { Game } from '../../../core/models/game.model';
 import { HoverCardService } from '../../../core/services/hover-card.service';
 
@@ -6,7 +6,7 @@ import { HoverCardService } from '../../../core/services/hover-card.service';
   selector: '[appHoverCard]',
   standalone: true
 })
-export class HoverCardDirective {
+export class HoverCardDirective implements OnDestroy {
   private el = inject(ElementRef);
   private hoverCardService = inject(HoverCardService);
 
@@ -21,6 +21,15 @@ export class HoverCardDirective {
 
   @HostListener('mouseleave')
   onMouseLeave(): void {
+    this.hoverCardService.close();
+  }
+
+  @HostListener('click')
+  onClick(): void {
+    this.hoverCardService.close();
+  }
+
+  ngOnDestroy(): void {
     this.hoverCardService.close();
   }
 }

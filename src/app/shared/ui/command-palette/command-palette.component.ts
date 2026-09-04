@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { GAMES_DATA } from '../../../core/data/tokens';
 import { AuthService } from '../../../core/auth/auth.service';
 import { CommandPaletteService } from '../../../core/services/command-palette.service';
+import { TranslationService } from '../../../core/services/translation.service';
 import { ScrollLockDirective } from '../../directives/scroll-lock.directive';
 import { Game } from '../../../core/models/game.model';
 
@@ -34,6 +35,8 @@ export class CommandPaletteComponent implements OnInit {
   private auth = inject(AuthService);
   private destroyRef = inject(DestroyRef);
   private paletteService = inject(CommandPaletteService);
+  private translationService = inject(TranslationService);
+  t = this.translationService.t;
 
   @ViewChild('searchInput') searchInputRef!: ElementRef<HTMLInputElement>;
 

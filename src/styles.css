@@ -437,3 +437,29 @@ button:active:not(:disabled),
   }
 }
 
+/* ==========================================================================
+   KHMER TYPOGRAPHY & LOCALIZATION (AC-001)
+   ========================================================================== */
+body.lang-kh {
+  --font-sans: 'Plus Jakarta Sans', 'Noto Sans Khmer', 'Kantumruy Pro', system-ui, sans-serif;
+  --font-display: 'Motiva Sans', 'Outfit', 'Noto Sans Khmer', 'Kantumruy Pro', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Noto Sans Khmer', monospace;
+  line-height: 1.6;
+}
+
+body.lang-kh h1, 
+body.lang-kh h2, 
+body.lang-kh h3, 
+body.lang-kh h4, 
+body.lang-kh h5, 
+body.lang-kh h6, 
+body.lang-kh .hero-title, 
+body.lang-kh .game-title, 
+body.lang-kh .steam-game-title, 
+body.lang-kh .dialog-title,
+body.lang-kh .col-heading,
+body.lang-kh .hover-meta-eyebrow,
+body.lang-kh button {
+  line-height: 1.5;
+  letter-spacing: 0;
+}

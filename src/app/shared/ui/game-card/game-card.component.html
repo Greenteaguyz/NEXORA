@@ -56,9 +56,9 @@
 
       <div class="price-badge-wrapper">
         @if (isOwned) {
-          <span class="price-badge owned">Owned</span>
+          <span class="price-badge owned">{{ t()('action.in_library') }}</span>
         } @else if (game.price === 0) {
-          <span class="price-badge free">FREE</span>
+          <span class="price-badge free">{{ t()('common.free_to_play') }}</span>
         } @else {
           <span class="price-badge paid">${{ game.price.toFixed(2) }}</span>
         }

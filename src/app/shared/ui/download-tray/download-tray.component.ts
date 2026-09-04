@@ -2,6 +2,7 @@ import { Component, inject, computed, ChangeDetectionStrategy } from '@angular/c
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { DownloadService, DownloadItem } from '../../../core/services/download.service';
+import { TranslationService } from '../../../core/services/translation.service';
 
 @Component({
   selector: 'app-download-tray',
@@ -26,7 +27,7 @@ import { DownloadService, DownloadItem } from '../../../core/services/download.s
                   <polyline points="7 10 12 15 17 10"/>
                   <line x1="12" y1="15" x2="12" y2="3"/>
                 </svg>
-                <span class="expanded-heading">DOWNLOAD MANAGER</span>
+                <span class="expanded-heading">{{ t()('tray.title') }}</span>
                 <span class="expanded-badge">{{ activeCount() }} Active</span>
               </div>
               <button 
@@ -631,6 +632,8 @@ import { DownloadService, DownloadItem } from '../../../core/services/download.s
 })
 export class DownloadTrayComponent {
   protected downloadService = inject(DownloadService);
+  private translationService = inject(TranslationService);
+  t = this.translationService.t;
 
   readonly latestItem = computed<DownloadItem | undefined>(() => {
     const items = this.downloadService.activeDownloads();

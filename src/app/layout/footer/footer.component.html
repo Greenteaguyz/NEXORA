@@ -6,40 +6,40 @@
         <span>NEXORA</span>
       </a>
       <p class="brand-desc">
-        Desktop game storefront and creator platform. Buy games, download standalone installers, and keep your library forever.
+        {{ t()('footer.brand_desc') }}
       </p>
     </div>
 
     <div class="footer-column">
-      <h4 class="col-heading">Store</h4>
+      <h4 class="col-heading">{{ t()('footer.col_store') }}</h4>
       <ul class="footer-links">
-        <li><a routerLink="/catalog">Browse All</a></li>
-        <li><a routerLink="/genres">Genres</a></li>
+        <li><a routerLink="/catalog">{{ t()('footer.browse_all') }}</a></li>
+        <li><a routerLink="/genres">{{ t()('header.genres') }}</a></li>
         @if (authService.isAuthenticated()) {
-          <li><a routerLink="/library">Library</a></li>
-          <li><a routerLink="/wishlist">Wishlist</a></li>
+          <li><a routerLink="/library">{{ t()('header.library') }}</a></li>
+          <li><a routerLink="/wishlist">{{ t()('header.wishlist') }}</a></li>
         }
       </ul>
     </div>
 
     <div class="footer-column">
-      <h4 class="col-heading">Creators</h4>
+      <h4 class="col-heading">{{ t()('footer.col_creators') }}</h4>
       <ul class="footer-links">
         @if (authService.isCreator()) {
-          <li><a routerLink="/studio">Creator Studio</a></li>
-          <li><a routerLink="/studio/games/new">Add New Game</a></li>
+          <li><a routerLink="/studio">{{ t()('header.creator_studio') }}</a></li>
+          <li><a routerLink="/studio/games/new">{{ t()('footer.add_new_game') }}</a></li>
         }
-        <li><a routerLink="/support">Publishing Guide</a></li>
+        <li><a routerLink="/support">{{ t()('footer.publishing_guide') }}</a></li>
       </ul>
     </div>
 
     <div class="footer-column">
-      <h4 class="col-heading">Help & Legal</h4>
+      <h4 class="col-heading">{{ t()('footer.col_help_legal') }}</h4>
       <ul class="footer-links">
-        <li><a routerLink="/support">Help & FAQ</a></li>
-        <li><a routerLink="/support">Privacy Policy</a></li>
+        <li><a routerLink="/support">{{ t()('footer.faq') }}</a></li>
+        <li><a routerLink="/support">{{ t()('footer.privacy') }}</a></li>
         @if (authService.isAuthenticated()) {
-          <li><a routerLink="/profile">Account Settings</a></li>
+          <li><a routerLink="/profile">{{ t()('footer.account_settings') }}</a></li>
         }
       </ul>
     </div>
@@ -51,8 +51,8 @@
         © 2026 NEXORA Corporation. All rights reserved. All trademarks are property of their respective owners in the US and other countries.
       </p>
       <div class="legal-nav-links">
-        <a routerLink="/support" fragment="privacy" class="legal-link">Privacy Policy</a>
-        <a routerLink="/support" fragment="privacy" class="legal-link">Terms of Service</a>
+        <a routerLink="/support" fragment="privacy" class="legal-link">{{ t()('footer.privacy') }}</a>
+        <a routerLink="/support" fragment="privacy" class="legal-link">{{ t()('footer.terms') }}</a>
       </div>
     </div>
   </div>

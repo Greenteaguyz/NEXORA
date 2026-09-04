@@ -19,6 +19,8 @@ import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.com
 import { SpatialNavDirective } from '../../shared/directives/spatial-nav.directive';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 
+import { TranslationService } from '../../core/services/translation.service';
+
 export interface LibraryDisplayItem {
   entry: LibraryEntry;
   game: Game;
@@ -48,6 +50,8 @@ export class LibraryComponent {
   private auth = inject(AuthService);
   private toast = inject(ToastService);
   protected downloadService = inject(DownloadService);
+  private translationService = inject(TranslationService);
+  t = this.translationService.t;
 
   items: LibraryDisplayItem[] = [];
   loading = true;

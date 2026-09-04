@@ -11,6 +11,8 @@ import { ToastService } from '../../core/services/toast.service';
 import { WISHLIST_DATA } from '../../core/data/tokens';
 import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
+import { LanguageSwitcherComponent } from '../../shared/ui/language-switcher/language-switcher.component';
+import { TranslationService } from '../../core/services/translation.service';
 import {
   staggerDelay,
   computeIndicatorGeometry,
@@ -20,13 +22,15 @@ import {
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, RoleBadgeComponent, ScrollLockDirective],
+  imports: [CommonModule, RouterLink, RouterLinkActive, RoleBadgeComponent, ScrollLockDirective, LanguageSwitcherComponent],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnDestroy {
   authService = inject(AuthService);
   themeService = inject(ThemeService);
+  translationService = inject(TranslationService);
+  t = this.translationService.t;
   commandPaletteService = inject(CommandPaletteService);
   private toastService = inject(ToastService);
   private router = inject(Router);
@@ -93,6 +97,7 @@ export class HeaderComponent implements OnDestroy {
       this.currentUrl();
       this.authService.isAuthenticated();
       this.authService.isCreator();
+      this.translationService.activeLang();
       this.scheduleIndicatorMeasure();
     }, { allowSignalWrites: true });
   }
@@ -279,8 +284,10 @@ export class HeaderComponent implements OnDestroy {
       // .is-visible:not(.no-anim)); the next frame reveals in place.
       this.indicatorPrimed = true;
       requestAnimationFrame(() => {
-        this.navIndicatorNoAnim.set(false);
-        this.navIndicatorVisible.set(true);
+        requestAnimationFrame(() => {
+          this.navIndicatorNoAnim.set(false);
+          this.navIndicatorVisible.set(true);
+        });
       });
     } else {
       this.navIndicatorVisible.set(true);

@@ -14,36 +14,36 @@
           <ul class="nav-links">
             <li class="nav-item">
               <a routerLink="/catalog" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
-                Store
+                {{ translationService.translate('header.store') }}
               </a>
             </li>
             <li class="nav-item">
               <a routerLink="/genres" routerLinkActive="active">
-                Genres
+                {{ translationService.translate('header.genres') }}
               </a>
             </li>
 
             @if (authService.isAuthenticated()) {
               <li class="nav-item">
                 <a routerLink="/library" routerLinkActive="active">
-                  Library
+                  {{ translationService.translate('header.library') }}
                 </a>
               </li>
               <li class="nav-item">
                 <a routerLink="/wishlist" routerLinkActive="active">
-                  Wishlist
+                  {{ translationService.translate('header.wishlist') }}
                 </a>
               </li>
               <li class="nav-item">
                 <a routerLink="/orders" routerLinkActive="active">
-                  Orders
+                  {{ translationService.translate('header.orders') }}
                 </a>
               </li>
 
               @if (authService.isCreator()) {
                 <li class="nav-item">
                   <a routerLink="/studio" routerLinkActive="active">
-                    Creator Studio
+                    {{ translationService.translate('header.creator_studio') }}
                   </a>
                 </li>
               }
@@ -74,9 +74,11 @@
             <circle cx="11" cy="11" r="8"/>
             <line x1="21" y1="21" x2="16.65" y2="16.65"/>
           </svg>
-          <span class="search-btn-label">Search</span>
+          <span class="search-btn-label">{{ translationService.translate('header.search_btn') }}</span>
           <kbd class="search-btn-kbd">Ctrl K</kbd>
         </button>
+
+        <app-language-switcher></app-language-switcher>
 
         <!-- Dual-Segment Theme Switcher -->
         <button 
@@ -117,9 +119,9 @@
                   class="user-avatar">
                 <span class="user-name">{{ authService.currentUser()?.displayName }}</span>
                 @if (authService.isCreator()) {
-                  <span class="role-tag creator">Creator</span>
+                  <span class="role-tag creator">{{ translationService.translate('header.role_creator') }}</span>
                 } @else {
-                  <span class="role-tag buyer">Buyer</span>
+                  <span class="role-tag buyer">{{ translationService.translate('header.role_buyer') }}</span>
                 }
               </a>
 
@@ -129,13 +131,13 @@
                 class="btn-logout" 
                 (click)="requestLogout($event)"
                 title="Log out of account">
-                Log Out
+                {{ translationService.translate('auth.logout') }}
               </button>
             </div>
           } @else {
             <div class="auth-buttons">
-              <a routerLink="/login" class="btn-secondary">Log In</a>
-              <a routerLink="/register" class="btn-primary">Sign Up</a>
+              <a routerLink="/login" class="btn-secondary">{{ translationService.translate('auth.login') }}</a>
+              <a routerLink="/register" class="btn-primary">{{ translationService.translate('auth.signup') }}</a>
             </div>
           }
         </div>

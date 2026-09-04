@@ -3,9 +3,9 @@
   <header class="orders-header">
     <div class="orders-header-main">
       <div class="header-left-cluster">
-        <span class="header-eyebrow">ORDERS</span>
-        <h1 class="orders-title">Purchase History</h1>
-        <p class="orders-subtitle">Past orders, details, and receipts.</p>
+        <span class="header-eyebrow">{{ t()('orders.eyebrow') }}</span>
+        <h1 class="orders-title">{{ t()('orders.title') }}</h1>
+        <p class="orders-subtitle">{{ t()('orders.subtitle') }}</p>
       </div>
 
       <div class="orders-stats-pill" aria-label="Order summary statistics">
@@ -39,12 +39,12 @@
         <table class="orders-table">
           <thead>
             <tr>
-              <th scope="col">Order ID</th>
-              <th scope="col">Game Title</th>
-              <th scope="col">Date</th>
-              <th scope="col">Amount</th>
-              <th scope="col">Status</th>
-              <th scope="col" class="text-right">Actions</th>
+              <th scope="col">{{ t()('orders.col_id') }}</th>
+              <th scope="col">{{ t()('orders.col_game') }}</th>
+              <th scope="col">{{ t()('orders.col_date') }}</th>
+              <th scope="col">{{ t()('orders.col_amount') }}</th>
+              <th scope="col">{{ t()('orders.col_status') }}</th>
+              <th scope="col" class="text-right">{{ t()('orders.col_actions') }}</th>
             </tr>
           </thead>
           <tbody>

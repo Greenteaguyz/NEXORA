@@ -16,7 +16,7 @@
         </svg>
       </div>
       <div class="header-text">
-        <h2 class="modal-title">Confirm Purchase</h2>
+        <h2 class="modal-title">{{ t()('checkout.title') }}</h2>
         <p class="modal-subtitle">Order Summary</p>
       </div>
       <button 
@@ -217,7 +217,7 @@
         class="btn-cancel" 
         (click)="onCancel()" 
         [disabled]="isBusy">
-        Cancel
+        {{ t()('checkout.cancel') }}
       </button>
 
       <button 

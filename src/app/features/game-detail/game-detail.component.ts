@@ -16,6 +16,7 @@ import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { PurchaseConfirmModalComponent, PurchaseConfirmationEvent } from '../../shared/ui/purchase-confirm-modal/purchase-confirm-modal.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
+import { TranslationService } from '../../core/services/translation.service';
 
 export interface SpecItem {
   icon: 'os' | 'cpu' | 'ram' | 'gpu' | 'directx' | 'storage';
@@ -59,6 +60,8 @@ export class GameDetailComponent implements OnInit, OnDestroy {
   private paymentsData = inject(PAYMENTS_DATA);
   private downloadService = inject(DownloadService);
   authService = inject(AuthService);
+  private translationService = inject(TranslationService);
+  t = this.translationService.t;
 
   game: Game | null = null;
   creator: User | null = null;

@@ -219,6 +219,13 @@ export class AppComponent implements OnDestroy {
   @HostListener('window:scroll')
   @HostListener('window:resize')
   onWindowScroll() {
+    if (this.hoverCardService.isOpen()) {
+      this.hoverCardService.close();
+    }
+    if (this.contextMenuService.isOpen()) {
+      this.contextMenuService.close();
+    }
+
     if (!isPlatformBrowser(this.platformId) || this.isRafScheduled) return;
 
     this.isRafScheduled = true;

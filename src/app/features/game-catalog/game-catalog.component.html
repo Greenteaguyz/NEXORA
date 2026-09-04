@@ -12,7 +12,7 @@
        ========================================================================= -->
   @if (currentHeroGame) {
     <section class="steam-featured-section" aria-label="Featured and Recommended">
-      <h2 class="featured-section-title">FEATURED & RECOMMENDED</h2>
+      <h2 class="featured-section-title">{{ t()('catalog.featured') }}</h2>
 
       <div 
         class="steam-carousel-capsule" 
@@ -151,7 +151,7 @@
             aria-label="Search games by title or genre"
             autocomplete="off"
             class="search-input" 
-            placeholder="Search games, tags, or creators..."
+            [placeholder]="t()('catalog.search_placeholder')"
             [value]="searchTerm" 
             (input)="onSearchInput($event)"
             (keydown.escape)="clearSearch()">
@@ -190,7 +190,7 @@
 
         <!-- Sort Dropdown (Steam Standard) -->
         <div class="sort-selector-cluster">
-          <label for="catalog-sort" class="sort-label">SORT BY:</label>
+          <label for="catalog-sort" class="sort-label">{{ t()('catalog.sort_by') }}</label>
           <select id="catalog-sort" class="sort-select" [value]="sortBy" (change)="onSortChange($event)" aria-label="Sort catalog games">
             <option value="featured">Featured</option>
             <option value="newest">New Releases</option>
