@@ -119,6 +119,22 @@ test.describe('NEXORA E2E User Journeys', () => {
     await page.waitForTimeout(200);
     await expect(page.locator('.preview-game-card, .preview-card-title').first()).toBeVisible();
     await expect(page.locator('.preview-card-title').first()).toContainText('Aero Cyber Strike');
+
+    // Verify Bento Media Hub grid geometry
+    await expect(page.locator('.bento-media-hub')).toBeVisible();
+    await expect(page.locator('.bento-media-hub .hero-card')).toBeVisible();
+    await expect(page.locator('.bento-media-hub .screenshot-slot')).toHaveCount(4);
+
+    // Verify Quick Price Tiers & Visual Split
+    await page.locator('.btn-price-tier:has-text("$9.99")').click();
+    await expect(page.locator('.payout-amount')).toContainText('8.99'); // 90% creator split
+
+    // Verify Reactive Readiness Checklist updates
+    const readinessPercent = page.locator('.readiness-badge');
+    await expect(readinessPercent).not.toHaveText('100%');
+
+    // Verify Sticky Action Footer
+    await expect(page.locator('.form-actions-footer.sticky')).toBeVisible();
   });
 
   test('Journey 5: Profile Avatar Edit, Preset Selection & Instant Header Sync', async ({ page }) => {
