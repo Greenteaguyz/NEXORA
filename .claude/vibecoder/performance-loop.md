@@ -1,47 +1,27 @@
----
-name: performance-audit
-description: Autonomously speed up this codebase by working through 100 performance prompts one at a time — rendering, bundle size, network, caching, database queries — applying each optimization with a git commit per step. Runs unattended until all 100 are done. Invoke with /performance-audit.
-disable-model-invocation: true
-allowed-tools: Read Edit Write Grep Glob Bash(git *) Bash(npm *) Bash(npx *) Bash(pnpm *) Bash(yarn *) Bash(bun *)
-disallowed-tools: AskUserQuestion
----
-
 # Performance optimization loop
 
-Work through all 100 prompts in the **Prompts** section at the bottom of this file, one at a time, applying each to **this** codebase. Run start to finish unattended — never stop to ask the user a question.
+## Setup (once)
 
-## Setup (do once)
+1. `git status --short`; if dirty, commit "wip before perf audit".
+2. Branch: `git checkout -b vibecoder/performance` (or resume it).
+3. Run typecheck/lint/test scripts from `package.json`; record results in the progress file as the correctness baseline — later prompts are judged by "no NEW failures," not absolute green.
+4. ONE production build allowed here only: record bundle/chunk sizes in `.claude/vibecoder/performance-baseline.md`.
 
-1. Check the working tree: `git status --short`. If there are uncommitted changes, commit them first ("wip before perf audit") so each prompt's work stays isolated.
-2. Switch to a dedicated branch so nothing lands on the user's main branch:
-   `git checkout -b vibecoder/performance` — if it already exists, `git checkout vibecoder/performance` and resume.
-3. Open the progress file `.claude/vibecoder/performance-progress.md`. If it doesn't exist, create it (and its directory) with all 100 prompts listed as unchecked items: `- [ ] 1. <title>` … `- [ ] 100. <title>`.
+## Loop (for each unchecked prompt N, in order)
 
-## The loop
+1. Confirm the tree is clean; if not, fold back or reset first.
+2. Apply the prompt, or record N/A with a one-line reason (both valid).
+3. Run typecheck/lint/test every time. If a baseline-green check now fails and can't be fixed within this prompt, revert (`git checkout -- .`), mark it `[x]` (skipped — broke checks, reverted), continue clean.
+4. Commit: `git add -A && git commit -m "perf N: <short title>"`.
+5. Mark `- [x]` with a one-line note (keep terse — re-read after compactions).
+6. Every 10th prompt: re-run checks and one build; append deltas to the baseline file so regressions surface mid-run.
+7. Go straight to N+1. Never ask questions mid-run.
 
-For each prompt N still unchecked in the progress file, in order from 1 to 100:
+## Standing rules
 
-1. Read prompt N from the **Prompts** section below.
-2. Apply it to this codebase as written: investigate first, then make the change. If the issue genuinely isn't present or the relevant tech doesn't exist here, that is a valid outcome — treat it as N/A with a one-line reason instead of forcing an edit.
-3. Verify you didn't break anything: if the project has a typecheck, lint, or test script (check `package.json`), run it; otherwise re-read the files you changed for obvious mistakes. Do **not** run a production build to verify — use lighter checks.
-4. Commit just this prompt's changes: `git add -A && git commit -m "perf N: <short title>"` (append ` (n/a)` to the message when nothing applied — still commit so the progress file update is recorded).
-5. Mark prompt N `- [x]` in the progress file with a one-line note of what you did.
-6. Go straight to N+1. Do not summarize each step or wait for input.
-
-## Resuming after a context reset
-
-A 100-step run will compact context several times. After any reset, re-read the progress file and the prompts below, then continue from the first unchecked prompt. **The progress file and git history are the source of truth — not your memory of what you did.**
-
-## When all 100 are done
-
-Post one final summary: how many prompts applied, how many were N/A and why (grouped), the most impactful changes, and the branch name (`vibecoder/performance`). Tell the user to review the branch and merge when satisfied.
-
-## Rules
-
-- Never ask the user anything mid-run. Make the most reasonable decision and keep moving.
-- One prompt = one commit. Keep each commit scoped to its prompt.
-- Never force-push, never commit to `main`/`master` directly, never delete unrelated code or features.
-- Don't trade correctness for speed — if an optimization would change behavior, keep the behavior. Mark a prompt skipped with a reason if it can't be done safely, and continue.
+- Architectural items (Web Workers, service workers, streaming SSR, optimistic UI, edge/CDN moves) get only the smallest safe slice plus a written follow-up plan — never autonomously provision external services.
+- Never force-push, never commit to main, never delete features.
+- Final summary is written to `.claude/vibecoder/performance-report.md` (applied count, N/A grouped, before/after deltas, branch name) and doubles as the PR description.
 
 # Prompts
 
