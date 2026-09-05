@@ -55,11 +55,7 @@
     },
     {
       "id": "wizard_lane",
-      "label": "Game Authoring & 3-Step Wizard"
-    },
-    {
-      "id": "settlement_lane",
-      "label": "Storefront & Revenue Settlement"
+      "label": "Game Authoring & Publishing"
     }
   ],
   "phases": [
@@ -104,7 +100,7 @@
     {
       "id": "store_settlement",
       "label": "Commerce payout",
-      "lane": "settlement_lane",
+      "lane": "wizard_lane",
       "fromCol": 4,
       "toCol": 4,
       "variant": "dashed"
@@ -157,7 +153,7 @@
     {
       "id": "draft_autosave",
       "lane": "safety_lane",
-      "col": 2,
+      "col": 1,
       "type": "backend",
       "label": "Drafts Autosave",
       "sublabel": "background sync state",
@@ -175,15 +171,15 @@
     {
       "id": "recycle_bin",
       "lane": "safety_lane",
-      "col": 3,
+      "col": 2,
       "type": "database",
       "label": "Recycle Bin",
-      "sublabel": "30-day soft delete recovery",
+      "sublabel": "30-day soft delete",
       "width": 140
     },
     {
       "id": "live_catalog",
-      "lane": "wizard_lane",
+      "lane": "account_lane",
       "col": 4,
       "type": "frontend",
       "label": "Live Store Listing",
@@ -192,7 +188,7 @@
     },
     {
       "id": "khqr_payout",
-      "lane": "settlement_lane",
+      "lane": "wizard_lane",
       "col": 4,
       "type": "backend",
       "label": "KHQR Settlement",

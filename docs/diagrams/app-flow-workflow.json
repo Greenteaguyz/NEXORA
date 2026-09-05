@@ -49,11 +49,7 @@
     },
     {
       "id": "commerce",
-      "label": "Checkout & Transactions"
-    },
-    {
-      "id": "library_lane",
-      "label": "Player Library & Downloads"
+      "label": "Checkout & Player Library"
     },
     {
       "id": "platform_lane",
@@ -102,8 +98,8 @@
     {
       "id": "play_group",
       "label": "Local game delivery",
-      "lane": "library_lane",
-      "fromCol": 3,
+      "lane": "commerce",
+      "fromCol": 4,
       "toCol": 4,
       "variant": "dashed"
     }
@@ -145,8 +141,8 @@
     },
     {
       "id": "wishlist",
-      "lane": "commerce",
-      "col": 1,
+      "lane": "discovery",
+      "col": 2,
       "type": "frontend",
       "label": "Wishlist",
       "sublabel": "saved games",
@@ -164,7 +160,7 @@
     {
       "id": "wallet",
       "lane": "platform_lane",
-      "col": 2,
+      "col": 1,
       "type": "frontend",
       "label": "Store Wallet",
       "sublabel": "funds & voucher",
@@ -181,7 +177,7 @@
     },
     {
       "id": "library",
-      "lane": "library_lane",
+      "lane": "commerce",
       "col": 4,
       "type": "frontend",
       "label": "Player Library",
