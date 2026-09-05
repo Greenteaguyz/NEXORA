@@ -1,0 +1,13 @@
+Codemap Generation Report
+Date: 2026-09-05T16:51:03.185Z
+Files Created:
+- docs/CODEMAPS/architecture.md
+- docs/CODEMAPS/frontend.md
+- docs/CODEMAPS/data.md
+- docs/CODEMAPS/backend.md
+- docs/CODEMAPS/dependencies.md
+
+Summary:
+- Token-lean codemaps generated for Angular 18 Steam-inspired storefront.
+- Reflected recent Khmer localization (200 keys, lazy loaded), Account Password security UX, wizard navigation fix, and 90/10 revenue split.
+- Architecture matches graph queries from graft and code-review-graph.

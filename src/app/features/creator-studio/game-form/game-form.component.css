@@ -140,6 +140,10 @@
   gap: clamp(16px, 1.8vw, 24px);
 }
 
+.wizard-step-panel[hidden] {
+  display: none !important;
+}
+
 /* Step 3 Review Card */
 .step3-review-card {
   display: flex;
@@ -1022,7 +1026,7 @@
 .readiness-progress-track {
   height: 6px;
   background: rgba(0, 0, 0, 0.3);
-  border-radius: 9999px;
+  border-radius: var(--radius-xs);
   overflow: hidden;
   border: 1px solid var(--border-card);
 }
@@ -1338,6 +1342,12 @@
    Light Mode Theme Overrides (High-Contrast WCAG AAA Standards)
    ========================================================================== */
 
+
+:host-context([data-theme="light"]) .form-actions-footer.sticky {
+  background: rgba(255, 255, 255, 0.95);
+  border-top: 1px solid var(--border-card);
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
+}
 
 :host-context([data-theme="light"]) .btn-cancel {
   color: var(--text-secondary);

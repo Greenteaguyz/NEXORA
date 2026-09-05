@@ -1,0 +1,347 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "NEXORA Application Flow & Core Workflows",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "buyer-journey",
+        "label": "Storefront Discovery & Purchase",
+        "focus": [
+          "catalog",
+          "game_detail",
+          "checkout",
+          "split_engine",
+          "orders",
+          "library"
+        ],
+        "note": "Trace a game from catalog discovery to checkout, revenue split, and library ownership."
+      },
+      {
+        "id": "creator-publishing",
+        "label": "Creator Studio & Publishing Flow",
+        "focus": [
+          "profile",
+          "studio",
+          "wizard",
+          "catalog"
+        ],
+        "note": "Follow creator onboarding, listing creation through the 3-step wizard, and live publication."
+      },
+      {
+        "id": "account-security",
+        "label": "Account Security & Wallet",
+        "focus": [
+          "profile",
+          "pwd_modal",
+          "payment",
+          "checkout"
+        ],
+        "note": "Inspect credential management with lockout defense and wallet funding for store checkout."
+      }
+    ],
+    "output": "docs/diagrams/app-flow-workflow.html"
+  },
+  "lanes": [
+    {
+      "id": "discovery",
+      "label": "Store & Discovery"
+    },
+    {
+      "id": "transaction",
+      "label": "Checkout & Ownership"
+    },
+    {
+      "id": "account",
+      "label": "Account & Creator Studio"
+    },
+    {
+      "id": "platform",
+      "label": "Platform Services & State"
+    }
+  ],
+  "phases": [
+    {
+      "id": "browse",
+      "label": "Discovery & Evaluation",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "transact",
+      "label": "Order & Fulfillment",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "lifecycle",
+      "label": "Library & Creator Lifecycle",
+      "fromCol": 4,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "groups": [
+    {
+      "id": "store_group",
+      "label": "Storefront browsing",
+      "lane": "discovery",
+      "fromCol": 0,
+      "toCol": 1,
+      "variant": "default"
+    },
+    {
+      "id": "checkout_group",
+      "label": "Order pipeline",
+      "lane": "transaction",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "creator_group",
+      "label": "Creator publishing",
+      "lane": "account",
+      "fromCol": 3,
+      "toCol": 5,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "catalog",
+    "game_detail",
+    "checkout",
+    "orders",
+    "library"
+  ],
+  "nodes": [
+    {
+      "id": "catalog",
+      "lane": "discovery",
+      "col": 0,
+      "type": "frontend",
+      "label": "Game Catalog",
+      "sublabel": "filters, search & tags",
+      "width": 136
+    },
+    {
+      "id": "game_detail",
+      "lane": "discovery",
+      "col": 1,
+      "type": "frontend",
+      "label": "Game Detail",
+      "sublabel": "media, specs & purchase CTA",
+      "width": 136
+    },
+    {
+      "id": "wishlist",
+      "lane": "transaction",
+      "col": 1,
+      "type": "frontend",
+      "label": "Wishlist",
+      "sublabel": "saved titles & alerts",
+      "width": 136
+    },
+    {
+      "id": "checkout",
+      "lane": "transaction",
+      "col": 2,
+      "type": "security",
+      "label": "Neutral Checkout",
+      "sublabel": "cards / wallet / KHQR",
+      "tag": "neutral default",
+      "width": 136
+    },
+    {
+      "id": "split_engine",
+      "lane": "platform",
+      "col": 2,
+      "type": "backend",
+      "label": "Revenue Split Engine",
+      "sublabel": "90% creator / 10% platform",
+      "tag": "instant split",
+      "width": 136
+    },
+    {
+      "id": "orders",
+      "lane": "transaction",
+      "col": 3,
+      "type": "backend",
+      "label": "Orders & Receipts",
+      "sublabel": "immutable transaction log",
+      "width": 136
+    },
+    {
+      "id": "library",
+      "lane": "transaction",
+      "col": 4,
+      "type": "frontend",
+      "label": "Player Library",
+      "sublabel": "instant ownership & play",
+      "width": 136
+    },
+    {
+      "id": "profile",
+      "lane": "account",
+      "col": 0,
+      "type": "frontend",
+      "label": "Account Profile",
+      "sublabel": "Alice (dev) vs Bob (buyer)",
+      "width": 136
+    },
+    {
+      "id": "pwd_modal",
+      "lane": "platform",
+      "col": 0,
+      "type": "security",
+      "label": "Account Password",
+      "sublabel": "lockout defense & hash",
+      "tag": "5 attempts limit",
+      "width": 136
+    },
+    {
+      "id": "payment",
+      "lane": "account",
+      "col": 1,
+      "type": "frontend",
+      "label": "Wallet & Payment",
+      "sublabel": "balance & gift card redeem",
+      "width": 136
+    },
+    {
+      "id": "studio",
+      "lane": "account",
+      "col": 3,
+      "type": "frontend",
+      "label": "Creator Studio",
+      "sublabel": "drafts, recycle bin & metrics",
+      "width": 136
+    },
+    {
+      "id": "wizard",
+      "lane": "account",
+      "col": 4,
+      "type": "frontend",
+      "label": "3-Step Game Wizard",
+      "sublabel": "info, media & specs",
+      "width": 136
+    }
+  ],
+  "edges": [
+    {
+      "id": "catalog-detail",
+      "from": "catalog",
+      "to": "game_detail",
+      "label": "select game",
+      "variant": "emphasis"
+    },
+    {
+      "id": "detail-checkout",
+      "from": "game_detail",
+      "to": "checkout",
+      "label": "buy game",
+      "variant": "emphasis"
+    },
+    {
+      "id": "detail-wishlist",
+      "from": "game_detail",
+      "to": "wishlist",
+      "label": "wishlist",
+      "variant": "dashed"
+    },
+    {
+      "id": "wishlist-checkout",
+      "from": "wishlist",
+      "to": "checkout",
+      "label": "buy saved",
+      "variant": "default"
+    },
+    {
+      "id": "checkout-split",
+      "from": "checkout",
+      "to": "split_engine",
+      "label": "split revenue",
+      "variant": "security"
+    },
+    {
+      "id": "split-orders",
+      "from": "split_engine",
+      "to": "orders",
+      "label": "record invoice",
+      "variant": "default"
+    },
+    {
+      "id": "checkout-orders",
+      "from": "checkout",
+      "to": "orders",
+      "variant": "emphasis"
+    },
+    {
+      "id": "orders-library",
+      "from": "orders",
+      "to": "library",
+      "label": "grant ownership",
+      "variant": "emphasis"
+    },
+    {
+      "id": "profile-password",
+      "from": "profile",
+      "to": "pwd_modal",
+      "label": "auth security",
+      "variant": "security"
+    },
+    {
+      "id": "profile-payment",
+      "from": "profile",
+      "to": "payment",
+      "label": "manage wallet",
+      "variant": "default"
+    },
+    {
+      "id": "payment-checkout",
+      "from": "payment",
+      "to": "checkout",
+      "label": "wallet funds",
+      "variant": "dashed"
+    },
+    {
+      "id": "studio-wizard",
+      "from": "studio",
+      "to": "wizard",
+      "label": "create / edit",
+      "variant": "emphasis"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Storefront & Checkout",
+      "items": [
+        "Neutral checkout requires explicit payment method selection",
+        "Instant 90% creator / 10% platform revenue split execution",
+        "Immediate ownership registration in Library with local state isolation"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Creator Studio & Publishing",
+      "items": [
+        "Isolated multi-persona state: Alice (creator) vs Bob (buyer)",
+        "3-step game wizard with unsaved changes guard and responsive tabs",
+        "Draft autosave and recycle bin with 30-day soft-delete recovery"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Security, Identity & I18n",
+      "items": [
+        "Brute-force lockout safeguards (5 attempts, 60-second cooldown)",
+        "Durable credential isolation in separate auth_credentials storage",
+        "Comprehensive English and Khmer translation with dynamic chunk loading"
+      ]
+    }
+  ]
+}

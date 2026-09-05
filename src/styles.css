@@ -1,13 +1,11 @@
-@import "bootstrap/dist/css/bootstrap.min.css" layer(bootstrap);
-
 /* ==========================================================================
    NEXORA DESIGN SYSTEM & STEAM DESIGN SYSTEM TOKENS
    ========================================================================== */
 
 :root {
   /* Typography Stack: Motiva Sans / Outfit (Display & Headings) + Plus Jakarta Sans (UI & Body) + JetBrains Mono (Specs) */
-  --font-display: 'Motiva Sans', 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-sans:    'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Motiva Sans', 'Outfit', 'Noto Sans Khmer', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans:    'Plus Jakarta Sans', 'Noto Sans Khmer', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono:    'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
 
   /* Steam Brand Accents (Dark Mode) */
@@ -131,6 +129,10 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+[hidden] {
+  display: none !important;
 }
 
 /* Suppress native browser password reveal icons in Edge/WebKit (Jakob's Law) */
@@ -402,14 +404,14 @@ body.app-scroll-locked {
   height: 48px;
   border-radius: var(--radius-full, 9999px);
   background-color: rgba(102, 192, 244, 0.6);
-  box-shadow: 0 0 10px rgba(102, 192, 244, 0.35);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
   will-change: transform;
   transform: translateZ(0);
 }
 
 [data-theme="light"] .virtual-scroll-thumb {
   background-color: rgba(0, 120, 212, 0.6);
-  box-shadow: 0 0 8px rgba(0, 120, 212, 0.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 /* Tactile Active Micro-Interactions (Snappy Steam Desktop Press Feel) */

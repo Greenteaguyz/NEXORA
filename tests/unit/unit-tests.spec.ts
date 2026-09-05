@@ -25,6 +25,8 @@ import { calculateHoverCardPosition } from '../../src/app/shared/ui/hover-card/h
 import { filterTableData, sortTableData, paginateTableData } from '../../src/app/shared/ui/data-table/data-table.util';
 import { getNextSlideIndex, getPrevSlideIndex, resolveActiveMedia } from '../../src/app/shared/ui/carousel/carousel.util';
 import { resolveTranslation } from '../../src/app/core/services/translation.util';
+import { en } from '../../src/app/core/services/i18n/en';
+import { kh } from '../../src/app/core/services/i18n/kh';
 import { firstValueFrom } from 'rxjs';
 
 interface AssertionResult {
@@ -4972,16 +4974,8 @@ function runTranslationUnitTests() {
     resolveTranslation('missing.key', dictionary, fallback) === 'missing.key');
 
   // Tier 1 Localization Dictionary Key Requirements
-  let enDict: Record<string, string> = {};
-  let khDict: Record<string, string> = {};
-  try {
-    const enPath = path.resolve(__dirname, '../../../src/assets/i18n/en.json');
-    const khPath = path.resolve(__dirname, '../../../src/assets/i18n/kh.json');
-    enDict = JSON.parse(fs.readFileSync(enPath, 'utf8'));
-    khDict = JSON.parse(fs.readFileSync(khPath, 'utf8'));
-  } catch (e) {
-    console.error('Failed to load dictionaries for testing', e);
-  }
+  const enDict = en;
+  const khDict = kh;
 
   const requiredKeys = [
     'catalog.featured',
@@ -5025,6 +5019,15 @@ function runTranslationUnitTests() {
     assert('Translation', `EN dictionary contains key: ${k}`, !!enDict[k]);
     assert('Translation', `KH dictionary contains key: ${k}`, !!khDict[k]);
   }
+
+  // 1:1 Parity Invariant across full dictionaries
+  const enKeys = Object.keys(enDict);
+  const khKeys = Object.keys(khDict);
+  assert('Translation', '1:1 key parity: EN and KH dictionaries have identical key counts', enKeys.length === khKeys.length, `EN: ${enKeys.length}, KH: ${khKeys.length}`);
+  const missingInKh = enKeys.filter(k => !(k in khDict));
+  assert('Translation', 'Zero missing keys in KH dictionary', missingInKh.length === 0, `Missing: ${missingInKh.join(', ')}`);
+  const missingInEn = khKeys.filter(k => !(k in enDict));
+  assert('Translation', 'Zero missing keys in EN dictionary', missingInEn.length === 0, `Missing: ${missingInEn.join(', ')}`);
 }
 
 // ---------------------------------------------------------------------------
@@ -5105,6 +5108,43 @@ function runComponentTranslationTests() {
 
   assert('Shared Trays Integration', 'CommandPalette binds to cmd.search_placeholder', cmdPaletteHtml.includes("cmd.search_placeholder"));
   assert('Shared Trays Integration', 'DownloadTray binds to tray.title', downloadTrayHtml.includes("tray.title"));
+
+  // Additional Feature Pages Translation Integration
+  let genresHtml = '';
+  let paymentHtml = '';
+  let profileHtml = '';
+  let gameFormHtml = '';
+  try {
+    genresHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/features/genres/genres.component.html'), 'utf8');
+    paymentHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/features/account-payment/account-payment.component.html'), 'utf8');
+    profileHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/features/profile/profile.component.html'), 'utf8');
+    gameFormHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/features/creator-studio/game-form/game-form.component.html'), 'utf8');
+  } catch (e) {
+    console.error('Failed to load new feature templates', e);
+  }
+
+  assert('Feature Pages Integration', 'Genres binds to genres.title', genresHtml.includes("genres.title"));
+  assert('Feature Pages Integration', 'Genres binds to genres.search_placeholder', genresHtml.includes("genres.search_placeholder"));
+  assert('Feature Pages Integration', 'Payment binds to payment.title', paymentHtml.includes("payment.title"));
+  assert('Feature Pages Integration', 'Payment binds to payment.back_link', paymentHtml.includes("payment.back_link"));
+  assert('Feature Pages Integration', 'Profile binds to profile.edit_btn', profileHtml.includes("profile.edit_btn"));
+  assert('Feature Pages Integration', 'Profile binds to profile.creator_title', profileHtml.includes("profile.creator_title"));
+  assert('Feature Pages Integration', 'GameForm binds to game_form.back_link', gameFormHtml.includes("game_form.back_link"));
+  assert('Feature Pages Integration', 'GameForm binds to game_form.step1', gameFormHtml.includes("game_form.step1"));
+
+  // Profile Human-Friendly Copy Invariant
+  assert('Feature Pages Integration', 'Profile binds to profile.stats_owned', profileHtml.includes("profile.stats_owned"));
+  assert('Feature Pages Integration', 'EN dictionary resolves profile.stats_owned to Owned Games', en['profile.stats_owned'] === 'Owned Games');
+  assert('Feature Pages Integration', 'EN dictionary resolves profile.creator_title to human-friendly copy', en['profile.creator_title'] === 'Creator Studio & Publishing');
+
+  // Wizard Navigation [hidden] Invariant
+  const gameFormCss = fs.readFileSync(path.resolve(__dirname, '../../../src/app/features/creator-studio/game-form/game-form.component.css'), 'utf8');
+  assert('Wizard Navigation', 'game-form CSS enforces display none !important on hidden panels',
+    gameFormCss.includes('.wizard-step-panel[hidden]') && gameFormCss.includes('display: none !important'));
+
+  const stylesCss = fs.readFileSync(path.resolve(__dirname, '../../../src/styles.css'), 'utf8');
+  assert('Wizard Navigation', 'Global styles.css enforces display none !important on [hidden]',
+    stylesCss.includes('[hidden]') && stylesCss.includes('display: none !important'));
 }
 
 // ---------------------------------------------------------------------------
@@ -5386,6 +5426,46 @@ function runShadcnAlertAndToastUnitTests(): void {
 }
 
 // ---------------------------------------------------------------------------
+// 93. UNIT TESTS: Language Switcher Segmented Button Architecture (AC-LANG)
+// ---------------------------------------------------------------------------
+function runLanguageSwitcherSegmentedTests(): void {
+  const templatePath = path.resolve(__dirname, '../../../src/app/shared/ui/language-switcher/language-switcher.component.html');
+  const cssPath = path.resolve(__dirname, '../../../src/app/shared/ui/language-switcher/language-switcher.component.css');
+  const tsPath = path.resolve(__dirname, '../../../src/app/shared/ui/language-switcher/language-switcher.component.ts');
+
+  const template = fs.readFileSync(templatePath, 'utf8');
+  const css = fs.readFileSync(cssPath, 'utf8');
+  const ts = fs.readFileSync(tsPath, 'utf8');
+
+  // Test 1: Uses segmented button group instead of popup dropdown container
+  assert('Language Switcher Segmented Button', 'Template renders segmented control role="group"',
+    template.includes('class="lang-segmented-group"') && template.includes('role="group"')
+  );
+
+  // Test 2: Renders direct buttons for EN and KH
+  assert('Language Switcher Segmented Button', 'Template renders 1-click segment buttons for EN and KH',
+    template.includes("(click)=\"setLanguage('en')\"") &&
+    template.includes("(click)=\"setLanguage('kh')\"") &&
+    template.includes('class="lang-segment-btn"')
+  );
+
+  // Test 3: No popover dropdown markup
+  assert('Language Switcher Segmented Button', 'Template contains zero floating dropdown menus',
+    !template.includes('class="lang-dropdown"')
+  );
+
+  // Test 4: CSS contains segmented button styling
+  assert('Language Switcher Segmented Button', 'CSS styles .lang-segmented-group and .lang-segment-btn',
+    css.includes('.lang-segmented-group') && css.includes('.lang-segment-btn')
+  );
+
+  // Test 5: TS component does not maintain floating isOpen state
+  assert('Language Switcher Segmented Button', 'TS component exposes setLanguage without isOpen toggle state',
+    ts.includes('setLanguage(') && !ts.includes('isOpen = signal(')
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Summary Runner
 // ---------------------------------------------------------------------------
 (async () => {
@@ -5400,6 +5480,7 @@ function runShadcnAlertAndToastUnitTests(): void {
   await runPasswordSecurityUnitTests();
   runGameDetailContinuousLayoutUnitTests();
   runShadcnAlertAndToastUnitTests();
+  runLanguageSwitcherSegmentedTests();
 
   const passed = results.filter(r => r.passed).length;
   const total = results.length;

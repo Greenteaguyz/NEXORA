@@ -11,6 +11,7 @@ import { KhqrCardComponent } from '../../shared/ui/khqr-card/khqr-card.component
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 import { AddPaymentMethodFormComponent } from '../../shared/ui/add-payment-method-form/add-payment-method-form.component';
 import { AlertComponent } from '../../shared/ui/alert/alert.component';
+import { TranslationService } from '../../core/services/translation.service';
 
 @Component({
   selector: 'app-account-payment',
@@ -32,6 +33,8 @@ import { AlertComponent } from '../../shared/ui/alert/alert.component';
 export class AccountPaymentComponent {
   readonly auth = inject(AuthService);
   private readonly paymentsData = inject(PAYMENTS_DATA);
+  private readonly translationService = inject(TranslationService);
+  readonly t = this.translationService.t;
 
   // State Signals
   readonly methods = signal<PaymentMethod[]>([]);

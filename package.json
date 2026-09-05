@@ -12,11 +12,13 @@
     "test:impeccable": "npx tsc src/app/core/tests/impeccable-anti-slop.spec.ts --rootDir . --outDir dist --module commonjs --target es2022 --skipLibCheck && node dist/src/app/core/tests/impeccable-anti-slop.spec.js",
     "test:unit": "npx tsc tests/unit/unit-tests.spec.ts --rootDir . --outDir dist --module commonjs --target es2022 --skipLibCheck && node dist/tests/unit/unit-tests.spec.js",
     "test:integration": "npx tsc tests/integration/integration-tests.spec.ts --rootDir . --outDir dist --module commonjs --target es2022 --skipLibCheck && node dist/tests/integration/integration-tests.spec.js",
-    "test:regression": "npm run test:unit && npm run test:integration && npm run test:master && npm run test:impeccable",
+    "test:regression": "npm run test:unit && npm run test:integration && npm run test:master && npm run test:impeccable && npm run test:theme-contrast",
+    "test:theme-contrast": "npx tsc src/app/core/tests/impeccable-theme-contrast.spec.ts --rootDir . --outDir dist --module commonjs --target es2022 --skipLibCheck && node dist/src/app/core/tests/impeccable-theme-contrast.spec.js",
     "verify": "npm run build && npm run test:regression",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
-    "perf:measure": "npx tsx scripts/measure-perf.ts"
+    "perf:measure": "npx tsx scripts/measure-perf.ts",
+    "graft": "node C:/Users/User/AppData/Local/npm-cache/_npx/b7f45974acf31384/node_modules/@nanonets/graft/dist/cli.js"
   },
   "dependencies": {
     "@angular/animations": "^18.2.0",
@@ -25,9 +27,7 @@
     "@angular/core": "^18.2.0",
     "@angular/forms": "^18.2.0",
     "@angular/platform-browser": "^18.2.0",
-    "@angular/platform-browser-dynamic": "^18.2.0",
     "@angular/router": "^18.2.0",
-    "bootstrap": "^5.3.8",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.10"

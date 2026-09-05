@@ -294,11 +294,6 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
     this.hoveredScreenshotUrl = null;
   }
 
-  getTagCount(tag: string): number {
-    if (tag === 'All' || tag === 'all') return this.allGames.length;
-    return this.allGames.filter(g => g.tags.includes(tag)).length;
-  }
-
   startAutoRotate(): void {
     this.stopAutoRotate();
     // SSR-safe reduced-motion guard: never schedule auto-advance for users
@@ -381,15 +376,6 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
     this.activePreset = preset;
     this.applyFilters();
     this.syncUrl();
-  }
-
-  getPresetCount(preset: CatalogPreset): number {
-    if (preset === 'all') return this.allGames.length;
-    if (preset === 'discounts') return this.allGames.filter(g => !!g.discountPercent && g.discountPercent > 0).length;
-    if (preset === 'under-10') return this.allGames.filter(g => g.price < 10).length;
-    if (preset === 'free') return this.allGames.filter(g => g.price === 0).length;
-    if (preset === 'top-sellers') return this.allGames.filter(g => g.price > 0).length;
-    return 0;
   }
 
   toggleTag(tag: string): void {

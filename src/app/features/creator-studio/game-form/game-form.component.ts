@@ -12,6 +12,7 @@ import { AlertComponent } from '../../../shared/ui/alert/alert.component';
 import { GameFormComponentLike } from './unsaved-changes.guard';
 import { compressImageFile, buildCompleteScreenshotArray, validateImagePayload } from '../../../core/utils/image-processor';
 import { ToastService } from '../../../core/services/toast.service';
+import { TranslationService } from '../../../core/services/translation.service';
 import { 
   evaluatePublishReadiness, 
   calculateEarningsSplit, 
@@ -50,6 +51,8 @@ export class GameFormComponent implements OnInit, GameFormComponentLike {
   private router = inject(Router);
   private destroyRef = inject(DestroyRef);
   private toast = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
+  readonly t = this.translationService.t;
 
   gameForm!: FormGroup;
   isEditMode = false;

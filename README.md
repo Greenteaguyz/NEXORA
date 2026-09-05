@@ -83,6 +83,9 @@ Navigate to [`http://localhost:4200`](http://localhost:4200) in your web browser
 * **Hero Carousel Touch Drag & Swipe Motion Architecture**: Hardware-accelerated dual-phase crossfade (`scale(1.015) -> 1.0` over `350ms`), coordinated info reveal, touch/pointer drag-to-swipe physics with 40px threshold, spatial `ArrowLeft`/`ArrowRight` navigation, tap-vs-drag disambiguation, and glowing Electric Cyan pagination pills.
 * **Rich Media & Visual Polish**: Official high-res game assets (featuring *Marvel Rivals*), dual-theme system (Dark & Light modes), Light Mode soft slate frosted backdrop blur for full-screen screenshot lightbox viewing, and 100% fluid edge-to-edge layout scaling.
 * **Role-Based Access Control & Multi-Persona**: Instant demo persona switching (Alice - Creator/Buyer, Bob - Buyer), creator upload studio, library management, and purchase fulfillment.
+* **Comprehensive Khmer (kh) Localization**: Native bilingual i18n support across all 13 application views, 100% dictionary parity (200 keys each), on-demand lazy chunk loading (23.9 kB), and Latin-first font stack ordering to prevent numeral and code glyph hijacking.
+* **Creator Studio 3-Step Game Wizard**: Responsive step tab panels (`Basic Info & Pricing`, `Artwork & Media`, `System Specs & Details`), unsaved changes guard, draft autosave, and 30-day soft-delete recycle bin.
+* **Grounded Account Password & Profile UX**: Clear noun-verb separation (`Account Password` header + `Change Password` action), brute-force lockout safeguards, and high-contrast theme styling.
 
 ---
 
@@ -101,7 +104,7 @@ Use the following preconfigured accounts to test role-based access control and u
 
 NEXORA provides a comprehensive automated testing battery covering unit logic, domain integration, master architectural invariants, Playwright E2E journeys, and the Impeccable Anti-Slop / Steam DesignMD compliance suite.
 
-### 1. Run all regression suites (904 Tests — 100% Pass Rate)
+### 1. Run all regression suites (1,048 Tests — 100% Pass Rate)
 
 Execute all automated test tiers:
 
@@ -112,10 +115,11 @@ npm run test:regression
 ```
 
 This command orchestrates:
-* **Unit Tests** (`npm run test:unit`): 550 assertions across 94 sections verifying email/password validations, 90/10 creator revenue splits, data transforms, context menu positioning, hover card debouncing/flipping, data table sorting/filtering/pagination, showcase carousel slide index navigation/active media resolution, `nexora_*` storage prefix isolation, fluid clamp bounds, 4-slide hero geometry parity, Speedtest theme switcher geometry, Unified Steam Deck Hub mobile drawer dimensions, carousel touch swipe gestures / keyboard navigation, smart scroll-aware header / mobile footer clearance, Steam bottom download tray signals, iOS 120Hz ProMotion scroll kinetic physics, header navigation animations, card number grouping / CVV directives, universal account password security logic, lockout backoff, and toast queue eviction/pause mechanics.
+* **Unit Tests** (`npm run test:unit`): 687 assertions across 100+ sections verifying email/password validations, 90/10 creator revenue splits, data transforms, context menu positioning, hover card debouncing/flipping, data table sorting/filtering/pagination, showcase carousel slide index navigation/active media resolution, `nexora_*` storage prefix isolation, fluid clamp bounds, 4-slide hero geometry parity, Speedtest theme switcher geometry, Unified Steam Deck Hub mobile drawer dimensions, carousel touch swipe gestures / keyboard navigation, smart scroll-aware header / mobile footer clearance, Steam bottom download tray signals, iOS 120Hz ProMotion scroll kinetic physics, header navigation animations, card number grouping / CVV directives, universal account password security logic, lockout backoff, and toast queue eviction/pause mechanics.
 * **Integration Tests** (`npm run test:integration`): 324 assertions across 28 sections verifying Alice/Bob persona lifecycles, query engine, commerce checkout with Mastercard/KHQR, wishlist-to-library fulfillment, route guards, `/studio/games/new` permissions, unsaved changes guards, multi-persona state synchronization, inline checkout payment methods, ABA PayWay modal flows, finance ledger integrity, paid-game removal purchase reversions, buyer card-only isolation, gift voucher auto-dashing, and detailed transaction modal controls.
 * **Master Battery** (`npm run test:master`): 23 tests verifying dataset invariants, ownership verification, ref-counted scroll lock state transitions, toast queue dedupe/expiration, URL sanitization against open redirects, card number grouping, and expiry formatting.
 * **Impeccable Anti-Slop Suite** (`npm run test:impeccable`): 7 tests asserting absence of neon glow halos, strict radii hierarchy (`2px/4px/6px/8px/16px`), snappy `0.15s` transitions, and WCAG AAA contrast ratios.
+* **Theme Contrast Suite** (`npm run test:theme-contrast`): 7 tests asserting high-contrast overrides across Wishlist, Library, Genres, and Modals in Light Mode.
 * **Playwright E2E Journeys** (`npm run test:e2e`): Automated multi-step browser user journeys with 100% pass rate.
 * **Dedicated Node Stress Suites** (`tests/stress/*.ts`): High-throughput stress suites for boundary fuzzing, finance invariants, checkout add-method, password lockout, and UI/UX polish.
 
@@ -206,7 +210,8 @@ WORKING    │             2. HOW-TOS               │             3. REFERENCE
 ---
 
 ## Architectural specifications
-
+* [Interactive App Flow & Workflow Diagram](file:///c:/Users/User/Downloads/AngularProject/docs/diagrams/app-flow-workflow.html) — Visual, interactive SVG workflow diagram of the entire NEXORA storefront, checkout, and creator lifecycle with theme switching and guided views.
+* [Architecture Codemaps Suite](file:///c:/Users/User/Downloads/AngularProject/docs/CODEMAPS/architecture.md) — Token-lean architectural codemaps covering system topology, frontend routes, data models, services, and dependencies.
 * [Frontend architecture specification](file:///c:/Users/User/Downloads/AngularProject/frontend-architecture.md) — Technical specification covering state management, reactive patterns, and design tokens.
 * [Pages and components map](file:///c:/Users/User/Downloads/AngularProject/pages_components_map.md) — Component registry, wireframes, and dependency graph.
 * [Site architecture](file:///c:/Users/User/Downloads/AngularProject/site_architecture.md) — Routing schema, guard flowcharts, and sitemap.

@@ -1,72 +1,59 @@
-.lang-switcher-container {
-  position: relative;
-  display: inline-block;
+:host {
+  display: inline-flex;
+  vertical-align: middle;
 }
 
-.lang-btn {
-  display: flex;
+.lang-segmented-group {
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 30px;
-  padding: 0 10px;
   background: var(--bg-surface);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-sm);
-  color: var(--text-secondary);
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition: all 0.15s ease;
+  padding: 2px;
+  gap: 2px;
+  box-sizing: border-box;
 }
 
-.lang-btn:hover {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
+:host-context([data-theme="light"]) .lang-segmented-group {
+  background: #E2E8F0;
+  border-color: #CBD5E1;
 }
 
-.chevron {
-  transition: transform 0.15s ease;
-}
-
-.chevron.open {
-  transform: rotate(180deg);
-}
-
-.lang-dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  width: 60px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-card);
-  display: flex;
-  flex-direction: column;
-  padding: 4px;
-  z-index: 50;
-}
-
-.lang-option {
+.lang-segment-btn {
   background: transparent;
   border: none;
-  border-radius: var(--radius-xs);
-  color: var(--text-secondary);
+  color: var(--text-muted);
+  padding: 4px 8px;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 800;
-  text-align: center;
-  padding: 6px 0;
+  letter-spacing: 0.04em;
+  border-radius: var(--radius-xs, 3px);
   cursor: pointer;
+  line-height: 1.1;
   transition: all 0.15s ease;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.lang-option:hover {
-  background: var(--border-subtle);
+.lang-segment-btn:hover {
   color: var(--text-primary);
 }
 
-.lang-option.active {
-  color: var(--accent-400);
+.lang-segment-btn:focus-visible {
+  outline: 2px solid var(--accent-400);
+  outline-offset: 1px;
+}
+
+.lang-segment-btn.active {
+  background: var(--accent-500);
+  color: #0E141B;
+  font-weight: 900;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+:host-context([data-theme="light"]) .lang-segment-btn.active {
+  background: var(--accent-600);
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
 }

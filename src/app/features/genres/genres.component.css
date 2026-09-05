@@ -347,10 +347,12 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 9px 16px;
+  min-height: 42px;
+  box-sizing: border-box;
   background-color: #16202D;
   border: 1px solid #2A475E;
-  border-radius: 9999px;
+  border-radius: var(--radius-sm);
   text-decoration: none;
   color: var(--text-primary);
   font-family: var(--font-sans);

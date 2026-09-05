@@ -1,49 +1,62 @@
-# NEXORA — Project Directives
+# NEXORA — Project Directives & Autonomous Protocol
 
-## 1. Motivational Intent
-Desktop-grade Steam-inspired storefront and creator platform built with Angular 18, delivering instant, grounded, accessible game discovery.
+## 1. System Intent & Architecture
+Desktop-grade Steam-inspired storefront and creator platform in Angular 18 (Standalone, `OnPush`, Signals, `@if`/`@for`).
+- `src/app/core/` — Reactive stores (`signal()`, `computed()`), persistence (`local-store.service.ts`), auth/guards, seed data.
+- `src/app/features/` — Pages (`game-catalog`, `game-detail`, `library`, `wishlist`, `orders`, `creator-studio`, `account-payment`, `profile`).
+- `src/app/layout/` & `src/app/shared/ui/` — Shell, navigation, modals, toasts, trays, bento cards.
 
-## 2. Non-obvious Tooling
-- `npm run verify` — Full quality gate (build + unit + integration + master + impeccable). Must pass before completion.
-- Standalone Node test runners compile via `tsc --skipLibCheck` into `dist/`.
+---
 
-## 3. Concise Architectural Map
-- `src/app/core/` — Services, signals store, seed data, persistence (`local-store.service.ts`).
-- `src/app/features/` — Route pages (catalog, game-detail, library, wishlist, orders, studio, profile).
-- `src/app/layout/` & `src/app/shared/ui/` — Shell, navigation, cards, modals, trays.
+## 2. Cognitive Loop & Reasoning Order (Mandatory State Machine)
+Every non-trivial prompt MUST follow this 4-step sequence before changing state:
 
-## 4. Rules w/ Verifiable Instructions
-- **Angular 18**: Standalone components, `OnPush`, Signals (`signal()`, `computed()`), `@if`/`@for`.
-- **Subagent Registry Enforcement**:
-  - *Allowed TypeNames*: `self`, `research`, `planner`, `architect`, `typescript-reviewer`, `code-reviewer`, `build-error-resolver`, `e2e-runner`, `performance-optimizer`, `a11y-architect`.
-  - *Prohibited / Invalid TypeNames*: `DeepCoder` (missing `skill_search` tool in registry), `code-explorer`, `code-architect`, `tdd-guide`, `security-reviewer`.
-  - *Artifact Paths*: All planning artifacts MUST be written to the Antigravity session brain directory (`<appDataDir>\brain\<conversation-id>/implementation_plan.md`), NEVER directly into repository git folders like `.claude/plans/`.
-- **Skill Lifecycle & Workflow Enforcements**:
-  - *Primary Agent (Pro)*: Act as Architect Lead. Synthesize, orchestrate, run quality gates, and maintain high-level plan.
-  - *Mandatory Subagent Delegation (`invoke_subagent`)*:
-    - **During Planning**: MUST invoke subagents (`research`, `architect`, `planner`) via `invoke_subagent` to audit codebase touchpoints, check dependencies, and map blast radius before writing or finalizing `implementation_plan.md`. Never plan monolithically.
-    - **While Implementing Plan**: MUST invoke worker subagents (`invoke_subagent` with `Model: "flash"` or specialized roles like `code-reviewer`, `typescript-reviewer`, `a11y-architect`, `build-error-resolver`, `e2e-runner`) for implementation chunks. Primary agent delegates code drafting, audits, and verification to subagents, then integrates findings.
-    - **Post-Change Verification**: Proactively invoke `code-reviewer` or `typescript-reviewer` subagent on modified code before running the final test suite.
-  - *Before/During task*: **Always auto-apply `ponytail`** (YAGNI, strict code reuse, zero new NPM packages) before writing any code. Keep responses terse (`caveman`), define scope (`intent-layer`), and orchestrate teams (`teamwork-preview`).
-  - *After task*: **Do not run `ponytail` here**. Instead, run `click-path-audit` to trace state logic, `impeccable` for UI polish, and filter test noise (`rtk-repo`).
-- **Quality Gate**: Run `npm run verify`; zero failures allowed.
-- **Surgical scope**: Modify only task-relevant files.
+```
+[1. DELIBERATE] -> [2. MAP & PLAN] -> [3. SURGICAL EXEC] -> [4. VERIFY & POLISH]
+```
 
-## 5. Hard Constraints & Anti-patterns
+### Stage 1: Deliberate (Karpathy "Think Before Coding")
+- **Assumptions**: State premise explicitly; never assume ambiguous specifications silently.
+- **Tradeoffs & Pushback**: Always evaluate if a simpler native Angular approach exists. Push back on overengineering.
+- **Minimalism (`ponytail`)**: YAGNI first. Reuse existing signal stores and utilities. **Zero new NPM packages**.
+
+### Stage 2: Map & Plan
+- **Blast Radius**: Trace impacted callers and dependents via `npm run graft -- callers <Symbol> --depth 2` or `code-review-graph`.
+- **Scope Contract (`intent-layer`)**: Define strict boundaries, observable state changes (`AC-NNN`), and prohibited side effects.
+- **Subagent Delegation**:
+  - *Planning phase*: Delegate investigation and blast radius to `research`, `architect`, or `planner`.
+  - *Artifact constraint*: Plans MUST be written to Antigravity brain (`<appDataDir>\brain\<conversation-id>/implementation_plan.md`), **never** to `.claude/plans/`.
+
+### Stage 3: Surgical Execution
+- **Subagent Registry**:
+  - *Allowed*: `self`, `research`, `planner`, `architect`, `typescript-reviewer`, `code-reviewer`, `build-error-resolver`, `e2e-runner`, `performance-optimizer`, `a11y-architect`.
+  - *Prohibited*: `DeepCoder`, `code-explorer`, `code-architect`, `tdd-guide`, `security-reviewer`.
+- **Worker Allocation**: Delegate drafting chunks to subagents (`Model: "flash"` or specialized roles); integrate as Lead Architect.
+- **Zero Drift**: Touch **only** task-relevant lines. Never touch adjacent formatting, unrelated comments, or orthogonal logic.
+
+### Stage 4: Verify & Polish
+- **Pre-Gate Review**: Invoke `code-reviewer` or `typescript-reviewer` on modified diffs.
+- **State Tracing**: Run `click-path-audit` on shared state stores and buttons.
+- **Quality Gate**: Run `npm run verify` (build + 687 unit + 324 integration + 23 master + 7 impeccable tests). **0 failures allowed**.
+
+---
+
+## 3. Invariants & Hard Constraints
 - **Zero raw emojis**: Inline SVGs with `viewBox` and `aria-*` only. No emojis (🎮, ✔, 🗑).
 - **Grounded hover**: 0px container `translateY`; no floating lift effects.
-- **No AI slop**: Zero neon blur, zero spring curves, zero pill utility buttons.
+- **No AI slop**: Zero neon blur halos, zero wobbly spring curves, zero pill utility buttons.
 - **Action-first headers**: Use `Play [Title]`, `Buy [Title]`.
-
-## 6. Pointers to Deeper Docs
-- `DESIGN.md` — Steam DesignMD specifications and geometry tokens.
-- `src/styles.css` — Global design tokens, themes, and CSS variables.
-- `tests/` — Playwright journeys (`e2e/`), integration tests, and unit specs.
-
-## 7. Gotchas & Tribal Knowledge
 - **SSR Safety**: Guard `window`/`localStorage` with `isPlatformBrowser(platformId)`.
-- **Multi-Persona State**: `local-store.service.ts` reactively isolates creator (Alice) vs buyer (Bob) state.
-- **Subscriptions**: Bound observables using `takeUntilDestroyed()`.
-- **O(1) Lookups**: Use `Map` indexed by id for hot paths instead of `Array.find`.
-- **Font Stack Ordering**: Primary Latin fonts (`Plus Jakarta Sans`) must precede localized non-Latin script fonts (`Suwannaphum`, Khmer) in font stacks to prevent Latin glyph hijacking.
-- **Dropdown/Outside-Click Listeners**: Stop propagation (`event.stopPropagation()`) on toggle buttons to prevent `@HostListener('document:click')` from immediately undoing open states.
+- **Multi-Persona Isolation**: `local-store.service.ts` reactively isolates creator (Alice) vs buyer (Bob) state.
+- **Subscriptions**: Bound all RxJS observables using `takeUntilDestroyed()`.
+- **O(1) Lookups**: Use `Map` indexed by `id` on hot query paths instead of `Array.find`.
+- **Font Stack Ordering**: Primary Latin fonts (`Plus Jakarta Sans`) must precede localized non-Latin script fonts (`Suwannaphum`, `Noto Sans Khmer`) to prevent glyph hijacking.
+- **Dropdown Listeners**: Call `event.stopPropagation()` on toggle buttons to prevent document click listeners from instantly collapsing open trays.
+
+---
+
+## 4. Operational Tooling
+- `npm run verify` — Primary quality gate. Must pass before completing any coding turn.
+- `npm run graft -- <cmd>` — Graph queries (`map`, `ask "<q>" --source`, `callers <sym> --depth 2`, `skeleton <file>`).
+- Standalone Node test runners compile via `tsc --skipLibCheck` into `dist/`.
+- Communication style: Terse, high signal-to-noise (`caveman`), zero conversational filler.

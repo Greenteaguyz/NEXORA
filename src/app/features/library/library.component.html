@@ -36,11 +36,11 @@
           </div>
 
           <div class="library-sort-wrap">
-            <label for="libSort" class="library-sort-label">Sort:</label>
+            <label for="libSort" class="library-sort-label">{{ t()('sort.sort_by') }}</label>
             <select id="libSort" [(ngModel)]="sortBy" class="library-sort-select" aria-label="Sort library collection">
-              <option value="recent">Recent Acquisitions</option>
-              <option value="title">Alphabetical (A-Z)</option>
-              <option value="installed">Installed Status</option>
+              <option value="recent">{{ t()('sort.recent') }}</option>
+              <option value="title">{{ t()('sort.alpha') }}</option>
+              <option value="installed">{{ t()('sort.installed') }}</option>
             </select>
           </div>
         </div>
@@ -109,13 +109,26 @@
       <div class="library-grid" appSpatialNav role="list" aria-label="Owned games collection">
         @for (item of filteredItems; track item.entry.id) {
           <div class="library-card" role="listitem">
-            <!-- Cover Art with Link -->
-            <a [routerLink]="['/games', item.game.id]" class="card-cover-wrap" [attr.aria-label]="'View details for ' + item.game.title">
-              <img [src]="item.game.coverImageUrl" [alt]="item.game.title + ' Cover'" class="card-cover-img" loading="lazy" (error)="$any($event.target).src = 'assets/logo-icon.svg'">
-              <div class="card-overlay" aria-hidden="true">
-                <span class="overlay-badge">View Game</span>
-              </div>
-            </a>
+            <!-- Cover Art with Secondary Management Trigger -->
+            <div class="card-cover-container">
+              <a [routerLink]="['/games', item.game.id]" class="card-cover-wrap" [attr.aria-label]="'View details for ' + item.game.title">
+                <img [src]="item.game.coverImageUrl" [alt]="item.game.title + ' Cover'" class="card-cover-img" loading="lazy" (error)="$any($event.target).src = 'assets/logo-icon.svg'">
+                <div class="card-overlay" aria-hidden="true">
+                  <span class="overlay-badge">View Game</span>
+                </div>
+              </a>
+              <button 
+                type="button" 
+                class="btn-remove-lib-icon" 
+                (click)="openRemoveModal(item.game, $event)"
+                title="Remove from your Library"
+                [attr.aria-label]="'Remove ' + item.game.title + ' from library'">
+                <svg class="remove-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+              </button>
+            </div>
 
             <!-- Card Details -->
             <div class="card-body">
@@ -132,15 +145,8 @@
                 }
               </div>
 
-              <!-- Metadata info -->
+              <!-- Metadata info (Status first for natural F-pattern scanning) -->
               <div class="card-meta-row">
-                <span class="card-acquired-date">
-                  <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <circle cx="12" cy="12" r="10"/>
-                    <polyline points="12 6 12 12 16 14"/>
-                  </svg>
-                  Acquired {{ formatAcquiredDate(item.entry.acquiredAt) }}
-                </span>
                 @if (isInstalled(item.game.id)) {
                   <span class="card-status-pill installed">
                     <svg class="status-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -156,9 +162,16 @@
                     In Cloud
                   </span>
                 }
+                <span class="card-acquired-date">
+                  <svg class="meta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  Acquired {{ formatAcquiredDate(item.entry.acquiredAt) }}
+                </span>
               </div>
 
-              <!-- Action Bar -->
+              <!-- Action Bar (100% full-width Play CTA — zero motor interference) -->
               <div class="card-actions-row">
                 @if (isInstalled(item.game.id)) {
                   <button type="button" class="btn-play-game" (click)="playGame(item.game)" [attr.aria-label]="'Launch ' + item.game.title">
@@ -176,17 +189,6 @@
                     (download)="onDownload(item.game)">
                   </app-download-button>
                 }
-                <button 
-                  type="button" 
-                  class="btn-remove-lib-icon" 
-                  (click)="openRemoveModal(item.game, $event)"
-                  title="Remove from your Library"
-                  [attr.aria-label]="'Remove ' + item.game.title + ' from library'">
-                  <svg class="remove-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <polyline points="3 6 5 6 21 6"/>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                  </svg>
-                </button>
               </div>
             </div>
           </div>

@@ -5,6 +5,8 @@ import { GAMES_DATA } from '../../core/data/tokens';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { GenreIconComponent } from '../../shared/ui/genre-icon/genre-icon.component';
 
+import { TranslationService } from '../../core/services/translation.service';
+
 export interface GenreSummary {
   name: string;
   count: number;
@@ -22,13 +24,15 @@ export interface GenreSummary {
 })
 export class GenresComponent implements OnInit {
   private gamesData = inject(GAMES_DATA);
+  protected translationService = inject(TranslationService);
+  readonly t = this.translationService.t;
 
   genresList = signal<GenreSummary[]>([]);
   searchQuery = signal<string>('');
   loading = signal<boolean>(true);
 
   readonly CORE_GENRE_NAMES = new Set([
-    'Action', 'Sci-Fi', 'Cyberpunk', 'RPG', 'Strategy', 'Adventure', 'Platformer', 'Retro'
+    'Action', 'Sci-Fi', 'Cyberpunk', 'RPG', 'Strategy', 'Adventure', 'Platformer', 'Retro', 'Tactics'
   ]);
 
   filteredGenres = computed(() => {

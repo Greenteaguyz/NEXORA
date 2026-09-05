@@ -5,15 +5,15 @@
       <svg class="back-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <polyline points="15 18 9 12 15 6"/>
       </svg>
-      <span>Back to Account Settings</span>
+      <span>{{ t()('payment.back_link') }}</span>
     </a>
   </nav>
 
   <!-- Page Header -->
   <header class="payment-header">
     <div class="header-titles">
-      <h1 class="page-title">Payment & Wallet</h1>
-      <p class="page-subtitle">{{ auth.isCreator() ? 'Manage saved payment cards, Bakong KHQR payout accounts, wallet funds, and gift cards.' : 'Manage saved payment cards, wallet funds, and gift cards.' }}</p>
+      <h1 class="page-title">{{ t()('payment.title') }}</h1>
+      <p class="page-subtitle">{{ auth.isCreator() ? t()('payment.subtitle_creator') : t()('payment.subtitle_buyer') }}</p>
     </div>
   </header>
 
@@ -43,9 +43,9 @@
         <div class="wallet-card-bg-accent" aria-hidden="true"></div>
         <div class="wallet-hero-top">
           <div class="wallet-tag-row">
-            <span class="wallet-chip">NEXORA STORE WALLET</span>
+            <span class="wallet-chip">{{ t()('payment.wallet_chip') }}</span>
             <span class="wallet-status-live">
-              <span class="pulse-dot"></span> LIVE BALANCE
+              <span class="pulse-dot"></span> {{ t()('payment.live_balance') }}
             </span>
           </div>
           <div class="wallet-icon-box">
@@ -69,7 +69,7 @@
               <line x1="12" y1="5" x2="12" y2="19"/>
               <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            <span>Add Funds</span>
+            <span>{{ t()('payment.topup_btn') }}</span>
           </button>
         </div>
       </section>
@@ -86,7 +86,7 @@
               <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
             </svg>
           </div>
-          <h2 class="section-title">Redeem Gift Card</h2>
+          <h2 class="section-title">{{ t()('payment.redeem_gift') }}</h2>
         </div>
 
         <p class="section-desc">Enter a gift code or voucher to add funds to your wallet.</p>
@@ -109,9 +109,9 @@
               class="btn-redeem" 
               [disabled]="redeemProcessing() || !giftCode.trim()">
               @if (redeemProcessing()) {
-                <span>Verifying...</span>
+                <span>{{ t()('common.loading') }}</span>
               } @else {
-                <span>Redeem</span>
+                <span>{{ t()('payment.redeem_gift') }}</span>
               }
             </button>
           </div>
@@ -131,12 +131,12 @@
               <polyline points="12 6 12 12 16 14"/>
             </svg>
           </div>
-          <h2 class="section-title">Wallet Activity</h2>
+          <h2 class="section-title">{{ t()('payment.tx_title') }}</h2>
         </div>
 
         @if (transactions().length === 0) {
           <div class="empty-tx-box">
-            <p>No wallet activity recorded yet.</p>
+            <p>{{ t()('payment.no_tx') }}</p>
           </div>
         } @else {
           <div class="tx-list">
@@ -192,7 +192,7 @@
                 <line x1="1" y1="10" x2="23" y2="10"/>
               </svg>
             </div>
-            <h2 class="section-title">Payment Methods</h2>
+            <h2 class="section-title">{{ t()('payment.methods_title') }}</h2>
           </div>
 
           <button type="button" class="btn-add-method" (click)="openAddModal()" aria-label="Add new payment method">
@@ -200,7 +200,7 @@
               <line x1="12" y1="5" x2="12" y2="19"/>
               <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            <span>Add Method</span>
+            <span>{{ t()('payment.add_method_btn') }}</span>
           </button>
         </div>
 
@@ -215,7 +215,7 @@
             </div>
             <h3>No payment methods linked</h3>
             <p>{{ auth.isCreator() ? 'Save a credit card or link Bakong KHQR for revenue payouts.' : 'Save a credit card to add funds and check out.' }}</p>
-            <button type="button" class="btn-primary-compact" (click)="openAddModal()">Add Method</button>
+            <button type="button" class="btn-primary-compact" (click)="openAddModal()">{{ t()('payment.add_method_btn') }}</button>
           </div>
         } @else {
           <div class="methods-grid">
@@ -231,7 +231,7 @@
                   </div>
 
                   @if (method.isDefault) {
-                    <span class="default-badge" role="status">DEFAULT</span>
+                    <span class="default-badge" role="status">{{ t()('payment.default') }}</span>
                   }
                 </div>
 
@@ -243,7 +243,7 @@
                     </div>
                     <div class="method-meta-row">
                       <span class="meta-holder">{{ method.holder }}</span>
-                      <span class="meta-expiry">Expires {{ method.expiry }}</span>
+                      <span class="meta-expiry">{{ t()('payment.expires') }} {{ method.expiry }}</span>
                     </div>
                   } @else {
                     <div class="method-account-number">
@@ -260,7 +260,7 @@
                 <div class="method-card-actions">
                   @if (!method.isDefault) {
                     <button type="button" class="btn-set-default" (click)="setDefault(method.id)">
-                      Make Default
+                      {{ t()('payment.default') }}
                     </button>
                   }
                   <button 
@@ -304,7 +304,7 @@
     <div class="modal-backdrop" appScrollLock role="dialog" aria-modal="true" aria-labelledby="add-modal-title" (click)="closeAddModal()">
       <div class="modal-card add-method-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3 id="add-modal-title" class="modal-title">Add Payment Method</h3>
+          <h3 id="add-modal-title" class="modal-title">{{ t()('payment.add_method_btn') }}</h3>
           <button type="button" class="btn-modal-close" (click)="closeAddModal()" aria-label="Close modal">&times;</button>
         </div>
 
@@ -323,7 +323,7 @@
     <div class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="topup-modal-title" (click)="closeTopUpModal()">
       <div class="modal-card top-up-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <h3 id="topup-modal-title" class="modal-title">Add Wallet Funds</h3>
+          <h3 id="topup-modal-title" class="modal-title">{{ t()('payment.topup_btn') }}</h3>
           <button type="button" class="btn-modal-close" (click)="closeTopUpModal()" aria-label="Close modal">&times;</button>
         </div>
 
@@ -373,9 +373,9 @@
           </div>
 
           <div class="modal-actions">
-            <button type="button" class="btn-cancel" (click)="closeTopUpModal()" [disabled]="topUpProcessing()">Cancel</button>
+            <button type="button" class="btn-cancel" (click)="closeTopUpModal()" [disabled]="topUpProcessing()">{{ t()('common.cancel') }}</button>
             <button type="submit" class="btn-submit" [disabled]="topUpProcessing() || topUpAmount <= 0">
-              {{ topUpProcessing() ? 'Processing...' : 'Add Funds' }}
+              {{ topUpProcessing() ? t()('common.loading') : t()('payment.topup_btn') }}
             </button>
           </div>
         </form>
@@ -399,8 +399,8 @@
         </div>
 
         <div class="modal-actions">
-          <button type="button" class="btn-cancel" (click)="closeRemoveModal()">Cancel</button>
-          <button type="button" class="btn-confirm-remove" (click)="confirmRemove()">Remove</button>
+          <button type="button" class="btn-cancel" (click)="closeRemoveModal()">{{ t()('common.cancel') }}</button>
+          <button type="button" class="btn-confirm-remove" (click)="confirmRemove()">{{ t()('payment.remove') }}</button>
         </div>
       </div>
     </div>
@@ -469,7 +469,7 @@
         </div>
 
         <div class="modal-actions tx-modal-actions">
-          <button type="button" class="btn-submit" (click)="closeTransactionDetails()">Done</button>
+          <button type="button" class="btn-submit" (click)="closeTransactionDetails()">{{ t()('common.close') }}</button>
         </div>
       </div>
     </div>

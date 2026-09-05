@@ -79,6 +79,8 @@ Architectural rationale, design choices, and trade-off analysis.
 
 ## Master architecture and planning documents
 
+* **[Interactive App Flow & Workflow Diagram](./diagrams/app-flow-workflow.html)** — Visual, interactive SVG workflow diagram of the entire NEXORA storefront, checkout, and creator lifecycle with theme switching and guided views.
+* **[Architecture Codemaps (docs/CODEMAPS/)](./CODEMAPS/architecture.md)** — Token-lean architectural codemaps covering system topology, frontend routes, data models, services, and dependencies.
 * **[Steam Design System (DESIGN.md)](../DESIGN.md)** — Comprehensive design specification detailing color tokens, typography scales, zero-shift media architecture, fluid `clamp()` tokens, 4/3/2/1 grid progression, and 50+ anti-slop guardrails.
 * **[Frontend architecture specification](../frontend-architecture.md)** — Architectural document covering system design, state management with Signals, DI abstraction, error handling, and design tokens.
 * **[Pages and components map](../pages_components_map.md)** — Component registry (28 components and 5 directives), layout wireframes, cross-cutting DI dependency matrix, and Mermaid component graph.
@@ -97,7 +99,7 @@ Audited via Angular esbuild application builder:
 * **Build Speed**: `~3.4s` production compilation
 * **Core Web Vitals**: FCP `~340ms`, LCP `~620ms`, CLS `0.00` (Zero Cumulative Layout Shift), INP `< 35ms`
 * **Performance Grade**: **A+ (99/100)**
-* **Automated Regression Coverage**: 851 tests (100% green across unit, integration, master, and design suites)
+* **Automated Regression Coverage**: 1,048 tests (100% green across 687 unit, 324 integration, 23 master, 7 anti-slop, and 7 theme contrast suites)
 
 ---
 

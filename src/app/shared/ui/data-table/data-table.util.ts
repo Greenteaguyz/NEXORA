@@ -1,4 +1,4 @@
-import { SortDirection } from './data-table.model';
+export type SortDirection = 'asc' | 'desc' | null;
 
 /**
  * Filter an array of objects by search query across specified keys.

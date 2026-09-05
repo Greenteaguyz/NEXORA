@@ -321,31 +321,35 @@
         </div>
       }
 
-      <!-- Row 2: Speedtest Theme Switcher + Segmented Persona Pills -->
+      <!-- Row 2: Controls Cluster (Theme, Language, Persona) -->
       <div class="footer-card-controls-row">
-        <!-- Appearance Switcher -->
-        <button 
-          type="button"
-          class="speedtest-theme-switcher" 
-          [class.dark]="themeService.currentTheme() === 'dark'"
-          (click)="toggleTheme()" 
-          role="switch"
-          [attr.aria-checked]="themeService.currentTheme() === 'dark'"
-          [title]="themeService.currentTheme() === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'"
-          aria-label="Toggle Light or Dark Theme">
-          <span class="switcher-slider" aria-hidden="true"></span>
-          <span class="switcher-segment sun-segment" [class.active]="themeService.currentTheme() === 'light'">
-            <svg class="segment-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="12" cy="12" r="4"></circle>
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
-            </svg>
-          </span>
-          <span class="switcher-segment moon-segment" [class.active]="themeService.currentTheme() === 'dark'">
-            <svg class="segment-svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-          </span>
-        </button>
+        <div class="footer-controls-left">
+          <!-- Appearance Switcher -->
+          <button 
+            type="button"
+            class="speedtest-theme-switcher" 
+            [class.dark]="themeService.currentTheme() === 'dark'"
+            (click)="toggleTheme()" 
+            role="switch"
+            [attr.aria-checked]="themeService.currentTheme() === 'dark'"
+            [title]="themeService.currentTheme() === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'"
+            aria-label="Toggle Light or Dark Theme">
+            <span class="switcher-slider" aria-hidden="true"></span>
+            <span class="switcher-segment sun-segment" [class.active]="themeService.currentTheme() === 'light'">
+              <svg class="segment-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+              </svg>
+            </span>
+            <span class="switcher-segment moon-segment" [class.active]="themeService.currentTheme() === 'dark'">
+              <svg class="segment-svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            </span>
+          </button>
+
+          <app-language-switcher></app-language-switcher>
+        </div>
 
         <!-- Segmented Persona Switcher -->
         <div class="card-persona-group" role="group" aria-label="Demo Persona Switcher">

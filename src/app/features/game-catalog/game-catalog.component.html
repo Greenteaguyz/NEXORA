@@ -82,7 +82,7 @@
               </div>
 
               <div class="info-tags-list">
-                @for (tag of currentHeroGame.tags.slice(0, 4); track tag) {
+                @for (tag of currentHeroGame.tags.slice(0, 3); track tag) {
                   <a [routerLink]="['/catalog']" [queryParams]="{ tag: tag }" class="info-tag-chip">
                     #{{ tag }}
                   </a>
@@ -190,95 +190,16 @@
 
         <!-- Sort Dropdown (Steam Standard) -->
         <div class="sort-selector-cluster">
-          <label for="catalog-sort" class="sort-label">{{ t()('catalog.sort_by') }}</label>
+          <label for="catalog-sort" class="sort-label">{{ t()('sort.sort_by') }}</label>
           <select id="catalog-sort" class="sort-select" [value]="sortBy" (change)="onSortChange($event)" aria-label="Sort catalog games">
-            <option value="featured">Featured</option>
-            <option value="newest">New Releases</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="title-asc">Alphabetical: A to Z</option>
+            <option value="featured">{{ t()('sort.featured') }}</option>
+            <option value="newest">{{ t()('sort.newest') }}</option>
+            <option value="price-asc">{{ t()('sort.price_asc') }}</option>
+            <option value="price-desc">{{ t()('sort.price_desc') }}</option>
+            <option value="title-asc">{{ t()('sort.alpha') }}</option>
           </select>
         </div>
       </div>
-    </div>
-
-    <!-- Hick's Law Quick Filter Presets Row (AC-001) -->
-    <div class="deck-presets-row" role="tablist" aria-label="Quick game presets">
-      <button 
-        type="button" 
-        role="tab"
-        class="preset-filter-chip"
-        [class.active]="activePreset === 'all'"
-        [attr.aria-selected]="activePreset === 'all'"
-        (click)="setPreset('all')">
-        <svg class="preset-chip-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="3" y="3" width="7" height="7"/>
-          <rect x="14" y="3" width="7" height="7"/>
-          <rect x="14" y="14" width="7" height="7"/>
-          <rect x="3" y="14" width="7" height="7"/>
-        </svg>
-        <span>All Titles</span>
-        <span class="preset-count">{{ getPresetCount('all') }}</span>
-      </button>
-
-      <button 
-        type="button" 
-        role="tab"
-        class="preset-filter-chip"
-        [class.active]="activePreset === 'top-sellers'"
-        [attr.aria-selected]="activePreset === 'top-sellers'"
-        (click)="setPreset('top-sellers')">
-        <svg class="preset-chip-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-        <span>Top Sellers</span>
-        <span class="preset-count">{{ getPresetCount('top-sellers') }}</span>
-      </button>
-
-      <button 
-        type="button" 
-        role="tab"
-        class="preset-filter-chip discount-preset"
-        [class.active]="activePreset === 'discounts'"
-        [attr.aria-selected]="activePreset === 'discounts'"
-        (click)="setPreset('discounts')">
-        <svg class="preset-chip-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="19" y1="5" x2="5" y2="19"/>
-          <circle cx="6.5" cy="6.5" r="2.5"/>
-          <circle cx="17.5" cy="17.5" r="2.5"/>
-        </svg>
-        <span>Special Offers</span>
-        <span class="preset-count highlight-sale">{{ getPresetCount('discounts') }}</span>
-      </button>
-
-      <button 
-        type="button" 
-        role="tab"
-        class="preset-filter-chip"
-        [class.active]="activePreset === 'under-10'"
-        [attr.aria-selected]="activePreset === 'under-10'"
-        (click)="setPreset('under-10')">
-        <svg class="preset-chip-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="12" y1="1" x2="12" y2="23"/>
-          <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-        </svg>
-        <span>Under $10</span>
-        <span class="preset-count">{{ getPresetCount('under-10') }}</span>
-      </button>
-
-      <button 
-        type="button" 
-        role="tab"
-        class="preset-filter-chip"
-        [class.active]="activePreset === 'free'"
-        [attr.aria-selected]="activePreset === 'free'"
-        (click)="setPreset('free')">
-        <svg class="preset-chip-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="20 6 9 17 4 12"/>
-        </svg>
-        <span>Free to Play</span>
-        <span class="preset-count">{{ getPresetCount('free') }}</span>
-      </button>
     </div>
 
     <!-- Bottom Row: Full-Width Category Tag Rails -->

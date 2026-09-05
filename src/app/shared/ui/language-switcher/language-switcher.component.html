@@ -1,19 +1,18 @@
-<div class="lang-switcher-container">
-  <button class="lang-btn" (click)="toggle($event)" [attr.aria-expanded]="isOpen()">
-    {{ translationService.activeLang() | uppercase }}
-    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chevron" [class.open]="isOpen()">
-      <polyline points="6 9 12 15 18 9"></polyline>
-    </svg>
+<div class="lang-segmented-group" role="group" aria-label="Language selection">
+  <button 
+    type="button" 
+    class="lang-segment-btn" 
+    [class.active]="translationService.activeLang() === 'en'"
+    [attr.aria-pressed]="translationService.activeLang() === 'en'"
+    (click)="setLanguage('en')">
+    EN
   </button>
-
-  @if (isOpen()) {
-    <div class="lang-dropdown">
-      <button class="lang-option" [class.active]="translationService.activeLang() === 'en'" (click)="setLanguage('en')">
-        EN
-      </button>
-      <button class="lang-option" [class.active]="translationService.activeLang() === 'kh'" (click)="setLanguage('kh')">
-        KH
-      </button>
-    </div>
-  }
+  <button 
+    type="button" 
+    class="lang-segment-btn" 
+    [class.active]="translationService.activeLang() === 'kh'"
+    [attr.aria-pressed]="translationService.activeLang() === 'kh'"
+    (click)="setLanguage('kh')">
+    KH
+  </button>
 </div>

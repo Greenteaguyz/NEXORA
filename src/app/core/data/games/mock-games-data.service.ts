@@ -12,40 +12,9 @@ export class MockGamesDataService implements GamesDataService {
   private readonly STORAGE_KEY = 'games_list';
   private localStore = inject(LocalStoreService);
   private games: Game[] = [];
-  private searchIndex = new Map<string, Set<string>>();
 
   constructor() {
     this.initData();
-  }
-
-  private tokenize(text: string): string[] {
-    if (!text) return [];
-    return text
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, ' ')
-      .split(/[\s-]+/)
-      .filter(t => t.length > 0);
-  }
-
-  private rebuildSearchIndex(): void {
-    this.searchIndex.clear();
-    for (const game of this.games) {
-      if (game.deletedAt || game.status === 'draft') continue;
-      const tokens = new Set<string>();
-      for (const t of this.tokenize(game.title)) tokens.add(t);
-      for (const tag of game.tags || []) {
-        for (const t of this.tokenize(tag)) tokens.add(t);
-      }
-      for (const t of this.tokenize(game.description || '')) {
-        tokens.add(t);
-      }
-      for (const token of tokens) {
-        if (!this.searchIndex.has(token)) {
-          this.searchIndex.set(token, new Set());
-        }
-        this.searchIndex.get(token)!.add(game.id);
-      }
-    }
   }
 
   private initData(): void {
@@ -77,7 +46,6 @@ export class MockGamesDataService implements GamesDataService {
       this.games = SEED_GAMES.map(g => ({ ...g, status: g.status || 'published' }));
       this.localStore.setItem(this.STORAGE_KEY, this.games);
     }
-    this.rebuildSearchIndex();
   }
 
   private queryCache = new Map<string, Game[]>();
@@ -93,7 +61,6 @@ export class MockGamesDataService implements GamesDataService {
 
   private persist(): void {
     this.localStore.setItem(this.STORAGE_KEY, this.games);
-    this.rebuildSearchIndex();
     this.invalidateQueryCache();
   }
 

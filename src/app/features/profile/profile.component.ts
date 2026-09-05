@@ -16,6 +16,7 @@ import { formatUsd } from '../../core/data/payments/payment-logic';
 import { USERS_DATA, LIBRARY_DATA, WISHLIST_DATA, ORDERS_DATA, GAMES_DATA } from '../../core/data/tokens';
 import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
+import { TranslationService } from '../../core/services/translation.service';
 
 @Component({
   selector: 'app-profile',
@@ -33,6 +34,8 @@ import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directi
 export class ProfileComponent implements OnDestroy {
   auth = inject(AuthService);
   toastService = inject(ToastService);
+  private readonly translationService = inject(TranslationService);
+  readonly t = this.translationService.t;
   private paymentsData = inject(PAYMENTS_DATA);
   private usersData = inject(USERS_DATA);
   private libraryData = inject(LIBRARY_DATA);

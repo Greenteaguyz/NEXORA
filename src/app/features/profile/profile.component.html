@@ -57,7 +57,7 @@
             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
           </svg>
-          <span>Edit Profile</span>
+          <span>{{ t()('profile.edit_btn') }}</span>
         </button>
       </div>
     </header>
@@ -68,7 +68,7 @@
         <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"/>
         </svg>
-        <span>Profile saved.</span>
+        <span>{{ t()('common.save') }}</span>
       </div>
     }
 
@@ -86,7 +86,7 @@
         </div>
         <div class="stat-text">
           <span class="stat-value">{{ ownedCount }}</span>
-          <span class="stat-title">Owned Games</span>
+          <span class="stat-title">{{ t()('profile.stats_owned') }}</span>
         </div>
       </a>
 
@@ -98,7 +98,7 @@
         </div>
         <div class="stat-text">
           <span class="stat-value">{{ wishlistCount }}</span>
-          <span class="stat-title">Wishlisted</span>
+          <span class="stat-title">{{ t()('profile.stats_wishlist') }}</span>
         </div>
       </a>
 
@@ -113,7 +113,7 @@
         </div>
         <div class="stat-text">
           <span class="stat-value">{{ ordersCount }}</span>
-          <span class="stat-title">Orders</span>
+          <span class="stat-title">{{ t()('profile.stats_orders') }}</span>
         </div>
       </a>
 
@@ -126,7 +126,7 @@
         </div>
         <div class="stat-text">
           <span class="stat-value">{{ walletBalance }}</span>
-          <span class="stat-title">Wallet Balance</span>
+          <span class="stat-title">{{ t()('profile.stats_wallet') }}</span>
         </div>
       </a>
     </section>
@@ -144,7 +144,7 @@
         </div>
         <div class="creator-bar-info">
           <div class="creator-title-row">
-            <strong class="creator-bar-title">Creator Studio & Publishing</strong>
+            <strong class="creator-bar-title">{{ t()('profile.creator_title') }}</strong>
             @if (auth.isCreator()) {
               <span class="creator-status-badge active" role="status" aria-label="Creator Mode Active">
                 <span class="status-dot" aria-hidden="true"></span>ACTIVE
@@ -152,7 +152,7 @@
             }
           </div>
           <span class="creator-bar-desc">
-            {{ auth.isCreator() ? 'Creator tools are active. You can publish and edit game listings.' : 'Turn on Creator mode to publish games to the store.' }}
+            {{ auth.isCreator() ? t()('profile.creator_desc_active') : t()('profile.creator_desc') }}
           </span>
         </div>
       </div>
@@ -165,7 +165,7 @@
               <polyline points="15 3 21 3 21 9"/>
               <line x1="10" y1="14" x2="21" y2="3"/>
             </svg>
-            <span>Open Creator Studio</span>
+            <span>{{ t()('profile.open_studio') }}</span>
           </a>
         }
         <button 
@@ -175,7 +175,7 @@
           [attr.aria-pressed]="auth.isCreator()"
           [attr.aria-label]="auth.isCreator() ? 'Turn off creator mode' : 'Enable creator mode'"
           (click)="initiateToggleCreatorRole()">
-          <span>{{ auth.isCreator() ? 'Turn Off Creator Mode' : 'Enable Creator Mode' }}</span>
+          <span>{{ auth.isCreator() ? t()('profile.turn_off_creator') : t()('profile.turn_on_creator') }}</span>
         </button>
       </div>
     </section>
@@ -191,10 +191,11 @@
         </div>
         <div class="security-card-info">
           <div class="security-title-row">
-            <strong class="security-card-title">Account Password</strong>
+            <strong class="security-card-title">{{ t()('profile.security_title') }}</strong>
           </div>
           <span class="security-card-desc">
-            Used to sign in to your NEXORA account
+            <!-- Used to sign in to your NEXORA account -->
+            {{ t()('profile.security_desc') }}
           </span>
         </div>
       </div>
@@ -205,7 +206,7 @@
           class="btn-security-action"
           (click)="openChangePasswordModal($event)"
           aria-label="Change account password">
-          <span>Change Password</span>
+          <span>{{ t()('profile.change_password') }}</span>
         </button>
       </div>
     </section>
@@ -222,7 +223,7 @@
         (keydown.escape)="closeChangePasswordModal()">
         <div class="modal-card password-modal-card" (click)="$event.stopPropagation()">
           <div class="modal-header">
-            <h3 id="change-password-title" class="modal-title">Change Password</h3>
+            <h3 id="change-password-title" class="modal-title">{{ t()('profile.change_password') }}</h3>
             <button type="button" class="btn-modal-close" (click)="closeChangePasswordModal()" aria-label="Close dialog">&times;</button>
           </div>
 
@@ -378,13 +379,14 @@
                 class="btn-cancel btn-keep-creator" 
                 (click)="closeChangePasswordModal()"
                 [disabled]="savingPassword">
-                Cancel
+                {{ t()('common.cancel') }}
               </button>
               <button 
                 type="submit" 
                 class="btn-submit-password" 
                 [disabled]="!isChangePasswordFormValid || savingPassword || lockoutRemainingSeconds > 0">
-                <span>{{ savingPassword ? 'Updating...' : 'Change Password' }}</span>
+                <!-- {{ savingPassword ? 'Updating...' : 'Change Password' }} -->
+                <span>{{ savingPassword ? t()('common.loading') : t()('profile.change_password') }}</span>
               </button>
             </div>
           </form>
@@ -445,7 +447,7 @@
       <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Edit Profile" appScrollLock (click)="cancelEditing()" (keydown.escape)="cancelEditing()">
         <div class="modal-card edit-profile-modal" (click)="$event.stopPropagation()">
           <div class="modal-header">
-            <h3 class="modal-title">Edit Profile Information</h3>
+            <h3 class="modal-title">{{ t()('profile.edit_btn') }}</h3>
             <button type="button" class="btn-modal-close" (click)="cancelEditing()" aria-label="Close">&times;</button>
           </div>
 
@@ -544,7 +546,7 @@
             </div>
 
             <div class="form-group">
-              <label for="displayName" class="form-label">Display Name</label>
+              <label for="displayName" class="form-label">{{ t()('profile.display_name') }}</label>
               <input 
                 id="displayName" 
                 type="text" 
@@ -555,7 +557,7 @@
             </div>
 
             <div class="form-group">
-              <label for="bio" class="form-label">Bio / Studio Profile</label>
+              <label for="bio" class="form-label">{{ t()('profile.bio') }}</label>
               <textarea 
                 id="bio" 
                 [(ngModel)]="editBio" 
@@ -566,9 +568,9 @@
             </div>
 
             <div class="modal-actions">
-              <button type="button" class="btn-cancel" (click)="cancelEditing()">Cancel</button>
+              <button type="button" class="btn-cancel" (click)="cancelEditing()">{{ t()('common.cancel') }}</button>
               <button type="submit" class="btn-save" [disabled]="saving">
-                {{ saving ? 'Saving...' : 'Save Changes' }}
+                {{ saving ? t()('common.loading') : t()('profile.save_btn') }}
               </button>
             </div>
           </form>

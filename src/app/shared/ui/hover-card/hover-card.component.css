@@ -85,7 +85,7 @@
   gap: 4px;
   padding: 2px 6px;
   background: rgba(10, 14, 19, 0.75);
-  border-radius: 9999px;
+  border-radius: var(--radius-sm);
   backdrop-filter: blur(4px);
 }
 
@@ -99,7 +99,7 @@
 
 .indicator-dot.active {
   width: 12px;
-  border-radius: 9999px;
+  border-radius: var(--radius-xs);
   background-color: var(--accent-400, #66C0F4);
 }
 

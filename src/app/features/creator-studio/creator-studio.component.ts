@@ -6,6 +6,7 @@ import { GAMES_DATA, ORDERS_DATA } from '../../core/data/tokens';
 import { AuthService } from '../../core/auth/auth.service';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { ToastService } from '../../core/services/toast.service';
+import { TranslationService } from '../../core/services/translation.service';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 
@@ -29,6 +30,8 @@ export class CreatorStudioComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   auth = inject(AuthService);
   private toast = inject(ToastService);
+  translationService = inject(TranslationService);
+  t = this.translationService.t;
   private readonly elementRef = inject(ElementRef);
   private previouslyFocused: HTMLElement | null = null;
 
@@ -37,21 +40,16 @@ export class CreatorStudioComponent implements OnInit, OnDestroy {
   totalRevenue = 0;
   unitsSold = 0;
 
-  // Payout Milestone Progress (Goal Gradient Law)
-  readonly payoutThreshold = 1000;
-  get payoutProgressPercent(): number {
-    return Math.min(100, Math.round((this.totalRevenue / this.payoutThreshold) * 100));
-  }
-  get remainingToPayout(): number {
-    return Math.max(0, this.payoutThreshold - this.totalRevenue);
-  }
-
   // View Filter Tabs
   activeTab = signal<'all' | 'active' | 'drafts' | 'bin'>('all');
 
   // Stage 1: Move to Recycle Bin Modal State
   gameToBin: Game | null = null;
   deleting = false;
+
+  // Empty Recycle Bin Warning Modal State
+  showEmptyBinModal = false;
+  emptyingBin = false;
 
   // Stage 2: Permanent Purge Modal State
   gameToPurge: Game | null = null;
@@ -444,14 +442,31 @@ export class CreatorStudioComponent implements OnInit, OnDestroy {
     });
   }
 
-  emptyBin(): void {
+  openEmptyBinModal(event: MouseEvent): void {
+    event.stopPropagation();
+    if (this.binGamesCount === 0) return;
+    if (typeof document !== 'undefined') {
+      this.previouslyFocused = document.activeElement as HTMLElement | null;
+    }
+    this.showEmptyBinModal = true;
+  }
+
+  closeEmptyBinModal(): void {
+    if (this.emptyingBin) return;
+    this.showEmptyBinModal = false;
+    this.restoreFocus();
+  }
+
+  confirmEmptyBin(): void {
     const user = this.auth.currentUser();
     if (!user || !this.gamesData.emptyRecycleBin) return;
-
     if (this.binGamesCount === 0) return;
 
+    this.emptyingBin = true;
     this.gamesData.emptyRecycleBin(user.id).subscribe({
       next: () => {
+        this.emptyingBin = false;
+        this.showEmptyBinModal = false;
         this.loadStudioGames();
         this.toast.show({
           type: 'info',
@@ -460,6 +475,7 @@ export class CreatorStudioComponent implements OnInit, OnDestroy {
         });
       },
       error: () => {
+        this.emptyingBin = false;
         this.toast.show({ type: 'error', title: 'Failed', message: 'Could not empty Recycle Bin.' });
       }
     });
@@ -468,6 +484,7 @@ export class CreatorStudioComponent implements OnInit, OnDestroy {
   @HostListener('window:keydown', ['$event'])
   onKeydown(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
+      if (this.showEmptyBinModal) this.closeEmptyBinModal();
       if (this.gameToBin) this.closeDeleteModal();
       if (this.gameToPurge) this.closePurgeModal();
     }

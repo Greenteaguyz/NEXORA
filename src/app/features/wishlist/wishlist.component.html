@@ -177,17 +177,14 @@
                 </div>
               </div>
 
-              <!-- Action Row (AC-004 Direct Conversion) -->
+              <!-- Action Row (Direct High-Converting CTA) -->
               <div class="card-actions-row">
-                <a [routerLink]="['/games', item.game.id]" class="btn-view-details">
-                  <span>Details</span>
-                </a>
                 @if (item.game.price === 0) {
-                  <a [routerLink]="['/games', item.game.id]" [queryParams]="{ intent: 'download' }" class="btn-buy-direct free">
+                  <a [routerLink]="['/games', item.game.id]" [queryParams]="{ intent: 'download' }" class="btn-buy-direct free" [attr.aria-label]="'Play ' + item.game.title + ' for free'">
                     <span>Play Free</span>
                   </a>
                 } @else {
-                  <a [routerLink]="['/games', item.game.id]" [queryParams]="{ intent: 'purchase' }" class="btn-buy-direct paid">
+                  <a [routerLink]="['/games', item.game.id]" [queryParams]="{ intent: 'purchase' }" class="btn-buy-direct paid" [attr.aria-label]="'Buy ' + item.game.title + ' for $' + item.game.price.toFixed(2)">
                     <span>Buy Game</span>
                   </a>
                 }

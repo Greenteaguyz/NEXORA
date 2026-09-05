@@ -405,6 +405,12 @@
   box-shadow: 0 2px 6px rgba(244, 63, 94, 0.4);
 }
 
+.btn-wishlist-remove::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+}
+
 .btn-wishlist-remove:hover {
   background-color: #E11D48;
   border-color: #E11D48;
@@ -542,53 +548,36 @@
 }
 
 .card-actions-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  display: flex;
+  align-items: center;
   margin-top: var(--space-1);
 }
 
-.btn-view-details {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 12px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border-card);
-  border-radius: var(--radius-xs, 2px);
-  color: var(--text-primary);
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all 0.15s ease;
-}
-
-.btn-view-details:hover {
-  border-color: var(--accent-400);
-  color: var(--accent-400);
-}
-
 .btn-buy-direct {
+  flex: 1;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 12px;
-  border-radius: var(--radius-xs, 2px);
-  font-size: 0.82rem;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm, 4px);
+  font-size: 0.88rem;
   font-weight: 700;
   text-decoration: none;
   white-space: nowrap;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-buy-direct.paid {
   background-color: var(--emerald-500, #75B022);
   color: #FFFFFF;
   border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .btn-buy-direct.paid:hover {
   background-color: #8ED629;
+  box-shadow: 0 3px 10px rgba(117, 176, 34, 0.4);
 }
 
 .btn-buy-direct.free {

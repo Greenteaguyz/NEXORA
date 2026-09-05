@@ -8,16 +8,18 @@
         <p class="orders-subtitle">{{ t()('orders.subtitle') }}</p>
       </div>
 
-      <div class="orders-stats-pill" aria-label="Order summary statistics">
-        <span class="stats-group">
-          <span class="stats-count">{{ items.length }}</span>
-          <span class="stats-label">{{ items.length === 1 ? 'Purchase' : 'Purchases' }}</span>
-        </span>
-        <span class="stats-group">
-          <span class="stats-count highlight">${{ totalSpent.toFixed(2) }}</span>
-          <span class="stats-label">Spent</span>
-        </span>
-      </div>
+      @if (items.length > 0) {
+        <div class="orders-stats-pill" aria-label="Order summary statistics">
+          <span class="stats-group">
+            <span class="stats-count">{{ items.length }}</span>
+            <span class="stats-label">{{ items.length === 1 ? 'Purchase' : 'Purchases' }}</span>
+          </span>
+          <span class="stats-group">
+            <span class="stats-count highlight">${{ totalSpent.toFixed(2) }}</span>
+            <span class="stats-label">Spent</span>
+          </span>
+        </div>
+      }
     </div>
   </header>
 
@@ -26,13 +28,46 @@
     @if (loading) {
       <app-loading-spinner size="lg" label="Loading your orders..."></app-loading-spinner>
     } @else if (items.length === 0) {
-      <app-empty-state 
-        icon="receipt" 
-        title="No Orders Yet" 
-        message="You haven't made any purchases yet. When you buy or claim games, your receipts will appear here."
-        actionLabel="Browse Store"
-        routerLink="/catalog">
-      </app-empty-state>
+      <div class="orders-empty-container">
+        <app-empty-state 
+          icon="receipt" 
+          title="No Orders Yet" 
+          message="You haven't made any purchases yet. When you buy or claim games, your receipts will appear here."
+          actionLabel="Browse Store"
+          routerLink="/catalog">
+        </app-empty-state>
+
+        <!-- Discovery Bridge (Zeigarnik Effect & Goal-Gradient Catalyst) -->
+        <div class="orders-discovery-bridge" role="region" aria-label="Discovery shortcuts">
+          <a routerLink="/wishlist" class="bridge-card wishlist-bridge" aria-label="Review your wishlist">
+            <div class="bridge-icon-wrap wishlist">
+              <svg viewBox="0 0 24 24" fill="currentColor" class="bridge-svg" aria-hidden="true">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              </svg>
+            </div>
+            <div class="bridge-text">
+              <span class="bridge-eyebrow">SAVED FOR LATER</span>
+              <h3 class="bridge-title">Review Your Wishlist</h3>
+              <p class="bridge-desc">Pick up games you've saved and start your collection.</p>
+            </div>
+            <span class="bridge-arrow">→</span>
+          </a>
+
+          <a routerLink="/catalog" [queryParams]="{ tag: 'Action' }" class="bridge-card catalog-bridge" aria-label="Browse top catalog titles">
+            <div class="bridge-icon-wrap action">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bridge-svg" aria-hidden="true">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </div>
+            <div class="bridge-text">
+              <span class="bridge-eyebrow">POPULAR ACTION</span>
+              <h3 class="bridge-title">Explore Trending Games</h3>
+              <p class="bridge-desc">Discover high-octane indie games and top community ratings.</p>
+            </div>
+            <span class="bridge-arrow">→</span>
+          </a>
+        </div>
+      </div>
     } @else {
       <!-- Orders Search & Filter Toolbar -->
       <div class="orders-toolbar">

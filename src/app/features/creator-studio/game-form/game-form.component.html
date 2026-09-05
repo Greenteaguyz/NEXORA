@@ -6,21 +6,21 @@
         <line x1="19" y1="12" x2="5" y2="12"/>
         <polyline points="12 19 5 12 12 5"/>
       </svg>
-      <span>Back to Creator Studio</span>
+      <span>{{ t()('game_form.back_link') }}</span>
     </a>
 
     <div class="form-title-wrap">
       <h1 class="form-title">
-        {{ isEditMode ? 'Edit Game Listing' : 'Add New Game' }}
+        {{ isEditMode ? t()('game_form.title_edit') : t()('game_form.title_add') }}
       </h1>
       <p class="form-subtitle">
-        {{ isEditMode ? 'Update store details, pricing, and tags.' : 'Enter game details, set pricing, and publish to the store.' }}
+        {{ isEditMode ? t()('game_form.subtitle_edit') : t()('game_form.subtitle_add') }}
       </p>
     </div>
   </header>
 
   @if (loading) {
-    <app-loading-spinner size="lg" label="Loading game data..."></app-loading-spinner>
+    <app-loading-spinner size="lg" [label]="t()('common.loading')"></app-loading-spinner>
   } @else {
     <!-- Main Form & Live Preview Layout -->
     <div class="form-layout-grid">
@@ -43,7 +43,7 @@
             [class.active]="activeStep() === 1"
             (click)="setStep(1)">
             <span class="step-num">1</span>
-            <span class="step-label">Basic Info & Pricing</span>
+            <span class="step-label">{{ t()('game_form.step1') }}</span>
           </button>
           <div class="step-connector" aria-hidden="true"></div>
           <button 
@@ -52,7 +52,7 @@
             [class.active]="activeStep() === 2"
             (click)="setStep(2)">
             <span class="step-num">2</span>
-            <span class="step-label">Artwork & Media</span>
+            <span class="step-label">{{ t()('game_form.step2') }}</span>
           </button>
           <div class="step-connector" aria-hidden="true"></div>
           <button 
@@ -61,7 +61,7 @@
             [class.active]="activeStep() === 3"
             (click)="setStep(3)">
             <span class="step-num">3</span>
-            <span class="step-label">Review & Publish</span>
+            <span class="step-label">{{ t()('game_form.step3') }}</span>
           </button>
         </nav>
 
@@ -73,7 +73,7 @@
           
           <div class="form-field">
             <div class="field-label-row">
-              <label for="title" class="field-label">Game Title <span class="req">*</span></label>
+              <label for="title" class="field-label">{{ t()('game_form.field_title') }} <span class="req">*</span></label>
               <span class="char-counter" [class.warn]="titleCharCount() > 80">{{ titleCharCount() }}/100</span>
             </div>
             <input 
@@ -91,7 +91,7 @@
 
           <div class="form-field">
             <div class="field-label-row">
-              <label for="description" class="field-label">Game Description <span class="req">*</span></label>
+              <label for="description" class="field-label">{{ t()('game_form.field_desc') }} <span class="req">*</span></label>
               <span class="char-counter" [class.warn]="descCharCount() > 1800">{{ descCharCount() }}/2000</span>
             </div>
             <textarea 
@@ -113,7 +113,7 @@
           <h2 class="section-title">2. Pricing & Distribution</h2>
           <div class="form-field">
             <div class="field-label-row">
-              <label for="price" class="field-label">Price (USD) <span class="req">*</span></label>
+              <label for="price" class="field-label">{{ t()('game_form.field_price') }} <span class="req">*</span></label>
               <!-- 1-Click Quick Price Tiers -->
               <div class="price-tiers-pills" role="group" aria-label="Quick price tiers">
                 <span class="tiers-prefix">Quick Tiers:</span>
@@ -172,7 +172,7 @@
         <section class="form-section">
           <h2 class="section-title">3. Genres & Tags</h2>
           <div class="form-field">
-            <label class="field-label">Store Tags (1–5 tags) <span class="req">*</span></label>
+            <label class="field-label">{{ t()('game_form.field_tags') }} <span class="req">*</span></label>
             <app-tag-chip-input formControlName="tags"></app-tag-chip-input>
           </div>
         </section>
@@ -210,7 +210,7 @@
           <div class="media-cover-hero">
             <div class="bento-card hero-card">
               <div class="bento-card-header">
-                <span class="bento-slot-title">Storefront Cover Artwork <span class="req">*</span></span>
+                <span class="bento-slot-title">{{ t()('game_form.field_cover') }} <span class="req">*</span></span>
                 <span class="slot-badge-cyan">Storefront Face (16:9)</span>
               </div>
 
@@ -589,10 +589,15 @@
 
         <!-- Sticky Submit & Actions Footer -->
         <div class="form-actions-footer sticky">
-
+          <div class="footer-left-zone">
+            <div class="footer-status-pill" [class.dirty]="gameForm.dirty">
+              <span class="status-pulse-dot" [class.active]="gameForm.dirty" aria-hidden="true"></span>
+              <span>{{ gameForm.dirty ? 'Unsaved changes' : 'Ready to save' }}</span>
+            </div>
+          </div>
 
           <div class="footer-btn-group">
-            <a routerLink="/studio" class="btn-cancel">Cancel</a>
+            <a routerLink="/studio" class="btn-cancel">{{ t()('common.cancel') }}</a>
 
             <span class="footer-btn-divider" aria-hidden="true"></span>
 
@@ -601,7 +606,7 @@
                 <svg class="step-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <polyline points="15 18 9 12 15 6"/>
                 </svg>
-                <span>Back</span>
+                <span>{{ t()('game_form.prev_step') }}</span>
               </button>
             }
 
@@ -615,13 +620,13 @@
                 <polyline points="17 21 17 13 7 13 7 21"/>
                 <polyline points="7 3 7 8 15 8"/>
               </svg>
-              <span>Save as Draft</span>
+              <span>{{ t()('game_form.save_draft') }}</span>
             </button>
 
 
             @if (activeStep() < 3) {
               <button type="button" class="btn-step-next" (click)="nextStep()">
-                <span>Continue</span>
+                <span>{{ t()('game_form.next_step') }}</span>
                 <svg class="step-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <polyline points="9 18 15 12 9 6"/>
                 </svg>
@@ -630,12 +635,12 @@
               <button type="submit" class="btn-submit" [disabled]="submitting || gameForm.invalid">
                 @if (submitting) {
                   <span class="spinner-sm"></span>
-                  <span>Saving...</span>
+                  <span>{{ t()('common.loading') }}</span>
                 } @else {
                   <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
-                  <span>{{ isEditMode ? 'Save Changes' : 'Publish Game' }}</span>
+                  <span>{{ isEditMode ? t()('game_form.update') : t()('game_form.publish') }}</span>
                 }
               </button>
             }

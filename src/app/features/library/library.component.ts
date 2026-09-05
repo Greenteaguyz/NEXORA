@@ -128,11 +128,6 @@ export class LibraryComponent {
     return Array.from(set).sort();
   }
 
-  getTagCount(tag: string): number {
-    if (tag === 'all') return this.items.length;
-    return this.items.filter(item => item.game.tags.includes(tag)).length;
-  }
-
   toggleTag(tag: string): void {
     if (this.selectedTags.has(tag)) {
       this.selectedTags.delete(tag);
