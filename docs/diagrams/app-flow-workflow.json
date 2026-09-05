@@ -2,44 +2,42 @@
   "schema_version": 2,
   "diagram_type": "workflow",
   "meta": {
-    "title": "NEXORA Application Flow & Core Workflows",
+    "title": "NEXORA Storefront & Player Workflow",
     "animation": "trace",
+    "visual_preset": "signal-flow",
     "quality_profile": "showcase",
     "views": [
       {
-        "id": "buyer-journey",
-        "label": "Storefront Discovery & Purchase",
+        "id": "discovery-to-checkout",
+        "label": "Discovery to Neutral Checkout",
         "focus": [
           "catalog",
           "game_detail",
+          "checkout"
+        ],
+        "note": "Explore titles by search and tag filters, then enter neutral checkout."
+      },
+      {
+        "id": "fulfillment-and-play",
+        "label": "Ownership & Steam Download Tray",
+        "focus": [
           "checkout",
           "split_engine",
           "orders",
-          "library"
+          "library",
+          "download_tray"
         ],
-        "note": "Trace a game from catalog discovery to checkout, revenue split, and library ownership."
+        "note": "Complete order fulfillment, register library ownership, and launch from the download tray."
       },
       {
-        "id": "creator-publishing",
-        "label": "Creator Studio & Publishing Flow",
+        "id": "wallet-and-security",
+        "label": "Wallet & Account Security",
         "focus": [
-          "profile",
-          "studio",
-          "wizard",
-          "catalog"
-        ],
-        "note": "Follow creator onboarding, listing creation through the 3-step wizard, and live publication."
-      },
-      {
-        "id": "account-security",
-        "label": "Account Security & Wallet",
-        "focus": [
-          "profile",
-          "pwd_modal",
-          "payment",
+          "security",
+          "wallet",
           "checkout"
         ],
-        "note": "Inspect credential management with lockout defense and wallet funding for store checkout."
+        "note": "Inspect wallet funding, account password lockout defense, and the 90/10 revenue split."
       }
     ],
     "output": "docs/diagrams/app-flow-workflow.html"
@@ -47,19 +45,19 @@
   "lanes": [
     {
       "id": "discovery",
-      "label": "Store & Discovery"
+      "label": "Storefront & Discovery"
     },
     {
-      "id": "transaction",
-      "label": "Checkout & Ownership"
+      "id": "commerce",
+      "label": "Checkout & Transactions"
     },
     {
-      "id": "account",
-      "label": "Account & Creator Studio"
+      "id": "library_lane",
+      "label": "Player Library & Downloads"
     },
     {
-      "id": "platform",
-      "label": "Platform Services & State"
+      "id": "platform_lane",
+      "label": "Security & Platform Services"
     }
   ],
   "phases": [
@@ -71,42 +69,42 @@
     },
     {
       "id": "transact",
-      "label": "Order & Fulfillment",
+      "label": "Checkout & Authorization",
       "fromCol": 2,
-      "toCol": 3,
+      "toCol": 2,
       "variant": "emphasis"
     },
     {
-      "id": "lifecycle",
-      "label": "Library & Creator Lifecycle",
-      "fromCol": 4,
-      "toCol": 5,
+      "id": "play",
+      "label": "Fulfillment & Local Delivery",
+      "fromCol": 3,
+      "toCol": 4,
       "variant": "dashed"
     }
   ],
   "groups": [
     {
       "id": "store_group",
-      "label": "Storefront browsing",
+      "label": "Storefront catalog",
       "lane": "discovery",
       "fromCol": 0,
       "toCol": 1,
       "variant": "default"
     },
     {
-      "id": "checkout_group",
-      "label": "Order pipeline",
-      "lane": "transaction",
+      "id": "order_group",
+      "label": "Order fulfillment",
+      "lane": "commerce",
       "fromCol": 2,
       "toCol": 3,
       "variant": "emphasis"
     },
     {
-      "id": "creator_group",
-      "label": "Creator publishing",
-      "lane": "account",
+      "id": "play_group",
+      "label": "Local game delivery",
+      "lane": "library_lane",
       "fromCol": 3,
-      "toCol": 5,
+      "toCol": 4,
       "variant": "dashed"
     }
   ],
@@ -124,8 +122,17 @@
       "col": 0,
       "type": "frontend",
       "label": "Game Catalog",
-      "sublabel": "filters, search & tags",
-      "width": 136
+      "sublabel": "search & filters",
+      "width": 140
+    },
+    {
+      "id": "security",
+      "lane": "platform_lane",
+      "col": 0,
+      "type": "security",
+      "label": "Account Password",
+      "sublabel": "lockout defense",
+      "width": 140
     },
     {
       "id": "game_detail",
@@ -133,101 +140,71 @@
       "col": 1,
       "type": "frontend",
       "label": "Game Detail",
-      "sublabel": "media, specs & purchase CTA",
-      "width": 136
+      "sublabel": "specs & buy CTA",
+      "width": 140
     },
     {
       "id": "wishlist",
-      "lane": "transaction",
+      "lane": "commerce",
       "col": 1,
       "type": "frontend",
       "label": "Wishlist",
-      "sublabel": "saved titles & alerts",
-      "width": 136
+      "sublabel": "saved games",
+      "width": 140
     },
     {
       "id": "checkout",
-      "lane": "transaction",
+      "lane": "commerce",
       "col": 2,
       "type": "security",
       "label": "Neutral Checkout",
-      "sublabel": "cards / wallet / KHQR",
-      "tag": "neutral default",
-      "width": 136
+      "sublabel": "cards or wallet",
+      "width": 140
     },
     {
-      "id": "split_engine",
-      "lane": "platform",
+      "id": "wallet",
+      "lane": "platform_lane",
       "col": 2,
-      "type": "backend",
-      "label": "Revenue Split Engine",
-      "sublabel": "90% creator / 10% platform",
-      "tag": "instant split",
-      "width": 136
+      "type": "frontend",
+      "label": "Store Wallet",
+      "sublabel": "funds & voucher",
+      "width": 140
     },
     {
       "id": "orders",
-      "lane": "transaction",
+      "lane": "commerce",
       "col": 3,
       "type": "backend",
       "label": "Orders & Receipts",
-      "sublabel": "immutable transaction log",
-      "width": 136
+      "sublabel": "invoice records",
+      "width": 140
     },
     {
       "id": "library",
-      "lane": "transaction",
+      "lane": "library_lane",
       "col": 4,
       "type": "frontend",
       "label": "Player Library",
-      "sublabel": "instant ownership & play",
-      "width": 136
+      "sublabel": "game ownership",
+      "width": 140
     },
     {
-      "id": "profile",
-      "lane": "account",
-      "col": 0,
-      "type": "frontend",
-      "label": "Account Profile",
-      "sublabel": "Alice (dev) vs Bob (buyer)",
-      "width": 136
-    },
-    {
-      "id": "pwd_modal",
-      "lane": "platform",
-      "col": 0,
-      "type": "security",
-      "label": "Account Password",
-      "sublabel": "lockout defense & hash",
-      "tag": "5 attempts limit",
-      "width": 136
-    },
-    {
-      "id": "payment",
-      "lane": "account",
-      "col": 1,
-      "type": "frontend",
-      "label": "Wallet & Payment",
-      "sublabel": "balance & gift card redeem",
-      "width": 136
-    },
-    {
-      "id": "studio",
-      "lane": "account",
+      "id": "split_engine",
+      "lane": "platform_lane",
       "col": 3,
-      "type": "frontend",
-      "label": "Creator Studio",
-      "sublabel": "drafts, recycle bin & metrics",
-      "width": 136
+      "type": "backend",
+      "label": "Revenue Split",
+      "sublabel": "90/10 split",
+      "width": 140
     },
     {
-      "id": "wizard",
-      "lane": "account",
+      "id": "download_tray",
+      "lane": "platform_lane",
       "col": 4,
       "type": "frontend",
-      "label": "3-Step Game Wizard",
-      "sublabel": "info, media & specs",
-      "width": 136
+      "label": "Download Tray",
+      "sublabel": "speeds & queue",
+      "width": 140
     }
   ],
   "edges": [
@@ -260,24 +237,25 @@
       "variant": "default"
     },
     {
-      "id": "checkout-split",
-      "from": "checkout",
-      "to": "split_engine",
-      "label": "split revenue",
-      "variant": "security"
-    },
-    {
-      "id": "split-orders",
-      "from": "split_engine",
-      "to": "orders",
-      "label": "record invoice",
-      "variant": "default"
+      "id": "wallet-checkout",
+      "from": "wallet",
+      "to": "checkout",
+      "label": "wallet funds",
+      "variant": "dashed"
     },
     {
       "id": "checkout-orders",
       "from": "checkout",
       "to": "orders",
+      "label": "process order",
       "variant": "emphasis"
+    },
+    {
+      "id": "checkout-split",
+      "from": "checkout",
+      "to": "split_engine",
+      "label": "record split",
+      "variant": "security"
     },
     {
       "id": "orders-library",
@@ -287,60 +265,46 @@
       "variant": "emphasis"
     },
     {
-      "id": "profile-password",
-      "from": "profile",
-      "to": "pwd_modal",
-      "label": "auth security",
-      "variant": "security"
-    },
-    {
-      "id": "profile-payment",
-      "from": "profile",
-      "to": "payment",
-      "label": "manage wallet",
-      "variant": "default"
-    },
-    {
-      "id": "payment-checkout",
-      "from": "payment",
-      "to": "checkout",
-      "label": "wallet funds",
-      "variant": "dashed"
-    },
-    {
-      "id": "studio-wizard",
-      "from": "studio",
-      "to": "wizard",
-      "label": "create / edit",
+      "id": "library-download",
+      "from": "library",
+      "to": "download_tray",
+      "label": "start download",
       "variant": "emphasis"
+    },
+    {
+      "id": "sec-wallet",
+      "from": "security",
+      "to": "wallet",
+      "label": "auth session",
+      "variant": "default"
     }
   ],
   "cards": [
     {
       "dot": "cyan",
-      "title": "Storefront & Checkout",
+      "title": "Storefront & Neutral Checkout",
       "items": [
-        "Neutral checkout requires explicit payment method selection",
-        "Instant 90% creator / 10% platform revenue split execution",
-        "Immediate ownership registration in Library with local state isolation"
+        "Neutral checkout defaults to None with zero pre-selected cards or wallet",
+        "Instant 90% creator / 10% platform revenue allocation recorded on confirmation",
+        "Card-only constraints enforced for consumer accounts (Bob Mercer)"
       ]
     },
     {
       "dot": "emerald",
-      "title": "Creator Studio & Publishing",
+      "title": "Ownership & Steam Download Tray",
       "items": [
-        "Isolated multi-persona state: Alice (creator) vs Bob (buyer)",
-        "3-step game wizard with unsaved changes guard and responsive tabs",
-        "Draft autosave and recycle bin with 30-day soft-delete recovery"
+        "Instant library ownership registration with multi-persona state isolation",
+        "Docked bottom download tray tracks real-time transfer speeds and progress",
+        "Direct game launch execution with session playtime accumulation"
       ]
     },
     {
       "dot": "rose",
-      "title": "Security, Identity & I18n",
+      "title": "Identity, Security & Accessibility",
       "items": [
-        "Brute-force lockout safeguards (5 attempts, 60-second cooldown)",
-        "Durable credential isolation in separate auth_credentials storage",
-        "Comprehensive English and Khmer translation with dynamic chunk loading"
+        "Brute-force lockout safeguards: 5 failed attempts trigger 60-second cooldown",
+        "Ref-counted scroll lock directive prevents background body jitter during modal opens",
+        "Full bilingual English & Khmer localization with 100% dictionary parity (200 keys)"
       ]
     }
   ]

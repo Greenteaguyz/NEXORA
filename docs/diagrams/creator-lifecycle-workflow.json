@@ -1,0 +1,290 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "NEXORA Creator Studio & Publishing Lifecycle",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "publishing-path",
+        "label": "Wizard Authoring to Live Store",
+        "focus": [
+          "profile_toggle",
+          "studio_dash",
+          "wizard_form",
+          "readiness_gate",
+          "live_catalog"
+        ],
+        "note": "Follow the publishing journey from creator role activation to live store publication."
+      },
+      {
+        "id": "safety-and-drafts",
+        "label": "Drafts, Guards & Recycle Bin",
+        "focus": [
+          "studio_dash",
+          "wizard_form",
+          "draft_autosave",
+          "recycle_bin",
+          "unsaved_guard"
+        ],
+        "note": "Review draft auto-persistence, unsaved navigation guards, and 30-day soft-delete recovery."
+      },
+      {
+        "id": "sales-settlement",
+        "label": "Store Sales & KHQR Settlement",
+        "focus": [
+          "readiness_gate",
+          "live_catalog",
+          "khqr_payout"
+        ],
+        "note": "Trace order sales revenue into the 90% creator ABA KHQR royalty settlement ledger."
+      }
+    ],
+    "output": "docs/diagrams/creator-lifecycle-workflow.html"
+  },
+  "lanes": [
+    {
+      "id": "account_lane",
+      "label": "Creator Account & Dashboard"
+    },
+    {
+      "id": "safety_lane",
+      "label": "Drafts, Guards & Recycle Bin"
+    },
+    {
+      "id": "wizard_lane",
+      "label": "Game Authoring & 3-Step Wizard"
+    },
+    {
+      "id": "settlement_lane",
+      "label": "Storefront & Revenue Settlement"
+    }
+  ],
+  "phases": [
+    {
+      "id": "onboard",
+      "label": "Onboarding & Studio Setup",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "author",
+      "label": "Wizard Specification",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "publish",
+      "label": "Publication & Royalty Payout",
+      "fromCol": 4,
+      "toCol": 4,
+      "variant": "dashed"
+    }
+  ],
+  "groups": [
+    {
+      "id": "creator_setup",
+      "label": "Studio access",
+      "lane": "account_lane",
+      "fromCol": 0,
+      "toCol": 1,
+      "variant": "default"
+    },
+    {
+      "id": "wizard_steps",
+      "label": "Authoring workflow",
+      "lane": "wizard_lane",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "store_settlement",
+      "label": "Commerce payout",
+      "lane": "settlement_lane",
+      "fromCol": 4,
+      "toCol": 4,
+      "variant": "dashed"
+    }
+  ],
+  "mainPath": [
+    "profile_toggle",
+    "studio_dash",
+    "wizard_form",
+    "readiness_gate",
+    "live_catalog"
+  ],
+  "nodes": [
+    {
+      "id": "profile_toggle",
+      "lane": "account_lane",
+      "col": 0,
+      "type": "frontend",
+      "label": "Creator Mode",
+      "sublabel": "Alice Vance role toggle",
+      "width": 140
+    },
+    {
+      "id": "unsaved_guard",
+      "lane": "safety_lane",
+      "col": 0,
+      "type": "security",
+      "label": "Unsaved Guard",
+      "sublabel": "client navigation check",
+      "width": 140
+    },
+    {
+      "id": "studio_dash",
+      "lane": "account_lane",
+      "col": 1,
+      "type": "frontend",
+      "label": "Creator Studio",
+      "sublabel": "listings, drafts & metrics",
+      "width": 140
+    },
+    {
+      "id": "wizard_form",
+      "lane": "wizard_lane",
+      "col": 2,
+      "type": "frontend",
+      "label": "3-Step Wizard",
+      "sublabel": "info, media & specs",
+      "width": 140
+    },
+    {
+      "id": "draft_autosave",
+      "lane": "safety_lane",
+      "col": 2,
+      "type": "backend",
+      "label": "Drafts Autosave",
+      "sublabel": "background sync state",
+      "width": 140
+    },
+    {
+      "id": "readiness_gate",
+      "lane": "wizard_lane",
+      "col": 3,
+      "type": "security",
+      "label": "Publish Readiness",
+      "sublabel": "specs & cover validator",
+      "width": 140
+    },
+    {
+      "id": "recycle_bin",
+      "lane": "safety_lane",
+      "col": 3,
+      "type": "database",
+      "label": "Recycle Bin",
+      "sublabel": "30-day soft delete recovery",
+      "width": 140
+    },
+    {
+      "id": "live_catalog",
+      "lane": "wizard_lane",
+      "col": 4,
+      "type": "frontend",
+      "label": "Live Store Listing",
+      "sublabel": "public game catalog",
+      "width": 140
+    },
+    {
+      "id": "khqr_payout",
+      "lane": "settlement_lane",
+      "col": 4,
+      "type": "backend",
+      "label": "KHQR Settlement",
+      "sublabel": "90% creator royalty",
+      "width": 140
+    }
+  ],
+  "edges": [
+    {
+      "id": "profile-studio",
+      "from": "profile_toggle",
+      "to": "studio_dash",
+      "label": "open studio",
+      "variant": "emphasis"
+    },
+    {
+      "id": "studio-wizard",
+      "from": "studio_dash",
+      "to": "wizard_form",
+      "label": "new listing",
+      "variant": "emphasis"
+    },
+    {
+      "id": "studio-bin",
+      "from": "studio_dash",
+      "to": "recycle_bin",
+      "label": "manage bin",
+      "variant": "dashed"
+    },
+    {
+      "id": "wizard-gate",
+      "from": "wizard_form",
+      "to": "readiness_gate",
+      "label": "validate game",
+      "variant": "emphasis"
+    },
+    {
+      "id": "wizard-draft",
+      "from": "wizard_form",
+      "to": "draft_autosave",
+      "label": "auto-save",
+      "variant": "dashed"
+    },
+    {
+      "id": "gate-catalog",
+      "from": "readiness_gate",
+      "to": "live_catalog",
+      "label": "publish game",
+      "variant": "emphasis"
+    },
+    {
+      "id": "catalog-payout",
+      "from": "live_catalog",
+      "to": "khqr_payout",
+      "label": "sales split",
+      "variant": "security"
+    },
+    {
+      "id": "guard-wizard",
+      "from": "unsaved_guard",
+      "to": "wizard_form",
+      "label": "guard form",
+      "variant": "security"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "3-Step Game Creation Wizard",
+      "items": [
+        "Step 1: Basic Info, pricing & localized tags",
+        "Step 2: Cover artwork, screenshots & trailer media slots",
+        "Step 3: Minimum / recommended specs (OS, CPU, GPU, RAM, Storage)"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Safety, Autosave & Recovery",
+      "items": [
+        "Client-side unsavedChangesGuard prevents accidental route navigation loss",
+        "Draft autosave preserves in-progress work to localStore key",
+        "Recycle bin provides 30-day soft-delete retention with 1-click restore"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Creator Royalties & Payout Rail",
+      "items": [
+        "Automated 90% creator revenue split recorded upon order confirmation",
+        "National Bank of Cambodia Bakong KHQR mobile payment payout integration",
+        "Exclusive to verified creator profiles with isolated seller credentials"
+      ]
+    }
+  ]
+}

@@ -79,7 +79,8 @@ Architectural rationale, design choices, and trade-off analysis.
 
 ## Master architecture and planning documents
 
-* **[Interactive App Flow & Workflow Diagram](./diagrams/app-flow-workflow.html)** — Visual, interactive SVG workflow diagram of the entire NEXORA storefront, checkout, and creator lifecycle with theme switching and guided views.
+* **[Storefront & Player Workflow Diagram](./diagrams/app-flow-workflow.html)** — Visual, interactive SVG workflow diagram of the NEXORA storefront, neutral checkout, ownership fulfillment, and Steam download tray.
+* **[Creator Studio Lifecycle Diagram](./diagrams/creator-lifecycle-workflow.html)** — Interactive workflow of the 3-step game wizard, unsaved changes guard, draft autosave, 30-day recycle bin, and 90% KHQR royalty payout.
 * **[Architecture Codemaps (docs/CODEMAPS/)](./CODEMAPS/architecture.md)** — Token-lean architectural codemaps covering system topology, frontend routes, data models, services, and dependencies.
 * **[Steam Design System (DESIGN.md)](../DESIGN.md)** — Comprehensive design specification detailing color tokens, typography scales, zero-shift media architecture, fluid `clamp()` tokens, 4/3/2/1 grid progression, and 50+ anti-slop guardrails.
 * **[Frontend architecture specification](../frontend-architecture.md)** — Architectural document covering system design, state management with Signals, DI abstraction, error handling, and design tokens.

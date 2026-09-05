@@ -210,7 +210,8 @@ WORKING    │             2. HOW-TOS               │             3. REFERENCE
 ---
 
 ## Architectural specifications
-* [Interactive App Flow & Workflow Diagram](file:///c:/Users/User/Downloads/AngularProject/docs/diagrams/app-flow-workflow.html) — Visual, interactive SVG workflow diagram of the entire NEXORA storefront, checkout, and creator lifecycle with theme switching and guided views.
+* [Storefront & Player Workflow Diagram](file:///c:/Users/User/Downloads/AngularProject/docs/diagrams/app-flow-workflow.html) — Visual, interactive SVG workflow diagram of the storefront, neutral checkout, ownership fulfillment, and Steam download tray.
+* [Creator Studio Lifecycle Diagram](file:///c:/Users/User/Downloads/AngularProject/docs/diagrams/creator-lifecycle-workflow.html) — Interactive workflow of the 3-step game wizard, unsaved changes guard, draft autosave, 30-day recycle bin, and 90% KHQR royalty payout.
 * [Architecture Codemaps Suite](file:///c:/Users/User/Downloads/AngularProject/docs/CODEMAPS/architecture.md) — Token-lean architectural codemaps covering system topology, frontend routes, data models, services, and dependencies.
 * [Frontend architecture specification](file:///c:/Users/User/Downloads/AngularProject/frontend-architecture.md) — Technical specification covering state management, reactive patterns, and design tokens.
 * [Pages and components map](file:///c:/Users/User/Downloads/AngularProject/pages_components_map.md) — Component registry, wireframes, and dependency graph.
