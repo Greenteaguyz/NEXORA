@@ -37,7 +37,17 @@
   </header>
 
   @if (loading()) {
-    <app-loading-spinner size="lg" [label]="t()('common.loading')"></app-loading-spinner>
+    <div class="core-genres-grid" aria-busy="true" aria-label="Loading genres" style="margin-top:24px;">
+      @for (_ of [1,2,3,4,5,6,7,8,9]; track $index) {
+        <div style="display:flex; align-items:center; gap:14px; background:var(--bg-surface); border:1px solid var(--border-card); border-radius:var(--radius-lg); padding:16px;">
+          <app-skeleton width="40px" height="40px" shape="rect"></app-skeleton>
+          <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+            <app-skeleton width="60%" height="14px"></app-skeleton>
+            <app-skeleton width="80%" height="12px"></app-skeleton>
+          </div>
+        </div>
+      }
+    </div>
   } @else {
     @if (searchQuery().trim()) {
       <!-- Search Mode View -->

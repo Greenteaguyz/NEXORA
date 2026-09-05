@@ -17,6 +17,7 @@ import { USERS_DATA, LIBRARY_DATA, WISHLIST_DATA, ORDERS_DATA, GAMES_DATA } from
 import { RoleBadgeComponent } from '../../shared/ui/role-badge/role-badge.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 import { TranslationService } from '../../core/services/translation.service';
+import { SkeletonComponent } from '../../shared/ui/skeleton/skeleton.component';
 
 @Component({
   selector: 'app-profile',
@@ -26,7 +27,8 @@ import { TranslationService } from '../../core/services/translation.service';
     FormsModule, 
     RouterLink, 
     RoleBadgeComponent,
-    ScrollLockDirective
+    ScrollLockDirective,
+    SkeletonComponent
   ],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']

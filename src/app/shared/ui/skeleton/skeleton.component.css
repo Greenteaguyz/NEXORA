@@ -1,0 +1,16 @@
+/* =============================================================
+   SkeletonComponent — NEXORA Design System
+   Pattern: shadcn/ui Skeleton (opacity-pulse, no translate lift)
+   Tokens: --bg-elevated, --bg-surface
+   ============================================================= */
+
+.skeleton {
+  display: block;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  animation: skeleton-pulse 1.8s ease-in-out infinite;
+}
+
+.skeleton--circle {
+  border-radius: var(--radius-full);
+}

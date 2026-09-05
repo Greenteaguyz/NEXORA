@@ -73,6 +73,19 @@
     }
 
     <!-- Quick Stats Triad -->
+    @if (loading) {
+      <section class="stats-overview-grid" aria-busy="true" aria-label="Loading account stats">
+        @for (_ of [1,2,3,4]; track $index) {
+          <div class="stat-card" style="display:flex; align-items:center; gap:12px;">
+            <app-skeleton width="40px" height="40px" shape="circle"></app-skeleton>
+            <div style="flex:1; display:flex; flex-direction:column; gap:7px;">
+              <app-skeleton width="40px" height="20px"></app-skeleton>
+              <app-skeleton width="65%" height="12px"></app-skeleton>
+            </div>
+          </div>
+        }
+      </section>
+    } @else {
     <section class="stats-overview-grid" aria-label="Account Overview Statistics">
       <a routerLink="/library" class="stat-card" aria-label="View your game library">
         <div class="stat-icon-wrap">
@@ -130,6 +143,7 @@
         </div>
       </a>
     </section>
+    }
 
     <!-- Minimal Creator Studio Row -->
     <section class="creator-studio-bar" aria-label="Creator Studio and Publishing">

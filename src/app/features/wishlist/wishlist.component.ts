@@ -11,6 +11,7 @@ import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { SpatialNavDirective } from '../../shared/directives/spatial-nav.directive';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
+import { SkeletonComponent } from '../../shared/ui/skeleton/skeleton.component';
 
 import { TranslationService } from '../../core/services/translation.service';
 
@@ -28,7 +29,8 @@ export interface WishlistDisplayItem {
     LoadingSpinnerComponent, 
     EmptyStateComponent,
     SpatialNavDirective,
-    ScrollLockDirective
+    ScrollLockDirective,
+    SkeletonComponent
   ],
   templateUrl: './wishlist.component.html',
   styleUrls: ['./wishlist.component.css']

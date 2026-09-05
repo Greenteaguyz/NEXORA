@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { GAMES_DATA } from '../../core/data/tokens';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { GenreIconComponent } from '../../shared/ui/genre-icon/genre-icon.component';
+import { SkeletonComponent } from '../../shared/ui/skeleton/skeleton.component';
 
 import { TranslationService } from '../../core/services/translation.service';
 
@@ -17,7 +18,7 @@ export interface GenreSummary {
 @Component({
   selector: 'app-genres',
   standalone: true,
-  imports: [CommonModule, RouterLink, LoadingSpinnerComponent, GenreIconComponent],
+  imports: [CommonModule, RouterLink, LoadingSpinnerComponent, GenreIconComponent, SkeletonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './genres.component.html',
   styleUrls: ['./genres.component.css']

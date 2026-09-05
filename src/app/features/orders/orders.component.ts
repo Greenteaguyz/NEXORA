@@ -10,6 +10,7 @@ import { AuthService } from '../../core/auth/auth.service';
 import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading-spinner.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
+import { SkeletonComponent } from '../../shared/ui/skeleton/skeleton.component';
 
 import { FormsModule } from '@angular/forms';
 import { TranslationService } from '../../core/services/translation.service';
@@ -28,7 +29,8 @@ export interface OrderDisplayItem {
     RouterLink, 
     LoadingSpinnerComponent, 
     EmptyStateComponent,
-    ScrollLockDirective
+    ScrollLockDirective,
+    SkeletonComponent
   ],
   templateUrl: './orders.component.html',
   styleUrls: ['./orders.component.css']
