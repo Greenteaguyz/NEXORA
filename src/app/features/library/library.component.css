@@ -62,10 +62,52 @@
   gap: var(--space-3);
 }
 
+.toolbar-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
 .search-input-wrap {
   position: relative;
-  max-width: 480px;
+  max-width: 440px;
   width: 100%;
+  flex: 1;
+}
+
+.library-sort-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.library-sort-label {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.library-sort-select {
+  background: var(--bg-input);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 12px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.library-sort-select:focus {
+  border-color: var(--accent-500);
 }
 
 .search-icon {
@@ -351,16 +393,34 @@
   height: 14px;
 }
 
-.card-ownership-pill {
+.card-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 0.72rem;
   font-weight: 800;
   font-family: var(--font-mono);
   letter-spacing: 0.04em;
-  color: var(--emerald-400);
-  background: rgba(16, 185, 129, 0.12);
-  padding: 2px 6px;
+  padding: 3px 8px;
   border-radius: var(--radius-xs);
   text-transform: uppercase;
+}
+
+.card-status-pill.installed {
+  color: #a4d007;
+  background: rgba(117, 176, 34, 0.16);
+  border: 1px solid rgba(117, 176, 34, 0.3);
+}
+
+.card-status-pill.cloud {
+  color: var(--accent-400);
+  background: rgba(102, 192, 244, 0.12);
+  border: 1px solid rgba(102, 192, 244, 0.25);
+}
+
+.status-svg {
+  width: 12px;
+  height: 12px;
 }
 
 .card-actions-row {
@@ -372,6 +432,38 @@
 
 .card-actions-row app-download-button {
   flex: 1;
+}
+
+.btn-play-game {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 16px;
+  background: linear-gradient(90deg, #75B022 0%, #588A1B 100%);
+  border: 1px solid #588A1B;
+  border-radius: var(--radius-sm);
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  /* Grounded hover rule: 0px translateY */
+  transform: translateY(0);
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-play-game:hover {
+  background: linear-gradient(90deg, #8ED629 0%, #6BA821 100%);
+  box-shadow: 0 3px 10px rgba(117, 176, 34, 0.4);
+  transform: translateY(0);
+}
+
+.play-svg {
+  width: 14px;
+  height: 14px;
 }
 
 .btn-remove-lib-icon {

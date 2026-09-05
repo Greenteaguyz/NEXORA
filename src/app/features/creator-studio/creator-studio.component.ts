@@ -1,4 +1,4 @@
-import { Component, inject, effect, OnInit, OnDestroy, HostListener, signal } from '@angular/core';
+import { Component, inject, effect, OnInit, OnDestroy, HostListener, signal, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Game } from '../../core/models/game.model';
@@ -29,11 +29,22 @@ export class CreatorStudioComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   auth = inject(AuthService);
   private toast = inject(ToastService);
+  private readonly elementRef = inject(ElementRef);
+  private previouslyFocused: HTMLElement | null = null;
 
   games: Game[] = [];
   loading = true;
   totalRevenue = 0;
   unitsSold = 0;
+
+  // Payout Milestone Progress (Goal Gradient Law)
+  readonly payoutThreshold = 1000;
+  get payoutProgressPercent(): number {
+    return Math.min(100, Math.round((this.totalRevenue / this.payoutThreshold) * 100));
+  }
+  get remainingToPayout(): number {
+    return Math.max(0, this.payoutThreshold - this.totalRevenue);
+  }
 
   // View Filter Tabs
   activeTab = signal<'all' | 'active' | 'drafts' | 'bin'>('all');
@@ -252,12 +263,16 @@ export class CreatorStudioComponent implements OnInit, OnDestroy {
   // ---------------------------------------------------------------------------
   openDeleteModal(game: Game, event: MouseEvent): void {
     event.stopPropagation();
+    if (typeof document !== 'undefined') {
+      this.previouslyFocused = document.activeElement as HTMLElement | null;
+    }
     this.gameToBin = game;
   }
 
   closeDeleteModal(): void {
     if (this.deleting) return;
     this.gameToBin = null;
+    this.restoreFocus();
   }
 
   confirmMoveToBin(): void {
@@ -321,6 +336,9 @@ export class CreatorStudioComponent implements OnInit, OnDestroy {
   // ---------------------------------------------------------------------------
   openPurgeModal(game: Game, event: MouseEvent): void {
     event.stopPropagation();
+    if (typeof document !== 'undefined') {
+      this.previouslyFocused = document.activeElement as HTMLElement | null;
+    }
     this.clearPurgeCountdownTimer();
     this.purgeCountdownSeconds = this.purgeCountdownTotal;
     this.gameToPurge = game;
@@ -339,6 +357,53 @@ export class CreatorStudioComponent implements OnInit, OnDestroy {
     if (this.purging) return;
     this.clearPurgeCountdownTimer();
     this.gameToPurge = null;
+    this.restoreFocus();
+  }
+
+  private restoreFocus(): void {
+    if (this.previouslyFocused && typeof this.previouslyFocused.focus === 'function' &&
+        typeof document !== 'undefined' && document.contains(this.previouslyFocused)) {
+      this.previouslyFocused.focus();
+      this.previouslyFocused = null;
+    }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent): void {
+    if (!this.gameToBin && !this.gameToPurge) return;
+
+    if (event.key === 'Escape') {
+      if (this.gameToPurge && !this.purging) {
+        this.closePurgeModal();
+      } else if (this.gameToBin && !this.deleting) {
+        this.closeDeleteModal();
+      }
+      return;
+    }
+
+    if (event.key === 'Tab') {
+      const modal = this.elementRef.nativeElement.querySelector('.modal-card') as HTMLElement | null;
+      if (!modal) return;
+      const focusables = Array.from(
+        modal.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter(el => el.offsetParent !== null);
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey) {
+        if (document.activeElement === first || !modal.contains(document.activeElement)) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last || !modal.contains(document.activeElement)) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    }
   }
 
   clearPurgeCountdownTimer(): void {

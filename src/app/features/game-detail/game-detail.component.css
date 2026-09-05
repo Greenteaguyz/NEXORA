@@ -638,13 +638,13 @@
 .steam-lower-grid {
   display: flex;
   flex-direction: column;
-  gap: clamp(20px, 3vw, 28px);
+  gap: 16px;
 }
 
 .steam-main-details {
   display: flex;
   flex-direction: column;
-  gap: clamp(20px, 3vw, 28px);
+  gap: 16px;
   width: 100%;
 }
 
@@ -652,7 +652,7 @@
   background: var(--bg-surface);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-lg, 8px);
-  padding: clamp(16px, 2.5vw, 24px);
+  padding: 14px 18px;
   box-shadow: var(--shadow-card);
 }
 :host-context([data-theme="light"]) .steam-detail-block {
@@ -665,8 +665,8 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: 10px;
-  margin-bottom: 16px;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
 }
 :host-context([data-theme="light"]) .block-header {
   border-bottom-color: rgba(0, 0, 0, 0.08);
@@ -723,7 +723,7 @@
 .specs-steam-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 10px;
 }
 
 @media (max-width: 960px) {
@@ -742,12 +742,12 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 6px;
+  gap: 4px;
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid var(--border-card);
   border-radius: var(--radius-sm, 4px);
-  padding: 12px 14px;
-  min-height: 70px;
+  padding: 8px 12px;
+  min-height: 56px;
 }
 :host-context([data-theme="light"]) .spec-simple-item {
   background: #F8FAFC;
@@ -760,21 +760,6 @@
   gap: 8px;
 }
 
-.spec-icon-box {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--cyan-400, #66C0F4);
-}
-:host-context([data-theme="light"]) .spec-icon-box {
-  color: #0284C7;
-}
-
-.spec-svg {
-  width: 15px;
-  height: 15px;
-  stroke: currentColor;
-}
 
 .spec-key {
   font-size: 0.74rem;
@@ -1109,4 +1094,452 @@
     width: 100%;
     justify-content: center;
   }
+}
+
+/* ==========================================================================
+   Bento Tabbed Navigation & Sticky Pre-Index Jump Bar (AC-1061 & AC-1062)
+   ========================================================================== */
+.steam-main-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+#section-about,
+#section-specs,
+#section-platform {
+  scroll-margin-top: 80px;
+}
+
+/* ==========================================================================
+   Elevated Story Dossier & Feature Pills Cluster
+   ========================================================================== */
+.story-lead-dossier {
+  border-left: 2px solid var(--accent-400);
+  padding: 10px 14px;
+  background: rgba(102, 192, 244, 0.04);
+  border-radius: 0 var(--radius-sm, 4px) var(--radius-sm, 4px) 0;
+  margin-bottom: 12px;
+}
+
+:host-context([data-theme="light"]) .story-lead-dossier {
+  background: rgba(0, 120, 212, 0.04);
+  border-left-color: #0078D4;
+}
+
+.story-lead-dossier p.story-lead-text {
+  margin: 0;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.game-feature-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.game-feature-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm, 4px);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transform: translateY(0);
+  transition: all 0.15s ease;
+}
+
+.game-feature-pill:hover {
+  border-color: var(--accent-400);
+  color: var(--text-primary);
+  transform: translateY(0);
+}
+
+:host-context([data-theme="light"]) .game-feature-pill {
+  background: #FFFFFF;
+  border-color: #E2E8F0;
+  color: var(--text-secondary);
+}
+
+:host-context([data-theme="light"]) .game-feature-pill:hover {
+  border-color: #0078D4;
+  color: #0F172A;
+}
+
+
+/* ==========================================================================
+   4-Cell Platform Bento Grid & Cryptographic Checksum Card
+   ========================================================================== */
+.platform-info-bento {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.platform-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .platform-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.platform-metric-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 10px 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm, 4px);
+  min-height: 64px;
+}
+
+:host-context([data-theme="light"]) .platform-metric-item {
+  background: #FFFFFF;
+  border-color: #E2E8F0;
+}
+
+.metric-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+.metric-key {
+  font-family: var(--font-mono);
+  font-size: 0.70rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.metric-val {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.metric-val.mono {
+  font-family: var(--font-mono);
+}
+
+.metric-val.p-accent {
+  color: var(--accent-400);
+  font-weight: 800;
+}
+
+:host-context([data-theme="light"]) .metric-val.p-accent {
+  color: #0078D4;
+}
+
+/* Checksum Verified Card */
+.checksum-verified-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-sm, 4px);
+}
+
+:host-context([data-theme="light"]) .checksum-verified-card {
+  background: #FFFFFF;
+  border-color: #E2E8F0;
+}
+
+.checksum-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.checksum-badge-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shield-svg {
+  width: 16px;
+  height: 16px;
+  color: var(--emerald-400);
+  flex-shrink: 0;
+}
+
+:host-context([data-theme="light"]) .shield-svg {
+  color: #75B022;
+}
+
+.checksum-label {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.btn-copy-checksum {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(102, 192, 244, 0.1);
+  border: 1px solid var(--border-card);
+  color: var(--accent-400);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: var(--radius-xs, 2px);
+  cursor: pointer;
+  transform: translateY(0);
+  transition: all 0.15s ease;
+}
+
+.btn-copy-checksum:hover {
+  background: rgba(102, 192, 244, 0.2);
+  border-color: var(--accent-400);
+  transform: translateY(0);
+}
+
+:host-context([data-theme="light"]) .btn-copy-checksum {
+  background: rgba(0, 120, 212, 0.08);
+  border-color: #CBD5E1;
+  color: #0078D4;
+}
+
+:host-context([data-theme="light"]) .btn-copy-checksum:hover {
+  background: rgba(0, 120, 212, 0.15);
+  border-color: #0078D4;
+}
+
+.copy-icon-svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+}
+
+.checksum-code {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 8px 10px;
+  border-radius: var(--radius-xs, 2px);
+  word-break: break-all;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+:host-context([data-theme="light"]) .checksum-code {
+  background: #F1F5F9;
+  color: #0F172A;
+  border-color: #E2E8F0;
+}
+
+/* ==========================================================================
+   Fitts's Law Sticky Purchase Bar (AC-002)
+   ========================================================================== */
+.steam-sticky-purchase-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-sticky, 200);
+  background: rgba(27, 40, 56, 0.96);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border-card);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.45);
+  transform: translateY(100%);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.steam-sticky-purchase-bar.visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+:host-context([data-theme="light"]) .steam-sticky-purchase-bar {
+  background: rgba(255, 255, 255, 0.96);
+  border-top-color: #CBD5E1;
+  box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.1);
+}
+
+.sticky-bar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sticky-left-cluster {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.sticky-cover-thumb {
+  width: 54px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: var(--radius-xs, 2px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.sticky-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sticky-game-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+:host-context([data-theme="light"]) .sticky-game-title {
+  color: #0F172A;
+}
+
+.sticky-tags-inline {
+  display: flex;
+  gap: 4px;
+}
+
+.sticky-tag-chip {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--accent-400);
+}
+
+:host-context([data-theme="light"]) .sticky-tag-chip {
+  color: #0078D4;
+}
+
+.sticky-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.sticky-status-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--emerald-400);
+  background: rgba(164, 208, 7, 0.12);
+  border: 1px solid rgba(164, 208, 7, 0.3);
+  padding: 3px 8px;
+  border-radius: var(--radius-xs, 2px);
+}
+
+.sticky-price-cluster {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sticky-discount-pill {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #A4D007;
+  background-color: #4C6B22;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs, 2px);
+}
+
+.sticky-orig-price {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.sticky-current-price {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+:host-context([data-theme="light"]) .sticky-current-price {
+  color: #0F172A;
+}
+
+.sticky-price-label.free {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--emerald-400);
+}
+
+.btn-sticky-primary {
+  min-height: 38px;
+  padding: 0 20px;
+  background-color: var(--emerald-500, #75B022);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-xs, 2px);
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.btn-sticky-primary:hover {
+  background-color: #8ED629;
+}
+
+.btn-sticky-link {
+  min-height: 38px;
+  padding: 0 16px;
+  background: var(--bg-elevated);
+  color: #FFFFFF;
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xs, 2px);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.15s ease;
+}
+
+.btn-sticky-link:hover {
+  border-color: var(--accent-400);
 }

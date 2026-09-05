@@ -14,6 +14,10 @@ Desktop-grade Steam-inspired storefront and creator platform built with Angular 
 
 ## 4. Rules w/ Verifiable Instructions
 - **Angular 18**: Standalone components, `OnPush`, Signals (`signal()`, `computed()`), `@if`/`@for`.
+- **Subagent Registry Enforcement**:
+  - *Allowed TypeNames*: `self`, `research`, `planner`, `architect`, `typescript-reviewer`, `code-reviewer`, `build-error-resolver`, `e2e-runner`, `performance-optimizer`, `a11y-architect`.
+  - *Prohibited / Invalid TypeNames*: `DeepCoder` (missing `skill_search` tool in registry), `code-explorer`, `code-architect`, `tdd-guide`, `security-reviewer`.
+  - *Artifact Paths*: All planning artifacts MUST be written to the Antigravity session brain directory (`<appDataDir>\brain\<conversation-id>/implementation_plan.md`), NEVER directly into repository git folders like `.claude/plans/`.
 - **Skill Lifecycle & Workflow Enforcements**:
   - *Primary Agent (Pro)*: Act as Architect Lead. Synthesize, orchestrate, run quality gates, and maintain high-level plan.
   - *Mandatory Subagent Delegation (`invoke_subagent`)*:

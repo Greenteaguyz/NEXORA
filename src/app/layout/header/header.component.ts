@@ -57,6 +57,7 @@ export class HeaderComponent implements OnDestroy {
   readonly navIndicatorNoAnim = signal(true);
   private indicatorPrimed = false;
   private indicatorMeasureQueued = false;
+  private resizeAnimTimer: any = null;
 
   /** Template helper: per-section entrance stagger for the drawer (pure, testable). */
   readonly staggerDelay = staggerDelay;
@@ -103,6 +104,10 @@ export class HeaderComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.resizeAnimTimer) {
+      clearTimeout(this.resizeAnimTimer);
+      this.resizeAnimTimer = null;
+    }
     this.closeScheduler.destroy();
     // Only release if this component actually engaged the ref-counted lock.
     if (this.headerScrollLockActive) {
@@ -296,7 +301,15 @@ export class HeaderComponent implements OnDestroy {
 
   @HostListener('window:resize')
   onWindowResize(): void {
+    this.navIndicatorNoAnim.set(true);
     this.scheduleIndicatorMeasure();
+    if (this.resizeAnimTimer) {
+      clearTimeout(this.resizeAnimTimer);
+    }
+    this.resizeAnimTimer = setTimeout(() => {
+      this.navIndicatorNoAnim.set(false);
+      this.resizeAnimTimer = null;
+    }, 150);
   }
 
   public requestLogout(event?: Event): void {

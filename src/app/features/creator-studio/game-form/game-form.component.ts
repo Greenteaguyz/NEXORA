@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, computed, DestroyRef, HostListener } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, OnInit, signal, computed, DestroyRef, HostListener } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
@@ -8,6 +8,7 @@ import { GAMES_DATA } from '../../../core/data/tokens';
 import { AuthService } from '../../../core/auth/auth.service';
 import { TagChipInputComponent } from '../../../shared/ui/tag-chip-input/tag-chip-input.component';
 import { LoadingSpinnerComponent } from '../../../shared/ui/loading-spinner/loading-spinner.component';
+import { AlertComponent } from '../../../shared/ui/alert/alert.component';
 import { GameFormComponentLike } from './unsaved-changes.guard';
 import { compressImageFile, buildCompleteScreenshotArray, validateImagePayload } from '../../../core/utils/image-processor';
 import { ToastService } from '../../../core/services/toast.service';
@@ -28,13 +29,15 @@ export interface ArtworkPreset {
 @Component({
   selector: 'app-game-form',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule, 
     ReactiveFormsModule, 
     FormsModule, 
     RouterLink, 
     TagChipInputComponent, 
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    AlertComponent
   ],
   templateUrl: './game-form.component.html',
   styleUrls: ['./game-form.component.css']
@@ -54,6 +57,27 @@ export class GameFormComponent implements OnInit, GameFormComponentLike {
   loading = true;
   submitting = false;
   errorMessage = '';
+
+  // 3-Step Wizard Navigation (Miller's Law / Progressive Chunking)
+  activeStep = signal<1 | 2 | 3>(1);
+
+  setStep(step: 1 | 2 | 3): void {
+    this.activeStep.set(step);
+  }
+
+  nextStep(): void {
+    const cur = this.activeStep();
+    if (cur < 3) {
+      this.activeStep.set((cur + 1) as 1 | 2 | 3);
+    }
+  }
+
+  prevStep(): void {
+    const cur = this.activeStep();
+    if (cur > 1) {
+      this.activeStep.set((cur - 1) as 1 | 2 | 3);
+    }
+  }
 
   /** Set right before the success navigation so the unsaved-changes guard never prompts. */
   justSaved = false;
@@ -279,8 +303,9 @@ export class GameFormComponent implements OnInit, GameFormComponentLike {
       this.gameForm.get(controlName)?.setValue(dataUrl);
       this.gameForm.get(controlName)?.markAsDirty();
       this.formValues.set({ ...this.gameForm.getRawValue() });
-    } catch (err: any) {
-      this.slotError.update(m => ({ ...m, [slot]: err?.message || 'Failed to process image file.' }));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to process image file.';
+      this.slotError.update(m => ({ ...m, [slot]: message }));
     } finally {
       this.slotUploading.update(m => ({ ...m, [slot]: false }));
       input.value = '';
@@ -371,8 +396,9 @@ export class GameFormComponent implements OnInit, GameFormComponentLike {
         title: 'Image Loaded',
         message: `${file.name} successfully compressed and assigned.`
       });
-    } catch (err: any) {
-      this.slotError.update(m => ({ ...m, [slot]: err?.message || 'Failed to process dropped image.' }));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to process dropped image.';
+      this.slotError.update(m => ({ ...m, [slot]: message }));
     } finally {
       this.slotUploading.update(m => ({ ...m, [slot]: false }));
     }

@@ -1,4 +1,4 @@
-import { Component, inject, effect, HostListener } from '@angular/core';
+import { Component, inject, effect, HostListener, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -57,6 +57,21 @@ export class LibraryComponent {
   loading = true;
   searchQuery = '';
   selectedTags = new Set<string>();
+  sortBy: 'recent' | 'title' | 'installed' = 'recent';
+  installedGameIds = signal<Set<string>>(new Set(['game_001', 'game_003']));
+
+  isInstalled(gameId: string): boolean {
+    const isCompletedDl = this.downloadService.activeDownloads().some(d => d.gameId === gameId && d.status === 'completed');
+    return isCompletedDl || this.installedGameIds().has(gameId);
+  }
+
+  playGame(game: Game): void {
+    this.toast.show({
+      type: 'success',
+      title: `Launching ${game.title}`,
+      message: 'Running standalone game executable with Steam overlay.'
+    }, 3500);
+  }
 
   constructor() {
     effect(() => {
@@ -131,7 +146,7 @@ export class LibraryComponent {
   }
 
   get filteredItems(): LibraryDisplayItem[] {
-    return this.items.filter(item => {
+    const result = this.items.filter(item => {
       const query = this.searchQuery.toLowerCase().trim();
       const matchesSearch = !query ||
         item.game.title.toLowerCase().includes(query) ||
@@ -142,6 +157,20 @@ export class LibraryComponent {
 
       return matchesSearch && matchesTag;
     });
+
+    if (this.sortBy === 'title') {
+      result.sort((a, b) => a.game.title.localeCompare(b.game.title));
+    } else if (this.sortBy === 'installed') {
+      result.sort((a, b) => {
+        const aInst = this.isInstalled(a.game.id) ? 1 : 0;
+        const bInst = this.isInstalled(b.game.id) ? 1 : 0;
+        return bInst - aInst;
+      });
+    } else {
+      result.sort((a, b) => new Date(b.entry.acquiredAt).getTime() - new Date(a.entry.acquiredAt).getTime());
+    }
+
+    return result;
   }
 
   formatAcquiredDate(dateString: string): string {

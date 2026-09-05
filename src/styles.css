@@ -77,6 +77,17 @@
   --fluid-page-pad-y:  clamp(16px, 0.75rem + 1.5vw, 40px);
   --fluid-grid-gap:    clamp(14px, 0.7rem + 1vw, 28px);
   --fluid-card-min:    clamp(260px, 14rem + 8vw, 340px);
+
+  /* Layering & Z-Index Tokens (Deterministic Hierarchy) */
+  --z-base:        1;
+  --z-elevated:    10;
+  --z-dropdown:    50;
+  --z-header:      100;
+  --z-sticky:      200;
+  --z-drawer:      900;
+  --z-popover:     1050;
+  --z-modal:       10000;
+  --z-toast:       100000;
 }
 
 /* ==========================================================================
@@ -122,6 +133,26 @@
   padding: 0;
 }
 
+/* Suppress native browser password reveal icons in Edge/WebKit (Jakob's Law) */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+}
+
+.form-control:focus,
+.form-input:focus {
+  border-color: var(--accent-400) !important;
+  box-shadow: 0 0 0 2px rgba(102, 192, 244, 0.25) !important;
+  outline: 2px solid transparent !important;
+}
+
+[data-theme="light"] .form-control:focus,
+[data-theme="light"] .form-input:focus {
+  border-color: var(--accent-600) !important;
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2) !important;
+  outline: 2px solid transparent !important;
+}
+
 html {
   overflow-y: overlay;
   scrollbar-width: thin;
@@ -163,6 +194,12 @@ p, .brand-desc, .capsule-pitch {
 .price-badge,
 .price-value,
 .price-tag,
+.card-price,
+.cmd-price-pill,
+.order-total,
+.receipt-amount,
+.countdown-text,
+.metric-value,
 .stat-metric,
 .stat-value,
 .download-speed,

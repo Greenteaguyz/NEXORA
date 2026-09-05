@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter, HostListener, OnInit, ElementRef, ViewChild, signal, computed, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, OnInit, ElementRef, ViewChild, signal, computed, ChangeDetectionStrategy, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Game } from '../../../core/models/game.model';
@@ -47,8 +48,11 @@ export class PurchaseConfirmModalComponent implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly paymentsData = inject(PAYMENTS_DATA);
   private readonly translationService = inject(TranslationService);
+  private readonly elementRef = inject(ElementRef);
+  private readonly destroyRef = inject(DestroyRef);
   t = this.translationService.t;
   private previouslyFocused: HTMLElement | null = null;
+  private focusTimeoutId: any = null;
 
   // Saved Payment Methods and Wallet
   readonly savedMethods = signal<PaymentMethod[]>([]);
@@ -78,23 +82,26 @@ export class PurchaseConfirmModalComponent implements OnInit {
     if (typeof document !== 'undefined') {
       this.previouslyFocused = document.activeElement as HTMLElement | null;
     }
-    setTimeout(() => {
+    this.focusTimeoutId = setTimeout(() => {
       this.confirmBtn?.nativeElement.focus();
     }, 50);
 
     const user = this.auth.currentUser();
     if (user) {
-      this.paymentsData.getMethods(user.id).subscribe(methods => {
+      this.paymentsData.getMethods(user.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(methods => {
         this.savedMethods.set(methods);
       });
 
-      this.paymentsData.getWalletSnapshot(user.id).subscribe(snap => {
+      this.paymentsData.getWalletSnapshot(user.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(snap => {
         this.wallet.set(snap.wallet);
       });
     }
   }
 
   ngOnDestroy(): void {
+    if (this.focusTimeoutId) {
+      clearTimeout(this.focusTimeoutId);
+    }
     if (this.previouslyFocused && typeof this.previouslyFocused.focus === 'function' &&
         typeof document !== 'undefined' && document.contains(this.previouslyFocused)) {
       this.previouslyFocused.focus();
@@ -151,7 +158,10 @@ export class PurchaseConfirmModalComponent implements OnInit {
 
   closeAddMethod(): void {
     this.showAddMethod.set(false);
-    setTimeout(() => {
+    if (this.focusTimeoutId) {
+      clearTimeout(this.focusTimeoutId);
+    }
+    this.focusTimeoutId = setTimeout(() => {
       this.confirmBtn?.nativeElement.focus();
     }, 50);
   }
@@ -174,7 +184,10 @@ export class PurchaseConfirmModalComponent implements OnInit {
       const fallback = this.savedMethods().find(m => m.isDefault) ?? this.savedMethods()[0];
       this.selectedOptionId.set(fallback.id);
     }
-    setTimeout(() => {
+    if (this.focusTimeoutId) {
+      clearTimeout(this.focusTimeoutId);
+    }
+    this.focusTimeoutId = setTimeout(() => {
       this.confirmBtn?.nativeElement.focus();
     }, 50);
   }
@@ -198,6 +211,31 @@ export class PurchaseConfirmModalComponent implements OnInit {
         return;
       }
       this.onCancel();
+      return;
+    }
+
+    if (event.key === 'Tab') {
+      const modalCard = this.elementRef.nativeElement.querySelector('.modal-card') as HTMLElement | null;
+      if (!modalCard) return;
+      const focusables = Array.from(
+        modalCard.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter(el => el.offsetParent !== null);
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey) {
+        if (document.activeElement === first || !modalCard.contains(document.activeElement)) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last || !modalCard.contains(document.activeElement)) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
     }
   }
 

@@ -12,7 +12,7 @@
 }
 
 .payment-page-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -67,6 +67,10 @@
 }
 
 /* Alerts */
+.account-alert-wrap {
+  margin-bottom: 24px;
+}
+
 .alert-banner {
   display: flex;
   align-items: center;
@@ -1124,7 +1128,7 @@
 
 .btn-submit:hover:not(:disabled) {
   filter: brightness(1.1);
-  box-shadow: 0 0 10px rgba(102, 192, 244, 0.3);
+  box-shadow: 0 4px 12px rgba(102, 192, 244, 0.25);
 }
 
 .btn-submit:active:not(:disabled) {
@@ -1358,4 +1362,60 @@
 
 .tx-modal-actions {
   padding: 0 24px 20px;
+}
+
+/* Quick Top-Up Preset Amounts (Fitts's Law / Instant 1-Click) */
+.preset-amounts-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.preset-pill {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-input, #0e141b);
+  border: 1px solid var(--border-card, rgba(255, 255, 255, 0.12));
+  border-radius: var(--radius-sm, 4px);
+  color: var(--text-primary, #e2e8f0);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  transform: translateY(0);
+}
+
+.preset-pill:hover {
+  background: var(--bg-elevated, #1b2838);
+  border-color: var(--accent-400, #66c0f4);
+  color: #ffffff;
+}
+
+.preset-pill.active {
+  background: rgba(102, 192, 244, 0.18);
+  border-color: var(--accent-400, #66c0f4);
+  color: #ffffff;
+  box-shadow: 0 0 0 1px var(--accent-400, #66c0f4);
+}
+
+:host-context([data-theme="light"]) .preset-pill {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+:host-context([data-theme="light"]) .preset-pill:hover {
+  background: #f1f5f9;
+  border-color: #0078d4;
+  color: #0f172a;
+}
+
+:host-context([data-theme="light"]) .preset-pill.active {
+  background: rgba(0, 120, 212, 0.12);
+  border-color: #0078d4;
+  color: #0078d4;
 }

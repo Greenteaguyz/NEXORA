@@ -1,9 +1,9 @@
 .profile-page-container {
   position: relative;
   width: 100%;
-  max-width: 1320px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: clamp(16px, 2.5vw, 36px) clamp(14px, 2vw, 28px) calc(76px + env(safe-area-inset-bottom, 0px));
+  padding: var(--fluid-page-pad-y, clamp(16px, 0.75rem + 1.5vw, 40px)) var(--fluid-page-pad-x, clamp(16px, 0.75rem + 1.8vw, 48px)) calc(76px + env(safe-area-inset-bottom, 0px));
   display: flex;
   flex-direction: column;
   gap: var(--space-6);
@@ -451,33 +451,7 @@
 
 /* Modal Countdown & Deactivation Card Styles */
 .deactivation-card {
-  max-width: 490px;
-}
-
-.countdown-pill {
-  position: relative;
-  overflow: hidden;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 172px;
-  text-align: center;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 700;
-  padding: 6px 16px 10px 16px;
-  border-radius: var(--radius-full);
-  background: rgba(229, 169, 60, 0.12);
-  color: #FCD34D;
-  border: 1px solid rgba(229, 169, 60, 0.35);
-  margin-bottom: 12px;
-  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
-}
-
-:host-context([data-theme="light"]) .countdown-pill {
-  background: rgba(217, 119, 6, 0.1);
-  color: #B45309;
-  border-color: rgba(217, 119, 6, 0.3);
+  max-width: 480px;
 }
 
 .countdown-text {
@@ -486,81 +460,36 @@
   text-align: center;
 }
 
-.countdown-progress-track {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 0 0 var(--radius-full) var(--radius-full);
-  overflow: hidden;
-}
-
-:host-context([data-theme="light"]) .countdown-progress-track {
-  background: rgba(0, 0, 0, 0.06);
-}
-
-.countdown-progress-bar {
-  height: 100%;
-  background: var(--amber-400);
-  transition: width 0.25s ease;
-}
-
-.countdown-pill.unlocked {
-  background: rgba(117, 176, 34, 0.15);
-  color: #8ED629;
-  border-color: rgba(117, 176, 34, 0.45);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  animation: unlockGlow 0.25s ease;
-}
-
-:host-context([data-theme="light"]) .countdown-pill.unlocked {
-  background: rgba(101, 163, 13, 0.12);
-  color: #4D7C0F;
-  border-color: rgba(101, 163, 13, 0.35);
-  box-shadow: none;
-}
-
-@keyframes unlockGlow {
-  0% {
-    border-color: rgba(117, 176, 34, 0.9);
-  }
-  100% {
-    border-color: rgba(117, 176, 34, 0.45);
-  }
-}
-
-.countdown-pill.unlocked .countdown-progress-bar {
-  background: #8ED629;
-}
-
 .safe-data-callout {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  background: rgba(117, 176, 34, 0.1);
-  border: 1px solid rgba(117, 176, 34, 0.3);
-  border-radius: var(--radius);
-  padding: 10px 14px;
-  font-size: 0.82rem;
+  gap: 12px;
+  background: rgba(102, 192, 244, 0.08);
+  border: 1px solid rgba(102, 192, 244, 0.25);
+  border-radius: var(--radius-lg);
+  padding: 12px 16px;
+  font-size: 0.86rem;
   line-height: 1.45;
-  color: #A3E635;
+  color: var(--text-secondary);
   margin-top: 14px;
 }
 
 :host-context([data-theme="light"]) .safe-data-callout {
-  background: rgba(101, 163, 13, 0.08);
-  border-color: rgba(101, 163, 13, 0.25);
-  color: #4D7C0F;
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+  color: #1E293B;
 }
 
 .safe-data-callout .check-icon {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  color: #8ED629;
+  color: var(--accent-400);
   margin-top: 1px;
+}
+
+:host-context([data-theme="light"]) .safe-data-callout .check-icon {
+  color: var(--accent-600);
 }
 
 .btn-keep-creator {
@@ -589,6 +518,8 @@
   border: 1px solid rgba(244, 63, 94, 0.5);
   color: #FDA4AF;
   padding: 8px 18px;
+  min-width: 172px;
+  text-align: center;
   border-radius: var(--radius-md);
   font-weight: 700;
   font-size: 0.85rem;
@@ -1259,7 +1190,7 @@
 
 /* Password Modal Card */
 .password-modal-card {
-  max-width: 460px;
+  max-width: 480px;
   width: 100%;
 }
 
@@ -1273,6 +1204,11 @@
   position: relative;
   display: flex;
   align-items: center;
+}
+
+.password-input-wrap input::-ms-reveal,
+.password-input-wrap input::-ms-clear {
+  display: none !important;
 }
 
 .password-input-wrap .form-control {

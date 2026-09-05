@@ -27,19 +27,49 @@
       <!-- Left: Interactive Form -->
       <form [formGroup]="gameForm" (ngSubmit)="onSubmit()" class="game-editor-form" novalidate>
         @if (errorMessage) {
-          <div class="alert-banner danger" role="alert">
-            <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <line x1="12" y1="8" x2="12" y2="12"/>
-              <line x1="12" y1="16" x2="12.01" y2="16"/>
-            </svg>
-            <span>{{ errorMessage }}</span>
+          <div class="game-form-alert-wrap">
+            <app-alert variant="destructive">
+              <div alert-title>Submission Error</div>
+              <div alert-description>{{ errorMessage }}</div>
+            </app-alert>
           </div>
         }
 
-        <!-- General Info Section -->
-        <section class="form-section">
-          <h2 class="section-title">1. General Information</h2>
+        <!-- 3-Step Wizard Navigation (Miller's Law / Progressive Chunking) -->
+        <nav class="form-wizard-steps" aria-label="Game creation wizard steps">
+          <button 
+            type="button" 
+            class="wizard-step-tab" 
+            [class.active]="activeStep() === 1"
+            (click)="setStep(1)">
+            <span class="step-num">1</span>
+            <span class="step-label">Basic Info & Pricing</span>
+          </button>
+          <div class="step-connector" aria-hidden="true"></div>
+          <button 
+            type="button" 
+            class="wizard-step-tab" 
+            [class.active]="activeStep() === 2"
+            (click)="setStep(2)">
+            <span class="step-num">2</span>
+            <span class="step-label">Artwork & Media</span>
+          </button>
+          <div class="step-connector" aria-hidden="true"></div>
+          <button 
+            type="button" 
+            class="wizard-step-tab" 
+            [class.active]="activeStep() === 3"
+            (click)="setStep(3)">
+            <span class="step-num">3</span>
+            <span class="step-label">Review & Publish</span>
+          </button>
+        </nav>
+
+        <!-- Step 1: Info & Pricing -->
+        <div [hidden]="activeStep() !== 1" class="wizard-step-panel">
+          <!-- General Info Section -->
+          <section class="form-section">
+            <h2 class="section-title">1. General Information</h2>
           
           <div class="form-field">
             <div class="field-label-row">
@@ -120,7 +150,7 @@
                   </svg>
                   <span>Est. creator payout:</span>
                   <strong class="payout-amount">${{ creatorEarnings().toFixed(2) }}</strong>
-                  <span class="payout-split-note">(90% net)</span>
+
                 </span>
               } @else {
                 <span class="payout-hint-text free">
@@ -146,7 +176,10 @@
             <app-tag-chip-input formControlName="tags"></app-tag-chip-input>
           </div>
         </section>
+      </div>
 
+      <!-- Step 2: Artwork & Media -->
+      <div [hidden]="activeStep() !== 2" class="wizard-step-panel">
         <!-- Artwork & Showcase Section: Neat 2-Tier Media Studio -->
         <section class="form-section">
           <div class="media-section-header">
@@ -183,12 +216,17 @@
 
               <div 
                 class="bento-media-frame hero-frame"
+                tabindex="0"
+                role="button"
+                aria-label="Upload storefront cover artwork"
                 [class.drag-active]="activeDragSlot() === 'cover'"
                 (dragenter)="onDragEnter($event, 'cover')"
                 (dragover)="onDragOver($event, 'cover')"
                 (dragleave)="onDragLeave($event, 'cover')"
                 (drop)="onDrop($event, 'cover')"
-                (click)="coverFileInput.click()">
+                (click)="coverFileInput.click()"
+                (keydown.enter)="coverFileInput.click()"
+                (keydown.space)="$event.preventDefault(); coverFileInput.click()">
                 <input #coverFileInput type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden-file-input" (change)="handleFileUpload($event, 'cover')">
                 
                 @if (slotUploading()['cover']) {
@@ -245,10 +283,6 @@
             </div>
           </div>
 
-          <!-- Tier 2: Gameplay Screenshots (Balanced 2x2 Grid with Clean 1-Word Titles) -->
-          <div class="media-screenshots-header">
-            <span class="screenshots-section-label">Gameplay Screenshots (4 Slots)</span>
-          </div>
 
           <div class="bento-screenshots-grid">
             <!-- Slot 1: 1. Gameplay -->
@@ -259,12 +293,17 @@
 
               <div 
                 class="bento-media-frame" 
+                tabindex="0"
+                role="button"
+                aria-label="Upload screenshot 1 - Gameplay"
                 [class.drag-active]="activeDragSlot() === 'ss1'"
                 (dragenter)="onDragEnter($event, 'ss1')"
                 (dragover)="onDragOver($event, 'ss1')"
                 (dragleave)="onDragLeave($event, 'ss1')"
                 (drop)="onDrop($event, 'ss1')"
-                (click)="ss1Input.click()">
+                (click)="ss1Input.click()"
+                (keydown.enter)="ss1Input.click()"
+                (keydown.space)="$event.preventDefault(); ss1Input.click()">
                 <input #ss1Input type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden-file-input" (change)="handleFileUpload($event, 'ss1')">
                 
                 @if (slotUploading()['ss1']) {
@@ -320,12 +359,17 @@
 
               <div 
                 class="bento-media-frame" 
+                tabindex="0"
+                role="button"
+                aria-label="Upload screenshot 2 - World"
                 [class.drag-active]="activeDragSlot() === 'ss2'"
                 (dragenter)="onDragEnter($event, 'ss2')"
                 (dragover)="onDragOver($event, 'ss2')"
                 (dragleave)="onDragLeave($event, 'ss2')"
                 (drop)="onDrop($event, 'ss2')"
-                (click)="ss2Input.click()">
+                (click)="ss2Input.click()"
+                (keydown.enter)="ss2Input.click()"
+                (keydown.space)="$event.preventDefault(); ss2Input.click()">
                 <input #ss2Input type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden-file-input" (change)="handleFileUpload($event, 'ss2')">
                 
                 @if (slotUploading()['ss2']) {
@@ -381,12 +425,17 @@
 
               <div 
                 class="bento-media-frame" 
+                tabindex="0"
+                role="button"
+                aria-label="Upload screenshot 3 - Mechanics"
                 [class.drag-active]="activeDragSlot() === 'ss3'"
                 (dragenter)="onDragEnter($event, 'ss3')"
                 (dragover)="onDragOver($event, 'ss3')"
                 (dragleave)="onDragLeave($event, 'ss3')"
                 (drop)="onDrop($event, 'ss3')"
-                (click)="ss3Input.click()">
+                (click)="ss3Input.click()"
+                (keydown.enter)="ss3Input.click()"
+                (keydown.space)="$event.preventDefault(); ss3Input.click()">
                 <input #ss3Input type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden-file-input" (change)="handleFileUpload($event, 'ss3')">
                 
                 @if (slotUploading()['ss3']) {
@@ -442,12 +491,17 @@
 
               <div 
                 class="bento-media-frame" 
+                tabindex="0"
+                role="button"
+                aria-label="Upload screenshot 4 - Action"
                 [class.drag-active]="activeDragSlot() === 'ss4'"
                 (dragenter)="onDragEnter($event, 'ss4')"
                 (dragover)="onDragOver($event, 'ss4')"
                 (dragleave)="onDragLeave($event, 'ss4')"
                 (drop)="onDrop($event, 'ss4')"
-                (click)="ss4Input.click()">
+                (click)="ss4Input.click()"
+                (keydown.enter)="ss4Input.click()"
+                (keydown.space)="$event.preventDefault(); ss4Input.click()">
                 <input #ss4Input type="file" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden-file-input" (change)="handleFileUpload($event, 'ss4')">
                 
                 @if (slotUploading()['ss4']) {
@@ -496,16 +550,61 @@
             </div>
           </div>
         </section>
+      </div>
+
+      <!-- Step 3: Review & Publish -->
+      <div [hidden]="activeStep() !== 3" class="wizard-step-panel">
+        <section class="form-section">
+          <h2 class="section-title">5. Review & Final Verification</h2>
+
+
+          <div class="step3-review-card">
+            <div class="step3-summary-item">
+              <span class="step3-summary-label">Listing Title:</span>
+              <span class="step3-summary-val">{{ gameForm.get('title')?.value || '(No title entered)' }}</span>
+            </div>
+            <div class="step3-summary-item">
+              <span class="step3-summary-label">Price:</span>
+              <span class="step3-summary-val">{{ previewPrice() === 0 ? 'Free to Play' : '$' + previewPrice().toFixed(2) }}</span>
+            </div>
+            <div class="step3-summary-item">
+              <span class="step3-summary-label">Selected Tags:</span>
+              <span class="step3-summary-val">{{ previewTags().length ? previewTags().join(', ') : '(No tags selected)' }}</span>
+            </div>
+            <div class="step3-summary-item">
+              <span class="step3-summary-label">Storefront Artwork:</span>
+              <span class="step3-summary-val" [class.complete]="!!gameForm.get('coverImageUrl')?.value">
+                {{ gameForm.get('coverImageUrl')?.value ? 'Ready (Cover Set)' : 'Pending (Cover missing)' }}
+              </span>
+            </div>
+            <div class="step3-summary-item">
+              <span class="step3-summary-label">Publish Readiness Score:</span>
+              <span class="step3-summary-val readiness-score" [class.ready]="isPublishReady()">
+                {{ readinessPercent() }}% Complete
+              </span>
+            </div>
+          </div>
+        </section>
+      </div>
 
         <!-- Sticky Submit & Actions Footer -->
         <div class="form-actions-footer sticky">
-          <div class="footer-status-pill" [class.dirty]="hasUnsavedChanges()">
-            <span class="status-pulse-dot" [class.active]="hasUnsavedChanges()"></span>
-            <span>{{ hasUnsavedChanges() ? 'Unsaved changes' : 'Ready to save' }}</span>
-          </div>
+
 
           <div class="footer-btn-group">
             <a routerLink="/studio" class="btn-cancel">Cancel</a>
+
+            <span class="footer-btn-divider" aria-hidden="true"></span>
+
+            @if (activeStep() > 1) {
+              <button type="button" class="btn-step-prev" (click)="prevStep()">
+                <svg class="step-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="15 18 9 12 15 6"/>
+                </svg>
+                <span>Back</span>
+              </button>
+            }
+
             <button 
               type="button" 
               class="btn-save-draft" 
@@ -518,17 +617,28 @@
               </svg>
               <span>Save as Draft</span>
             </button>
-            <button type="submit" class="btn-submit" [disabled]="submitting || gameForm.invalid">
-              @if (submitting) {
-                <span class="spinner-sm"></span>
-                <span>Saving...</span>
-              } @else {
-                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
+
+
+            @if (activeStep() < 3) {
+              <button type="button" class="btn-step-next" (click)="nextStep()">
+                <span>Continue</span>
+                <svg class="step-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6"/>
                 </svg>
-                <span>{{ isEditMode ? 'Save Changes' : 'Publish Game' }}</span>
-              }
-            </button>
+              </button>
+            } @else {
+              <button type="submit" class="btn-submit" [disabled]="submitting || gameForm.invalid">
+                @if (submitting) {
+                  <span class="spinner-sm"></span>
+                  <span>Saving...</span>
+                } @else {
+                  <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  <span>{{ isEditMode ? 'Save Changes' : 'Publish Game' }}</span>
+                }
+              </button>
+            }
           </div>
         </div>
       </form>
@@ -564,9 +674,7 @@
                   <span class="preview-card-tag">#{{ t }}</span>
                 }
               </div>
-              <div class="preview-footer">
-                <span class="preview-distribution">Standalone Installer</span>
-              </div>
+
             </div>
           </div>
 

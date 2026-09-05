@@ -1,5 +1,5 @@
 @if (isOpen()) {
-  <div class="cmd-backdrop" appScrollLock (click)="close()" role="dialog" aria-modal="true" aria-label="Game & Store Search Palette">
+  <div class="cmd-backdrop" appScrollLock (click)="close()" (keydown.escape)="close()" role="dialog" aria-modal="true" aria-label="Game & Store Search Palette">
     <div class="cmd-dialog" (click)="$event.stopPropagation()">
       <!-- Search Header -->
       <div class="cmd-header">

@@ -86,6 +86,13 @@
   cursor: pointer;
 }
 
+.btn-wishlist::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+}
+
 .heart-svg {
   width: 15px;
   height: 15px;
@@ -257,6 +264,38 @@
   background-color: rgba(255, 255, 255, 0.08);
   color: #FFFFFF;
   border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.price-compound-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.discount-pill {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #A4D007;
+  background-color: #4C6B22;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+}
+
+.price-strike-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.1;
+}
+
+.original-price {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-decoration: line-through;
 }
 
 /* Light Mode Overrides for High Visibility */

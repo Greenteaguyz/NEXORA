@@ -1,0 +1,102 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "NEXORA Storefront & Creator Platform",
+    "animation": "trace",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "buyer-journey",
+        "label": "Buyer Journey (Bob)",
+        "focus": ["catalog", "detail", "auth", "checkout", "split", "library", "download"],
+        "note": "Follow buyer Bob from game discovery to 90/10 split purchase and DRM-free download."
+      },
+      {
+        "id": "creator-journey",
+        "label": "Creator Journey (Alice)",
+        "focus": ["auth", "studio", "editor", "guard", "storage"],
+        "note": "Follow creator Alice managing games with canDeactivate dirty guards and safe storage."
+      },
+      {
+        "id": "reversal-refund",
+        "label": "Refund & Ledger Reversal",
+        "focus": ["library", "refund"],
+        "note": "Show how a buyer can return a game and receive an instant wallet refund."
+      }
+    ]
+  },
+  "lanes": [
+    { "id": "buyer", "label": "Buyer Track — Storefront & Commerce (Bob)" },
+    { "id": "exceptions", "label": "Refunds & Reversals", "variant": "exception" },
+    { "id": "security", "label": "Identity & Roles — Persona Switcher" },
+    { "id": "creator", "label": "Creator Track — Studio & Publishing (Alice)" }
+  ],
+  "phases": [
+    { "id": "browse", "label": "Browse & Choose", "fromCol": 0, "toCol": 1 },
+    { "id": "transact", "label": "Authorize & Transact", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "fulfill", "label": "Fulfill & Save", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "groups": [
+    { "id": "buyer_discovery", "label": "Discovery flow", "lane": "buyer", "fromCol": 0, "toCol": 1, "variant": "default" },
+    { "id": "buyer_settlement", "label": "Buyer settlement", "lane": "buyer", "fromCol": 2, "toCol": 4, "variant": "emphasis" },
+    { "id": "creator_pipeline", "label": "Creator pipeline", "lane": "creator", "fromCol": 2, "toCol": 5, "variant": "dashed" }
+  ],
+  "mainPath": ["catalog", "detail", "auth", "checkout", "split", "library", "download"],
+  "nodes": [
+    { "id": "catalog", "lane": "buyer", "col": 0, "type": "frontend", "label": "Game Catalog", "sublabel": "Find games easily", "brand": "angular", "width": 132 },
+    { "id": "detail", "lane": "buyer", "col": 1, "type": "frontend", "label": "Game Detail", "sublabel": "View media & specs", "width": 132 },
+    { "id": "checkout", "lane": "buyer", "col": 2, "type": "backend", "label": "Checkout Cart", "sublabel": "Card & wallet pay", "tag": "Multi-Tender", "width": 132 },
+    { "id": "split", "lane": "buyer", "col": 3, "type": "backend", "label": "90/10 Split", "sublabel": "90% creator, 10% fee", "tag": "Atomic Ledger", "width": 132 },
+    { "id": "library", "lane": "buyer", "col": 4, "type": "database", "label": "Buyer Library", "sublabel": "Owned games shelf", "width": 132 },
+    { "id": "download", "lane": "buyer", "col": 5, "type": "cloud", "label": "DRM-Free Blob", "sublabel": "Direct game download", "tag": "Zero DRM", "width": 132 },
+    { "id": "refund", "lane": "exceptions", "col": 4, "type": "security", "label": "Purchase Revert", "sublabel": "Instant wallet refund", "tag": "Order Reversal", "width": 132 },
+    { "id": "auth", "lane": "security", "col": 1, "type": "security", "label": "Persona Guard", "sublabel": "Switch Alice or Bob", "tag": "Angular 18 Signals", "width": 132 },
+    { "id": "studio", "lane": "creator", "col": 2, "type": "frontend", "label": "Creator Studio", "sublabel": "Manage your games", "tag": "Alice Creator", "width": 132 },
+    { "id": "editor", "lane": "creator", "col": 3, "type": "frontend", "label": "Game Editor", "sublabel": "Edit details & price", "tag": "Reactive Form", "width": 132 },
+    { "id": "guard", "lane": "creator", "col": 4, "type": "security", "label": "canDeactivate", "sublabel": "Warn before leaving", "tag": "Dirty Form Check", "width": 132 },
+    { "id": "storage", "lane": "creator", "col": 5, "type": "database", "label": "LocalStore", "sublabel": "Safe local storage", "tag": "5s Purge Lock", "width": 132 }
+  ],
+  "edges": [
+    { "id": "select-game", "from": "catalog", "to": "detail", "label": "select game" },
+    { "id": "verify-persona", "from": "detail", "to": "auth", "label": "verify role", "variant": "emphasis" },
+    { "id": "buyer-active", "from": "auth", "to": "checkout", "label": "buyer active", "variant": "emphasis" },
+    { "id": "creator-active", "from": "auth", "to": "studio", "label": "creator active", "variant": "security" },
+    { "id": "place-order", "from": "checkout", "to": "split", "label": "place order", "variant": "emphasis" },
+    { "id": "grant-access", "from": "split", "to": "library", "label": "grant license", "variant": "emphasis" },
+    { "id": "stream-game", "from": "library", "to": "download", "label": "stream chunk", "variant": "emphasis" },
+    { "id": "request-refund", "from": "library", "to": "refund", "label": "refund revert", "variant": "security", "role": "error" },
+    { "id": "manage-game", "from": "studio", "to": "editor", "label": "edit or add game" },
+    { "id": "check-unsaved", "from": "editor", "to": "guard", "label": "validate draft" },
+    { "id": "persist-draft", "from": "guard", "to": "storage", "label": "atomic save", "variant": "emphasis" }
+  ],
+  "cards": [
+    {
+      "dot": "emerald",
+      "title": "Buyer Track (Bob)",
+      "items": [
+        "Fast game discovery with Angular 18 Signals and instant search",
+        "Multi-tender checkout splits 90% directly to creator and 10% to platform",
+        "DRM-Free Blob streaming enables offline playback without launcher lock-in"
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Creator Track (Alice)",
+      "items": [
+        "Seamless persona switching between Buyer Bob and Creator Alice",
+        "Game Editor with canDeactivate guard protects unsaved price and media edits",
+        "LocalStore service provides SSR-safe data with a 5-second destructive purge lock"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Safety & Reversals",
+      "items": [
+        "Purchase Revert returns funds to store wallet and revokes library entitlement",
+        "Dedicated exception lane keeps edge cases distinct from the primary flow",
+        "Zero neon clutter, 100% WCAG AAA high-contrast readability"
+      ]
+    }
+  ]
+}

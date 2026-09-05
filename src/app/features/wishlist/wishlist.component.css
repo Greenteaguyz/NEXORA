@@ -21,12 +21,99 @@
   padding-bottom: var(--space-6);
 }
 
+/* Wishlist Sale Alert Banner (Von Restorff AC-005) */
+.wishlist-sale-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: rgba(117, 176, 34, 0.12);
+  border: 1px solid rgba(117, 176, 34, 0.35);
+  border-radius: var(--radius-sm, 4px);
+  padding: 12px 18px;
+  margin-top: 14px;
+}
+
+:host-context([data-theme="light"]) .wishlist-sale-banner {
+  background: rgba(46, 125, 50, 0.08);
+  border-color: rgba(46, 125, 50, 0.3);
+}
+
+.sale-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.sale-icon-svg {
+  width: 18px;
+  height: 18px;
+  color: var(--emerald-400, #A4D007);
+  flex-shrink: 0;
+}
+
+:host-context([data-theme="light"]) .sale-icon-svg {
+  color: #2E7D32;
+}
+
+.btn-sort-deals {
+  background: #75B022;
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-xs, 2px);
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
+}
+
+.btn-sort-deals:hover {
+  background-color: #8ED629;
+}
+
 /* Wishlist Search & Filter Toolbar */
 .wishlist-toolbar {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
   gap: var(--space-4);
   margin-top: var(--space-6);
+}
+
+.wishlist-sort-cluster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.sort-label {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.sort-select {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-card);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm, 4px);
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+}
+
+:host-context([data-theme="light"]) .sort-select {
+  background: #FFFFFF;
+  border-color: #CBD5E1;
+  color: var(--text-primary);
 }
 
 .wishlist-search-wrapper {
@@ -455,6 +542,9 @@
 }
 
 .card-actions-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
   margin-top: var(--space-1);
 }
 
@@ -462,34 +552,77 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-2);
-  width: 100%;
-  padding: 9px 16px;
-  background: var(--steam-btn-gradient, linear-gradient(90deg, #0078D4 0%, #0284C7 100%));
-  border: 1px solid rgba(102, 192, 244, 0.45);
-  border-radius: var(--radius);
-  color: #FFFFFF;
-  font-size: 0.875rem;
-  font-weight: 800;
+  padding: 8px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-xs, 2px);
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 700;
   text-decoration: none;
   transition: all 0.15s ease;
-  box-shadow: 0 4px 12px rgba(0, 120, 212, 0.25);
 }
 
 .btn-view-details:hover {
-  background: linear-gradient(90deg, #0284C7 0%, #0078D4 100%);
-  border-color: #66C0F4;
-  box-shadow: 0 6px 16px rgba(102, 192, 244, 0.4);
+  border-color: var(--accent-400);
+  color: var(--accent-400);
 }
 
-.arrow-icon {
-  width: 14px;
-  height: 14px;
-  transition: transform 0.2s ease;
+.btn-buy-direct {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: var(--radius-xs, 2px);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease;
 }
 
-.btn-view-details:hover .arrow-icon {
-  transform: translateX(3px);
+.btn-buy-direct.paid {
+  background-color: var(--emerald-500, #75B022);
+  color: #FFFFFF;
+  border: none;
+}
+
+.btn-buy-direct.paid:hover {
+  background-color: #8ED629;
+}
+
+.btn-buy-direct.free {
+  background-color: rgba(52, 211, 153, 0.15);
+  color: var(--emerald-400);
+  border: 1px solid rgba(52, 211, 153, 0.35);
+}
+
+.btn-buy-direct.free:hover {
+  background-color: rgba(52, 211, 153, 0.25);
+}
+
+.wishlist-discount-cluster {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wishlist-discount-pill {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #A4D007;
+  background-color: #4C6B22;
+  padding: 2px 5px;
+  border-radius: var(--radius-xs, 2px);
+  line-height: 1.2;
+}
+
+.wishlist-orig-price {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-decoration: line-through;
 }
 
 @media (max-width: 768px) {

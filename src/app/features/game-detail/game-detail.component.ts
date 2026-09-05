@@ -1,5 +1,5 @@
-import { Component, inject, OnInit, OnDestroy, HostListener, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, AfterViewInit, OnDestroy, HostListener, effect, PLATFORM_ID, signal, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Meta, Title } from '@angular/platform-browser';
 import { Game } from '../../core/models/game.model';
@@ -19,7 +19,7 @@ import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directi
 import { TranslationService } from '../../core/services/translation.service';
 
 export interface SpecItem {
-  icon: 'os' | 'cpu' | 'ram' | 'gpu' | 'directx' | 'storage';
+  icon?: 'os' | 'cpu' | 'ram' | 'gpu' | 'directx' | 'storage';
   label: string;
   value: string;
 }
@@ -35,6 +35,7 @@ export interface SpecTier {
 @Component({
   selector: 'app-game-detail',
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule, 
     RouterLink, 
@@ -46,7 +47,7 @@ export interface SpecTier {
   templateUrl: './game-detail.component.html',
   styleUrls: ['./game-detail.component.css']
 })
-export class GameDetailComponent implements OnInit, OnDestroy {
+export class GameDetailComponent implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private title = inject(Title);
@@ -62,6 +63,20 @@ export class GameDetailComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   private translationService = inject(TranslationService);
   t = this.translationService.t;
+  private platformId = inject(PLATFORM_ID);
+  readonly isBrowser = isPlatformBrowser(this.platformId);
+
+  // Fitts's Law Sticky Bar & Miller's Law Tab Signals (AC-002)
+  showStickyBar = signal<boolean>(false);
+  activeDetailTab = signal<'about' | 'specs' | 'platform'>('about');
+  private stickyObserver: IntersectionObserver | null = null;
+  private sectionObserver: IntersectionObserver | null = null;
+  private isProgrammaticScroll = false;
+  private programmaticScrollTimer: any = null;
+  private stickyTimer: any = null;
+  private sectionTimer: any = null;
+  private checksumTimer: any = null;
+  private claimToastTimer: any = null;
 
   game: Game | null = null;
   creator: User | null = null;
@@ -128,7 +143,7 @@ export class GameDetailComponent implements OnInit, OnDestroy {
   get currentPlatformInstallerInfo(): { osName: string; ext: string; size: string; api: string; hash: string } {
     if (this.selectedDownloadPlatform === 'linux') {
       return {
-        osName: 'Linux & SteamOS',
+        osName: 'Linux',
         ext: 'Native AppImage (.tar.gz)',
         size: this.isRetro2D ? '310 MB' : '1.78 GB',
         api: 'Vulkan 1.2+ / Mesa 22.0+',
@@ -146,6 +161,7 @@ export class GameDetailComponent implements OnInit, OnDestroy {
 
   setDownloadPlatform(platform: 'windows' | 'linux'): void {
     this.selectedDownloadPlatform = platform;
+    this.selectedOs = platform;
   }
 
   copyChecksum(): void {
@@ -154,13 +170,17 @@ export class GameDetailComponent implements OnInit, OnDestroy {
       navigator.clipboard.writeText(hash).catch(() => {});
     }
     this.copiedChecksum = true;
-    setTimeout(() => {
+    if (this.checksumTimer) {
+      clearTimeout(this.checksumTimer);
+    }
+    this.checksumTimer = setTimeout(() => {
       this.copiedChecksum = false;
     }, 2500);
   }
 
   setOs(os: 'windows' | 'linux'): void {
     this.selectedOs = os;
+    this.selectedDownloadPlatform = os;
   }
 
   setSpecsTab(tab: 'minimum' | 'recommended'): void {
@@ -364,6 +384,8 @@ export class GameDetailComponent implements OnInit, OnDestroy {
         this.checkWishlist(game.id);
         this.checkOwnership(game.id);
         this.loading = false;
+        this.setupStickyObserver();
+        this.setupSectionObserver();
 
         this.title.setTitle(`${game.title} — NEXORA`);
         this.updateMetaTags(game);
@@ -439,6 +461,30 @@ export class GameDetailComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.clearOgTags();
+    this.stickyObserver?.disconnect();
+    this.stickyObserver = null;
+    this.sectionObserver?.disconnect();
+    this.sectionObserver = null;
+    if (this.programmaticScrollTimer) {
+      clearTimeout(this.programmaticScrollTimer);
+      this.programmaticScrollTimer = null;
+    }
+    if (this.stickyTimer) {
+      clearTimeout(this.stickyTimer);
+      this.stickyTimer = null;
+    }
+    if (this.sectionTimer) {
+      clearTimeout(this.sectionTimer);
+      this.sectionTimer = null;
+    }
+    if (this.checksumTimer) {
+      clearTimeout(this.checksumTimer);
+      this.checksumTimer = null;
+    }
+    if (this.claimToastTimer) {
+      clearTimeout(this.claimToastTimer);
+      this.claimToastTimer = null;
+    }
   }
 
   private loadCreator(ownerId: string): void {
@@ -626,7 +672,10 @@ export class GameDetailComponent implements OnInit, OnDestroy {
             this.isWishlisted = false;
           });
         }
-        setTimeout(() => {
+        if (this.claimToastTimer) {
+          clearTimeout(this.claimToastTimer);
+        }
+        this.claimToastTimer = setTimeout(() => {
           this.showFreeClaimToast = false;
         }, 4500);
       },
@@ -828,5 +877,63 @@ export class GameDetailComponent implements OnInit, OnDestroy {
     } else if (event.key === 'ArrowLeft') {
       this.prevScreenshot();
     }
+  }
+
+  scrollToSection(tab: 'about' | 'specs' | 'platform'): void {
+    this.activeDetailTab.set(tab);
+    if (!this.isBrowser) return;
+
+    this.isProgrammaticScroll = true;
+    if (this.programmaticScrollTimer) {
+      clearTimeout(this.programmaticScrollTimer);
+    }
+    this.programmaticScrollTimer = setTimeout(() => {
+      this.isProgrammaticScroll = false;
+    }, 700);
+
+    const target = document.getElementById('section-' + tab);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  setActiveDetailTab(tab: 'about' | 'specs' | 'platform'): void {
+    this.scrollToSection(tab);
+  }
+
+  ngAfterViewInit(): void {
+    // Post-render lifecycle hook
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    if (!this.isBrowser) return;
+    const banner = document.querySelector('.steam-purchase-banner');
+    if (banner) {
+      const rect = banner.getBoundingClientRect();
+      this.showStickyBar.set(rect.bottom < 0);
+    }
+  }
+
+  private setupStickyObserver(): void {
+    if (!this.isBrowser || typeof IntersectionObserver === 'undefined') return;
+    if (this.stickyTimer) {
+      clearTimeout(this.stickyTimer);
+    }
+    this.stickyTimer = setTimeout(() => {
+      const target = document.querySelector('.steam-purchase-banner');
+      if (!target) return;
+      this.stickyObserver?.disconnect();
+      this.stickyObserver = new IntersectionObserver(([entry]) => {
+        const bounding = entry.boundingClientRect;
+        const isAbove = bounding.bottom < 0;
+        this.showStickyBar.set(!entry.isIntersecting && isAbove);
+      }, { threshold: 0.05 });
+      this.stickyObserver.observe(target);
+    }, 150);
+  }
+
+  private setupSectionObserver(): void {
+    // Pre-index tab rail removed: continuous vertical document flow
   }
 }

@@ -59,6 +59,14 @@
           <span class="price-badge owned">{{ t()('action.in_library') }}</span>
         } @else if (game.price === 0) {
           <span class="price-badge free">{{ t()('common.free_to_play') }}</span>
+        } @else if (game.discountPercent) {
+          <div class="price-compound-wrap">
+            <span class="discount-pill">-{{ game.discountPercent }}%</span>
+            <div class="price-strike-col">
+              <span class="original-price">${{ (game.originalPrice || game.price).toFixed(2) }}</span>
+              <span class="price-badge paid">${{ game.price.toFixed(2) }}</span>
+            </div>
+          </div>
         } @else {
           <span class="price-badge paid">${{ game.price.toFixed(2) }}</span>
         }

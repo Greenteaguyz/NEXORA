@@ -41,6 +41,36 @@
         </div>
       </div>
     </div>
+
+    <!-- Goal Gradient Payout Milestone Bar (AC-UX Laws) -->
+    <div class="payout-goal-banner">
+      <div class="payout-goal-header">
+        <div class="payout-goal-title-wrap">
+          <svg class="payout-goal-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="1" x2="12" y2="23"/>
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+          <span class="payout-goal-title">Creator Payout Milestone</span>
+        </div>
+        <div class="payout-goal-stats">
+          <span class="payout-current">${{ totalRevenue.toFixed(2) }}</span>
+          <span class="payout-divider">/</span>
+          <span class="payout-target">${{ payoutThreshold.toFixed(2) }}</span>
+          <span class="payout-badge">{{ payoutProgressPercent }}%</span>
+        </div>
+      </div>
+      <div class="payout-progress-track" role="progressbar" [attr.aria-valuenow]="payoutProgressPercent" aria-valuemin="0" aria-valuemax="100" [attr.aria-label]="'Payout goal progress ' + payoutProgressPercent + '%'">
+        <div class="payout-progress-fill" [style.width.%]="payoutProgressPercent"></div>
+      </div>
+      <div class="payout-goal-footnote">
+        @if (remainingToPayout > 0) {
+          <span>${{ remainingToPayout.toFixed(2) }} remaining until next automated disbursement cycle.</span>
+        } @else {
+          <span class="payout-met">Milestone reached! Your payout will process in the next disbursement window.</span>
+        }
+        <span class="payout-rail">Direct KHQR & Card Rails</span>
+      </div>
+    </div>
   </header>
 
   <!-- Publish / Update Success Alert (AC-1118) -->
@@ -271,7 +301,7 @@
 
   <!-- Stage 1: Move to Recycle Bin / Soft-Delete Confirmation Reminder Modal -->
   @if (gameToBin) {
-    <div class="modal-backdrop" role="dialog" aria-modal="true" [attr.aria-label]="gameToBin.status === 'draft' ? 'Delete Draft' : 'Move to Recycle Bin'" appScrollLock (click)="closeDeleteModal()">
+    <div class="modal-backdrop" role="dialog" aria-modal="true" [attr.aria-label]="gameToBin.status === 'draft' ? 'Delete Draft' : 'Move to Recycle Bin'" appScrollLock (click)="closeDeleteModal()" (keydown.escape)="closeDeleteModal()">
       <div class="modal-card" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3 class="modal-title">
@@ -323,17 +353,6 @@
         </div>
 
         <div class="modal-body">
-          <div class="countdown-pill" [class.unlocked]="purgeCountdownSeconds === 0" aria-live="polite" aria-atomic="true">
-            @if (purgeCountdownSeconds > 0) {
-              <span class="countdown-text">Wait <strong>{{ purgeCountdownSeconds }}s</strong> to confirm</span>
-            } @else {
-              <span class="countdown-text">Ready to confirm</span>
-            }
-            <div class="countdown-progress-track" aria-hidden="true">
-              <div class="countdown-progress-bar" [style.width.%]="purgeCountdownProgressPercent"></div>
-            </div>
-          </div>
-
           <div class="purge-warning-box">
             <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
@@ -351,7 +370,7 @@
             class="btn-confirm-purge" 
             [disabled]="purgeCountdownSeconds > 0 || purging"
             (click)="confirmPermanentDelete()">
-            {{ purging ? 'Erasing...' : 'Permanently Delete' }}
+            {{ purging ? 'Erasing...' : (purgeCountdownSeconds > 0 ? 'Permanently Delete (' + purgeCountdownSeconds + 's)' : 'Permanently Delete') }}
           </button>
         </div>
       </div>

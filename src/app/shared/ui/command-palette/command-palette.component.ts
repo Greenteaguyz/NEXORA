@@ -36,7 +36,10 @@ export class CommandPaletteComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private paletteService = inject(CommandPaletteService);
   private translationService = inject(TranslationService);
+  private elementRef = inject(ElementRef);
   t = this.translationService.t;
+  private previouslyFocused: HTMLElement | null = null;
+  private focusTimeoutId: any = null;
 
   @ViewChild('searchInput') searchInputRef!: ElementRef<HTMLInputElement>;
 
@@ -45,6 +48,30 @@ export class CommandPaletteComponent implements OnInit {
   selectedIndex = signal(0);
 
   games = signal<Game[]>([]);
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      if (this.focusTimeoutId) {
+        clearTimeout(this.focusTimeoutId);
+      }
+    });
+
+    effect(() => {
+      if (this.isOpen()) {
+        if (typeof document !== 'undefined') {
+          this.previouslyFocused = document.activeElement as HTMLElement | null;
+        }
+        this.resetQuery();
+        this.focusInput();
+      } else {
+        if (this.previouslyFocused && typeof this.previouslyFocused.focus === 'function' &&
+            typeof document !== 'undefined' && document.contains(this.previouslyFocused)) {
+          this.previouslyFocused.focus();
+          this.previouslyFocused = null;
+        }
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.loadGames();
@@ -137,7 +164,10 @@ export class CommandPaletteComponent implements OnInit {
   }
 
   private focusInput(): void {
-    setTimeout(() => {
+    if (this.focusTimeoutId) {
+      clearTimeout(this.focusTimeoutId);
+    }
+    this.focusTimeoutId = setTimeout(() => {
       if (this.searchInputRef) {
         this.searchInputRef.nativeElement.focus();
       }
@@ -177,6 +207,28 @@ export class CommandPaletteComponent implements OnInit {
       const idx = this.selectedIndex();
       if (items[idx]) {
         this.executeCommand(items[idx]);
+      }
+    } else if (event.key === 'Tab') {
+      const dialog = this.elementRef.nativeElement.querySelector('.cmd-dialog') as HTMLElement | null;
+      if (!dialog) return;
+      const focusables = Array.from(
+        dialog.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        )
+      ).filter(el => el.offsetParent !== null);
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (event.shiftKey) {
+        if (document.activeElement === first || !dialog.contains(document.activeElement)) {
+          event.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last || !dialog.contains(document.activeElement)) {
+          event.preventDefault();
+          first.focus();
+        }
       }
     }
   }

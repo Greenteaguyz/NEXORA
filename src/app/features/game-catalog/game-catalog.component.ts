@@ -13,6 +13,8 @@ import { AmbientSpotlightComponent } from '../../shared/ui/ambient-spotlight/amb
 import { AmbientColorExtractorService } from '../../core/services/ambient-color-extractor.service';
 import { TranslationService } from '../../core/services/translation.service';
 
+export type CatalogPreset = 'all' | 'top-sellers' | 'discounts' | 'under-10' | 'free';
+
 @Component({
   selector: 'app-game-catalog',
   standalone: true,
@@ -41,6 +43,7 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
   featuredGames: Game[] = [];
   availableTags: string[] = [];
 
+  activePreset: CatalogPreset = 'all';
   activeHeroIndex = 0;
   hoveredScreenshotUrl: string | null = null;
   searchTerm = '';
@@ -334,6 +337,7 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
         this.selectedTags = new Set();
       }
 
+      this.activePreset = (this.route.snapshot.queryParams['preset'] as CatalogPreset) || 'all';
       this.searchTerm = this.route.snapshot.queryParams['search'] || '';
       this.sortBy = this.route.snapshot.queryParams['sort'] || 'featured';
       this.applyFilters();
@@ -349,14 +353,16 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
           }
           const newSearch = params['search'] || '';
           const newSort = params['sort'] || 'featured';
+          const newPreset = (params['preset'] as CatalogPreset) || 'all';
 
           const setsEqual = this.selectedTags.size === nextSet.size && 
             Array.from(this.selectedTags).every(t => nextSet.has(t));
 
-          if (!setsEqual || this.searchTerm !== newSearch || this.sortBy !== newSort) {
+          if (!setsEqual || this.searchTerm !== newSearch || this.sortBy !== newSort || this.activePreset !== newPreset) {
             this.selectedTags = nextSet;
             this.searchTerm = newSearch;
             this.sortBy = newSort;
+            this.activePreset = newPreset;
             this.applyFilters();
           }
         })
@@ -368,6 +374,22 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
     const tagSet = new Set<string>();
     games.forEach(g => g.tags.forEach(t => tagSet.add(t)));
     this.availableTags = Array.from(tagSet).sort();
+  }
+
+  setPreset(preset: CatalogPreset): void {
+    if (this.activePreset === preset) return;
+    this.activePreset = preset;
+    this.applyFilters();
+    this.syncUrl();
+  }
+
+  getPresetCount(preset: CatalogPreset): number {
+    if (preset === 'all') return this.allGames.length;
+    if (preset === 'discounts') return this.allGames.filter(g => !!g.discountPercent && g.discountPercent > 0).length;
+    if (preset === 'under-10') return this.allGames.filter(g => g.price < 10).length;
+    if (preset === 'free') return this.allGames.filter(g => g.price === 0).length;
+    if (preset === 'top-sellers') return this.allGames.filter(g => g.price > 0).length;
+    return 0;
   }
 
   toggleTag(tag: string): void {
@@ -397,6 +419,17 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
 
   applyFilters(): void {
     let result = [...this.allGames];
+
+    // Filter by quick preset (Hick's Law)
+    if (this.activePreset === 'discounts') {
+      result = result.filter(g => !!g.discountPercent && g.discountPercent > 0);
+    } else if (this.activePreset === 'under-10') {
+      result = result.filter(g => g.price < 10);
+    } else if (this.activePreset === 'free') {
+      result = result.filter(g => g.price === 0);
+    } else if (this.activePreset === 'top-sellers') {
+      result = result.filter(g => g.price > 0);
+    }
 
     // Filter by tag multi-selection (Union / Match Any)
     if (this.selectedTags.size > 0) {
@@ -439,6 +472,7 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
       queryParams: {
         search: this.searchTerm.trim() || null,
         tags: this.selectedTags.size > 0 ? Array.from(this.selectedTags).join(',') : null,
+        preset: this.activePreset !== 'all' ? this.activePreset : null,
         sort: this.sortBy !== 'featured' ? this.sortBy : null
       },
       queryParamsHandling: '',
@@ -449,6 +483,7 @@ export class GameCatalogComponent implements OnInit, OnDestroy {
   resetAllFilters(): void {
     this.searchTerm = '';
     this.selectedTags.clear();
+    this.activePreset = 'all';
     this.sortBy = 'featured';
     this.applyFilters();
     this.syncUrl();

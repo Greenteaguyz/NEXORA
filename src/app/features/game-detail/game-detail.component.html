@@ -246,7 +246,7 @@
                 <svg class="platform-glyph-svg" viewBox="0 0 24 24" fill="currentColor" title="Windows Standalone (.exe)" aria-hidden="true">
                   <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.901-1.801"/>
                 </svg>
-                <svg class="platform-glyph-svg" viewBox="0 0 24 24" fill="currentColor" title="Linux & SteamOS Native (.AppImage)" aria-hidden="true">
+                <svg class="platform-glyph-svg" viewBox="0 0 24 24" fill="currentColor" title="Linux Native (.AppImage)" aria-hidden="true">
                   <path d="M12.003 2c-2.76 0-4.996 2.235-4.996 4.994 0 .97.28 1.874.764 2.639C6.44 10.375 5.5 12.07 5.5 14c0 1.258.397 2.423 1.074 3.383-.357.734-.574 1.558-.574 2.43 0 .42.052.827.148 1.217.155.629.742 1.05 1.385.97 1.077-.133 1.98-.679 2.583-1.468.604.301 1.28.468 1.884.468s1.28-.167 1.884-.468c.603.789 1.506 1.335 2.583 1.468.643.08 1.23-.341 1.385-.97.096-.39.148-.797.148-1.217 0-.872-.217-1.696-.574-2.43.677-.96 1.074-2.125 1.074-3.383 0-1.93-.94-3.625-2.271-4.367.484-.765.764-1.669.764-2.639 0-2.759-2.236-4.994-4.996-4.994z"/>
                 </svg>
               </div>
@@ -373,7 +373,7 @@
                 </div>
                 <div class="receipt-detail-item">
                   <span class="detail-label">Platform Build</span>
-                  <span class="detail-val">{{ selectedOs === 'windows' ? 'Windows 10/11 (.exe)' : 'Linux / SteamOS (.AppImage)' }}</span>
+                  <span class="detail-val">{{ selectedOs === 'windows' ? 'Windows 10/11 (.exe)' : 'Linux (.AppImage)' }}</span>
                 </div>
               </div>
             </div>
@@ -448,23 +448,31 @@
       </div>
     }
 
-    <!-- STEAM LOWER GRID: About This Game & Specs -->
+    <!-- STEAM LOWER GRID: Tabbed Bento Architecture (Miller's Law Chunking) -->
     <div class="steam-lower-grid">
-      <!-- Main Details Column -->
       <main class="steam-main-details full-width">
-        <!-- ABOUT THIS GAME SECTION -->
-        <section class="steam-detail-block about-game-block" aria-labelledby="heading-about-game">
+
+        <!-- ABOUT THIS GAME SECTION (AC-1060 Continuous Section 1) -->
+        <section id="section-about" class="steam-detail-block about-game-block" aria-labelledby="heading-about-game">
           <div class="block-header">
             <h2 id="heading-about-game" class="block-title">About This Game</h2>
           </div>
-
           <div class="block-content">
-            <p class="story-lead-text">{{ game.description }}</p>
+            <div class="story-lead-dossier">
+              <p class="story-lead-text">{{ game.description }}</p>
+            </div>
+            @if (game.tags && game.tags.length > 0) {
+              <div class="game-feature-pills" aria-label="Game tags and features">
+                @for (tag of game.tags; track tag) {
+                  <span class="game-feature-pill">#{{ tag }}</span>
+                }
+              </div>
+            }
           </div>
         </section>
 
-        <!-- SYSTEM REQUIREMENTS SECTION (3x2 Balanced Grid AC-1058) -->
-        <section class="steam-detail-block specs-block" aria-labelledby="heading-system-specs">
+        <!-- SYSTEM REQUIREMENTS SECTION (AC-1060 Continuous Section 2) -->
+        <section id="section-specs" class="steam-detail-block specs-block" aria-labelledby="heading-system-specs">
           <div class="block-header">
             <h2 id="heading-system-specs" class="block-title">System Requirements</h2>
             <div class="os-tabs-cluster" role="tablist" aria-label="Operating system specifications">
@@ -493,21 +501,6 @@
             @for (item of minimumSpecs.items; track item.label) {
               <div class="spec-simple-item">
                 <div class="spec-item-header">
-                  <span class="spec-icon-box" aria-hidden="true">
-                    @if (item.icon === 'os') {
-                      <svg class="spec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-                    } @else if (item.icon === 'cpu') {
-                      <svg class="spec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="15" x2="23" y2="15"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/></svg>
-                    } @else if (item.icon === 'ram') {
-                      <svg class="spec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 19v-3"/><path d="M10 19v-3"/><path d="M14 19v-3"/><path d="M18 19v-3"/><rect x="2" y="5" width="20" height="11" rx="2"/></svg>
-                    } @else if (item.icon === 'gpu') {
-                      <svg class="spec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="8" cy="12" r="2.5"/><circle cx="16" cy="12" r="2.5"/></svg>
-                    } @else if (item.icon === 'directx') {
-                      <svg class="spec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    } @else {
-                      <svg class="spec-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
-                    }
-                  </span>
                   <span class="spec-key">{{ item.label }}</span>
                 </div>
                 <span class="spec-val">{{ item.value }}</span>
@@ -515,8 +508,130 @@
             }
           </div>
         </section>
+
+        <!-- INSTALLER & PLATFORM SECTION (AC-1060 Continuous Section 3) -->
+        <section id="section-platform" class="steam-detail-block platform-block" aria-labelledby="heading-platform-info">
+          <div class="block-header">
+            <h2 id="heading-platform-info" class="block-title">Installer &amp; Platform Build</h2>
+            <div class="os-tabs-cluster" role="tablist" aria-label="Platform installer tabs">
+              <button 
+                type="button" 
+                class="os-tab-btn" 
+                [class.active]="selectedDownloadPlatform === 'windows'" 
+                (click)="setDownloadPlatform('windows')"
+                role="tab"
+                [attr.aria-selected]="selectedDownloadPlatform === 'windows'">
+                Windows
+              </button>
+              <button 
+                type="button" 
+                class="os-tab-btn" 
+                [class.active]="selectedDownloadPlatform === 'linux'" 
+                (click)="setDownloadPlatform('linux')"
+                role="tab"
+                [attr.aria-selected]="selectedDownloadPlatform === 'linux'">
+                Linux
+              </button>
+            </div>
+          </div>
+
+          <div class="platform-info-bento">
+            <div class="platform-metrics-grid">
+              <!-- Metric 1: Package Format -->
+              <div class="platform-metric-item">
+                <div class="metric-header">
+                  <span class="metric-key">Package Format</span>
+                </div>
+                <span class="metric-val mono">{{ currentPlatformInstallerInfo.ext }}</span>
+              </div>
+
+              <!-- Metric 2: Download Size -->
+              <div class="platform-metric-item">
+                <div class="metric-header">
+                  <span class="metric-key">Download Size</span>
+                </div>
+                <span class="metric-val p-accent">{{ currentPlatformInstallerInfo.size }}</span>
+              </div>
+            </div>
+
+            <!-- Verified Cryptographic Checksum Card -->
+            <div class="checksum-verified-card">
+              <div class="checksum-header">
+                <div class="checksum-badge-title">
+                  <svg class="shield-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <polyline points="9 12 11 14 15 10"/>
+                  </svg>
+                  <span class="checksum-label">Verified Cryptographic Integrity (SHA-256)</span>
+                </div>
+                <button type="button" class="btn-copy-checksum" (click)="copyChecksum()" [attr.aria-label]="copiedChecksum ? 'Checksum copied to clipboard' : 'Copy SHA-256 hash'">
+                  <svg class="copy-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    @if (copiedChecksum) {
+                      <polyline points="20 6 9 17 4 12"/>
+                    } @else {
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    }
+                  </svg>
+                  <span>{{ copiedChecksum ? 'Checksum Copied!' : 'Copy Hash' }}</span>
+                </button>
+              </div>
+              <code class="checksum-code">{{ currentPlatformInstallerInfo.hash }}</code>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
+
+    <!-- Fitts's Law Sticky Purchase Bar (AC-002) -->
+    <aside 
+      class="steam-sticky-purchase-bar" 
+      [class.visible]="showStickyBar()" 
+      [attr.aria-hidden]="!showStickyBar()"
+      aria-label="Quick purchase navigation">
+      <div class="sticky-bar-inner">
+        <div class="sticky-left-cluster">
+          <img [src]="game.coverImageUrl" [alt]="game.title + ' Thumbnail'" class="sticky-cover-thumb" (error)="$any($event.target).src = 'assets/logo-icon.svg'">
+          <div class="sticky-title-group">
+            <span class="sticky-game-title">{{ game.title }}</span>
+            <div class="sticky-tags-inline">
+              @for (tag of game.tags.slice(0, 2); track tag) {
+                <span class="sticky-tag-chip">#{{ tag }}</span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="sticky-right-actions">
+          @if (isCreatorOwner) {
+            <a [routerLink]="['/studio/games', game.id, 'edit']" class="btn-sticky-link">Edit in Studio</a>
+            <button type="button" class="btn-sticky-primary" (click)="onDownload()">Download Build</button>
+          } @else if (isOwned) {
+            <span class="sticky-status-badge">In Library</span>
+            <button type="button" class="btn-sticky-primary" (click)="onDownload()">
+              <svg class="btn-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              <span>Play Game</span>
+            </button>
+          } @else if (game.price === 0) {
+            <span class="sticky-price-label free">Free to Play</span>
+            <button type="button" class="btn-sticky-primary" (click)="claimFreeToLibrary()">Play Free</button>
+          } @else {
+            <div class="sticky-price-cluster">
+              @if (game.discountPercent) {
+                <span class="sticky-discount-pill">-{{ game.discountPercent }}%</span>
+                <span class="sticky-orig-price">${{ (game.originalPrice || game.price).toFixed(2) }}</span>
+              }
+              <span class="sticky-current-price">${{ game.price.toFixed(2) }}</span>
+            </div>
+            <button type="button" class="btn-sticky-primary" (click)="onPurchaseConfirmed()">Buy Game</button>
+          }
+        </div>
+      </div>
+    </aside>
 
     <!-- Screenshot Lightbox Modal Overlay with Accessible Dialog Attributes -->
     @if (lightboxActive) {

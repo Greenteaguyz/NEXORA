@@ -1465,10 +1465,10 @@ assert('UI/UX Polish', 'Recycle Bin restore and purge actions use high-contrast 
 // 5. Permanent Purge Countdown Safety Lock & Compact Micro-Pill
 assert('UI/UX Polish', 'Permanent Purge defines 5s countdown lock in CreatorStudioComponent',
   studioTsContent.includes('readonly purgeCountdownTotal = 5') && studioTsContent.includes('purgeCountdownSeconds = 5'));
-assert('UI/UX Polish', 'Permanent Purge modal renders countdown-pill and disabled confirm button',
-  studioHtmlContent.includes('purgeCountdownSeconds === 0') && studioHtmlContent.includes('[disabled]="purgeCountdownSeconds > 0 || purging"'));
-assert('UI/UX Polish', 'Permanent Purge CSS defines compact countdown pill (136px / 0.72rem) and disabled state',
-  studioCssContent.includes('.countdown-pill') && studioCssContent.includes('min-width: 136px') && studioCssContent.includes('font-size: 0.72rem') && studioCssContent.includes('.btn-confirm-purge:disabled'));
+assert('UI/UX Polish', 'Permanent Purge modal renders countdown in confirm button with disabled lock',
+  studioHtmlContent.includes('purgeCountdownSeconds > 0') && studioHtmlContent.includes('[disabled]="purgeCountdownSeconds > 0 || purging"'));
+assert('UI/UX Polish', 'Permanent Purge CSS defines stable button min-width and disabled state',
+  studioCssContent.includes('.btn-confirm-purge') && studioCssContent.includes('min-width: 180px') && studioCssContent.includes('.btn-confirm-purge:disabled'));
 assert('UI/UX Polish', 'Permanent Purge uses action-first title and removes boilerplate "Are you sure you want to"',
   studioHtmlContent.includes('Permanently Delete "{{ gameToPurge.title }}"?') && !studioHtmlContent.includes('Are you sure you want to'));
 

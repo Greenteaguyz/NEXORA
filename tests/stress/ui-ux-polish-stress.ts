@@ -246,21 +246,18 @@ async function runSuite(): Promise<void> {
   assert(hasPurgeCleanup, 'PD', 'PD4', 'clearPurgeCountdownTimer is invoked on closePurgeModal and ngOnDestroy',
     'clearPurgeCountdownTimer missing from closePurgeModal or ngOnDestroy');
 
-  // PD5: Template binds countdown pill and disabled attribute
-  const hasTemplateCountdown = studioHtml.includes('purgeCountdownSeconds === 0') &&
-    studioHtml.includes('purgeCountdownProgressPercent') &&
+  // PD5: Template binds countdown in confirm button and disabled attribute
+  const hasTemplateCountdown = studioHtml.includes('purgeCountdownSeconds > 0') &&
     studioHtml.includes('[disabled]="purgeCountdownSeconds > 0 || purging"');
-  assert(hasTemplateCountdown, 'PD', 'PD5', 'Template renders countdown-pill and disables confirm button when countdown > 0',
-    'Template missing countdown pill or disabled binding on btn-confirm-purge');
+  assert(hasTemplateCountdown, 'PD', 'PD5', 'Template renders inline countdown and disables confirm button when countdown > 0',
+    'Template missing inline countdown or disabled binding on btn-confirm-purge');
 
-  // PD6: CSS defines compact countdown pill and disabled button state
-  const hasPurgeCss = studioCss.includes('.countdown-pill') &&
-    studioCss.includes('min-width: 136px') &&
-    studioCss.includes('font-size: 0.72rem') &&
-    studioCss.includes('.countdown-pill.unlocked') &&
+  // PD6: CSS defines stable confirm button and disabled button state
+  const hasPurgeCss = studioCss.includes('.btn-confirm-purge') &&
+    studioCss.includes('min-width: 180px') &&
     studioCss.includes('.btn-confirm-purge:disabled');
-  assert(hasPurgeCss, 'PD', 'PD6', 'CSS defines compact .countdown-pill (136px / 0.72rem), .unlocked, and .btn-confirm-purge:disabled',
-    'CSS missing compact countdown pill or disabled styles in creator-studio.component.css');
+  assert(hasPurgeCss, 'PD', 'PD6', 'CSS defines stable .btn-confirm-purge (min-width: 180px) and .btn-confirm-purge:disabled',
+    'CSS missing confirm button styles or disabled styles in creator-studio.component.css');
 
   // PD7: Rapid 1,000 open/close cycles stress test
   let simulatedSeconds = 5;

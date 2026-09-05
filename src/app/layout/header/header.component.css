@@ -520,7 +520,7 @@
 
 .btn-primary:hover {
   background-color: var(--accent-500);
-  box-shadow: var(--shadow-glow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }
 
 .btn-secondary {

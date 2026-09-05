@@ -410,17 +410,6 @@
           </div>
 
           <div class="modal-body-reset">
-            <div class="countdown-pill" [class.unlocked]="countdownSeconds === 0" aria-live="polite" aria-atomic="true">
-              @if (countdownSeconds > 0) {
-                <span class="countdown-text">Wait <strong>{{ countdownSeconds }}s</strong> to confirm</span>
-              } @else {
-                <span class="countdown-text">Ready to confirm</span>
-              }
-              <div class="countdown-progress-track" aria-hidden="true">
-                <div class="countdown-progress-bar" [style.width.%]="countdownProgressPercent"></div>
-              </div>
-            </div>
-
             <p id="disable-creator-desc" class="reset-warning-text">
               Hides Creator Studio from your navigation
             </p>
@@ -442,7 +431,7 @@
               class="btn-confirm-deactivate" 
               [disabled]="countdownSeconds > 0"
               (click)="confirmDisableCreator()">
-              Turn Off
+              <span class="countdown-text">{{ countdownSeconds > 0 ? 'Turn Off (' + countdownSeconds + 's)' : 'Turn Off' }}</span>
             </button>
           </div>
         </div>
@@ -453,7 +442,7 @@
     <!-- Reset Confirmation Modal -->
     <!-- Edit Profile Modal -->
     @if (isEditing) {
-      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Edit Profile" appScrollLock (click)="cancelEditing()">
+      <div class="modal-backdrop" role="dialog" aria-modal="true" aria-label="Edit Profile" appScrollLock (click)="cancelEditing()" (keydown.escape)="cancelEditing()">
         <div class="modal-card edit-profile-modal" (click)="$event.stopPropagation()">
           <div class="modal-header">
             <h3 class="modal-title">Edit Profile Information</h3>

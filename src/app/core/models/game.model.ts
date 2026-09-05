@@ -7,6 +7,8 @@ export interface Game {
   description: string;
   tags: string[];
   price: number;
+  originalPrice?: number;
+  discountPercent?: number;
   coverImageUrl: string;
   screenshotUrls: string[];
   samplePackageUrl: string;

@@ -145,10 +145,51 @@
 }
 
 .game-price-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.price-strikethrough {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.price-discount-pill {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #a4d007;
+  background: #4c6b22;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+}
+
+.price-amount {
   font-size: 1.25rem;
   font-weight: 800;
   color: var(--emerald-400);
-  margin-top: 4px;
+}
+
+.order-savings-callout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(117, 176, 34, 0.12);
+  border: 1px solid rgba(117, 176, 34, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  color: #a4d007;
+  font-size: 0.84rem;
+}
+
+.savings-svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 /* Payment Method Selector */

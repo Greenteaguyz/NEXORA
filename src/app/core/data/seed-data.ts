@@ -48,6 +48,8 @@ export const SEED_GAMES: Game[] = [
     description: 'A team-based 6v6 superhero shooter. Build team compositions from the Marvel roster, combine abilities, and fight across destructible battlegrounds.',
     tags: ['Action', 'Hero Shooter', 'Third-Person', 'Sci-Fi', 'Tactics', 'PvP'],
     price: 4.99,
+    originalPrice: 9.99,
+    discountPercent: 50,
     coverImageUrl: 'assets/images/marvel-rivals-capsule.jpg',
     screenshotUrls: [
       'assets/images/marvel-rivals-wide-hero.jpg',
@@ -120,6 +122,8 @@ export const SEED_GAMES: Game[] = [
     description: 'Historical action-adventure focused on stealth, parkour navigation, and melee combat across detailed open-world cities.',
     tags: ['Action', 'Adventure', 'Stealth', 'Open World', 'Historical'],
     price: 39.99,
+    originalPrice: 59.99,
+    discountPercent: 33,
     coverImageUrl: 'assets/images/assassins-creed-capsule.jpg',
     screenshotUrls: [
       'assets/images/assassins-creed-ss1.jpg',

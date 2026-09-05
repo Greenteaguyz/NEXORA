@@ -44,6 +44,7 @@ export class WishlistComponent {
   loading = true;
   searchQuery = '';
   selectedTags = new Set<string>();
+  sortBy: 'date' | 'discount' | 'price-asc' | 'price-desc' | 'title' = 'date';
 
   constructor() {
     effect(() => {
@@ -81,8 +82,21 @@ export class WishlistComponent {
     this.selectedTags.clear();
   }
 
+  get discountedCount(): number {
+    return this.items.filter(i => !!i.game.discountPercent && i.game.discountPercent > 0).length;
+  }
+
+  get totalSavings(): number {
+    return this.items.reduce((acc, i) => {
+      if (i.game.discountPercent && i.game.originalPrice) {
+        return acc + (i.game.originalPrice - i.game.price);
+      }
+      return acc;
+    }, 0);
+  }
+
   get filteredItems(): WishlistDisplayItem[] {
-    return this.items.filter(item => {
+    const result = this.items.filter(item => {
       const query = this.searchQuery.toLowerCase().trim();
       const matchesSearch = !query ||
         item.game.title.toLowerCase().includes(query) ||
@@ -93,6 +107,20 @@ export class WishlistComponent {
 
       return matchesSearch && matchesTag;
     });
+
+    if (this.sortBy === 'discount') {
+      result.sort((a, b) => (b.game.discountPercent || 0) - (a.game.discountPercent || 0));
+    } else if (this.sortBy === 'price-asc') {
+      result.sort((a, b) => a.game.price - b.game.price);
+    } else if (this.sortBy === 'price-desc') {
+      result.sort((a, b) => b.game.price - a.game.price);
+    } else if (this.sortBy === 'title') {
+      result.sort((a, b) => a.game.title.localeCompare(b.game.title));
+    } else if (this.sortBy === 'date') {
+      result.sort((a, b) => new Date(b.entry.addedAt).getTime() - new Date(a.entry.addedAt).getTime());
+    }
+
+    return result;
   }
 
   loadWishlist(user = this.auth.currentUser()): void {

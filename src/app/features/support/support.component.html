@@ -96,6 +96,12 @@
             Privacy & Storage
           </button>
         </div>
+
+        @if (searchQuery) {
+          <div class="faq-search-matches-pill">
+            <span>Showing <strong>{{ filteredFaqs.length }}</strong> {{ filteredFaqs.length === 1 ? 'match' : 'matches' }} for "{{ searchQuery }}"</span>
+          </div>
+        }
       </div>
 
       <!-- FAQ Accordion List -->
@@ -133,7 +139,7 @@
                 </div>
               </button>
               @if (openFaqId === faq.id) {
-                <div [id]="'faq-answer-' + faq.id" class="faq-answer" role="region">
+                <div [id]="'faq-answer-' + faq.id" class="faq-answer-panel" role="region">
                   <p class="faq-answer-text">{{ faq.answer }}</p>
                 </div>
               }
@@ -156,6 +162,21 @@
           <h2 id="heading-ticket" class="section-title">Submit a Support Ticket</h2>
           <span class="section-desc">Direct assistance from NEXORA platform support</span>
         </div>
+      </div>
+
+      <!-- Guaranteed Response SLA Banner -->
+      <div class="support-sla-banner">
+        <div class="sla-left">
+          <svg class="sla-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <div class="sla-text">
+            <strong class="sla-title">Guaranteed Response SLA</strong>
+            <span class="sla-sub">Average ticket response under <strong>2 hours</strong>. Offline play issues prioritized.</span>
+          </div>
+        </div>
+        <span class="sla-status-pill">Active Desk</span>
       </div>
 
       @if (ticketSubmitted) {

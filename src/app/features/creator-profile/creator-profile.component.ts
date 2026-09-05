@@ -57,6 +57,10 @@ export class CreatorProfileComponent implements OnInit {
     });
   }
 
+  get flagshipGame(): Game | null {
+    return this.creatorGames.length > 0 ? this.creatorGames[0] : null;
+  }
+
   copiedShareLink = false;
 
   copyProfileLink(): void {

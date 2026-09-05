@@ -95,6 +95,72 @@
   letter-spacing: 0.05em;
 }
 
+/* Orders Toolbar */
+.orders-toolbar {
+  margin-bottom: var(--space-4);
+  display: flex;
+  align-items: center;
+}
+
+.orders-search-wrap {
+  position: relative;
+  max-width: 440px;
+  width: 100%;
+}
+
+.orders-search-input {
+  width: 100%;
+  padding: 10px 38px 10px 40px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  transition: border-color 0.15s ease;
+}
+
+.orders-search-input:focus {
+  outline: none;
+  border-color: var(--accent-500);
+  box-shadow: 0 0 0 3px rgba(102, 192, 244, 0.2);
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.btn-clear-search {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.btn-clear-search:hover {
+  color: var(--text-primary);
+}
+
+.clear-search-svg {
+  width: 14px;
+  height: 14px;
+}
+
 /* Orders Table */
 .orders-table-wrapper {
   background: var(--bg-surface);
@@ -254,6 +320,41 @@
   text-align: right;
 }
 
+.order-actions-cluster {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btn-play-order {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, #75B022 0%, #588A1B 100%);
+  border: 1px solid #588A1B;
+  color: #FFFFFF;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  transform: translateY(0);
+}
+
+.btn-play-order:hover {
+  background: linear-gradient(90deg, #8ED629 0%, #6BA821 100%);
+  transform: translateY(0);
+}
+
+.play-order-svg {
+  width: 12px;
+  height: 12px;
+}
+
 .btn-view-receipt {
   display: inline-flex;
   align-items: center;
@@ -298,7 +399,7 @@
 
 .receipt-modal-card {
   background: var(--bg-surface);
-  border: 1px solid var(--border-glow);
+  border: 1px solid var(--accent-400);
   border-radius: var(--radius-xl);
   width: 100%;
   max-width: 600px;

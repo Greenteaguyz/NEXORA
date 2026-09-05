@@ -91,6 +91,50 @@
       </div>
     </header>
 
+    <!-- Flagship Release Hero Showcase -->
+    @if (flagshipGame) {
+      <section class="flagship-hero-section">
+        <div class="flagship-header-row">
+          <span class="flagship-eyebrow">FEATURED FLAGSHIP RELEASE</span>
+          <span class="verified-developer-badge">
+            <svg class="verified-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <polyline points="9 12 11 14 15 10"/>
+            </svg>
+            Verified Developer
+          </span>
+        </div>
+        <div class="flagship-card">
+          <a [routerLink]="['/games', flagshipGame.id]" class="flagship-cover-link">
+            <img [src]="flagshipGame.coverImageUrl" [alt]="flagshipGame.title" class="flagship-cover-img" (error)="$any($event.target).src = 'assets/logo-icon.svg'">
+          </a>
+          <div class="flagship-details">
+            <div class="flagship-badge-pill">Community Favorite</div>
+            <h3 class="flagship-title">
+              <a [routerLink]="['/games', flagshipGame.id]">{{ flagshipGame.title }}</a>
+            </h3>
+            <p class="flagship-desc">{{ flagshipGame.description }}</p>
+            <div class="flagship-meta-strip">
+              <div class="flagship-tags">
+                @for (t of flagshipGame.tags.slice(0, 3); track t) {
+                  <span class="tag-chip">#{{ t }}</span>
+                }
+              </div>
+              <div class="flagship-action-group">
+                <span class="flagship-price">{{ flagshipGame.price === 0 ? 'Free to Play' : '$' + flagshipGame.price.toFixed(2) }}</span>
+                <a [routerLink]="['/games', flagshipGame.id]" class="btn-flagship-view">
+                  <span>View Flagship</span>
+                  <svg class="view-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    }
+
     <!-- Published Games Section -->
     <section class="portfolio-section">
       <div class="section-title-bar">

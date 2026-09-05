@@ -34,6 +34,31 @@
         routerLink="/catalog">
       </app-empty-state>
     } @else {
+      <!-- Orders Search & Filter Toolbar -->
+      <div class="orders-toolbar">
+        <div class="orders-search-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery" 
+            placeholder="Search orders by title, ID, or tag..." 
+            class="orders-search-input"
+            (keydown.escape)="searchQuery = ''"
+            aria-label="Filter orders">
+          @if (searchQuery) {
+            <button type="button" class="btn-clear-search" (click)="searchQuery = ''" aria-label="Clear search">
+              <svg class="clear-search-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="18" x2="18" y2="6"/>
+              </svg>
+            </button>
+          }
+        </div>
+      </div>
+
       <!-- Desktop & Tablet Orders Table -->
       <div class="orders-table-wrapper" role="region" aria-label="Order history table">
         <table class="orders-table">
@@ -48,7 +73,7 @@
             </tr>
           </thead>
           <tbody>
-            @for (item of items; track item.order.id) {
+            @for (item of filteredItems; track item.order.id) {
               <tr class="order-row">
                 <!-- Order ID -->
                 <td class="cell-id">
@@ -100,17 +125,25 @@
 
                 <!-- Actions -->
                 <td class="cell-actions text-right">
-                  <button 
-                    type="button" 
-                    class="btn-view-receipt" 
-                    (click)="viewReceipt(item)"
-                    [attr.aria-label]="'View receipt for order ' + item.order.id">
-                    <svg class="receipt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                      <polyline points="14 2 14 8 20 8"/>
-                    </svg>
-                    <span>Receipt</span>
-                  </button>
+                  <div class="order-actions-cluster">
+                    <a routerLink="/library" class="btn-play-order" [attr.aria-label]="'Play ' + (item.game?.title || 'game') + ' in Library'">
+                      <svg class="play-order-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                      </svg>
+                      <span>Play</span>
+                    </a>
+                    <button 
+                      type="button" 
+                      class="btn-view-receipt" 
+                      (click)="viewReceipt(item)"
+                      [attr.aria-label]="'View receipt for order ' + item.order.id">
+                      <svg class="receipt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                      </svg>
+                      <span>Receipt</span>
+                    </button>
+                  </div>
                 </td>
               </tr>
             }

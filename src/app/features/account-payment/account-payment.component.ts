@@ -10,6 +10,7 @@ import { PaymentBrandMarkComponent } from '../../shared/ui/payment-brand-mark/pa
 import { KhqrCardComponent } from '../../shared/ui/khqr-card/khqr-card.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 import { AddPaymentMethodFormComponent } from '../../shared/ui/add-payment-method-form/add-payment-method-form.component';
+import { AlertComponent } from '../../shared/ui/alert/alert.component';
 
 @Component({
   selector: 'app-account-payment',
@@ -22,7 +23,8 @@ import { AddPaymentMethodFormComponent } from '../../shared/ui/add-payment-metho
     PaymentBrandMarkComponent,
     KhqrCardComponent,
     ScrollLockDirective,
-    AddPaymentMethodFormComponent
+    AddPaymentMethodFormComponent,
+    AlertComponent
   ],
   templateUrl: './account-payment.component.html',
   styleUrl: './account-payment.component.css'

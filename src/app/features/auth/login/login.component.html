@@ -6,17 +6,37 @@
       <p class="auth-subtitle">Log in to access your game library and indie studio.</p>
     </div>
 
-    <!-- 1-Click Demo Account Autofill Box -->
+    <!-- 1-Click Demo Account Quick Selector -->
     <div class="demo-box">
       <div class="demo-box-label">
         <svg class="demo-bolt-svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
         </svg>
-        <span>1-Click Demo Quick-Fill</span>
+        <span>Instant 1-Click Persona Login</span>
       </div>
       <div class="demo-account-pills">
-        <button type="button" class="demo-btn" (click)="fillDemo('alice@nexora.io')">Alice (Creator)</button>
-        <button type="button" class="demo-btn" (click)="fillDemo('bob@nexora.io')">Bob (Buyer)</button>
+        <button 
+          type="button" 
+          class="demo-btn demo-persona-card" 
+          [class.active]="email === 'alice@nexora.io'"
+          (click)="fillDemo('alice@nexora.io')">
+          <div class="persona-top-line">
+            <span class="persona-name">Alice Vance</span>
+            <span class="persona-badge creator">Creator</span>
+          </div>
+          <span class="persona-role-hint">Studio & Listings</span>
+        </button>
+        <button 
+          type="button" 
+          class="demo-btn demo-persona-card" 
+          [class.active]="email === 'bob@nexora.io'"
+          (click)="fillDemo('bob@nexora.io')">
+          <div class="persona-top-line">
+            <span class="persona-name">Bob Mercer</span>
+            <span class="persona-badge buyer">Buyer</span>
+          </div>
+          <span class="persona-role-hint">Library & Wishlist</span>
+        </button>
       </div>
     </div>
 
@@ -35,6 +55,9 @@
           class="form-input" 
           placeholder="welcome@nexora.io" 
           required>
+        @if (email && !email.includes('@')) {
+          <span class="inline-validation-hint warn">Please enter a valid email address with &#64;.</span>
+        }
       </div>
 
       <div class="form-group">

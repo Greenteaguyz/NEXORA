@@ -313,12 +313,12 @@ console.log('\n--- 6. UNIT TESTS: Universal UI & Empty-State Normalizer ---');
  */
 function normalizeEmptyStateIcon(icon: string): string {
   const i = (icon || '').trim();
-  if (i === '🎮' || i.toLowerCase().includes('game')) return 'gamepad';
-  if (i === '🔍' || i.toLowerCase().includes('search')) return 'search';
-  if (i === '💖' || i === '❤️' || i.toLowerCase().includes('heart') || i.toLowerCase().includes('wish')) return 'heart';
-  if (i === '🧾' || i.toLowerCase().includes('receipt') || i.toLowerCase().includes('order')) return 'receipt';
-  if (i === '🚀' || i.toLowerCase().includes('rocket') || i.toLowerCase().includes('publish') || i.toLowerCase().includes('studio')) return 'rocket';
-  if (i === '⚠️' || i.toLowerCase().includes('warn') || i.toLowerCase().includes('alert') || i.toLowerCase().includes('error')) return 'warning';
+  if (i === '\uD83C\uDFAE' || i.toLowerCase().includes('game')) return 'gamepad';
+  if (i === '\uD83D\uDD0D' || i.toLowerCase().includes('search')) return 'search';
+  if (i === '\uD83D\uDC96' || i === '\u2764\uFE0F' || i.toLowerCase().includes('heart') || i.toLowerCase().includes('wish')) return 'heart';
+  if (i === '\uD83E\uDDFE' || i.toLowerCase().includes('receipt') || i.toLowerCase().includes('order')) return 'receipt';
+  if (i === '\uD83D\uDE80' || i.toLowerCase().includes('rocket') || i.toLowerCase().includes('publish') || i.toLowerCase().includes('studio')) return 'rocket';
+  if (i === '\u26A0\uFE0F' || i.toLowerCase().includes('warn') || i.toLowerCase().includes('alert') || i.toLowerCase().includes('error')) return 'warning';
   return i;
 }
 
@@ -342,11 +342,11 @@ function resolveDuotoneOpacity(baseOpacity: number, theme: 'dark' | 'light'): nu
 }
 
 // Test 1: Emoji matching to semantic icon keys
-assert('Icon Normalizer', 'Gamepad emoji "🎮" resolves to "gamepad"', normalizeEmptyStateIcon('🎮') === 'gamepad');
-assert('Icon Normalizer', 'Heart emoji "❤️" resolves to "heart"', normalizeEmptyStateIcon('❤️') === 'heart');
-assert('Icon Normalizer', 'Receipt emoji "🧾" resolves to "receipt"', normalizeEmptyStateIcon('🧾') === 'receipt');
-assert('Icon Normalizer', 'Rocket emoji "🚀" resolves to "rocket"', normalizeEmptyStateIcon('🚀') === 'rocket');
-assert('Icon Normalizer', 'Warning emoji "⚠️" resolves to "warning"', normalizeEmptyStateIcon('⚠️') === 'warning');
+assert('Icon Normalizer', 'Gamepad emoji resolves to "gamepad"', normalizeEmptyStateIcon('\uD83C\uDFAE') === 'gamepad');
+assert('Icon Normalizer', 'Heart emoji resolves to "heart"', normalizeEmptyStateIcon('\u2764\uFE0F') === 'heart');
+assert('Icon Normalizer', 'Receipt emoji resolves to "receipt"', normalizeEmptyStateIcon('\uD83E\uDDFE') === 'receipt');
+assert('Icon Normalizer', 'Rocket emoji resolves to "rocket"', normalizeEmptyStateIcon('\uD83D\uDE80') === 'rocket');
+assert('Icon Normalizer', 'Warning emoji resolves to "warning"', normalizeEmptyStateIcon('\u26A0\uFE0F') === 'warning');
 
 // Test 2: Substring keywords to semantic icon keys
 assert('Icon Normalizer', 'Keyword "orders_history" resolves to "receipt"', normalizeEmptyStateIcon('orders_history') === 'receipt');
@@ -5215,6 +5215,177 @@ function runFontStackUnitTests() {
 }
 
 // ---------------------------------------------------------------------------
+// Game Detail: Full Continuous Section Layout & Sticky Pre-Index Jump Bar (AC-1060 - AC-1063)
+// ---------------------------------------------------------------------------
+console.log('\n--- Game Detail Continuous Section Layout & Pre-Index Jump Bar Tests ---');
+
+function runGameDetailContinuousLayoutUnitTests() {
+  const htmlPath = path.resolve(__dirname, '../../../src/app/features/game-detail/game-detail.component.html');
+  const tsPath = path.resolve(__dirname, '../../../src/app/features/game-detail/game-detail.component.ts');
+  const cssPath = path.resolve(__dirname, '../../../src/app/features/game-detail/game-detail.component.css');
+
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const ts = fs.readFileSync(tsPath, 'utf8');
+  const css = fs.readFileSync(cssPath, 'utf8');
+
+  // AC-1060: Full Continuous Layout without @if gating
+  assert('Game Detail Continuous Layout', 'HTML defines section-about with proper id and block class',
+    html.includes('id="section-about"')
+  );
+  assert('Game Detail Continuous Layout', 'HTML defines section-specs with proper id and block class',
+    html.includes('id="section-specs"')
+  );
+  assert('Game Detail Continuous Layout', 'HTML defines section-platform with proper id and block class',
+    html.includes('id="section-platform"')
+  );
+  assert('Game Detail Continuous Layout', 'HTML does NOT gate sections behind activeDetailTab @if switches',
+    !html.includes("@if (activeDetailTab() === 'about')") &&
+    !html.includes("@if (activeDetailTab() === 'specs')") &&
+    !html.includes("@if (activeDetailTab() === 'platform')")
+  );
+
+  // Direct Continuous Vertical Flow (Uninterrupted Steam Layout)
+  assert('Game Detail Continuous Flow', 'HTML does NOT render floating bento-tabs-nav in favor of direct reading',
+    !html.includes('class="bento-tabs-nav"')
+  );
+  assert('Game Detail Continuous Flow', 'HTML does NOT render bento-tab-btn jump buttons',
+    !html.includes('class="bento-tab-btn"')
+  );
+  assert('Game Detail Continuous Flow', 'CSS defines clean section scroll-margin-top 80px for continuous layout',
+    css.includes('scroll-margin-top: 80px;')
+  );
+
+  // Backward-Compatible Scroll & State API
+  assert('Game Detail Scroll API', 'TS defines scrollToSection method for anchor traversal',
+    ts.includes('scrollToSection(tab: \'about\' | \'specs\' | \'platform\')')
+  );
+  assert('Game Detail Scroll API', 'TS preserves setActiveDetailTab for backward compatibility',
+    ts.includes('setActiveDetailTab(tab: \'about\' | \'specs\' | \'platform\')')
+  );
+  assert('Game Detail Scroll API', 'TS defines setupSectionObserver method',
+    ts.includes('setupSectionObserver()')
+  );
+  assert('Game Detail Scroll API', 'TS cleans up observers and timers safely in ngOnDestroy',
+    ts.includes('this.stickyObserver?.disconnect()')
+  );
+
+  // AC-1064: Harmonized Platform Selection State Synchronization
+  assert('Game Detail Harmonized OS', 'TS synchronizes selectedDownloadPlatform inside setOs',
+    ts.includes('this.selectedDownloadPlatform = os;')
+  );
+  assert('Game Detail Harmonized OS', 'TS synchronizes selectedOs inside setDownloadPlatform',
+    ts.includes('this.selectedOs = platform;')
+  );
+
+  // Elevated Story Dossier & Feature Pills
+  assert('Game Detail Story Dossier', 'HTML wraps lead story in story-lead-dossier container',
+    html.includes('class="story-lead-dossier"')
+  );
+  assert('Game Detail Story Dossier', 'HTML renders game-feature-pills cluster for tags',
+    html.includes('class="game-feature-pills"')
+  );
+  assert('Game Detail Story Dossier', 'CSS styles story-lead-dossier with accent border-left',
+    css.includes('.story-lead-dossier') && css.includes('border-left: 2px solid var(--accent-400)')
+  );
+
+  // 2-Cell Platform Bento Grid & Verified Checksum Badge
+  assert('Game Detail Platform Bento', 'HTML implements platform-metrics-grid for essential telemetry cards',
+    html.includes('class="platform-metrics-grid"')
+  );
+  assert('Game Detail Platform Bento', 'HTML implements checksum-verified-card cryptographic badge',
+    html.includes('class="checksum-verified-card"')
+  );
+  assert('Game Detail Platform Bento', 'CSS styles platform-metrics-grid with 2-column grid layout',
+    css.includes('.platform-metrics-grid') && css.includes('grid-template-columns: repeat(2, 1fr);')
+  );
+  assert('Game Detail Platform Bento', 'CSS styles checksum-verified-card with cryptographic badge styling',
+    css.includes('.checksum-verified-card')
+  );
+
+  // De-Cluttering & Typographic Refinements
+  assert('Game Detail De-Clutter', 'Pre-index tab buttons do NOT contain decorative SVG icons',
+    !html.includes('class="bento-tab-svg"')
+  );
+  assert('Game Detail De-Clutter', 'Story tag pills render with # prefix and no SVG icons',
+    html.includes('class="game-feature-pill">#{{ tag }}</span>') &&
+    !html.includes('class="pill-svg"')
+  );
+  assert('Game Detail De-Clutter', 'System requirements grid does NOT contain mini icon boxes',
+    !html.includes('class="spec-icon-box"')
+  );
+  assert('Game Detail De-Clutter', 'Platform metrics grid does NOT contain mini icon boxes',
+    !html.includes('class="metric-icon-box"')
+  );
+  assert('Game Detail De-Clutter', 'HTML does NOT display Linux / SteamOS text in platform tabs or metadata',
+    !html.includes('Linux / SteamOS') &&
+    !html.includes('Linux & SteamOS')
+  );
+  assert('Game Detail De-Clutter', 'TS currentPlatformInstallerInfo uses clean Linux identifier',
+    ts.includes("osName: 'Linux',")
+  );
+}
+
+// ---------------------------------------------------------------------------
+// 92. UNIT TESTS: shadcn/ui Alert & Toast Component Architecture
+// ---------------------------------------------------------------------------
+function runShadcnAlertAndToastUnitTests(): void {
+  const alertPath = path.resolve(__dirname, '../../../src/app/shared/ui/alert/alert.component.ts');
+  assert('shadcn/ui Alert Spec', 'AlertComponent source exists', fs.existsSync(alertPath));
+
+  const alertContent = fs.readFileSync(alertPath, 'utf8');
+  assert('shadcn/ui Alert Spec', 'Exports AlertComponent, AlertTitleDirective, AlertDescriptionDirective',
+    alertContent.includes('export class AlertComponent') &&
+    alertContent.includes('export class AlertTitleDirective') &&
+    alertContent.includes('export class AlertDescriptionDirective')
+  );
+  assert('shadcn/ui Alert Spec', 'Defines 5 semantic variants including destructive and success',
+    alertContent.includes("'default'") &&
+    alertContent.includes("'destructive'") &&
+    alertContent.includes("'warning'") &&
+    alertContent.includes("'info'") &&
+    alertContent.includes("'success'")
+  );
+  assert('shadcn/ui Alert Spec', 'Maps destructive variant to role="alert" and others to role="status"',
+    alertContent.includes("this.variant() === 'destructive' ? 'alert' : 'status'") &&
+    alertContent.includes("this.variant() === 'destructive' ? 'assertive' : 'polite'")
+  );
+  assert('shadcn/ui Alert Spec', 'Enforces strict Steam 8px radius and zero neon glows',
+    alertContent.includes('var(--radius-lg, 8px)') &&
+    !alertContent.includes('filter: drop-shadow(0 0') &&
+    !alertContent.includes('box-shadow: 0 0')
+  );
+
+  const toastPath = path.resolve(__dirname, '../../../src/app/shared/ui/toast/toast.component.ts');
+  const toastContent = fs.readFileSync(toastPath, 'utf8');
+  assert('shadcn/ui Toast Spec', 'Toast close button is quiet and revealed on hover/focus',
+    toastContent.includes('.toast-card:hover .btn-toast-close') &&
+    toastContent.includes('opacity: 0;')
+  );
+  assert('shadcn/ui Toast Spec', 'Toast action button implements shadcn outline button styling',
+    toastContent.includes('.btn-toast-action') &&
+    toastContent.includes('var(--radius, 6px)')
+  );
+  assert('shadcn/ui Toast Spec', 'Toast card enforces 8px radius and fast mechanical slide',
+    toastContent.includes('border-radius: var(--radius-lg, 8px);') &&
+    toastContent.includes('animation: slideInUp 0.2s ease-out;')
+  );
+
+  // Feature Integrations
+  const paymentHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/features/account-payment/account-payment.component.html'), 'utf8');
+  assert('shadcn/ui Alert Feature Integration', 'AccountPaymentComponent uses app-alert for success and error',
+    paymentHtml.includes('<app-alert variant="success">') &&
+    paymentHtml.includes('<app-alert variant="destructive">')
+  );
+
+  const gameFormHtml = fs.readFileSync(path.resolve(__dirname, '../../../src/app/features/creator-studio/game-form/game-form.component.html'), 'utf8');
+  assert('shadcn/ui Alert Feature Integration', 'GameFormComponent uses app-alert for submission error',
+    gameFormHtml.includes('<app-alert variant="destructive">') &&
+    gameFormHtml.includes('alert-title') &&
+    gameFormHtml.includes('alert-description')
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Summary Runner
 // ---------------------------------------------------------------------------
 (async () => {
@@ -5227,6 +5398,8 @@ function runFontStackUnitTests() {
   runTranslationUnitTests();
   runComponentTranslationTests();
   await runPasswordSecurityUnitTests();
+  runGameDetailContinuousLayoutUnitTests();
+  runShadcnAlertAndToastUnitTests();
 
   const passed = results.filter(r => r.passed).length;
   const total = results.length;

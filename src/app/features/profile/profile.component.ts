@@ -1,4 +1,4 @@
-import { Component, inject, effect, OnDestroy, HostListener } from '@angular/core';
+import { Component, inject, effect, OnDestroy, HostListener, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -39,6 +39,8 @@ export class ProfileComponent implements OnDestroy {
   private wishlistData = inject(WISHLIST_DATA);
   private ordersData = inject(ORDERS_DATA);
   private gamesData = inject(GAMES_DATA);
+  private readonly elementRef = inject(ElementRef);
+  private previouslyFocused: HTMLElement | null = null;
 
   ownedCount = 0;
   wishlistCount = 0;
@@ -137,7 +139,22 @@ export class ProfileComponent implements OnDestroy {
     }
   }
 
+  private saveFocus(): void {
+    if (typeof document !== 'undefined') {
+      this.previouslyFocused = document.activeElement as HTMLElement | null;
+    }
+  }
+
+  private restoreFocus(): void {
+    if (this.previouslyFocused && typeof this.previouslyFocused.focus === 'function' &&
+        typeof document !== 'undefined' && document.contains(this.previouslyFocused)) {
+      this.previouslyFocused.focus();
+      this.previouslyFocused = null;
+    }
+  }
+
   startEditing(): void {
+    this.saveFocus();
     this.initEditForm();
     this.isEditing = true;
     this.saveSuccess = false;
@@ -146,6 +163,7 @@ export class ProfileComponent implements OnDestroy {
   cancelEditing(): void {
     this.isEditing = false;
     this.avatarUploadError = '';
+    this.restoreFocus();
   }
 
   selectPresetAvatar(url: string): void {

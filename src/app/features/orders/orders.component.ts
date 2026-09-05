@@ -11,6 +11,7 @@ import { LoadingSpinnerComponent } from '../../shared/ui/loading-spinner/loading
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { ScrollLockDirective } from '../../shared/directives/scroll-lock.directive';
 
+import { FormsModule } from '@angular/forms';
 import { TranslationService } from '../../core/services/translation.service';
 
 export interface OrderDisplayItem {
@@ -23,6 +24,7 @@ export interface OrderDisplayItem {
   standalone: true,
   imports: [
     CommonModule, 
+    FormsModule,
     RouterLink, 
     LoadingSpinnerComponent, 
     EmptyStateComponent,
@@ -41,6 +43,18 @@ export class OrdersComponent {
   items: OrderDisplayItem[] = [];
   loading = true;
   selectedReceiptOrder: OrderDisplayItem | null = null;
+  searchQuery = '';
+
+  get filteredItems(): OrderDisplayItem[] {
+    const q = this.searchQuery.toLowerCase().trim();
+    if (!q) return this.items;
+    return this.items.filter(item => {
+      const titleMatch = item.game?.title.toLowerCase().includes(q) ?? false;
+      const idMatch = item.order.id.toLowerCase().includes(q);
+      const tagMatch = item.game?.tags.some(t => t.toLowerCase().includes(q)) ?? false;
+      return titleMatch || idMatch || tagMatch;
+    });
+  }
 
   constructor() {
     effect(() => {
